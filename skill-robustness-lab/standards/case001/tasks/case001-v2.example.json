@@ -1,0 +1,26 @@
+{
+  "schema_version": "4.0",
+  "case_id": "case001-v2",
+  "source_id": "src-authored-order-csv",
+  "family_id": "fam-authored-order-csv",
+  "task_id": "case001-v2.example",
+  "split": "development",
+  "purpose": "development",
+  "contract_id": "case001-v2.contract-v1",
+  "judge_id": "case001-v2.judge-v1",
+  "prompt": "Use the supplied skill and orders.csv to write deduplicated.csv and summary.csv in the output directory. Preserve input files and report invalid records.",
+  "inputs": {
+    "orders.csv": "order_id,customer_id,updated_at,amount\n001,C2,2026-01-01T08:00:00+08:00,10.00\n001,C1,2026-01-01T00:00:00Z,12.50\n002,,2026-01-02T00:00:00Z,\n003,C1,2026-01-03T00:00:00Z,2.25\n"
+  },
+  "expected": {
+    "outcome": "success",
+    "outputs": {
+      "deduplicated.csv": "order_id,customer_id,updated_at,amount\n001,C1,2026-01-01T00:00:00Z,12.50\n002,UNKNOWN,2026-01-02T00:00:00Z,0.00\n003,C1,2026-01-03T00:00:00Z,2.25\n",
+      "summary.csv": "customer_id,order_count,total_amount,latest_updated_at\nC1,2,14.75,2026-01-03T00:00:00Z\nUNKNOWN,1,0.00,2026-01-02T00:00:00Z\n"
+    },
+    "error_record": null,
+    "error_field": null
+  },
+  "covered_rule_ids": [],
+  "coverage_note": "Migrated existing development fixture; independent per-rule coverage review is pending"
+}

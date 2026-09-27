@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "family",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "4.0"
+      ]
+    },
+    "family_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grouping_basis": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+      },
+      "minItems": 1
+    },
+    "review_status": {
+      "enum": [
+        "pending",
+        "reviewed"
+      ]
+    },
+    "review_note": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "family_id",
+    "name",
+    "grouping_basis",
+    "source_ids",
+    "review_status",
+    "review_note"
+  ],
+  "additionalProperties": false
+}

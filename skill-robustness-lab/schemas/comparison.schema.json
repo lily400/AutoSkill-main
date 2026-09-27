@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "comparison",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "4.0"
+      ]
+    },
+    "comparison_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "clean_run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "degraded_run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "family_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "method_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+    },
+    "generation_repeat": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "comparable": {
+      "type": "boolean"
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "clean_status": {
+      "type": "object"
+    },
+    "degraded_status": {
+      "type": "object"
+    },
+    "eligible_for_skill_quality_comparison": {
+      "type": "boolean"
+    },
+    "semantic_score_delta": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "task_success_delta": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "metrics_status": {
+      "enum": [
+        "not_run",
+        "computed"
+      ]
+    },
+    "metric_reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "comparison_id",
+    "clean_run_id",
+    "degraded_run_id",
+    "case_id",
+    "source_id",
+    "family_id",
+    "method_id",
+    "generation_repeat",
+    "comparable",
+    "reasons",
+    "clean_status",
+    "degraded_status",
+    "eligible_for_skill_quality_comparison",
+    "semantic_score_delta",
+    "task_success_delta",
+    "metrics_status",
+    "metric_reason"
+  ],
+  "additionalProperties": false
+}
