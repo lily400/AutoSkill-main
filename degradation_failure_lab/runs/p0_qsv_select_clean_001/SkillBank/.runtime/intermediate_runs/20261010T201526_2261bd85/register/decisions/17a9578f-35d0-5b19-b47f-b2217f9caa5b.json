@@ -1,0 +1,135 @@
+{
+  "skill_id": "17a9578f-35d0-5b19-b47f-b2217f9caa5b",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "17a9578f-35d0-5b19-b47f-b2217f9caa5b",
+    "name": "Column selector execution with qsv select",
+    "description": "Use qsv select selector syntax to choose, order, or duplicate columns by 1-based index, header name, range, last-column token, or regex when a delimited file needs a precise column subset without changing row data.",
+    "skill_body": "Construct a qsv select selector from the caller's requested columns. Use 1-based indices (e.g., 1,4), ranges (1-4, 3-), header-name ranges (Header1-Header4), _ for the last column, and /regex/ for pattern matches. Repeat selectors to duplicate columns or reorder output arbitrarily. Quote header names or selectors that conflict with selector syntax or shell metacharacters. Run qsv select with the selector and input file, then verify the output header has exactly the requested columns in the requested order and that row data is unchanged. Do not use --random for this deterministic selector-based output contract. If target columns cannot be resolved, do not guess; report the ambiguity.\n\n## Objective\n\nProduce a delimited output with the requested columns selected and ordered from an input delimited file, without changing row data.\n## Applicable Signals\n\n- Caller knows target columns by index, header name, range, last-column token, or regex\n- Requested change is limited to column projection, ordering, or duplication\n- Row values must remain unchanged\n- Input is a delimited file with usable headers for name-based or regex selectors\n\n## Contraindications\n\n- Need to filter rows or transform cell values\n- Need to join or aggregate datasets\n- Column names are unknown and cannot be inferred from input headers\n- Need a privacy-specific deletion policy or column-level randomization as the primary procedure\n\n## Intervention Moves\n\n- Map requested columns to qsv select selector syntax\n- Use 1-based indices, ranges, and header-name ranges\n- Use _ for the last column and /regex/ for pattern-based selection\n- Repeat selectors when duplicating columns\n- Quote column names or selectors that conflict with selector syntax\n- Execute qsv select and verify output column set and order\n\n## Workflow Steps\n\n- Confirm which columns are requested and whether selection will use indices, header names, ranges, the last-column token _, or regex.\n- Construct the selector using 1-based indices, ranges, header-name ranges, _ for the last column, and /regex/ for pattern matches.\n- Repeat selectors to duplicate columns or reorder output arbitrarily.\n- Quote header names or selectors that conflict with selector syntax or shell metacharacters.\n- Run qsv select with the selector and input file.\n- Inspect the output to confirm exactly the requested columns appear in the requested order and row data is unchanged.\n\n## Constraints\n\n- Assumes a delimited input with stable column order for index-based selectors and accessible header names for name-based or regex selectors.\n- Selector syntax is 1-based and order-preserving by default; repeated columns are allowed.\n- The output must preserve all row values; only columns are projected, reordered, or duplicated.\n- Resolve missing or ambiguous target columns before execution instead of guessing.\n\n## Cautions\n\n- Regex selectors can match unintended columns; verify the output column set.\n- Header-name ranges depend on current header ordering and may shift if upstream columns change.\n- Do not use --random for this skill's deterministic selector-based output contract.\n- This skill does not define row filtering, value transforms, joins, or aggregations.\n\n## Output Contract\n\n- A CSV output containing exactly the specified columns in the specified order, with row data otherwise unchanged. If the selector cannot be resolved, no valid column projection is produced.\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Select the first and fourth columns\n- Therapist/Output: qsv select 1,4\n- Notes: Uses 1-based indices.\n\n### Example 2\n\n- Client/Input: Select the first 4 columns by name\n- Therapist/Output: qsv select Header1-Header4\n- Notes: Uses a header-name range.\n\n### Example 3\n\n- Client/Input: Select columns starting with 'a' (regex)\n- Therapist/Output: qsv select /^a/\n- Notes: Uses a regex selector against header names.",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "Produce a delimited output with the requested columns selected and ordered from an input delimited file, without changing row data.",
+    "domain": "qsv",
+    "task_family": "column_selection",
+    "method_family": "qsv select selector syntax",
+    "stage": "data preparation",
+    "applicable_signals": [
+      "Caller knows target columns by index, header name, range, last-column token, or regex",
+      "Requested change is limited to column projection, ordering, or duplication",
+      "Row values must remain unchanged",
+      "Input is a delimited file with usable headers for name-based or regex selectors"
+    ],
+    "contraindications": [
+      "Need to filter rows or transform cell values",
+      "Need to join or aggregate datasets",
+      "Column names are unknown and cannot be inferred from input headers",
+      "Need a privacy-specific deletion policy or column-level randomization as the primary procedure"
+    ],
+    "intervention_moves": [
+      "Map requested columns to qsv select selector syntax",
+      "Use 1-based indices, ranges, and header-name ranges",
+      "Use _ for the last column and /regex/ for pattern-based selection",
+      "Repeat selectors when duplicating columns",
+      "Quote column names or selectors that conflict with selector syntax",
+      "Execute qsv select and verify output column set and order"
+    ],
+    "triggers": [
+      "Need to extract non-contiguous columns",
+      "Need to select columns by header name, range, regex, or last column",
+      "Need to duplicate or reorder selected columns",
+      "CSV or delimited column projection is required without row filtering"
+    ],
+    "workflow_steps": [
+      "Confirm which columns are requested and whether selection will use indices, header names, ranges, the last-column token _, or regex.",
+      "Construct the selector using 1-based indices, ranges, header-name ranges, _ for the last column, and /regex/ for pattern matches.",
+      "Repeat selectors to duplicate columns or reorder output arbitrarily.",
+      "Quote header names or selectors that conflict with selector syntax or shell metacharacters.",
+      "Run qsv select with the selector and input file.",
+      "Inspect the output to confirm exactly the requested columns appear in the requested order and row data is unchanged."
+    ],
+    "constraints": [
+      "Assumes a delimited input with stable column order for index-based selectors and accessible header names for name-based or regex selectors.",
+      "Selector syntax is 1-based and order-preserving by default; repeated columns are allowed.",
+      "The output must preserve all row values; only columns are projected, reordered, or duplicated.",
+      "Resolve missing or ambiguous target columns before execution instead of guessing."
+    ],
+    "cautions": [
+      "Regex selectors can match unintended columns; verify the output column set.",
+      "Header-name ranges depend on current header ordering and may shift if upstream columns change.",
+      "Do not use --random for this skill's deterministic selector-based output contract.",
+      "This skill does not define row filtering, value transforms, joins, or aggregations."
+    ],
+    "output_contract": [
+      "A CSV output containing exactly the specified columns in the specified order, with row data otherwise unchanged. If the selector cannot be resolved, no valid column projection is produced."
+    ],
+    "examples": [
+      {
+        "input": "Select the first and fourth columns",
+        "output": "qsv select 1,4",
+        "notes": "Uses 1-based indices."
+      },
+      {
+        "input": "Select the first 4 columns by name",
+        "output": "qsv select Header1-Header4",
+        "notes": "Uses a header-name range."
+      },
+      {
+        "input": "Select columns starting with 'a' (regex)",
+        "output": "qsv select /^a/",
+        "notes": "Uses a regex selector against header names."
+      }
+    ],
+    "tags": [
+      "qsv",
+      "select",
+      "column-selection",
+      "csv",
+      "data-preparation"
+    ],
+    "support_ids": [
+      "b15589ef-522d-504e-8d0e-4e1542e30b34"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "9787e4af-4f96-5ccc-bafc-fe4cefb76e97"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.9,
+      "domain_type": "qsv",
+      "taxonomy_id": "qsv",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "qsv|||session_skill|session|micro_skill_node|produce a delimited output with the requested columns selected and ordered from an input delimited file, without changing row data.|qsv|column_selection|qsv select selector syntax|data preparation|column selector execution with qsv select"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

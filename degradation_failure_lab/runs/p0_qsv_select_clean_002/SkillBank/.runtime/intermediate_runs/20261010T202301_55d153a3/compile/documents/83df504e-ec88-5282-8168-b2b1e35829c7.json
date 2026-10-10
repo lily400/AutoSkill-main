@@ -1,0 +1,1168 @@
+{
+  "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+  "title": "select.md",
+  "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+  "support_records": [
+    {
+      "support_id": "69a12244-23ce-507b-96b6-a3cd30c9c606",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "skill_id": "",
+      "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+      "section": "# select",
+      "span": {
+        "start": 9,
+        "end": 2716
+      },
+      "excerpt": "> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>\n\n## Description [↩](#nav)\nSelect columns from CSV data efficiently.\n\n<a name=\"examples\"></a>\n\n## Examples [↩](#nav)\n> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).",
+      "relation_type": "support",
+      "confidence": 0.9,
+      "metadata": {
+        "document_title": "select.md",
+        "domain": "qsv",
+        "extraction_unit": "window",
+        "skill_name": "CSV 列选择与重排",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "根据选择器表达式生成目标列集合与顺序的 CSV 输出",
+        "task_family": "列选择",
+        "method_family": "选择器表达式",
+        "stage": "数据变换",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "candidate_slot": 1,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      },
+      "created_at": "2026-10-10T12:23:24+00:00"
+    },
+    {
+      "support_id": "bada88df-ed91-51b5-b1a7-1f30be9d5f3b",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "skill_id": "",
+      "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+      "section": "# select",
+      "span": {
+        "start": 9,
+        "end": 2716
+      },
+      "excerpt": "> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>\n\n## Description [↩](#nav)\nSelect columns from CSV data efficiently.\n\n<a name=\"examples\"></a>\n\n## Examples [↩](#nav)\n> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "select.md",
+        "domain": "qsv",
+        "extraction_unit": "window",
+        "skill_name": "列排序与随机打乱",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "对选定列执行字典序排序或可复现的随机打乱",
+        "task_family": "列顺序调整",
+        "method_family": "排序/随机化",
+        "stage": "数据变换",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "candidate_slot": 2,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      },
+      "created_at": "2026-10-10T12:23:24+00:00"
+    },
+    {
+      "support_id": "95afbbcd-e77c-5cc5-b027-0b5ca4975d62",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "skill_id": "",
+      "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+      "section": "# select",
+      "span": {
+        "start": 9,
+        "end": 2716
+      },
+      "excerpt": "> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>\n\n## Description [↩](#nav)\nSelect columns from CSV data efficiently.\n\n<a name=\"examples\"></a>\n\n## Examples [↩](#nav)\n> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).",
+      "relation_type": "constraint",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "select.md",
+        "domain": "qsv",
+        "extraction_unit": "window",
+        "skill_name": "敏感列排除",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "在输出中移除匹配敏感模式的列",
+        "task_family": "数据脱敏",
+        "method_family": "否定正则选择器",
+        "stage": "数据变换",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "candidate_slot": 3,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      },
+      "created_at": "2026-10-10T12:23:24+00:00"
+    },
+    {
+      "support_id": "5f5a5486-0524-5ab7-ac9b-549f8c99ad09",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "skill_id": "",
+      "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+      "section": "# select",
+      "span": {
+        "start": 9,
+        "end": 2716
+      },
+      "excerpt": "> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>\n\n## Description [↩](#nav)\nSelect columns from CSV data efficiently.\n\n<a name=\"examples\"></a>\n\n## Examples [↩](#nav)\n> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "select.md",
+        "domain": "qsv",
+        "extraction_unit": "window",
+        "skill_name": "选择器语法冲突转义",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "正确转义含特殊字符的列名以完成选择",
+        "task_family": "列选择",
+        "method_family": "引号转义",
+        "stage": "数据变换",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "candidate_slot": 4,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      },
+      "created_at": "2026-10-10T12:23:24+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "d5b50768-a930-5fec-b2b7-43823c8be1dd",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "name": "CSV 列选择与重排",
+      "description": "使用 qsv select 的列选择器语法，按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列，生成仅包含目标列集合与顺序的 CSV 输出。适用于需要精确控制输出列集合与顺序的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "根据选择器表达式生成目标列集合与顺序的 CSV 输出",
+      "domain": "qsv",
+      "task_family": "列选择",
+      "method_family": "选择器表达式",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "输入为 CSV 数据且需要控制输出列集合",
+        "需要按索引、名称、范围或正则定位列",
+        "需要调整列顺序、反转、复制或删除列"
+      ],
+      "contraindications": [
+        "需要按行过滤而非列选择",
+        "需要聚合或统计计算"
+      ],
+      "intervention_moves": [
+        "使用索引选择器（如 1,4、1-4）",
+        "使用名称选择器（如 Header1-Header4）",
+        "使用范围省略（如 3-）或排除（如 !1-2）",
+        "使用特殊字符 _ 表示最后一列",
+        "使用重名定位（如 Foo[2]）",
+        "使用正则选择或排除（如 /^a/、'!/SSN|account_no|password/'）",
+        "组合多种选择器实现任意重排与复制",
+        "使用 --sort 排序或 --random 配合 --seed 打乱列顺序",
+        "用引号包裹与选择器语法冲突的列名"
+      ],
+      "workflow_steps": [
+        "明确目标列集合与顺序",
+        "选择合适的选择器类型（索引、名称、范围、正则）",
+        "组合选择器实现重排、反转、复制或删除",
+        "按需添加 --sort 或 --random（可配合 --seed）",
+        "对与选择器语法冲突的列名使用引号包裹",
+        "执行命令并校验输出列集合与顺序"
+      ],
+      "triggers": [
+        "需要按索引或名称挑选列",
+        "需要重排或反转列顺序",
+        "需要复制或删除特定列",
+        "需要按正则匹配列名进行选择或排除",
+        "需要按字节值排序或随机打乱列顺序"
+      ],
+      "constraints": [
+        "选择器表达式必须能唯一或明确地定位目标列",
+        "重名定位使用 0 基索引（如 Foo[2] 表示第 3 个 Foo）",
+        "与选择器语法冲突的列名必须用引号包裹"
+      ],
+      "cautions": [
+        "正则选择器需注意转义与引号嵌套",
+        "--random 结果不可复现，除非配合 --seed"
+      ],
+      "output_contract": [
+        "仅包含所选列且顺序符合表达式的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "qsv select 1,4",
+          "output": "输出第 1 和第 4 列",
+          "notes": null
+        },
+        {
+          "input": "qsv select _-1",
+          "output": "反转列顺序输出",
+          "notes": null
+        },
+        {
+          "input": "qsv select '!/SSN|account_no|password/'",
+          "output": "删除匹配 SSN、account_no、password 的列后输出",
+          "notes": null
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.9,
+      "support_ids": [
+        "69a12244-23ce-507b-96b6-a3cd30c9c606"
+      ],
+      "metadata": {
+        "prompt": "根据选择器表达式构造 qsv select 命令，生成目标列集合与顺序的 CSV 输出。\n\n执行步骤：\n1. 明确目标列集合与顺序：确定要保留、删除、重排、反转或复制的列。\n2. 选择选择器类型：\n   - 索引：如 1,4 选择第 1 和第 4 列；1-4 选择第 1 至第 4 列。\n   - 名称：如 Header1-Header4 按名称范围选择。\n   - 范围省略：3- 表示从第 3 列到末尾；!1-2 表示忽略前 2 列。\n   - 特殊字符：_ 表示最后一列，如 1,_ 选择第一列和最后一列；_-1 反转列顺序。\n   - 重名定位：Foo[2] 选择第 3 个名为 Foo 的列（0 基索引）。\n   - 正则：/^a/ 选择以 a 开头的列；'/^.*\\d.*$/' 选择含数字的列；'!/SSN|account_no|password/' 删除匹配列。\n3. 组合选择器：可混合索引、名称、范围、正则，如 3-1,Header3-Header1,Header1,Foo[2],Header1，实现任意重排与复制。\n4. 可选排序或随机：--sort 按字节值字典序排序；--random 随机打乱，可配合 --seed 固定随机种子。\n5. 处理与选择器语法冲突的列名：用引号包裹，如 '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'。\n6. 执行命令并校验输出列集合与顺序是否符合表达式。",
+        "tags": [
+          "qsv",
+          "select",
+          "列选择",
+          "列重排",
+          "CSV",
+          "选择器表达式"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# select"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      }
+    },
+    {
+      "draft_id": "da6a9043-c536-57d2-9c49-b82774847ee2",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "name": "列排序与随机打乱",
+      "description": "在列选择基础上，对选定列执行按字节值字典序排序（--sort）或可复现的随机打乱（--random 配合 --seed）。适用于需要稳定或可复现地调整列顺序的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "对选定列执行字典序排序或可复现的随机打乱",
+      "domain": "qsv",
+      "task_family": "列顺序调整",
+      "method_family": "排序/随机化",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "需要按列名字节值排序",
+        "需要随机打乱列顺序",
+        "需要可复现的随机结果"
+      ],
+      "contraindications": [
+        "需要按行排序",
+        "需要保持原始列顺序"
+      ],
+      "intervention_moves": [
+        "在列选择器后追加 --sort 进行字典序排序",
+        "在列选择器后追加 --random 进行随机打乱",
+        "随机打乱时配合 --seed 以保证可复现"
+      ],
+      "workflow_steps": [
+        "确认目标为列顺序调整而非行排序",
+        "构造列选择器",
+        "追加 --sort 或 --random（随机时加 --seed）",
+        "校验输出列顺序"
+      ],
+      "triggers": [
+        "需要按列名字节值对列排序",
+        "需要随机打乱列顺序",
+        "需要可复现的随机列顺序"
+      ],
+      "constraints": [
+        "--random 需配合 --seed 才能获得可复现结果",
+        "--sort 按列名字节值排序，而非按数值或自定义顺序"
+      ],
+      "cautions": [
+        "随机打乱未指定 --seed 时结果不可复现"
+      ],
+      "output_contract": [
+        "列顺序被排序或打乱后的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "qsv select 1- --sort",
+          "output": "按列名字节值字典序排列的 CSV",
+          "notes": "对全部列进行字典序排序"
+        },
+        {
+          "input": "qsv select 1,4,5-7 --sort",
+          "output": "选定列按字节值排序后的 CSV",
+          "notes": "先选择再排序"
+        },
+        {
+          "input": "qsv select 1- --random --seed 42",
+          "output": "以种子 42 可复现地随机打乱列顺序的 CSV",
+          "notes": "可复现的随机打乱"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "bada88df-ed91-51b5-b1a7-1f30be9d5f3b"
+      ],
+      "metadata": {
+        "prompt": "在已确定列选择器后，按需追加 --sort 或 --random 选项来调整列顺序。\n\n- 字典序排序：使用 --sort，按列名的字节值（lexicographic/byte value）排序。\n- 随机打乱：使用 --random；若需可复现结果，必须同时提供 --seed <整数>。\n- 可与列选择器组合：先选择列，再对结果排序或打乱。\n\n执行步骤：\n1. 确认目标是对列顺序（而非行顺序）进行调整。\n2. 构造列选择器（如 1-、1,4,5-7）。\n3. 追加 --sort 或 --random（随机时加 --seed）。\n4. 校验输出 CSV 的列顺序符合预期。",
+        "tags": [
+          "qsv",
+          "select",
+          "column-order",
+          "sort",
+          "random",
+          "seed"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# select"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      }
+    },
+    {
+      "draft_id": "d2bc377b-526c-5cbc-8bff-3607e89f6a5b",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "name": "敏感列排除",
+      "description": "使用否定选择器与正则表达式在输出中排除匹配敏感模式的列（如 SSN、account_no、password），适用于数据脱敏或共享前的列裁剪。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在输出中移除匹配敏感模式的列",
+      "domain": "qsv",
+      "task_family": "数据脱敏",
+      "method_family": "否定正则选择器",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "输出将共享或发布",
+        "存在已知敏感列名模式"
+      ],
+      "contraindications": [
+        "需要保留全部列用于审计",
+        "敏感列模式未定义"
+      ],
+      "intervention_moves": [
+        "使用否定正则选择器排除敏感列：qsv select '!/SSN|account_no|password/'"
+      ],
+      "workflow_steps": [
+        "确认敏感列名模式",
+        "构造否定正则选择器",
+        "运行 qsv select 生成输出",
+        "校验输出不含敏感列"
+      ],
+      "triggers": [
+        "输出将共享或发布",
+        "存在已知敏感列名模式",
+        "需要在数据变换阶段裁剪敏感列"
+      ],
+      "constraints": [
+        "仅在输出将共享或发布时使用",
+        "敏感列模式必须已定义"
+      ],
+      "cautions": [
+        "排除后需校验输出列，避免遗漏敏感列"
+      ],
+      "output_contract": [
+        "不包含敏感列的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "qsv select '!/SSN|account_no|password/'",
+          "output": "不包含 SSN、account_no、password 列的 CSV 输出",
+          "notes": "使用否定正则选择器排除敏感列"
+        }
+      ],
+      "risk_class": "medium",
+      "confidence": 0.8,
+      "support_ids": [
+        "95afbbcd-e77c-5cc5-b027-0b5ca4975d62"
+      ],
+      "metadata": {
+        "prompt": "当输出将被共享或发布，且存在已知敏感列名模式时，使用 qsv select 的否定正则选择器排除敏感列。\n\n执行步骤：\n1. 确认敏感列名模式（如 SSN、account_no、password）。\n2. 构造否定正则选择器：qsv select '!/SSN|account_no|password/'。\n3. 运行命令生成不含敏感列的 CSV 输出。\n4. 校验输出列中不再包含匹配敏感模式的列。\n\n注意：仅在输出将共享或发布时使用；若需保留全部列用于审计或敏感列模式未定义，则不应使用本规则。",
+        "tags": [
+          "qsv",
+          "select",
+          "数据脱敏",
+          "否定正则选择器",
+          "列裁剪"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# select"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      }
+    },
+    {
+      "draft_id": "784a7a2e-11f8-5300-90a8-109c4337dde6",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "name": "选择器语法冲突转义",
+      "description": "当列名包含与 qsv select 选择器语法冲突的字符（如连字符、逗号）时，使用引号转义列名，确保选择器正确解析并选中目标列。适用于列名含特殊字符、直接使用列名会导致解析歧义或失败的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确转义含特殊字符的列名以完成选择",
+      "domain": "qsv",
+      "task_family": "列选择",
+      "method_family": "引号转义",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "列名包含连字符或逗号",
+        "选择器解析失败或歧义"
+      ],
+      "contraindications": [
+        "列名不含特殊字符",
+        "使用索引选择器"
+      ],
+      "intervention_moves": [
+        "识别列名中与选择器语法冲突的字符",
+        "用引号包裹冲突列名",
+        "将转义后的列名传入 qsv select 选择器",
+        "验证输出列与预期一致"
+      ],
+      "workflow_steps": [
+        "检查目标列名是否包含连字符、逗号等选择器语法字符",
+        "对冲突列名使用引号转义",
+        "执行 qsv select 并传入转义后的选择器",
+        "核对输出列名与顺序是否符合预期"
+      ],
+      "triggers": [
+        "列名包含连字符或逗号",
+        "选择器解析失败或产生歧义",
+        "按列名选择时结果与预期不符"
+      ],
+      "constraints": [
+        "仅在选择器语法冲突时使用引号转义",
+        "转义后需验证解析结果"
+      ],
+      "cautions": [
+        "引号转义仅解决语法冲突，不改变列名本身",
+        "若列名同时包含引号字符，需额外处理"
+      ],
+      "output_contract": [
+        "正确解析并选中目标列的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "列名为 'Date - Opening' 和 'Date - Actual Closing'，需选择这两列",
+          "output": "qsv select '\"Date - Opening\",\"Date - Actual Closing\"'",
+          "notes": "引号包裹含连字符的列名以避免被解析为范围"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.75,
+      "support_ids": [
+        "5f5a5486-0524-5ab7-ac9b-549f8c99ad09"
+      ],
+      "metadata": {
+        "prompt": "在执行 qsv select 时，若目标列名包含连字符（-）、逗号（,）等与选择器语法冲突的字符，请用引号将列名整体包裹后再传入选择器，避免被解析为范围或分隔符。例如：qsv select '\"Date - Opening\",\"Date - Actual Closing\"'。转义后确认输出列与预期一致。",
+        "tags": [
+          "qsv",
+          "select",
+          "列选择",
+          "转义",
+          "引号"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# select"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 4,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      }
+    }
+  ],
+  "skill_specs": [
+    {
+      "skill_id": "3aab94b4-5f80-54ee-89cd-136656f9e5d6",
+      "name": "CSV 列选择与重排",
+      "description": "使用 qsv select 的列选择器语法，按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列，生成仅包含目标列集合与顺序的 CSV 输出。适用于需要精确控制输出列集合与顺序的场景。",
+      "skill_body": "根据选择器表达式构造 qsv select 命令，生成目标列集合与顺序的 CSV 输出。\n\n执行步骤：\n1. 明确目标列集合与顺序：确定要保留、删除、重排、反转或复制的列。\n2. 选择选择器类型：\n   - 索引：如 1,4 选择第 1 和第 4 列；1-4 选择第 1 至第 4 列。\n   - 名称：如 Header1-Header4 按名称范围选择。\n   - 范围省略：3- 表示从第 3 列到末尾；!1-2 表示忽略前 2 列。\n   - 特殊字符：_ 表示最后一列，如 1,_ 选择第一列和最后一列；_-1 反转列顺序。\n   - 重名定位：Foo[2] 选择第 3 个名为 Foo 的列（0 基索引）。\n   - 正则：/^a/ 选择以 a 开头的列；'/^.*\\d.*$/' 选择含数字的列；'!/SSN|account_no|password/' 删除匹配列。\n3. 组合选择器：可混合索引、名称、范围、正则，如 3-1,Header3-Header1,Header1,Foo[2],Header1，实现任意重排与复制。\n4. 可选排序或随机：--sort 按字节值字典序排序；--random 随机打乱，可配合 --seed 固定随机种子。\n5. 处理与选择器语法冲突的列名：用引号包裹，如 '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'。\n6. 执行命令并校验输出列集合与顺序是否符合表达式。\n\n## Objective\n\n根据选择器表达式生成目标列集合与顺序的 CSV 输出\n## Applicable Signals\n\n- 输入为 CSV 数据且需要控制输出列集合\n- 需要按索引、名称、范围或正则定位列\n- 需要调整列顺序、反转、复制或删除列\n\n## Contraindications\n\n- 需要按行过滤而非列选择\n- 需要聚合或统计计算\n\n## Intervention Moves\n\n- 使用索引选择器（如 1,4、1-4）\n- 使用名称选择器（如 Header1-Header4）\n- 使用范围省略（如 3-）或排除（如 !1-2）\n- 使用特殊字符 _ 表示最后一列\n- 使用重名定位（如 Foo[2]）\n- 使用正则选择或排除（如 /^a/、'!/SSN|account_no|password/'）\n- 组合多种选择器实现任意重排与复制\n- 使用 --sort 排序或 --random 配合 --seed 打乱列顺序\n- 用引号包裹与选择器语法冲突的列名\n\n## Workflow Steps\n\n- 明确目标列集合与顺序\n- 选择合适的选择器类型（索引、名称、范围、正则）\n- 组合选择器实现重排、反转、复制或删除\n- 按需添加 --sort 或 --random（可配合 --seed）\n- 对与选择器语法冲突的列名使用引号包裹\n- 执行命令并校验输出列集合与顺序\n\n## Constraints\n\n- 选择器表达式必须能唯一或明确地定位目标列\n- 重名定位使用 0 基索引（如 Foo[2] 表示第 3 个 Foo）\n- 与选择器语法冲突的列名必须用引号包裹\n\n## Cautions\n\n- 正则选择器需注意转义与引号嵌套\n- --random 结果不可复现，除非配合 --seed\n\n## Output Contract\n\n- 仅包含所选列且顺序符合表达式的 CSV 输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: qsv select 1,4\n- Therapist/Output: 输出第 1 和第 4 列\n\n### Example 2\n\n- Client/Input: qsv select _-1\n- Therapist/Output: 反转列顺序输出\n\n### Example 3\n\n- Client/Input: qsv select '!/SSN|account_no|password/'\n- Therapist/Output: 删除匹配 SSN、account_no、password 的列后输出",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "根据选择器表达式生成目标列集合与顺序的 CSV 输出",
+      "domain": "qsv",
+      "task_family": "列选择",
+      "method_family": "选择器表达式",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "输入为 CSV 数据且需要控制输出列集合",
+        "需要按索引、名称、范围或正则定位列",
+        "需要调整列顺序、反转、复制或删除列"
+      ],
+      "contraindications": [
+        "需要按行过滤而非列选择",
+        "需要聚合或统计计算"
+      ],
+      "intervention_moves": [
+        "使用索引选择器（如 1,4、1-4）",
+        "使用名称选择器（如 Header1-Header4）",
+        "使用范围省略（如 3-）或排除（如 !1-2）",
+        "使用特殊字符 _ 表示最后一列",
+        "使用重名定位（如 Foo[2]）",
+        "使用正则选择或排除（如 /^a/、'!/SSN|account_no|password/'）",
+        "组合多种选择器实现任意重排与复制",
+        "使用 --sort 排序或 --random 配合 --seed 打乱列顺序",
+        "用引号包裹与选择器语法冲突的列名"
+      ],
+      "triggers": [
+        "需要按索引或名称挑选列",
+        "需要重排或反转列顺序",
+        "需要复制或删除特定列",
+        "需要按正则匹配列名进行选择或排除",
+        "需要按字节值排序或随机打乱列顺序"
+      ],
+      "workflow_steps": [
+        "明确目标列集合与顺序",
+        "选择合适的选择器类型（索引、名称、范围、正则）",
+        "组合选择器实现重排、反转、复制或删除",
+        "按需添加 --sort 或 --random（可配合 --seed）",
+        "对与选择器语法冲突的列名使用引号包裹",
+        "执行命令并校验输出列集合与顺序"
+      ],
+      "constraints": [
+        "选择器表达式必须能唯一或明确地定位目标列",
+        "重名定位使用 0 基索引（如 Foo[2] 表示第 3 个 Foo）",
+        "与选择器语法冲突的列名必须用引号包裹"
+      ],
+      "cautions": [
+        "正则选择器需注意转义与引号嵌套",
+        "--random 结果不可复现，除非配合 --seed"
+      ],
+      "output_contract": [
+        "仅包含所选列且顺序符合表达式的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "qsv select 1,4",
+          "output": "输出第 1 和第 4 列",
+          "notes": null
+        },
+        {
+          "input": "qsv select _-1",
+          "output": "反转列顺序输出",
+          "notes": null
+        },
+        {
+          "input": "qsv select '!/SSN|account_no|password/'",
+          "output": "删除匹配 SSN、account_no、password 的列后输出",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "qsv",
+        "select",
+        "列选择",
+        "列重排",
+        "CSV",
+        "选择器表达式"
+      ],
+      "support_ids": [
+        "69a12244-23ce-507b-96b6-a3cd30c9c606"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "d5b50768-a930-5fec-b2b7-43823c8be1dd"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.9,
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "family_name": "",
+        "family_id": "",
+        "profile_id": "",
+        "domain_root_name": "",
+        "domain_root_id": "",
+        "taxonomy_axis": "",
+        "family_bucket_label": "",
+        "visible_levels": {},
+        "identity_key": "qsv|||session_skill|session|workflow_skill|根据选择器表达式生成目标列集合与顺序的 csv 输出|qsv|列选择|选择器表达式|数据变换|csv 列选择与重排"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "c1b66fd9-e1d8-58a0-b4d0-10b84c099b2e",
+      "name": "列排序与随机打乱",
+      "description": "在列选择基础上，对选定列执行按字节值字典序排序（--sort）或可复现的随机打乱（--random 配合 --seed）。适用于需要稳定或可复现地调整列顺序的场景。",
+      "skill_body": "在已确定列选择器后，按需追加 --sort 或 --random 选项来调整列顺序。\n\n- 字典序排序：使用 --sort，按列名的字节值（lexicographic/byte value）排序。\n- 随机打乱：使用 --random；若需可复现结果，必须同时提供 --seed <整数>。\n- 可与列选择器组合：先选择列，再对结果排序或打乱。\n\n执行步骤：\n1. 确认目标是对列顺序（而非行顺序）进行调整。\n2. 构造列选择器（如 1-、1,4,5-7）。\n3. 追加 --sort 或 --random（随机时加 --seed）。\n4. 校验输出 CSV 的列顺序符合预期。\n\n## Objective\n\n对选定列执行字典序排序或可复现的随机打乱\n## Applicable Signals\n\n- 需要按列名字节值排序\n- 需要随机打乱列顺序\n- 需要可复现的随机结果\n\n## Contraindications\n\n- 需要按行排序\n- 需要保持原始列顺序\n\n## Intervention Moves\n\n- 在列选择器后追加 --sort 进行字典序排序\n- 在列选择器后追加 --random 进行随机打乱\n- 随机打乱时配合 --seed 以保证可复现\n\n## Workflow Steps\n\n- 确认目标为列顺序调整而非行排序\n- 构造列选择器\n- 追加 --sort 或 --random（随机时加 --seed）\n- 校验输出列顺序\n\n## Constraints\n\n- --random 需配合 --seed 才能获得可复现结果\n- --sort 按列名字节值排序，而非按数值或自定义顺序\n\n## Cautions\n\n- 随机打乱未指定 --seed 时结果不可复现\n\n## Output Contract\n\n- 列顺序被排序或打乱后的 CSV 输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: qsv select 1- --sort\n- Therapist/Output: 按列名字节值字典序排列的 CSV\n- Notes: 对全部列进行字典序排序\n\n### Example 2\n\n- Client/Input: qsv select 1,4,5-7 --sort\n- Therapist/Output: 选定列按字节值排序后的 CSV\n- Notes: 先选择再排序\n\n### Example 3\n\n- Client/Input: qsv select 1- --random --seed 42\n- Therapist/Output: 以种子 42 可复现地随机打乱列顺序的 CSV\n- Notes: 可复现的随机打乱",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "对选定列执行字典序排序或可复现的随机打乱",
+      "domain": "qsv",
+      "task_family": "列顺序调整",
+      "method_family": "排序/随机化",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "需要按列名字节值排序",
+        "需要随机打乱列顺序",
+        "需要可复现的随机结果"
+      ],
+      "contraindications": [
+        "需要按行排序",
+        "需要保持原始列顺序"
+      ],
+      "intervention_moves": [
+        "在列选择器后追加 --sort 进行字典序排序",
+        "在列选择器后追加 --random 进行随机打乱",
+        "随机打乱时配合 --seed 以保证可复现"
+      ],
+      "triggers": [
+        "需要按列名字节值对列排序",
+        "需要随机打乱列顺序",
+        "需要可复现的随机列顺序"
+      ],
+      "workflow_steps": [
+        "确认目标为列顺序调整而非行排序",
+        "构造列选择器",
+        "追加 --sort 或 --random（随机时加 --seed）",
+        "校验输出列顺序"
+      ],
+      "constraints": [
+        "--random 需配合 --seed 才能获得可复现结果",
+        "--sort 按列名字节值排序，而非按数值或自定义顺序"
+      ],
+      "cautions": [
+        "随机打乱未指定 --seed 时结果不可复现"
+      ],
+      "output_contract": [
+        "列顺序被排序或打乱后的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "qsv select 1- --sort",
+          "output": "按列名字节值字典序排列的 CSV",
+          "notes": "对全部列进行字典序排序"
+        },
+        {
+          "input": "qsv select 1,4,5-7 --sort",
+          "output": "选定列按字节值排序后的 CSV",
+          "notes": "先选择再排序"
+        },
+        {
+          "input": "qsv select 1- --random --seed 42",
+          "output": "以种子 42 可复现地随机打乱列顺序的 CSV",
+          "notes": "可复现的随机打乱"
+        }
+      ],
+      "tags": [
+        "qsv",
+        "select",
+        "column-order",
+        "sort",
+        "random",
+        "seed"
+      ],
+      "support_ids": [
+        "bada88df-ed91-51b5-b1a7-1f30be9d5f3b"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "da6a9043-c536-57d2-9c49-b82774847ee2"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "family_name": "",
+        "family_id": "",
+        "profile_id": "",
+        "domain_root_name": "",
+        "domain_root_id": "",
+        "taxonomy_axis": "",
+        "family_bucket_label": "",
+        "visible_levels": {},
+        "identity_key": "qsv|||micro_skill|micro|micro_skill_node|对选定列执行字典序排序或可复现的随机打乱|qsv|列顺序调整|排序/随机化|数据变换|列排序与随机打乱"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "a4333861-781b-5e31-8d77-8610cdcd674d",
+      "name": "敏感列排除",
+      "description": "使用 qsv select 的否定正则选择器在输出中排除匹配敏感模式的列（如 SSN、account_no、password），适用于数据脱敏或共享前的列裁剪。",
+      "skill_body": "当输出将被共享或发布，且存在已知敏感列名模式时，使用 qsv select 的否定正则选择器排除敏感列。\n\n执行步骤：\n1. 确认敏感列名模式（如 SSN、account_no、password）。\n2. 构造否定正则选择器：qsv select '!/SSN|account_no|password/'。\n3. 运行命令生成不含敏感列的 CSV 输出。\n4. 校验输出列中不再包含匹配敏感模式的列。\n\n注意：仅在输出将共享或发布时使用；若需保留全部列用于审计或敏感列模式未定义，则不应使用本规则。\n\n## Objective\n\n在输出中移除匹配敏感模式的列\n## Applicable Signals\n\n- 输出将共享或发布\n- 存在已知敏感列名模式\n\n## Contraindications\n\n- 需要保留全部列用于审计\n- 敏感列模式未定义\n\n## Intervention Moves\n\n- 使用否定正则选择器排除敏感列：qsv select '!/SSN|account_no|password/'\n\n## Workflow Steps\n\n- 确认敏感列名模式\n- 构造否定正则选择器\n- 运行 qsv select 生成输出\n- 校验输出不含敏感列\n\n## Constraints\n\n- 仅在输出将共享或发布时使用\n- 敏感列模式必须已定义\n\n## Cautions\n\n- 排除后需校验输出列，避免遗漏敏感列\n\n## Output Contract\n\n- 不包含敏感列的 CSV 输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: qsv select '!/SSN|account_no|password/'\n- Therapist/Output: 不包含 SSN、account_no、password 列的 CSV 输出\n- Notes: 使用否定正则选择器排除敏感列",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在输出中移除匹配敏感模式的列",
+      "domain": "qsv",
+      "task_family": "数据脱敏",
+      "method_family": "否定正则选择器",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "输出将共享或发布",
+        "存在已知敏感列名模式"
+      ],
+      "contraindications": [
+        "需要保留全部列用于审计",
+        "敏感列模式未定义"
+      ],
+      "intervention_moves": [
+        "使用否定正则选择器排除敏感列：qsv select '!/SSN|account_no|password/'"
+      ],
+      "triggers": [
+        "输出将共享或发布",
+        "存在已知敏感列名模式",
+        "需要在数据变换阶段裁剪敏感列"
+      ],
+      "workflow_steps": [
+        "确认敏感列名模式",
+        "构造否定正则选择器",
+        "运行 qsv select 生成输出",
+        "校验输出不含敏感列"
+      ],
+      "constraints": [
+        "仅在输出将共享或发布时使用",
+        "敏感列模式必须已定义"
+      ],
+      "cautions": [
+        "排除后需校验输出列，避免遗漏敏感列"
+      ],
+      "output_contract": [
+        "不包含敏感列的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "qsv select '!/SSN|account_no|password/'",
+          "output": "不包含 SSN、account_no、password 列的 CSV 输出",
+          "notes": "使用否定正则选择器排除敏感列"
+        }
+      ],
+      "tags": [
+        "qsv",
+        "select",
+        "数据脱敏",
+        "否定正则选择器",
+        "列裁剪"
+      ],
+      "support_ids": [
+        "95afbbcd-e77c-5cc5-b027-0b5ca4975d62"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "d2bc377b-526c-5cbc-8bff-3607e89f6a5b"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "family_name": "",
+        "family_id": "",
+        "profile_id": "",
+        "domain_root_name": "",
+        "domain_root_id": "",
+        "taxonomy_axis": "",
+        "family_bucket_label": "",
+        "visible_levels": {},
+        "identity_key": "qsv|||safety_rule|micro|safety_rule_node|在输出中移除匹配敏感模式的列|qsv|数据脱敏|否定正则选择器|数据变换|敏感列排除"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "fa99ad14-266c-517e-b559-3d1917170564",
+      "name": "选择器语法冲突转义",
+      "description": "当列名包含与 qsv select 选择器语法冲突的字符（如连字符、逗号）时，使用引号转义列名，确保选择器正确解析并选中目标列。适用于列名含特殊字符、直接使用列名会导致解析歧义或失败的场景。",
+      "skill_body": "在执行 qsv select 时，若目标列名包含连字符（-）、逗号（,）等与选择器语法冲突的字符，请用引号将列名整体包裹后再传入选择器，避免被解析为范围或分隔符。例如：qsv select '\"Date - Opening\",\"Date - Actual Closing\"'。转义后确认输出列与预期一致。\n\n## Objective\n\n正确转义含特殊字符的列名以完成选择\n## Applicable Signals\n\n- 列名包含连字符或逗号\n- 选择器解析失败或歧义\n\n## Contraindications\n\n- 列名不含特殊字符\n- 使用索引选择器\n\n## Intervention Moves\n\n- 识别列名中与选择器语法冲突的字符\n- 用引号包裹冲突列名\n- 将转义后的列名传入 qsv select 选择器\n- 验证输出列与预期一致\n\n## Workflow Steps\n\n- 检查目标列名是否包含连字符、逗号等选择器语法字符\n- 对冲突列名使用引号转义\n- 执行 qsv select 并传入转义后的选择器\n- 核对输出列名与顺序是否符合预期\n\n## Constraints\n\n- 仅在选择器语法冲突时使用引号转义\n- 转义后需验证解析结果\n\n## Cautions\n\n- 引号转义仅解决语法冲突，不改变列名本身\n- 若列名同时包含引号字符，需额外处理\n\n## Output Contract\n\n- 正确解析并选中目标列的 CSV 输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 列名为 'Date - Opening' 和 'Date - Actual Closing'，需选择这两列\n- Therapist/Output: qsv select '\"Date - Opening\",\"Date - Actual Closing\"'\n- Notes: 引号包裹含连字符的列名以避免被解析为范围",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确转义含特殊字符的列名以完成选择",
+      "domain": "qsv",
+      "task_family": "列选择",
+      "method_family": "引号转义",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "列名包含连字符或逗号",
+        "选择器解析失败或歧义"
+      ],
+      "contraindications": [
+        "列名不含特殊字符",
+        "使用索引选择器"
+      ],
+      "intervention_moves": [
+        "识别列名中与选择器语法冲突的字符",
+        "用引号包裹冲突列名",
+        "将转义后的列名传入 qsv select 选择器",
+        "验证输出列与预期一致"
+      ],
+      "triggers": [
+        "列名包含连字符或逗号",
+        "选择器解析失败或产生歧义",
+        "按列名选择时结果与预期不符"
+      ],
+      "workflow_steps": [
+        "检查目标列名是否包含连字符、逗号等选择器语法字符",
+        "对冲突列名使用引号转义",
+        "执行 qsv select 并传入转义后的选择器",
+        "核对输出列名与顺序是否符合预期"
+      ],
+      "constraints": [
+        "仅在选择器语法冲突时使用引号转义",
+        "转义后需验证解析结果"
+      ],
+      "cautions": [
+        "引号转义仅解决语法冲突，不改变列名本身",
+        "若列名同时包含引号字符，需额外处理"
+      ],
+      "output_contract": [
+        "正确解析并选中目标列的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "列名为 'Date - Opening' 和 'Date - Actual Closing'，需选择这两列",
+          "output": "qsv select '\"Date - Opening\",\"Date - Actual Closing\"'",
+          "notes": "引号包裹含连字符的列名以避免被解析为范围"
+        }
+      ],
+      "tags": [
+        "qsv",
+        "select",
+        "列选择",
+        "转义",
+        "引号"
+      ],
+      "support_ids": [
+        "5f5a5486-0524-5ab7-ac9b-549f8c99ad09"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "784a7a2e-11f8-5300-90a8-109c4337dde6"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "family_name": "",
+        "family_id": "",
+        "profile_id": "",
+        "domain_root_name": "",
+        "domain_root_id": "",
+        "taxonomy_axis": "",
+        "family_bucket_label": "",
+        "visible_levels": {},
+        "identity_key": "qsv|||micro_skill|micro|micro_skill_node|正确转义含特殊字符的列名以完成选择|qsv|列选择|引号转义|数据变换|选择器语法冲突转义"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "errors": [],
+  "group_count": 4,
+  "processed_documents": 1,
+  "total_documents": 1,
+  "skipped": false
+}

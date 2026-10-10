@@ -1,0 +1,172 @@
+{
+  "doc_id": "bc1cff1f-0543-5b66-80ca-89aaec9353c8",
+  "title": "smoke.md",
+  "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\AutoSkill-main\\research\\robustness\\runs\\smoke-b0-stage0\\input\\smoke.md",
+  "window_id": "2387de8b-41f9-55b3-9ca2-1afbe1341ca7",
+  "section_heading": "# CSV Data Cleaning",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "d844596c-473c-53ae-95bc-c7878729f7c9",
+      "doc_id": "bc1cff1f-0543-5b66-80ca-89aaec9353c8",
+      "skill_id": "",
+      "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\AutoSkill-main\\research\\robustness\\runs\\smoke-b0-stage0\\input\\smoke.md",
+      "section": "# CSV Data Cleaning",
+      "span": {
+        "start": 46,
+        "end": 172
+      },
+      "excerpt": "## Remove duplicate rows\nRead a CSV file, remove exact duplicate rows, and write a new file. Keep the original file unchanged.",
+      "relation_type": "support",
+      "confidence": 0.95,
+      "metadata": {
+        "document_title": "smoke.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "CSV Duplicate Row Removal",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "data cleaning",
+        "task_family": "file_transformation",
+        "method_family": "deduplication",
+        "stage": "preprocessing",
+        "domain_type": "default",
+        "taxonomy_id": "default",
+        "candidate_slot": 1,
+        "window_id": "2387de8b-41f9-55b3-9ca2-1afbe1341ca7",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 0,
+        "heading_path": [
+          "# CSV Data Cleaning"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Remove duplicate rows"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Read a CSV file, remove exact duplicate rows, and write a new file. Keep the original file unchanged."
+      },
+      "created_at": "2026-09-27T13:27:16+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "2fc72a78-df97-5fc3-a711-771fafb8c77a",
+      "doc_id": "bc1cff1f-0543-5b66-80ca-89aaec9353c8",
+      "name": "CSV Duplicate Row Removal",
+      "description": "Reads a CSV file, removes exact duplicate rows based on all columns, and writes the deduplicated data to a new file while preserving the original.",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "data cleaning",
+      "domain": "data_processing",
+      "task_family": "file_transformation",
+      "method_family": "deduplication",
+      "stage": "preprocessing",
+      "applicable_signals": [
+        "input file path provided",
+        "output file path specified",
+        "no fuzzy matching criteria requested"
+      ],
+      "contraindications": [
+        "data requires fuzzy or partial-row deduplication",
+        "row order must be preserved for time-series analysis",
+        "memory-constrained environment where full load is unsafe"
+      ],
+      "intervention_moves": [
+        "read_csv",
+        "drop_duplicates",
+        "to_csv"
+      ],
+      "workflow_steps": [
+        "Validate input CSV file existence and readability.",
+        "Load CSV into tabular structure (e.g., pandas DataFrame).",
+        "Apply exact row-wise deduplication (keep='first').",
+        "Validate output file path is writable and does not overwrite input.",
+        "Write deduplicated data to new CSV file with identical dialect and encoding.",
+        "Confirm original file checksum or mtime remains unchanged."
+      ],
+      "triggers": [
+        "user needs to clean CSV data",
+        "input has suspected duplicate rows",
+        "original file must remain unmodified"
+      ],
+      "constraints": [
+        "Input and output files must be on accessible local or mounted filesystem.",
+        "All columns participate in duplicate detection — no column subset override supported."
+      ],
+      "cautions": [
+        "Large files may exceed memory limits; warn before loading if size > 500MB.",
+        "Empty or malformed CSV may raise parsing errors — validate structure first."
+      ],
+      "output_contract": [
+        "A new CSV file containing only unique rows, with identical column structure, encoding, and dialect as input; original file byte-identical and unmodified."
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.95,
+      "support_ids": [
+        "d844596c-473c-53ae-95bc-c7878729f7c9"
+      ],
+      "metadata": {
+        "prompt": "Load the input CSV file into memory; identify and remove rows that are exact duplicates across all columns; write the resulting unique rows to a new CSV file with the same schema and encoding as the input; ensure the original file is never modified or overwritten.",
+        "tags": [
+          "csv",
+          "deduplication",
+          "data cleaning",
+          "file transformation"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# CSV Data Cleaning"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "default",
+        "taxonomy_id": "default",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "2387de8b-41f9-55b3-9ca2-1afbe1341ca7",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 0,
+        "heading_path": [
+          "# CSV Data Cleaning"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Remove duplicate rows"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Read a CSV file, remove exact duplicate rows, and write a new file. Keep the original file unchanged."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

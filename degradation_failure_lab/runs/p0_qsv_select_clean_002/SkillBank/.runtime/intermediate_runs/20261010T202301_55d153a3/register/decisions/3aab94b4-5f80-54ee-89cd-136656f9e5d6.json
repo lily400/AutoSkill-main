@@ -1,0 +1,134 @@
+{
+  "skill_id": "3aab94b4-5f80-54ee-89cd-136656f9e5d6",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "3aab94b4-5f80-54ee-89cd-136656f9e5d6",
+    "name": "CSV 列选择与重排",
+    "description": "使用 qsv select 的列选择器语法，按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列，生成仅包含目标列集合与顺序的 CSV 输出。适用于需要精确控制输出列集合与顺序的场景。",
+    "skill_body": "根据选择器表达式构造 qsv select 命令，生成目标列集合与顺序的 CSV 输出。\n\n执行步骤：\n1. 明确目标列集合与顺序：确定要保留、删除、重排、反转或复制的列。\n2. 选择选择器类型：\n   - 索引：如 1,4 选择第 1 和第 4 列；1-4 选择第 1 至第 4 列。\n   - 名称：如 Header1-Header4 按名称范围选择。\n   - 范围省略：3- 表示从第 3 列到末尾；!1-2 表示忽略前 2 列。\n   - 特殊字符：_ 表示最后一列，如 1,_ 选择第一列和最后一列；_-1 反转列顺序。\n   - 重名定位：Foo[2] 选择第 3 个名为 Foo 的列（0 基索引）。\n   - 正则：/^a/ 选择以 a 开头的列；'/^.*\\d.*$/' 选择含数字的列；'!/SSN|account_no|password/' 删除匹配列。\n3. 组合选择器：可混合索引、名称、范围、正则，如 3-1,Header3-Header1,Header1,Foo[2],Header1，实现任意重排与复制。\n4. 可选排序或随机：--sort 按字节值字典序排序；--random 随机打乱，可配合 --seed 固定随机种子。\n5. 处理与选择器语法冲突的列名：用引号包裹，如 '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'。\n6. 执行命令并校验输出列集合与顺序是否符合表达式。\n\n## Objective\n\n根据选择器表达式生成目标列集合与顺序的 CSV 输出\n## Applicable Signals\n\n- 输入为 CSV 数据且需要控制输出列集合\n- 需要按索引、名称、范围或正则定位列\n- 需要调整列顺序、反转、复制或删除列\n\n## Contraindications\n\n- 需要按行过滤而非列选择\n- 需要聚合或统计计算\n\n## Intervention Moves\n\n- 使用索引选择器（如 1,4、1-4）\n- 使用名称选择器（如 Header1-Header4）\n- 使用范围省略（如 3-）或排除（如 !1-2）\n- 使用特殊字符 _ 表示最后一列\n- 使用重名定位（如 Foo[2]）\n- 使用正则选择或排除（如 /^a/、'!/SSN|account_no|password/'）\n- 组合多种选择器实现任意重排与复制\n- 使用 --sort 排序或 --random 配合 --seed 打乱列顺序\n- 用引号包裹与选择器语法冲突的列名\n\n## Workflow Steps\n\n- 明确目标列集合与顺序\n- 选择合适的选择器类型（索引、名称、范围、正则）\n- 组合选择器实现重排、反转、复制或删除\n- 按需添加 --sort 或 --random（可配合 --seed）\n- 对与选择器语法冲突的列名使用引号包裹\n- 执行命令并校验输出列集合与顺序\n\n## Constraints\n\n- 选择器表达式必须能唯一或明确地定位目标列\n- 重名定位使用 0 基索引（如 Foo[2] 表示第 3 个 Foo）\n- 与选择器语法冲突的列名必须用引号包裹\n\n## Cautions\n\n- 正则选择器需注意转义与引号嵌套\n- --random 结果不可复现，除非配合 --seed\n\n## Output Contract\n\n- 仅包含所选列且顺序符合表达式的 CSV 输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: qsv select 1,4\n- Therapist/Output: 输出第 1 和第 4 列\n\n### Example 2\n\n- Client/Input: qsv select _-1\n- Therapist/Output: 反转列顺序输出\n\n### Example 3\n\n- Client/Input: qsv select '!/SSN|account_no|password/'\n- Therapist/Output: 删除匹配 SSN、account_no、password 的列后输出",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "根据选择器表达式生成目标列集合与顺序的 CSV 输出",
+    "domain": "qsv",
+    "task_family": "列选择",
+    "method_family": "选择器表达式",
+    "stage": "数据变换",
+    "applicable_signals": [
+      "输入为 CSV 数据且需要控制输出列集合",
+      "需要按索引、名称、范围或正则定位列",
+      "需要调整列顺序、反转、复制或删除列"
+    ],
+    "contraindications": [
+      "需要按行过滤而非列选择",
+      "需要聚合或统计计算"
+    ],
+    "intervention_moves": [
+      "使用索引选择器（如 1,4、1-4）",
+      "使用名称选择器（如 Header1-Header4）",
+      "使用范围省略（如 3-）或排除（如 !1-2）",
+      "使用特殊字符 _ 表示最后一列",
+      "使用重名定位（如 Foo[2]）",
+      "使用正则选择或排除（如 /^a/、'!/SSN|account_no|password/'）",
+      "组合多种选择器实现任意重排与复制",
+      "使用 --sort 排序或 --random 配合 --seed 打乱列顺序",
+      "用引号包裹与选择器语法冲突的列名"
+    ],
+    "triggers": [
+      "需要按索引或名称挑选列",
+      "需要重排或反转列顺序",
+      "需要复制或删除特定列",
+      "需要按正则匹配列名进行选择或排除",
+      "需要按字节值排序或随机打乱列顺序"
+    ],
+    "workflow_steps": [
+      "明确目标列集合与顺序",
+      "选择合适的选择器类型（索引、名称、范围、正则）",
+      "组合选择器实现重排、反转、复制或删除",
+      "按需添加 --sort 或 --random（可配合 --seed）",
+      "对与选择器语法冲突的列名使用引号包裹",
+      "执行命令并校验输出列集合与顺序"
+    ],
+    "constraints": [
+      "选择器表达式必须能唯一或明确地定位目标列",
+      "重名定位使用 0 基索引（如 Foo[2] 表示第 3 个 Foo）",
+      "与选择器语法冲突的列名必须用引号包裹"
+    ],
+    "cautions": [
+      "正则选择器需注意转义与引号嵌套",
+      "--random 结果不可复现，除非配合 --seed"
+    ],
+    "output_contract": [
+      "仅包含所选列且顺序符合表达式的 CSV 输出"
+    ],
+    "examples": [
+      {
+        "input": "qsv select 1,4",
+        "output": "输出第 1 和第 4 列",
+        "notes": null
+      },
+      {
+        "input": "qsv select _-1",
+        "output": "反转列顺序输出",
+        "notes": null
+      },
+      {
+        "input": "qsv select '!/SSN|account_no|password/'",
+        "output": "删除匹配 SSN、account_no、password 的列后输出",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "qsv",
+      "select",
+      "列选择",
+      "列重排",
+      "CSV",
+      "选择器表达式"
+    ],
+    "support_ids": [
+      "69a12244-23ce-507b-96b6-a3cd30c9c606"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "d5b50768-a930-5fec-b2b7-43823c8be1dd"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.9,
+      "domain_type": "qsv",
+      "taxonomy_id": "qsv",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "qsv|||session_skill|session|workflow_skill|根据选择器表达式生成目标列集合与顺序的 csv 输出|qsv|列选择|选择器表达式|数据变换|csv 列选择与重排"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

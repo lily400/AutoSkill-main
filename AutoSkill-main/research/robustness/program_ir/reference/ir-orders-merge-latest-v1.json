@@ -1,0 +1,181 @@
+{
+  "schema_version": "program-ir-stage0-v1",
+  "ir_id": "ir-orders-merge-latest-v1",
+  "workflow_id": "wf-orders-merge-latest-v1",
+  "spec_id": "spec-orders-merge-latest-v1",
+  "goal": "按有序输入合并 CSV，并为每个订单选择唯一最新完整记录。",
+  "scope": [
+    "固定三列 UTF-8 CSV",
+    "秒级带时区 ISO 时间",
+    "单次批处理",
+    "新输出路径"
+  ],
+  "inputs": {
+    "ordered_input_files": "任务提供的非空有序文件列表",
+    "output_path": "任务提供的尚不存在且不等于输入的新路径"
+  },
+  "tool_contracts": [
+    "read_csv_utf8",
+    "parse_timezone_aware_iso_seconds",
+    "normalize_utc",
+    "group_records",
+    "create_new_csv_exclusive",
+    "snapshot_files"
+  ],
+  "preconditions": [
+    "输入可读且符合三列 CSV 契约",
+    "order_id 非空",
+    "输出路径合法且不存在"
+  ],
+  "steps": [
+    {
+      "id": "P01",
+      "action": "检查输入列表、路径、CSV 契约和输出路径",
+      "rules": [
+        "R09",
+        "R10"
+      ]
+    },
+    {
+      "id": "P02",
+      "action": "按文件列表及文件内顺序读取全部记录并赋全局序号",
+      "rules": [
+        "R01",
+        "R02"
+      ]
+    },
+    {
+      "id": "P03",
+      "action": "校验全部记录，解析时区并得到 UTC 时刻",
+      "rules": [
+        "R03",
+        "R04",
+        "R08"
+      ]
+    },
+    {
+      "id": "P04",
+      "action": "按 order_id 分组，以 (UTC时刻,全局序号) 选择最大记录",
+      "rules": [
+        "R05",
+        "R06",
+        "R07"
+      ]
+    },
+    {
+      "id": "P05",
+      "action": "从获胜整行构造结果并把时间序列化为 UTC",
+      "rules": [
+        "R06",
+        "R12"
+      ]
+    },
+    {
+      "id": "P06",
+      "action": "以不覆盖方式创建指定新文件",
+      "rules": [
+        "R09",
+        "R10",
+        "R11"
+      ]
+    },
+    {
+      "id": "P07",
+      "action": "检查键集合、获胜整行、格式和文件副作用",
+      "rules": [
+        "R09",
+        "R11",
+        "R12"
+      ]
+    }
+  ],
+  "depends_on": {
+    "P02": [
+      "P01"
+    ],
+    "P03": [
+      "P02"
+    ],
+    "P04": [
+      "P03"
+    ],
+    "P05": [
+      "P04"
+    ],
+    "P06": [
+      "P03",
+      "P05"
+    ],
+    "P07": [
+      "P06"
+    ]
+  },
+  "branches": [
+    {
+      "condition": "candidate.utc > current.utc",
+      "action": "replace_with_candidate"
+    },
+    {
+      "condition": "candidate.utc == current.utc and candidate.global_index > current.global_index",
+      "action": "replace_with_candidate"
+    },
+    {
+      "condition": "all inputs contain only valid headers",
+      "action": "create_header_only_output"
+    }
+  ],
+  "exceptions": [
+    {
+      "condition": "invalid timestamp or input contract",
+      "action": "stop, report location when available, leave no output",
+      "rules": [
+        "R03",
+        "R08",
+        "R11"
+      ]
+    },
+    {
+      "condition": "output equals input or already exists",
+      "action": "stop without overwrite",
+      "rules": [
+        "R09",
+        "R10",
+        "R11"
+      ]
+    }
+  ],
+  "invariants": [
+    "输入文件不变",
+    "一项输出记录的字段来自同一获胜输入行",
+    "不同 order_id 不丢失",
+    "写出前全部记录已校验"
+  ],
+  "effects": {
+    "allowed": [
+      "成功时创建指定新输出文件"
+    ],
+    "forbidden": [
+      "修改输入",
+      "覆盖文件",
+      "失败后留下结果文件",
+      "改动非目标文件"
+    ]
+  },
+  "outputs": [
+    "UTF-8 CSV",
+    "表头 order_id,updated_at,payload",
+    "每键一行",
+    "UTC 时间",
+    "输出行序自由"
+  ],
+  "checks": [
+    "输入覆盖",
+    "唯一键集合",
+    "获胜整行",
+    "UTC 等价",
+    "错误定位",
+    "失败无输出",
+    "输入及哨兵不变"
+  ],
+  "unresolved": []
+}
