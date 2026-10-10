@@ -11,7 +11,7 @@ from run_clean import validate_config
 
 class BaselineGuards(unittest.TestCase):
     def test_real_source_hash_and_classification(self):
-        m=json.loads((LAB / 'data/manifests/qsv_select.json').read_text(encoding='utf-8'))
+        m=json.loads((LAB / 'data/manifests/qsv_select_canonical.json').read_text(encoding='utf-8'))
         self.assertEqual(sha256(LAB / m['local_path']),m['sha256'])
         self.assertEqual(m['classification'],'RECONSTRUCTED_OFFICIAL_SOURCE')
         self.assertFalse(m['paper_snapshot_verified'])

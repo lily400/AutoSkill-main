@@ -1,0 +1,109 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^case[0-9]{3,}_[a-z0-9_]+$"
+    },
+    "classification": {
+      "const": "CUSTOM_TEST_DATA"
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                },
+                "lines": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "minItems": 1,
+                  "uniqueItems": false
+                }
+              },
+              "required": [
+                "source_id",
+                "lines"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "uniqueItems": false
+          },
+          "rule_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "annotation_status": {
+            "enum": [
+              "analyst_checklist",
+              "human_annotated",
+              "pending"
+            ]
+          }
+        },
+        "required": [
+          "rule_id",
+          "text",
+          "source_evidence",
+          "rule_type",
+          "annotation_status"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "case_id",
+    "classification",
+    "provenance",
+    "rules"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "rules"
+}

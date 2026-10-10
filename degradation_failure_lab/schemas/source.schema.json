@@ -1,0 +1,92 @@
+{
+  "type": "object",
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "source_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_commit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1
+    },
+    "downloaded_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "document_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "corresponding_cli_command": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "classification": {
+      "enum": [
+        "OFFICIAL_PAPER_DATA",
+        "RECONSTRUCTED_OFFICIAL_SOURCE",
+        "CUSTOM_TEST_DATA"
+      ]
+    },
+    "paper_snapshot_verified": {
+      "type": "boolean"
+    },
+    "local_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "variant": {
+      "enum": [
+        "clean"
+      ]
+    },
+    "transform": {
+      "const": null
+    }
+  },
+  "required": [
+    "source_id",
+    "source_url",
+    "source_repository",
+    "source_commit",
+    "source_path",
+    "license",
+    "downloaded_at",
+    "sha256",
+    "document_type",
+    "classification",
+    "paper_snapshot_verified",
+    "local_path"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "source"
+}

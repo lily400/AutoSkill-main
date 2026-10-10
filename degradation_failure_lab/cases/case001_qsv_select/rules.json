@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "case_id": "case001_qsv_select",
+  "classification": "CUSTOM_TEST_DATA",
+  "provenance": {
+    "file": "data/manifests/qsv_select_rules.json",
+    "sha256": "dd9b9aa9e00b41fd39ae6cb58b63f70e1e8787a332eb53d0d6b66ad483a2e07d"
+  },
+  "rules": [
+    {
+      "rule_id": "R1",
+      "text": "1,4 selects the first and fourth columns; 1-4 selects the first four columns.",
+      "source_evidence": [
+        {
+          "source_id": "qsv-select-257ae7b38738",
+          "lines": [
+            27,
+            36
+          ]
+        }
+      ],
+      "rule_type": "command_behavior",
+      "annotation_status": "analyst_checklist"
+    },
+    {
+      "rule_id": "R2",
+      "text": "!1-2 excludes the first two columns; Foo[2] selects the third column with duplicate name Foo.",
+      "source_evidence": [
+        {
+          "source_id": "qsv-select-257ae7b38738",
+          "lines": [
+            51,
+            60
+          ]
+        }
+      ],
+      "rule_type": "command_behavior",
+      "annotation_status": "analyst_checklist"
+    },
+    {
+      "rule_id": "R3",
+      "text": "_ denotes the last column; _-1 reverses the column order.",
+      "source_evidence": [
+        {
+          "source_id": "qsv-select-257ae7b38738",
+          "lines": [
+            63,
+            72
+          ]
+        }
+      ],
+      "rule_type": "command_behavior",
+      "annotation_status": "analyst_checklist"
+    },
+    {
+      "rule_id": "R4",
+      "text": "! followed by a regex excludes matching columns; --sort orders selected columns lexicographically by byte values.",
+      "source_evidence": [
+        {
+          "source_id": "qsv-select-257ae7b38738",
+          "lines": [
+            87,
+            96,
+            164
+          ]
+        }
+      ],
+      "rule_type": "command_behavior",
+      "annotation_status": "analyst_checklist"
+    },
+    {
+      "rule_id": "R5",
+      "text": "--random shuffles selected columns and --seed supplies an integer random seed.",
+      "source_evidence": [
+        {
+          "source_id": "qsv-select-257ae7b38738",
+          "lines": [
+            105,
+            120,
+            162,
+            163
+          ]
+        }
+      ],
+      "rule_type": "command_behavior",
+      "annotation_status": "analyst_checklist"
+    },
+    {
+      "rule_id": "R6",
+      "text": "Names containing spaces or characters conflicting with selector syntax require quoting.",
+      "source_evidence": [
+        {
+          "source_id": "qsv-select-257ae7b38738",
+          "lines": [
+            129,
+            132,
+            154
+          ]
+        }
+      ],
+      "rule_type": "command_behavior",
+      "annotation_status": "analyst_checklist"
+    },
+    {
+      "rule_id": "R7",
+      "text": "--no-headers treats first row as data; --delimiter is one character; --output writes a file rather than stdout.",
+      "source_evidence": [
+        {
+          "source_id": "qsv-select-257ae7b38738",
+          "lines": [
+            173,
+            174,
+            175
+          ]
+        }
+      ],
+      "rule_type": "command_behavior",
+      "annotation_status": "analyst_checklist"
+    }
+  ]
+}
