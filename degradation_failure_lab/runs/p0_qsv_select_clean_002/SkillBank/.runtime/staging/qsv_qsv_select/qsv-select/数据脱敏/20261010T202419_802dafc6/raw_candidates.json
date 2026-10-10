@@ -1,0 +1,392 @@
+{
+  "schema": "autoskill.document.staging.raw_candidates.v1",
+  "profile_id": "qsv::qsv_select",
+  "family_id": "qsv-select",
+  "child_type": "数据脱敏",
+  "run_id": "20261010T202419_802dafc6",
+  "documents": [
+    {
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "source_type": "document",
+      "title": "select.md",
+      "authors": [],
+      "year": null,
+      "domain": "qsv",
+      "raw_text": "# select\n\n> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>\n\n## Description [↩](#nav)\n\nSelect columns from CSV data efficiently.\n\nThis command lets you manipulate the columns in CSV data. You can re-order,\nduplicate, reverse or drop them. Columns can be referenced by index or by\nname if there is a header row (duplicate column names can be disambiguated with\nmore indexing). Column ranges can also be specified. Finally, columns can be\nselected using regular expressions.\n\n\n<a name=\"examples\"></a>\n\n## Examples [↩](#nav)\n\n> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).\n\nSee also <https://github.com/dathere/qsv/wiki/Selection-and-Inspection#select>\n\n<a name=\"usage\"></a>\n\n## Usage [↩](#nav)\n\n```console\nqsv select [options] [--] <selection> [<input>]\nqsv select --help\n```\n\n<a name=\"arguments\"></a>\n\n## Arguments [↩](#nav)\n\n| &nbsp;&nbsp;Argument&nbsp;&nbsp;&nbsp; | Description |\n|----------|-------------|\n| &nbsp;`<selection>`&nbsp; | The columns to select. You can select columns by index, by name, by range, by regex and any combination of these. If the first character is '!', the selection will be inverted. If the selection contains embedded spaces or characters that conflict with selector syntax, it must be quoted. See examples above. |\n\n<a name=\"select-options\"></a>\n\n## Select Options [↩](#nav)\n\n| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |\n|--------|------|-------------|--------|\n| &nbsp;`‑R,`<br>`‑‑random`&nbsp; | flag | Randomly shuffle the columns in the selection. |  |\n| &nbsp;`‑‑seed`&nbsp; | integer | Seed for the random number generator. |  |\n| &nbsp;`‑S,`<br>`‑‑sort`&nbsp; | flag | Sort the selected columns lexicographically, i.e. by their byte values. |  |\n\n<a name=\"common-options\"></a>\n\n## Common Options [↩](#nav)\n\n| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |\n|--------|------|-------------|--------|\n| &nbsp;`‑h,`<br>`‑‑help`&nbsp; | flag | Display this message |  |\n| &nbsp;`‑o,`<br>`‑‑output`&nbsp; | string | Write output to <file> instead of stdout. |  |\n| &nbsp;`‑n,`<br>`‑‑no‑headers`&nbsp; | flag | When set, the first row will not be interpreted as headers. (i.e., They are not searched, analyzed, sliced, etc.) |  |\n| &nbsp;`‑d,`<br>`‑‑delimiter`&nbsp; | string | The field delimiter for reading CSV data. Must be a single character. (default: ,) |  |\n\n---\n**Source:** [`src/cmd/select.rs`](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)\n| **[Table of Contents](TableOfContents.md)** | **[README](../../README.md)**",
+      "sections": [
+        {
+          "heading": "# select",
+          "text": "> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>",
+          "level": 1,
+          "span": {
+            "start": 9,
+            "end": 522
+          },
+          "metadata": {
+            "heading_path": [
+              "# select"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+          }
+        },
+        {
+          "heading": "## Description [↩](#nav)",
+          "text": "Select columns from CSV data efficiently.\n\nThis command lets you manipulate the columns in CSV data. You can re-order,\nduplicate, reverse or drop them. Columns can be referenced by index or by\nname if there is a header row (duplicate column names can be disambiguated with\nmore indexing). Column ranges can also be specified. Finally, columns can be\nselected using regular expressions.\n\n\n<a name=\"examples\"></a>",
+          "level": 2,
+          "span": {
+            "start": 547,
+            "end": 961
+          },
+          "metadata": {
+            "heading_path": [
+              "# select",
+              "## Description [↩](#nav)"
+            ],
+            "parent_heading": "# select",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Select columns from CSV data efficiently.",
+            "sibling_headings": [
+              "## Examples [↩](#nav)",
+              "Usage [↩](#nav)",
+              "Arguments [↩](#nav)",
+              "Select Options [↩](#nav)",
+              "Common Options [↩](#nav)"
+            ]
+          }
+        },
+        {
+          "heading": "## Examples [↩](#nav)",
+          "text": "> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).\n\nSee also <https://github.com/dathere/qsv/wiki/Selection-and-Inspection#select>\n\n<a name=\"usage\"></a>",
+          "level": 2,
+          "span": {
+            "start": 983,
+            "end": 2823
+          },
+          "metadata": {
+            "heading_path": [
+              "# select",
+              "## Examples [↩](#nav)"
+            ],
+            "parent_heading": "# select",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "> Select the first and fourth columns",
+            "sibling_headings": [
+              "## Description [↩](#nav)",
+              "Usage [↩](#nav)",
+              "Arguments [↩](#nav)",
+              "Select Options [↩](#nav)",
+              "Common Options [↩](#nav)"
+            ]
+          }
+        },
+        {
+          "heading": "Usage [↩](#nav)",
+          "text": "```console\nqsv select [options] [--] <selection> [<input>]\nqsv select --help\n```\n\n<a name=\"arguments\"></a>",
+          "level": 2,
+          "span": {
+            "start": 2842,
+            "end": 2951
+          },
+          "metadata": {
+            "heading_path": [
+              "# select",
+              "Usage [↩](#nav)"
+            ],
+            "parent_heading": "# select",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "```console",
+            "sibling_headings": [
+              "## Description [↩](#nav)",
+              "## Examples [↩](#nav)",
+              "Arguments [↩](#nav)",
+              "Select Options [↩](#nav)",
+              "Common Options [↩](#nav)"
+            ]
+          }
+        },
+        {
+          "heading": "Arguments [↩](#nav)",
+          "text": "| &nbsp;&nbsp;Argument&nbsp;&nbsp;&nbsp; | Description |\n|----------|-------------|\n| &nbsp;`<selection>`&nbsp; | The columns to select. You can select columns by index, by name, by range, by regex and any combination of these. If the first character is '!', the selection will be inverted. If the selection contains embedded spaces or characters that conflict with selector syntax, it must be quoted. See examples above. |\n\n<a name=\"select-options\"></a>",
+          "level": 2,
+          "span": {
+            "start": 2974,
+            "end": 3431
+          },
+          "metadata": {
+            "heading_path": [
+              "# select",
+              "Arguments [↩](#nav)"
+            ],
+            "parent_heading": "# select",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "| &nbsp;&nbsp;Argument&nbsp;&nbsp;&nbsp; | Description |",
+            "sibling_headings": [
+              "## Description [↩](#nav)",
+              "## Examples [↩](#nav)",
+              "Usage [↩](#nav)",
+              "Select Options [↩](#nav)",
+              "Common Options [↩](#nav)"
+            ]
+          }
+        },
+        {
+          "heading": "Select Options [↩](#nav)",
+          "text": "| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |\n|--------|------|-------------|--------|\n| &nbsp;`‑R,`<br>`‑‑random`&nbsp; | flag | Randomly shuffle the columns in the selection. |  |\n| &nbsp;`‑‑seed`&nbsp; | integer | Seed for the random number generator. |  |\n| &nbsp;`‑S,`<br>`‑‑sort`&nbsp; | flag | Sort the selected columns lexicographically, i.e. by their byte values. |  |\n\n<a name=\"common-options\"></a>",
+          "level": 2,
+          "span": {
+            "start": 3459,
+            "end": 3926
+          },
+          "metadata": {
+            "heading_path": [
+              "# select",
+              "Select Options [↩](#nav)"
+            ],
+            "parent_heading": "# select",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |",
+            "sibling_headings": [
+              "## Description [↩](#nav)",
+              "## Examples [↩](#nav)",
+              "Usage [↩](#nav)",
+              "Arguments [↩](#nav)",
+              "Common Options [↩](#nav)"
+            ]
+          }
+        },
+        {
+          "heading": "Common Options [↩](#nav)",
+          "text": "| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |\n|--------|------|-------------|--------|\n| &nbsp;`‑h,`<br>`‑‑help`&nbsp; | flag | Display this message |  |\n| &nbsp;`‑o,`<br>`‑‑output`&nbsp; | string | Write output to <file> instead of stdout. |  |\n| &nbsp;`‑n,`<br>`‑‑no‑headers`&nbsp; | flag | When set, the first row will not be interpreted as headers. (i.e., They are not searched, analyzed, sliced, etc.) |  |\n| &nbsp;`‑d,`<br>`‑‑delimiter`&nbsp; | string | The field delimiter for reading CSV data. Must be a single character. (default: ,) |  |\n\n---\n**Source:** [`src/cmd/select.rs`](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)\n| **[Table of Contents](TableOfContents.md)** | **[README](../../README.md)**",
+          "level": 2,
+          "span": {
+            "start": 3954,
+            "end": 4737
+          },
+          "metadata": {
+            "heading_path": [
+              "# select",
+              "Common Options [↩](#nav)"
+            ],
+            "parent_heading": "# select",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |",
+            "sibling_headings": [
+              "## Description [↩](#nav)",
+              "## Examples [↩](#nav)",
+              "Usage [↩](#nav)",
+              "Arguments [↩](#nav)",
+              "Select Options [↩](#nav)"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "source_id": "qsv-select-257ae7b38738",
+        "source_url": "https://raw.githubusercontent.com/dathere/qsv/257ae7b38738688138dc430c2ccb4eef8766f3fc/docs/help/select.md",
+        "source_commit": "257ae7b38738688138dc430c2ccb4eef8766f3fc",
+        "sha256": "74e7ac8247d670bc5e351551a4bf76dd12f9de358dffaea5f593e2fd29cca384",
+        "classification": "RECONSTRUCTED_OFFICIAL_SOURCE",
+        "variant": "clean",
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "family_name": "qsv-select",
+        "profile_id": "qsv::qsv_select",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "qsv",
+        "resume_key": "53b98d651a325b7df8e2558bbddf917cada36d236ba5c81d2f3810d24829fa2c",
+        "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+        "taxonomy_id": "qsv"
+      },
+      "checksum": "c3842988d28f4aa087e5fc93b1344c232a997c01",
+      "content_hash": "c3842988d28f4aa087e5fc93b1344c232a997c01",
+      "imported_at": "2026-10-10T12:23:02+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "95afbbcd-e77c-5cc5-b027-0b5ca4975d62",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "skill_id": "a4333861-781b-5e31-8d77-8610cdcd674d",
+      "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+      "section": "# select",
+      "span": {
+        "start": 9,
+        "end": 2716
+      },
+      "excerpt": "> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>\n\n## Description [↩](#nav)\nSelect columns from CSV data efficiently.\n\n<a name=\"examples\"></a>\n\n## Examples [↩](#nav)\n> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).",
+      "relation_type": "constraint",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "select.md",
+        "domain": "qsv",
+        "extraction_unit": "window",
+        "skill_name": "敏感列排除",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "在输出中移除匹配敏感模式的列",
+        "task_family": "数据脱敏",
+        "method_family": "否定正则选择器",
+        "stage": "数据变换",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "candidate_slot": 3,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      },
+      "created_at": "2026-10-10T12:23:24+00:00"
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "a4333861-781b-5e31-8d77-8610cdcd674d",
+      "name": "敏感列排除",
+      "description": "使用 qsv select 的否定正则选择器在输出中排除匹配敏感模式的列（如 SSN、account_no、password），适用于数据脱敏或共享前的列裁剪。",
+      "skill_body": "当输出将被共享或发布，且存在已知敏感列名模式时，使用 qsv select 的否定正则选择器排除敏感列。\n\n执行步骤：\n1. 确认敏感列名模式（如 SSN、account_no、password）。\n2. 构造否定正则选择器：qsv select '!/SSN|account_no|password/'。\n3. 运行命令生成不含敏感列的 CSV 输出。\n4. 校验输出列中不再包含匹配敏感模式的列。\n\n注意：仅在输出将共享或发布时使用；若需保留全部列用于审计或敏感列模式未定义，则不应使用本规则。\n\n## Objective\n\n在输出中移除匹配敏感模式的列\n## Applicable Signals\n\n- 输出将共享或发布\n- 存在已知敏感列名模式\n\n## Contraindications\n\n- 需要保留全部列用于审计\n- 敏感列模式未定义\n\n## Intervention Moves\n\n- 使用否定正则选择器排除敏感列：qsv select '!/SSN|account_no|password/'\n\n## Workflow Steps\n\n- 确认敏感列名模式\n- 构造否定正则选择器\n- 运行 qsv select 生成输出\n- 校验输出不含敏感列\n\n## Constraints\n\n- 仅在输出将共享或发布时使用\n- 敏感列模式必须已定义\n\n## Cautions\n\n- 排除后需校验输出列，避免遗漏敏感列\n\n## Output Contract\n\n- 不包含敏感列的 CSV 输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: qsv select '!/SSN|account_no|password/'\n- Therapist/Output: 不包含 SSN、account_no、password 列的 CSV 输出\n- Notes: 使用否定正则选择器排除敏感列",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在输出中移除匹配敏感模式的列",
+      "domain": "qsv",
+      "task_family": "数据脱敏",
+      "method_family": "否定正则选择器",
+      "stage": "数据变换",
+      "applicable_signals": [
+        "输出将共享或发布",
+        "存在已知敏感列名模式"
+      ],
+      "contraindications": [
+        "需要保留全部列用于审计",
+        "敏感列模式未定义"
+      ],
+      "intervention_moves": [
+        "使用否定正则选择器排除敏感列：qsv select '!/SSN|account_no|password/'"
+      ],
+      "triggers": [
+        "输出将共享或发布",
+        "存在已知敏感列名模式",
+        "需要在数据变换阶段裁剪敏感列"
+      ],
+      "workflow_steps": [
+        "确认敏感列名模式",
+        "构造否定正则选择器",
+        "运行 qsv select 生成输出",
+        "校验输出不含敏感列"
+      ],
+      "constraints": [
+        "仅在输出将共享或发布时使用",
+        "敏感列模式必须已定义"
+      ],
+      "cautions": [
+        "排除后需校验输出列，避免遗漏敏感列"
+      ],
+      "output_contract": [
+        "不包含敏感列的 CSV 输出"
+      ],
+      "examples": [
+        {
+          "input": "qsv select '!/SSN|account_no|password/'",
+          "output": "不包含 SSN、account_no、password 列的 CSV 输出",
+          "notes": "使用否定正则选择器排除敏感列"
+        }
+      ],
+      "tags": [
+        "qsv",
+        "select",
+        "数据脱敏",
+        "否定正则选择器",
+        "列裁剪"
+      ],
+      "support_ids": [
+        "95afbbcd-e77c-5cc5-b027-0b5ca4975d62"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "d2bc377b-526c-5cbc-8bff-3607e89f6a5b"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "family_name": "qsv-select",
+        "family_id": "",
+        "profile_id": "qsv::qsv_select",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "qsv|||safety_rule|micro|safety_rule_node|在输出中移除匹配敏感模式的列|qsv|数据脱敏|否定正则选择器|数据变换|敏感列排除"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ]
+}

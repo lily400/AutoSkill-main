@@ -1,0 +1,65 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-10T12:24:19+00:00",
+  "family_name": "qsv-select",
+  "skill_id": "a4333861-781b-5e31-8d77-8610cdcd674d",
+  "skill_name": "敏感列排除",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "95afbbcd-e77c-5cc5-b027-0b5ca4975d62",
+      "doc_id": "83df504e-ec88-5282-8168-b2b1e35829c7",
+      "document_title": "select.md",
+      "source_file": "D:\\Baseline-anthing2skill\\AutoSkill-main\\degradation_failure_lab\\data\\sources\\qsv\\257ae7b38738688138dc430c2ccb4eef8766f3fc\\select.md",
+      "section": "# select",
+      "span": {
+        "start": 9,
+        "end": 2716
+      },
+      "relation_type": "constraint",
+      "confidence": 0.8,
+      "quote": "> Select, re-order, reverse, duplicate or drop columns.\n\n**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend \"has powerful column selector support. See `select` for syntax.\")\n\n<a name=\"nav\"></a>\n[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)\n\n<a name=\"description\"></a>\n\n## Description [↩](#nav)\nSelect columns from CSV data efficiently.\n\n<a name=\"examples\"></a>\n\n## Examples [↩](#nav)\n> Select the first and fourth columns\n\n```console\nqsv select 1,4\n```\n\n> Select the first 4 columns (by index)\n\n```console\nqsv select 1-4\n```\n\n> Select the first 4 columns (by name)\n\n```console\nqsv select Header1-Header4\n```\n\n> Ignore the first 2 columns (by range)\n\n```console\nqsv select 3-\n```\n\n> Ignore the first 2 columns (by index)\n\n```console\nqsv select '!1-2'\n```\n\n> Select the third column named 'Foo':\n\n```console\nqsv select 'Foo[2]'\n```\n\n> Select the first and last columns, _ is a special character for the last column:\n\n```console\nqsv select 1,_\n```\n\n> Reverse the order of columns:\n\n```console\nqsv select _-1\n```\n\n> select columns starting with 'a' (regex)\n\n```console\nqsv select /^a/\n```\n\n> select columns with a digit (regex)\n\n```console\nqsv select '/^.*\\d.*$/'\n```\n\n> remove SSN, account_no and password columns (regex)\n\n```console\nqsv select '!/SSN|account_no|password/'\n```\n\n> Sort the columns lexicographically (i.e. by their byte values)\n\n```console\nqsv select 1- --sort\n```\n\n> Select some columns and then sort them\n\n```console\nqsv select 1,4,5-7 --sort\n```\n\n> Randomly shuffle the columns:\n\n```console\nqsv select 1- --random\n```\n\n> Randomly shuffle the columns with a seed\n\n```console\nqsv select 1- --random --seed 42\n```\n\n> Select some columns and then shuffle them with a seed:\n\n```console\nqsv select 1,4,5-7 --random --seed 42\n```\n\n> Re-order and duplicate columns arbitrarily using different types of selectors\n\n```console\nqsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\n```\n\n> Quote column names that conflict with selector syntax:\n\n```console\nqsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\n```\n\nFor more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).",
+      "metadata": {
+        "document_title": "select.md",
+        "domain": "qsv",
+        "extraction_unit": "window",
+        "skill_name": "敏感列排除",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "在输出中移除匹配敏感模式的列",
+        "task_family": "数据脱敏",
+        "method_family": "否定正则选择器",
+        "stage": "数据变换",
+        "domain_type": "qsv",
+        "taxonomy_id": "qsv",
+        "candidate_slot": 3,
+        "window_id": "492febe3-ac09-5817-91e4-195334c0eaf0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 43,
+        "heading_path": [
+          "# select"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [],
+        "subsection_headings": [
+          "## Description [↩](#nav)",
+          "## Examples [↩](#nav)",
+          "Usage [↩](#nav)",
+          "Arguments [↩](#nav)",
+          "Select Options [↩](#nav)",
+          "Common Options [↩](#nav)"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+      }
+    }
+  ]
+}

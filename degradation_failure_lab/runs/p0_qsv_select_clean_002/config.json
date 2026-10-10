@@ -1,0 +1,42 @@
+{
+  "upstream_path": "D:\\Baseline-anthing2skill\\AutoSkill-main\\AutoSkill-main",
+  "source_manifest": "data/manifests/qsv_select.json",
+  "provider_service": "DeepSeek",
+  "credential_env": "DEEPSEEK_API_KEY",
+  "llm": {
+    "provider": "openai",
+    "base_url": "https://api.deepseek.com",
+    "model": "deepseek-flash",
+    "timeout_s": 180,
+    "max_tokens": 16384,
+    "max_input_chars": 100000,
+    "connector_factory": "provider_adapter:build",
+    "thinking_mode": "disabled"
+  },
+  "embeddings": {
+    "provider": "hashing",
+    "dims": 256
+  },
+  "max_http_calls": 32,
+  "max_observed_total_tokens": 200000,
+  "pipeline": {
+    "domain": "qsv",
+    "domain_type": "qsv",
+    "family_name": "qsv-select",
+    "extract_strategy": "recommended",
+    "section_outline_mode": "llm",
+    "max_candidates_per_unit": 4,
+    "max_units_per_document": 0,
+    "extract_workers": 1,
+    "extract_retries": 1,
+    "extract_retry_backoff_s": 1.0,
+    "max_documents": 1,
+    "max_chars_per_chunk": 6000,
+    "overlap_chars": 300,
+    "max_section_chars": 10000,
+    "retrieval_score_threshold": 0.3,
+    "llm_rate_limit_requests": 10,
+    "llm_rate_limit_window_s": 60.0
+  },
+  "configuration_note": "Official connector extension adds thinking=disabled only; all upstream stage budgets, prompts and algorithms retained. Same single source, fresh store."
+}
