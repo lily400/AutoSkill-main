@@ -1,0 +1,78 @@
+degradation_failure_lab/                         # 共 407 个文件；大目录按职责折叠
+├── README.md
+├── .gitattributes
+├── .gitignore
+├── configs/                                     # 2 files；仅现行配置
+│   ├── environment.json
+│   └── generation/deepseek_flash.json
+├── data/                                        # 17 files
+│   ├── catalog.json
+│   ├── manifests/
+│   │   └── qsv_select.json                     # 唯一现行来源清单
+│   ├── raw_sources/qsv/<commit>/
+│   │   ├── select.md
+│   │   ├── Cargo.toml
+│   │   └── LICENSE-MIT
+│   ├── condition_inputs/                       # 有正式退化输入时再创建
+│   ├── sources/                                # Legacy；3 个 P0 CRLF 文件 + README
+│   ├── legacy_bytes/                           # Legacy；6 个精确字节文件 + README
+│   └── legacy_byte_index.json
+├── cases/                                       # 4 files
+│   └── case001_qsv_select/
+│       ├── case.json
+│       ├── rules.json
+│       ├── conditions.json
+│       └── inputs/clean.json
+├── schemas/                                     # 7 JSON Schema files
+├── src/degradation_lab/                         # 10 files；唯一公共实现
+│   ├── __init__.py
+│   ├── io.py
+│   ├── schema.py
+│   ├── catalog.py
+│   ├── runner.py
+│   ├── adapter.py
+│   ├── provider_adapter.py
+│   ├── artifacts.py
+│   ├── evaluation.py
+│   └── cli.py
+├── scripts/                                     # 3 files
+│   ├── lab.py                                  # 唯一正式入口
+│   ├── run_clean.py                            # deprecated thin shim
+│   └── verify_run.py                           # deprecated thin shim
+├── tests/
+│   └── test_framework.py                       # 18 个离线测试
+├── runs/                                        # 239 files
+│   ├── README.md
+│   ├── legacy_index.json
+│   ├── p0_qsv_select_clean_001/                # Legacy 真实失败运行，完整保留
+│   ├── p0_qsv_select_clean_002/                # Legacy 真实成功运行，完整保留
+│   └── <case_id>/<condition_id>/<run_id>/      # 新运行布局
+├── evaluations/                                 # 1 file
+│   └── case001_qsv_select/clean/p0_qsv_select_clean_002/p0_initial_review.json
+├── results/                                     # 28 files；派生导出与聚合
+│   ├── exports/p0_qsv_select_clean_001/
+│   ├── exports/p0_qsv_select_clean_002/
+│   ├── aggregates/P0_1/
+│   └── aggregates/P0_2_validation/
+├── legacy/                                      # 20 files
+│   ├── P0/
+│   │   ├── README.md
+│   │   ├── configs/
+│   │   ├── data/manifests/
+│   │   ├── scripts/
+│   │   └── tests/
+│   └── P0_1/
+│       ├── README.md
+│       ├── data/manifests/
+│       └── implementation_tools/
+├── reports/                                     # 71 files（含本报告与树）
+│   ├── P0/                                     # P0 报告、audit 与日志
+│   ├── P0_1/                                   # P0.1 报告与验收记录
+│   └── P0_2/
+│       ├── audit_before.md
+│       ├── migration_map.md
+│       ├── validation_report.md
+│       ├── project_tree.txt
+│       └── remaining_legacy.md
+└── docs/
+    └── PROJECT_STRUCTURE_GUIDE.md

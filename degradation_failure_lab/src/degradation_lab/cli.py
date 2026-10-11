@@ -39,7 +39,8 @@ def main():
             for p in sorted((root/'evaluations').rglob('*.json')): validate_evaluation(root,read(p))
         result = {'cases':cases, 'sources':list(manager.sources.sources), 'status':'VALID'}
     elif args.command in ('plan','run'):
-        runner = ExperimentRunner(root)
+        manager = CaseManager(root)
+        runner = ExperimentRunner(root, manager)
         plans = []
         # Validate the complete batch before starting any paid request.
         for case_id in args.case:

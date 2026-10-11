@@ -1,22 +1,20 @@
-"""Compatibility command: read-only verification, external sidecar exports."""
-import argparse
-import json
+"""Deprecated compatibility shim; use ``python scripts/lab.py verify``."""
 from pathlib import Path
 import sys
 sys.dont_write_bytecode = True
 LAB = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(LAB/'src'))
-from degradation_lab.artifacts import export_run
-
-
-def verify(run):
-    # Existing scripts\verify_run.py --run <old path> remains supported.
-    return export_run(LAB, Path(run).name, LAB/'results/exports'/Path(run).name)
+from degradation_lab.cli import main
 
 
 if __name__ == '__main__':
     sys.stdout.reconfigure(encoding='utf-8')
-    p=argparse.ArgumentParser(); p.add_argument('--run',required=True)
-    args=p.parse_args(); result=verify(Path(args.run))
-    print(json.dumps(result,ensure_ascii=False,indent=2))
-    raise SystemExit(0 if result['status']=='PASS' else 1)
+    args = sys.argv[1:]
+    if '--run' in args:
+        index = args.index('--run') + 1
+        args[index] = Path(args[index]).name
+        if '--out' not in args:
+            args.extend(['--out', 'results/exports/' + args[index]])
+    print('DEPRECATED: use scripts/lab.py verify', file=sys.stderr)
+    sys.argv[1:] = ['verify', *args]
+    raise SystemExit(main())

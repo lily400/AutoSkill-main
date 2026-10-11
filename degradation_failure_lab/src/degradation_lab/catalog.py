@@ -22,7 +22,10 @@ class SourceManager:
 
     def verify(self, source):
         check('source', source)
-        path = inside(self.root, source['local_path'])
+        relative = Path(source['local_path']).as_posix()
+        if source['classification'] != 'CUSTOM_TEST_DATA' and not relative.startswith('data/raw_sources/'):
+            raise ValueError('Current repository sources must live under data/raw_sources')
+        path = inside(self.root, relative)
         if sha256(path) != source['sha256']: raise ValueError('Source hash mismatch: ' + source['source_id'])
         if 'bytes' in source and path.stat().st_size != source['bytes']: raise ValueError('Source byte count mismatch')
         if source['classification'] == 'OFFICIAL_PAPER_DATA' and not source['paper_snapshot_verified']:
@@ -89,8 +92,14 @@ class CaseManager:
             self.sources.verify(source)
             if item['source_sha256'] != source['sha256']: raise ValueError('Parent source hash mismatch')
             if sha256(inside(self.root, item['path'])) != item['sha256']: raise ValueError('Condition input hash mismatch')
-            if condition['kind'] == 'clean' and item['sha256'] != source['sha256']:
-                raise ValueError('Clean input differs from original')
-            if condition['kind'] == 'degraded' and item['sha256'] == source['sha256']:
-                raise ValueError('Degraded input must differ from original; duplicated clean bytes are not a degradation')
+            if condition['kind'] == 'clean':
+                if Path(item['path']).as_posix() != Path(source['local_path']).as_posix():
+                    raise ValueError('Clean input must reference the authoritative source file')
+                if item['sha256'] != source['sha256']:
+                    raise ValueError('Clean input differs from original')
+            else:
+                if not Path(item['path']).as_posix().startswith('data/condition_inputs/'):
+                    raise ValueError('Degraded input must live under data/condition_inputs')
+                if item['sha256'] == source['sha256']:
+                    raise ValueError('Degraded input must differ from original; duplicated clean bytes are not a degradation')
         return condition, manifest

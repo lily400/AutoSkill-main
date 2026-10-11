@@ -42,9 +42,9 @@ def validate_config(cfg):
 
 
 class ExperimentRunner:
-    def __init__(self, root):
+    def __init__(self, root, cases=None):
         self.root = Path(root).resolve()
-        self.cases = CaseManager(root)
+        self.cases = cases or CaseManager(root)
 
     def resolve(self, case_id, condition_id):
         bundle = self.cases.load(case_id)

@@ -23,12 +23,12 @@ def fixture_catalog(root):
     cfg['llm']={'provider':'openai','model':'fixture-vendor-model','base_url':'https://fixture.invalid'}
     cfg['provider_service']='FIXTURE'; cfg['credential_env']='FIXTURE_ONLY_KEY'
     write(root/'configs/shared.json',cfg)
-    source=root/'data/source.md'; source.parent.mkdir(parents=True)
+    source=root/'data/raw_sources/fixture/source.md'; source.parent.mkdir(parents=True)
     source.write_text('# FIXTURE ONLY\nRun fixture tool with --flag.\n',encoding='utf-8')
     m={'source_id':'fixture-source','source_url':'fixture://not-real-data','source_repository':'fixture',
        'source_commit':'fixture','source_path':'source.md','license':'fixture-test-only','downloaded_at':'2026-10-10',
        'sha256':sha256(source),'document_type':'fixture_markdown','classification':'CUSTOM_TEST_DATA',
-       'paper_snapshot_verified':False,'local_path':'data/source.md'}
+       'paper_snapshot_verified':False,'local_path':'data/raw_sources/fixture/source.md'}
     write(root/'data/source.json',m)
     write(root/'data/catalog.json',{'schema_version':1,'datasets':[{'dataset_id':'fixture',
         'description':'Only offline unit-test data','source_manifests':['data/source.json']}]})
@@ -41,9 +41,10 @@ def fixture_catalog(root):
                 'source_id':'fixture-source','lines':[2]}],'rule_type':'fixture','annotation_status':'pending'}]})
         conditions=[]
         for condition in ('clean','damage_a','damage_b','damage_c'):
-            p='data/source.md'
+            p='data/raw_sources/fixture/source.md'
             if condition!='clean':
-                p='data/'+condition+'.md'
+                p='data/condition_inputs/'+condition+'.md'
+                (root/p).parent.mkdir(parents=True, exist_ok=True)
                 (root/p).write_text('# FIXTURE '+condition+'\nfixture --flag\n',encoding='utf-8')
             manifest=f'cases/{cid}/inputs/{condition}.json'
             write(root/manifest,{'schema_version':1,'case_id':cid,'condition_id':condition,'inputs':[{
@@ -96,9 +97,18 @@ class Framework(unittest.TestCase):
     def test_actual_case001_and_original_rules_unchanged(self):
         manager=CaseManager(LAB); self.assertEqual(manager.list_cases(),['case001_qsv_select'])
         b=manager.load('case001_qsv_select'); manager.condition(b,'clean')
-        old=read(LAB/'data/manifests/qsv_select_rules.json')['rules']
+        old=read(LAB/'legacy/P0/data/manifests/qsv_select_rules.json')['rules']
         self.assertEqual([(r['rule_id'],r['text'],r['source_evidence'][0]['lines']) for r in b['rules']['rules']],
                          [(r['id'],r['rule'],r['lines']) for r in old])
+        source=b['case']['source_ids'][0]
+        manifest=manager.sources.sources[source]
+        clean=read(LAB/'cases/case001_qsv_select/inputs/clean.json')['inputs'][0]
+        self.assertEqual(manifest['local_path'],clean['path'])
+        self.assertTrue(manifest['local_path'].startswith('data/raw_sources/'))
+        self.assertEqual(sha256(LAB/manifest['local_path']),manifest['sha256'])
+        self.assertEqual(read(LAB/'data/catalog.json')['datasets'][0]['source_manifests'],
+                         ['data/manifests/qsv_select.json'])
+        self.assertFalse((LAB/'data/manifests/qsv_select_canonical.json').exists())
 
     def test_old_success_read_only_full_verification(self):
         before=inventory(LAB/'runs/p0_qsv_select_clean_002')
@@ -116,9 +126,18 @@ class Framework(unittest.TestCase):
         self.assertTrue(report['checks']['saved_artifact_hashes'])
 
     def test_history_and_upstream_not_changed(self):
+        moved={
+            'configs/clean_qsv_select.json':'legacy/P0/configs/clean_qsv_select.json',
+            'configs/clean_qsv_select_non_thinking.json':'legacy/P0/configs/clean_qsv_select_non_thinking.json',
+            'data/manifests/qsv_auxiliary_files.json':'legacy/P0/data/manifests/qsv_auxiliary_files.json',
+            'data/manifests/qsv_select.json':'legacy/P0/data/manifests/qsv_select.json',
+            'data/manifests/qsv_select_rules.json':'legacy/P0/data/manifests/qsv_select_rules.json'}
         for rel,h in self.before.items():
             if rel.startswith(('runs/','reports/','data/','configs/')):
-                self.assertEqual(sha256(LAB/rel),h,rel)
+                target=moved.get(rel,rel)
+                if rel.startswith('reports/') and not rel.startswith('reports/P0_1/'):
+                    target='reports/P0/'+rel[len('reports/'):]
+                self.assertEqual(sha256(LAB/target),h,rel+' -> '+target)
         self.assertEqual(upstream_inventory(Path(read(LAB/'configs/environment.json')['upstream_path'])),self.upstream)
 
     def test_strict_schema_missing_unknown_type_and_id(self):
