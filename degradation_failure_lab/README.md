@@ -17,22 +17,32 @@
 | `evaluations/` | **新**运行的人工/自动规则评价 |
 | `results/` | 导出、聚合和运行索引，按需要留存 |
 
+## 可移植的官方代码路径和 Windows 路径预检
+
+`configs/environment.json` 默认使用相对于 `degradation_failure_lab` 根目录的 `../AutoSkill-main`，因此整个仓库搬到 `D:\AS\AutoSkill-main\` 后无需再编辑绝对路径。注意官方和实验目录须保持同级：
+`D:\AS\AutoSkill-main\AutoSkill-main\` 和 `D:\AS\AutoSkill-main\degradation_failure_lab\`。
+
+若官方代码单独放在别处，可在当前 PowerShell 终端设置：
+`$env:ANYTHING2SKILL_SOURCE = 'D:\path\to\official-source'`。
+此变量优先于配置文件。运行目录的 `environment.json` 仍会记录当时的绝对路径用于追溯，但可复用的项目配置不含机器特定路径。
+
+`validate` 和 `plan` 会提前校验官方路径；Windows 下还会预估官方 Extract 窗口 JSON 的深层路径，若过长则在付费调用前阻止执行。自动运行 ID 缩短为 `r` 加 12 位随机十六进制字符串，开始时间保存在 `invocation.json` 中。长度检查不能保证所有未来技能文件名都不会过长；如果阻止运行，请缩短仓库路径或指定更短的 `--run-id`，不要直接修改官方生成器。
+
 ## 命令
 
 在 `degradation_failure_lab` 下执行（Windows PowerShell）：
 
 ```powershell
-$py = 'D:\anoconda1\envs\autoskill\python.exe'
-& $py -B scripts\lab.py list
-& $py -B scripts\lab.py validate
-& $py -B scripts\lab.py plan --case case001_qsv_select --condition clean --repeat 1
-& $py -B -m unittest discover -s tests -v
+python -B scripts\lab.py list
+python -B scripts\lab.py validate
+python -B scripts\lab.py plan --case case001_qsv_select --condition clean --repeat 1
+python -B -m unittest discover -s tests -v
 ```
 
 以下命令会实际调用付费模型，尚未完成新框架的真实端到端验收：
 
 ```powershell
-& $py -B scripts\lab.py run --case case001_qsv_select --condition clean --repeat 1
+python -B scripts\lab.py run --case case001_qsv_select --condition clean --repeat 1
 ```
 
 真实运行完成后可执行 `lab.py verify --run <run_id>`，然后 `evaluation-init`、`evaluation-validate` 和 `aggregate`。未审核的规则不会自动计为正确。
