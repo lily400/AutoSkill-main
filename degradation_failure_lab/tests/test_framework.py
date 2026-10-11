@@ -12,7 +12,7 @@ from degradation_lab.catalog import CaseManager
 from degradation_lab.runner import ExperimentRunner, validate_config
 from degradation_lab.artifacts import inspect_run, export_run, run_refs
 from degradation_lab.evaluation import aggregate, validate_evaluation
-from degradation_lab.io import read, write, sha256, inventory, upstream_inventory
+from degradation_lab.io import read, write, sha256, inventory
 from degradation_lab.schema import check
 
 
@@ -84,11 +84,6 @@ def fixture_artifacts(run):
 
 
 class Framework(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.before=read(LAB/'reports/P0_1/project_before.json')
-        cls.upstream=read(LAB/'reports/P0_1/upstream_before.json')
-
     def setUp(self):
         # An accidental paid/network call fails every new framework test.
         self.network=patch('urllib.request.urlopen',side_effect=AssertionError('No network/model calls permitted'))
@@ -97,9 +92,8 @@ class Framework(unittest.TestCase):
     def test_actual_case001_and_original_rules_unchanged(self):
         manager=CaseManager(LAB); self.assertEqual(manager.list_cases(),['case001_qsv_select'])
         b=manager.load('case001_qsv_select'); manager.condition(b,'clean')
-        old=read(LAB/'legacy/P0/data/manifests/qsv_select_rules.json')['rules']
-        self.assertEqual([(r['rule_id'],r['text'],r['source_evidence'][0]['lines']) for r in b['rules']['rules']],
-                         [(r['id'],r['rule'],r['lines']) for r in old])
+        self.assertEqual([r['rule_id'] for r in b['rules']['rules']], ['R1','R2','R3','R4','R5','R6','R7'])
+        self.assertEqual(b['rules']['provenance'], {})
         source=b['case']['source_ids'][0]
         manifest=manager.sources.sources[source]
         clean=read(LAB/'cases/case001_qsv_select/inputs/clean.json')['inputs'][0]
@@ -110,35 +104,9 @@ class Framework(unittest.TestCase):
                          ['data/manifests/qsv_select.json'])
         self.assertFalse((LAB/'data/manifests/qsv_select_canonical.json').exists())
 
-    def test_old_success_read_only_full_verification(self):
-        before=inventory(LAB/'runs/p0_qsv_select_clean_002')
-        report,exports=inspect_run(LAB,'p0_qsv_select_clean_002')
-        self.assertEqual(report['status'],'PASS'); self.assertEqual(report['counts']['registered_skills'],2)
-        self.assertEqual(len(exports['traceability']),4)
-        with tempfile.TemporaryDirectory() as d: export_run(LAB,'p0_qsv_select_clean_002',Path(d))
-        self.assertEqual(before,inventory(LAB/'runs/p0_qsv_select_clean_002'))
-
-    def test_old_failure_is_not_success(self):
-        report,exports=inspect_run(LAB,'p0_qsv_select_clean_001')
-        self.assertEqual(report['status'],'PARTIAL'); self.assertEqual(report['recorded_official_status'],'failed')
-        self.assertTrue(report['errors']); self.assertEqual(report['counts']['registered_skills'],0)
-        self.assertGreater(len(exports['skill_specs']),0)
-        self.assertTrue(report['checks']['saved_artifact_hashes'])
-
-    def test_history_and_upstream_not_changed(self):
-        moved={
-            'configs/clean_qsv_select.json':'legacy/P0/configs/clean_qsv_select.json',
-            'configs/clean_qsv_select_non_thinking.json':'legacy/P0/configs/clean_qsv_select_non_thinking.json',
-            'data/manifests/qsv_auxiliary_files.json':'legacy/P0/data/manifests/qsv_auxiliary_files.json',
-            'data/manifests/qsv_select.json':'legacy/P0/data/manifests/qsv_select.json',
-            'data/manifests/qsv_select_rules.json':'legacy/P0/data/manifests/qsv_select_rules.json'}
-        for rel,h in self.before.items():
-            if rel.startswith(('runs/','reports/','data/','configs/')):
-                target=moved.get(rel,rel)
-                if rel.startswith('reports/') and not rel.startswith('reports/P0_1/'):
-                    target='reports/P0/'+rel[len('reports/'):]
-                self.assertEqual(sha256(LAB/target),h,rel+' -> '+target)
-        self.assertEqual(upstream_inventory(Path(read(LAB/'configs/environment.json')['upstream_path'])),self.upstream)
+    def test_no_active_legacy_files(self):
+        for name in ('legacy','data/legacy_bytes','data/sources','runs/legacy_index.json'):
+            self.assertFalse((LAB/name).exists(),name)
 
     def test_strict_schema_missing_unknown_type_and_id(self):
         case=read(LAB/'cases/case001_qsv_select/case.json')
@@ -223,24 +191,22 @@ class Framework(unittest.TestCase):
             with self.assertRaises(ValueError): export_run(root,p.name,p/'exports')
             self.assertEqual(aggregate(root,root/'results/summary')['runs'],0)
 
-    def test_p0_review_preserves_uncertainty_omission_and_addition(self):
-        p=LAB/'evaluations/case001_qsv_select/clean/p0_qsv_select_clean_002/p0_initial_review.json'
-        v=validate_evaluation(LAB,read(p)); records={r['record_id']:r for r in v['records']}
-        self.assertEqual(records['R6_preservation']['status'],'uncertain')
-        self.assertEqual(records['R7_preservation']['error_types'],['rule_omission'])
-        self.assertEqual(records['R4_preservation']['status'],'correct')
-        self.assertEqual(records['R4_addition']['status'],'incorrect')
-        wrong=copy.deepcopy(v); wrong['records'][0]['skill_ids']=['missing-skill']
-        with self.assertRaises(ValueError): validate_evaluation(LAB,wrong)
-
-    def test_rule_aggregation_separates_engineering_and_quality(self):
+    def test_new_run_evaluation_contract(self):
+        from degradation_lab.evaluation import init_evaluation
         with tempfile.TemporaryDirectory() as d:
-            result=aggregate(LAB,Path(d)); rows=read(Path(d)/'rule_results.json')
-            self.assertEqual(result['runs'],2); self.assertEqual(len(rows),15)
-            success=[r for r in rows if r['run_id'].endswith('002')]
-            self.assertTrue(all(r['engineering_status']=='PASS' for r in success))
-            self.assertTrue(any(r['status']=='incorrect' for r in success))
-            self.assertEqual(len([r for r in rows if r['run_id'].endswith('001') and r['status']=='unreviewed']),7)
+            root=Path(d); fixture_catalog(root)
+            run=ExperimentRunner(root).prepare('case002_fixture','clean','fixture_review',fixture=True)
+            fixture_artifacts(run)
+            path=init_evaluation(root,run.name,'review001')
+            review=read(path)
+            self.assertEqual(review['records'][0]['status'],'unreviewed')
+            review['records'][0]['status']='correct'
+            review['records'][0]['skill_ids']=['skill-fixture']
+            validate_evaluation(root,review)
+            wrong=copy.deepcopy(review)
+            wrong['records'][0]['skill_ids']=['missing-skill']
+            with self.assertRaises(ValueError): validate_evaluation(root,wrong)
+            self.assertEqual(aggregate(root,root/'results/summary')['runs'],0)
 
     def test_mock_keys_and_custom_connectors_rejected(self):
         cfg=read(LAB/'configs/generation/deepseek_flash.json')

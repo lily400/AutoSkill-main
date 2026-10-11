@@ -1,25 +1,12 @@
-"""Read-only legacy/new run loading and evidence exports; no extraction logic."""
+"""Read-only inspection and trace exports for current case/condition/run layouts."""
 from pathlib import Path
 import re
 from .io import inside, read, sha256, upstream_inventory, write
 
 
-def historical_hash(root, path, expected):
-    """Accept only exact archived Git bytes plus an unchanged, proven EOL checkout."""
-    path, root = Path(path).resolve(), Path(root).resolve()
-    if sha256(path)==expected: return True
-    index=root/'data/legacy_byte_index.json'
-    if not index.is_file() or not path.is_relative_to(root): return False
-    record=read(index).get(path.relative_to(root).as_posix())
-    if not record or record['expected_sha256']!=expected or sha256(path)!=record['working_sha256']: return False
-    archive=inside(root,record['archived_path'])
-    return sha256(archive)==expected and path.read_bytes().replace(b'\r\n',b'\n')==archive.read_bytes()
-
-
 def run_refs(root):
     root = Path(root)
-    index = root/'runs/legacy_index.json'
-    refs = read(index) if index.is_file() else []
+    refs = []
     for p in sorted((root/'runs').glob('case*/*/*/invocation.json')):
         invocation = read(p)
         refs.append({k:invocation[k] for k in ('case_id', 'condition_id', 'run_id')})
@@ -55,15 +42,8 @@ def inspect_run(root, run_id):
     invocation = read(run/'invocation.json')
     execution = read(run/'execution.json') if (run/'execution.json').is_file() else {}
     calls = read(run/'model_calls.json') if (run/'model_calls.json').is_file() else []
-    legacy = not (run/'input_manifest.json').is_file()
-    if legacy:
-        source = read(run/'source_manifest.json')
-        sources = [source]
-        inputs = [{'source_id':source['source_id'], 'sha256':source['sha256'],
-                   'execution_path':str(inside(root, source['local_path']))}]
-    else:
-        sources = read(run/'sources.json')
-        inputs = read(run/'input_manifest.json')['inputs']
+    sources = read(run/'sources.json')
+    inputs = read(run/'input_manifest.json')['inputs']
     source_map = {s['source_id']:s for s in sources}
     input_map = {str(Path(i['execution_path']).resolve()).lower():i for i in inputs}
     ing, ext, comp, reg = [stages.get(k, {}) for k in ('ingest', 'extract', 'compile', 'register')]
@@ -108,7 +88,7 @@ def inspect_run(root, run_id):
                          if s.get('metadata', {}).get('window_id') == wid), None)
         if not item and len(inputs) == 1: item = inputs[0]
         matches, unmatched, cursor = [], [], 0
-        actual_input = inside(run,item['path']) if item and not legacy else (Path(item['execution_path']) if item else None)
+        actual_input = inside(run, item['path']) if item else None
         lines = actual_input.read_text(encoding='utf-8').splitlines() if actual_input else []
         for line in w.get('text', '').splitlines():
             if not line.strip(): continue
@@ -126,17 +106,15 @@ def inspect_run(root, run_id):
     trace = read(run/'official_call_trace.json') if (run/'official_call_trace.json').is_file() else {}
     saved = read(run/'artifact_manifest.json') if (run/'artifact_manifest.json').is_file() else {}
     checks = {
-        'original_source_hashes':all(historical_hash(root,inside(root,s['local_path']),s['sha256']) if legacy
-            else sha256(inside(root,s['local_path']))==s['sha256'] for s in sources),
-        'input_hashes':bool(inputs) and all(historical_hash(root,Path(i['execution_path']),i['sha256']) if legacy
-            else sha256(inside(run,i['path']))==i['sha256'] for i in inputs),
+        'original_source_hashes':all(sha256(inside(root,s['local_path']))==s['sha256'] for s in sources),
+        'input_hashes':bool(inputs) and all(sha256(inside(run,i['path']))==i['sha256'] for i in inputs),
         'real_model_calls':not fixture and invocation.get('real_generation') is True and bool(calls)
             and any(c.get('success') and c.get('response_id') for c in calls),
         'configured_model_observed':bool(calls) and all(c['model_requested'] == cfg['llm']['model'] for c in calls),
         'no_mock':cfg['llm']['provider'] == 'openai' and not any(k in cfg['llm'] for k in ('response','allow_mock')),
         'upstream_unchanged':before == after == upstream_inventory(Path(environment['upstream_path'])),
         'saved_artifact_hashes':bool(saved) and all(inside(run,p).is_file() and
-            (historical_hash(root,inside(run,p),h) if legacy else sha256(inside(run,p))==h) for p,h in saved.items()),
+            sha256(inside(run,p))==h for p,h in saved.items()),
         'completed_without_errors':execution.get('exit_code') == 0 and result.get('status') == 'completed' and not result.get('errors'),
         'all_inputs_parsed':len(docs) == len(inputs) == len(ing.get('text_units',[])) and bool(docs)
             and all(x.get('text','').strip() for x in ing.get('text_units', [])),
@@ -171,12 +149,10 @@ def inspect_run(root, run_id):
               'drafts':len(drafts), 'compiled_specs':len(specs), 'registered_skills':len(final_ids)}
     report = dict(identity, status='FIXTURE' if fixture else ('PASS' if all(checks.values()) else 'PARTIAL'),
         recorded_official_status=result.get('status', 'not_executed'), checks=checks, counts=counts,
-        missing_states=missing, historical_input_snapshot='global pinned source (P0 did not copy raw bytes)' if legacy else 'run-local byte snapshot',
+        missing_states=missing, input_snapshot='run-local byte snapshot',
         quality_status='SEPARATE_RULE_EVALUATION_REQUIRED', errors=result.get('errors', []),
         execution_kind='fixture' if fixture else 'official', usage_totals=execution.get('usage_totals', {}),
-        historical_checkout_differences={p:v for p,v in read(Path(root)/'data/legacy_byte_index.json').items()
-            if p.startswith(identity['path']+'/') or (legacy and p==sources[0]['local_path'])}
-            if (Path(root)/'data/legacy_byte_index.json').is_file() else {})
+        historical_checkout_differences={})
     all_files = list((run/'SkillBank').rglob('SKILL.md'))
     exports = {'documents':list(docs.values()), 'text_units':ing.get('text_units', []),
         'windows':list(windows.values()), 'support_records':list(supports.values()),

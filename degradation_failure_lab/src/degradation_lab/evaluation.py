@@ -47,11 +47,8 @@ def validate_evaluation(root, value):
                 raise ValueError('Generated evidence line outside SKILL.md')
     p = value['provenance']
     if bool(p.get('file')) != bool(p.get('sha256')): raise ValueError('Incomplete review provenance')
-    if p:
-        provenance = inside(root, p['file'])
-        if not provenance.is_file() and p['file'] == 'reports/quality_review.md':
-            provenance = inside(root, 'reports/P0/quality_review.md')
-        if sha256(provenance) != p['sha256']: raise ValueError('Original quality review changed')
+    if p and sha256(inside(root,p['file'])) != p['sha256']:
+        raise ValueError('Evaluation provenance changed')
     return value
 
 
