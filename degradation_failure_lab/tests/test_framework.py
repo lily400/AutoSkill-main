@@ -12,13 +12,14 @@ from degradation_lab.catalog import CaseManager
 from degradation_lab.runner import ExperimentRunner, validate_config
 from degradation_lab.artifacts import inspect_run, export_run, run_refs
 from degradation_lab.evaluation import aggregate, validate_evaluation
-from degradation_lab.io import read, write, sha256, inventory
+from degradation_lab.io import read, write, sha256, inventory, resolve_upstream, check_windows_run_path
 from degradation_lab.schema import check
 
 
 def fixture_catalog(root):
     """All invented data stay inside TemporaryDirectory; never registered in LAB."""
-    write(root/'configs/environment.json',read(LAB/'configs/environment.json'))
+    # Fixture roots are temporary and not siblings of the official source.
+    write(root/'configs/environment.json',{'upstream_path':str(resolve_upstream(LAB))})
     cfg=read(LAB/'configs/generation/deepseek_flash.json')
     cfg['llm']={'provider':'openai','model':'fixture-vendor-model','base_url':'https://fixture.invalid'}
     cfg['provider_service']='FIXTURE'; cfg['credential_env']='FIXTURE_ONLY_KEY'
@@ -107,6 +108,32 @@ class Framework(unittest.TestCase):
     def test_no_active_legacy_files(self):
         for name in ('legacy','data/legacy_bytes','data/sources','runs/legacy_index.json'):
             self.assertFalse((LAB/name).exists(),name)
+
+    def test_portable_official_path_relative_to_lab_not_cwd(self):
+        self.assertEqual(read(LAB/'configs/environment.json')['upstream_path'], '../AutoSkill-main')
+        expected = LAB.parent/'AutoSkill-main'
+        with patch.dict('os.environ', {'ANYTHING2SKILL_SOURCE':''}):
+            with patch('os.getcwd', return_value=str(LAB/'cases')):
+                self.assertEqual(resolve_upstream(LAB), expected.resolve())
+
+    def test_explicit_upstream_override_and_invalid_path(self):
+        official = resolve_upstream(LAB)
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            write(root/'configs/environment.json',{'upstream_path':'../missing-source'})
+            with patch.dict('os.environ', {'ANYTHING2SKILL_SOURCE':str(official)}):
+                self.assertEqual(resolve_upstream(root), official)
+            with patch.dict('os.environ', {'ANYTHING2SKILL_SOURCE':''}):
+                with self.assertRaisesRegex(ValueError,'Official Anything2Skill source not found'):
+                    resolve_upstream(root)
+
+    def test_windows_path_guard_before_paid_call(self):
+        with tempfile.TemporaryDirectory() as d:
+            short=Path(d)/'runs/case001_qsv_select/clean/r123456789012'
+            long=Path(d)/('x'*150)/'runs/case001_qsv_select/clean/r123456789012'
+            self.assertIsNone(check_windows_run_path(short,windows=True))
+            with self.assertRaisesRegex(ValueError,'Windows intermediate path'):
+                check_windows_run_path(long,windows=True)
 
     def test_strict_schema_missing_unknown_type_and_id(self):
         case=read(LAB/'cases/case001_qsv_select/case.json')
@@ -224,7 +251,7 @@ class Framework(unittest.TestCase):
             self.assertFalse((root/'runs').exists())
 
     def test_official_loader_multisource_and_signature_without_llm(self):
-        upstream=Path(read(LAB/'configs/environment.json')['upstream_path'])
+        upstream=resolve_upstream(LAB)
         sys.path.insert(0,str(upstream))
         from AutoSkill4Doc import extract_from_doc
         from AutoSkill4Doc.document.file_loader import load_file_units
@@ -239,7 +266,7 @@ class Framework(unittest.TestCase):
                 registry_root=str(root/'store'),continue_on_error=False,dry_run=False,logger=None,**cfg['pipeline'])
 
     def test_new_adapter_changes_only_model_parameter(self):
-        sys.path.insert(0,read(LAB/'configs/environment.json')['upstream_path'])
+        sys.path.insert(0,str(resolve_upstream(LAB)))
         from autoskill.llm.factory import build_llm
         from degradation_lab.provider_adapter import build
         cfg={'provider':'openai','model':'fixture-model','max_tokens':256}
@@ -248,7 +275,7 @@ class Framework(unittest.TestCase):
         self.assertEqual(adapted.pop('thinking'),{'type':'disabled'}); self.assertEqual(adapted,baseline)
 
     def test_setup_failure_persisted_and_secret_redacted(self):
-        sys.path.insert(0,read(LAB/'configs/environment.json')['upstream_path'])
+        sys.path.insert(0,str(resolve_upstream(LAB)))
         with tempfile.TemporaryDirectory() as d:
             root=Path(d); fixture_catalog(root)
             # Fault-injection test, not a real run or model response.

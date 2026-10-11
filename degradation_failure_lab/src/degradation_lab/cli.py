@@ -4,7 +4,7 @@ from pathlib import Path
 from .artifacts import export_run, inspect_run
 from .catalog import CaseManager
 from .evaluation import aggregate, init_evaluation, validate_evaluation
-from .io import inside, read
+from .io import inside, read, resolve_upstream
 from .runner import ExperimentRunner
 
 
@@ -33,11 +33,14 @@ def main():
         manager = CaseManager(root)
         cases = manager.list_cases()
         if args.command=='validate':
+            official_source = resolve_upstream(root)
             for case_id in cases:
                 bundle = manager.load(case_id)
                 for c in bundle['conditions']['conditions']: manager.condition(bundle,c['condition_id'])
             for p in sorted((root/'evaluations').rglob('*.json')): validate_evaluation(root,read(p))
         result = {'cases':cases, 'sources':list(manager.sources.sources), 'status':'VALID'}
+        if args.command == 'validate':
+            result['upstream_path'] = str(official_source)
     elif args.command in ('plan','run'):
         manager = CaseManager(root)
         runner = ExperimentRunner(root, manager)

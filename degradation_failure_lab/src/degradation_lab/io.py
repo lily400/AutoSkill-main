@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -31,6 +32,54 @@ def inside(root, relative):
     if not target.is_relative_to(root):
         raise ValueError('Path escapes project: ' + str(relative))
     return target
+
+
+def resolve_upstream(root):
+    """Resolve the official source relative to the lab root, not the shell CWD.
+
+    ANYTHING2SKILL_SOURCE may override the portable, project-relative config.
+    The resolved absolute path is written only to each run's provenance snapshot.
+    """
+    root = Path(root).resolve()
+    config = read(root / 'configs/environment.json')
+    value = os.environ.get('ANYTHING2SKILL_SOURCE') or config.get('upstream_path')
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError('Missing upstream_path in configs/environment.json')
+    source = Path(value.strip()).expanduser()
+    if not source.is_absolute():
+        source = root / source
+    source = source.resolve()
+    required = ('AutoSkill4Doc/pipeline.py', 'autoskill/__init__.py')
+    missing = [name for name in required if not (source / name).is_file()]
+    if missing:
+        raise ValueError(
+            'Official Anything2Skill source not found at ' + str(source) +
+            '; missing ' + ', '.join(missing) +
+            '. Move the repository with both sibling folders intact or set '
+            'ANYTHING2SKILL_SOURCE to the official source directory.'
+        )
+    return source
+
+
+def check_windows_run_path(target, *, windows=None):
+    """Prevent expensive model calls when standard Windows file APIs hit MAX_PATH.
+
+    Forecast the upstream Extract/window snapshot; this is a conservative guard,
+    not a guarantee for every eventual skill filename.
+    """
+    if windows is None:
+        windows = os.name == 'nt'
+    if not windows:
+        return
+    sample = (Path(target) / 'SkillBank/.runtime/intermediate_runs' /
+              ('0' * 24) / 'extract/windows' / ('0' * 36) /
+              (('0' * 36) + '.json'))
+    if len(str(sample)) >= 250:
+        raise ValueError(
+            f'BLOCKED: Windows intermediate path may be too long ({len(str(sample))} characters). '
+            'Use a shorter checkout location (for example D:\\AS), or a shorter --run-id. '
+            'No model request has been made.'
+        )
 
 
 def inventory(root):
