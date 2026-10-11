@@ -1,11 +1,10 @@
 import os
 import re
 import shutil
-import time
 import uuid
 from pathlib import Path
 from .catalog import CaseManager
-from .io import inside, inventory, read, sha256, upstream_inventory, utc, write
+from .io import check_windows_run_path, inside, inventory, read, resolve_upstream, sha256, upstream_inventory, utc, write
 
 
 def validate_config(cfg):
@@ -59,18 +58,23 @@ class ExperimentRunner:
     def plan(self, case_id, condition_id, repeat=1):
         if type(repeat) is not int or repeat < 1: raise ValueError('repeat must be a positive integer')
         _, _, manifest, config = self.resolve(case_id, condition_id)
+        upstream = resolve_upstream(self.root)
+        check_windows_run_path(inside(self.root, f'runs/{case_id}/{condition_id}/r' + '0'*12))
         return {'case_id':case_id, 'condition_id':condition_id, 'repeat':repeat,
                 'input_count':len(manifest['inputs']), 'model':config['llm']['model'],
-                'output_pattern':f'runs/{case_id}/{condition_id}/<timestamp_uuid>/'}
+                'upstream_path':str(upstream),
+                'output_pattern':f'runs/{case_id}/{condition_id}/<r_uuid12>/'}
 
     def prepare(self, case_id, condition_id, run_id=None, fixture=False):
         bundle, condition, manifest, config = self.resolve(case_id, condition_id)
-        run_id = run_id or time.strftime('%Y%m%dT%H%M%S') + '_' + uuid.uuid4().hex[:12]
+        run_id = run_id or 'r' + uuid.uuid4().hex[:12]
         if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', run_id): raise ValueError('Unsafe run_id')
+        upstream = resolve_upstream(self.root)
+        target = inside(self.root, f'runs/{case_id}/{condition_id}/{run_id}')
+        check_windows_run_path(target)
         from .artifacts import run_refs
         if any(r['run_id']==run_id for r in run_refs(self.root)):
             raise FileExistsError('Globally unique run_id already exists: ' + run_id)
-        target = inside(self.root, f'runs/{case_id}/{condition_id}/{run_id}')
         target.mkdir(parents=True, exist_ok=False)
         (target/'SkillBank').mkdir()
         (target/'inputs').mkdir()
@@ -89,8 +93,6 @@ class ExperimentRunner:
         write(target/'condition.json', condition)
         write(target/'config.json', config)
         # Store environment paths separately from reusable generation parameters.
-        environment = read(self.root/'configs/environment.json')
-        upstream = Path(os.environ.get('ANYTHING2SKILL_SOURCE', environment['upstream_path'])).resolve()
         write(target/'environment.json', {'upstream_path':str(upstream)})
         write(target/'upstream_before.json', upstream_inventory(upstream))
         package = self.root/'src/degradation_lab'
