@@ -1,0 +1,63 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^case[0-9]{3,}_[a-z0-9_]+$"
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+          },
+          "kind": {
+            "enum": [
+              "clean",
+              "degraded"
+            ]
+          },
+          "input_manifest": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operator": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "parameters": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "condition_id",
+          "kind",
+          "input_manifest",
+          "operator",
+          "parameters"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "case_id",
+    "conditions"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "conditions"
+}
