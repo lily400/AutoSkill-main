@@ -13,7 +13,7 @@ def validate_config(cfg):
     llm = cfg.get('llm', {})
     if llm.get('provider') != 'openai': raise ValueError('Official OpenAI-compatible provider required; mock forbidden')
     allowed = {'provider', 'base_url', 'model', 'timeout_s', 'max_tokens', 'max_input_chars',
-               'connector_factory', 'thinking_mode', 'extra_headers', 'extra_body'}
+               'connector_factory', 'thinking_mode', 'proxy_mode', 'transport_retries', 'transport_retry_backoff_s', 'extra_headers', 'extra_body'}
     if set(llm) - allowed: raise ValueError('Unsupported or credential-bearing LLM config field')
     if llm.get('connector_factory') not in (None, 'degradation_lab.provider_adapter:build'):
         raise ValueError('Only the audited optional thinking adapter is allowed')
@@ -21,6 +21,16 @@ def validate_config(cfg):
         raise ValueError('Request overrides are not supported by this audited baseline')
     if 'thinking_mode' in llm and llm.get('connector_factory') is None:
         raise ValueError('thinking_mode requires the audited connector')
+    if any(k in llm for k in ('proxy_mode','transport_retries','transport_retry_backoff_s')) and llm.get('connector_factory') is None:
+        raise ValueError('Transport settings require the audited connector')
+    if llm.get('proxy_mode','system') not in ('system','direct'):
+        raise ValueError('proxy_mode must be direct or system')
+    retries=llm.get('transport_retries',0)
+    if type(retries) is not int or not 0 <= retries <= 2:
+        raise ValueError('transport_retries must be integer 0..2')
+    delay=llm.get('transport_retry_backoff_s',1.0)
+    if type(delay) not in (float,int) or not 0 <= delay <= 10:
+        raise ValueError('transport_retry_backoff_s must be number 0..10')
     def credentials(value):
         if isinstance(value, dict):
             for k,v in value.items():

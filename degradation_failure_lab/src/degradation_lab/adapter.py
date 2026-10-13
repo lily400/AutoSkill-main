@@ -1,7 +1,10 @@
 """Reuse P0's unchanged official API invocation and transparent HTTP observer."""
 from collections import Counter
 import hashlib, inspect, json, os, sys, threading, time, traceback
+import urllib.request, urllib.error
+from urllib.parse import urlsplit
 from pathlib import Path
+
 from .io import read, sha256, utc, write as write_json, upstream_inventory as code_inventory
 
 
@@ -24,6 +27,7 @@ def execute(run):
     from AutoSkill4Doc import extract_from_doc
     from AutoSkill4Doc.document.file_loader import load_file_units
     from autoskill.llm.openai import OpenAIChatLLM
+    from .provider_adapter import ConfiguredOpenAIChatLLM, limited_transport_retry, retryable_transport_error
     units, actual_path = load_file_units(str(source), max_files=len(input_manifest['inputs']))
     if len(units)!=len(input_manifest['inputs']) or not all(u.get('text','').strip() for u in units):
         raise RuntimeError('Official file loader did not parse every nonempty input')
@@ -47,43 +51,71 @@ def execute(run):
         with (run / 'pipeline.log').open('a',encoding='utf-8') as f: f.write(line+'\n')
         print(line, flush=True)
 
-    original = OpenAIChatLLM._post_json
+    # Safe route diagnostics; no proxy credentials or URL parameters are persisted.
+    try:
+        system_proxy=urllib.request.getproxies().get('https')
+        proxy=urlsplit(system_proxy if '://' in (system_proxy or '') else 'http://'+system_proxy) if system_proxy else None
+        proxy_data={'proxy_mode':cfg['llm'].get('proxy_mode','system'),
+                    'system_https_proxy_present':bool(system_proxy),
+                    'system_https_proxy_host':proxy.hostname if proxy else None,
+                    'system_https_proxy_port':proxy.port if proxy else None,
+                    'transport_retries':cfg['llm'].get('transport_retries',0)}
+    except (TypeError,ValueError):
+        proxy_data={'proxy_mode':cfg['llm'].get('proxy_mode','system'), 'diagnostic_error':True}
+    write_json(run/'network_diagnostics.json',proxy_data)
+    original_base=OpenAIChatLLM._post_json
+    original_custom=ConfiguredOpenAIChatLLM._post_json
 
     def observed(client, *, payload, stream):
-        with lock:
-            tokens = sum(c.get('usage',{}).get('total_tokens',0) for c in calls)
-            if len(calls)>=cfg['max_http_calls'] or tokens>=cfg['max_observed_total_tokens']:
-                raise RuntimeError('P0 external observation budget exhausted')
-            n = len(calls)+1
-            rec = {'number':n,'started_at':utc(),'model_requested':client.model,'endpoint':client._build_url(),
-                   'official_client':inspect.getsourcefile(original),'stack':[]}
-            frame = inspect.currentframe().f_back
-            while frame:
-                if frame.f_code.co_filename.lower().startswith(upstream_resolved):
-                    rec['stack'].append({'file':frame.f_code.co_filename,'function':frame.f_code.co_name,'line':frame.f_lineno})
-                frame = frame.f_back
-            calls.append(rec)
-        call_dir = run / 'http' / f'{n:03d}'
-        # Only the body is logged. Authorization headers and SDK configuration are never serialized.
-        write_json(call_dir / 'request.json', json.loads(redact(json.dumps(payload, ensure_ascii=False))))
-        start = time.monotonic()
-        try:
-            body = original(client, payload=payload, stream=stream)
-            (call_dir / 'response.json').write_text(redact(body),encoding='utf-8')
-            parsed = json.loads(body)
-            rec.update({'success':True,'response_id':parsed.get('id'),'model_returned':parsed.get('model'),
-                'usage':parsed.get('usage',{}),'response_sha256':hashlib.sha256(body.encode()).hexdigest(),
-                'finish_reasons':[c.get('finish_reason') for c in parsed.get('choices',[])],
-                'returned_body_unchanged':True})
-            return body
-        except Exception as e:
-            rec.update({'success':False,'exception_type':type(e).__name__,'error':redact(str(e))})
-            raise
-        finally:
-            rec['seconds'] = round(time.monotonic()-start,3)
-            write_json(call_dir / 'event.json', rec)
-            write_json(run / 'model_calls.json', calls)
-            log(f'HTTP call {n}: success={rec.get("success")} tokens={rec.get("usage",{}).get("total_tokens")}')
+        original=original_custom if isinstance(client,ConfiguredOpenAIChatLLM) else original_base
+        logical_id=None
+        def send_once(attempt_index):
+            nonlocal logical_id
+            with lock:
+                tokens=sum(c.get('usage',{}).get('total_tokens',0) for c in calls)
+                if len(calls)>=cfg['max_http_calls'] or tokens>=cfg['max_observed_total_tokens']:
+                    raise RuntimeError('P0 external observation budget exhausted')
+                n=len(calls)+1
+                if logical_id is None: logical_id=n
+                rec={'number':n,'logical_call_id':logical_id,'attempt_index':attempt_index,
+                     'retry_of':logical_id if attempt_index>1 else None,
+                     'started_at':utc(),'model_requested':client.model,
+                     'endpoint':client._build_url(),
+                     'official_client':inspect.getsourcefile(original),'stack':[]}
+                frame=inspect.currentframe().f_back
+                while frame:
+                    if frame.f_code.co_filename.lower().startswith(upstream_resolved):
+                        rec['stack'].append({'file':frame.f_code.co_filename,
+                                             'function':frame.f_code.co_name,'line':frame.f_lineno})
+                    frame=frame.f_back
+                calls.append(rec)
+            call_dir=run/'http'/f'{n:03d}'
+            write_json(call_dir/'request.json',json.loads(redact(json.dumps(payload,ensure_ascii=False))))
+            start=time.monotonic()
+            try:
+                body=original(client,payload=payload,stream=stream)
+                (call_dir/'response.json').write_text(redact(body),encoding='utf-8')
+                parsed=json.loads(body)
+                rec.update({'success':True,'response_id':parsed.get('id'),
+                    'model_returned':parsed.get('model'),'usage':parsed.get('usage',{}),
+                    'response_sha256':hashlib.sha256(body.encode()).hexdigest(),
+                    'finish_reasons':[c.get('finish_reason') for c in parsed.get('choices',[])],
+                    'returned_body_unchanged':True})
+                return body
+            except Exception as e:
+                rec.update({'success':False,'exception_type':type(e).__name__,
+                    'error':redact(str(e)),'transport_retry_eligible':retryable_transport_error(e),
+                    'reason_type':type(e.reason).__name__ if isinstance(e,urllib.error.URLError) else None})
+                raise
+            finally:
+                rec['seconds']=round(time.monotonic()-start,3)
+                write_json(call_dir/'event.json',rec)
+                write_json(run/'model_calls.json',calls)
+                log(f'HTTP call {n}: success={rec.get("success")} tokens={rec.get("usage",{}).get("total_tokens")}')
+
+        return limited_transport_retry(send_once,retries=cfg['llm'].get('transport_retries',0),
+            backoff_s=cfg['llm'].get('transport_retry_backoff_s',1.0),
+            on_retry=lambda idx,exc:log(f'Transport retry after failed attempt {idx}: {type(exc).__name__}; POST delivery or billing may be unknown'))
 
     def trace(frame, event, arg):
         if event=='call' and frame.f_code.co_filename.lower().startswith(upstream_resolved):
@@ -94,6 +126,7 @@ def execute(run):
                 counts[f'{frame.f_code.co_filename}:{frame.f_code.co_firstlineno}:{name}'] += 1
 
     OpenAIChatLLM._post_json = observed
+    ConfiguredOpenAIChatLLM._post_json = observed
     sys.setprofile(trace)
     threading.setprofile(trace)
     exit_code = 1
@@ -112,7 +145,8 @@ def execute(run):
     finally:
         sys.setprofile(None)
         threading.setprofile(None)
-        OpenAIChatLLM._post_json = original
+        OpenAIChatLLM._post_json = original_base
+        ConfiguredOpenAIChatLLM._post_json = original_custom
         write_json(run / 'official_call_trace.json',dict(counts))
         after = code_inventory(upstream)
         write_json(run / 'upstream_after.json',after)
