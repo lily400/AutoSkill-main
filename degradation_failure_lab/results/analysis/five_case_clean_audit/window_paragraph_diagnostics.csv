@@ -1,0 +1,1262 @@
+﻿case_id,section_heading,section_chunk_index,paragraph_index,characters,passed_paragraph_filter,exact_whole_paragraph_in_window_ids,text,note
+case001_qsv_select,select,1,0,55,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","> Select, re-order, reverse, duplicate or drop columns.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,1,237,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/select.rs](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)** | [👆](TableOfContents.md#legend ""has powerful column selector support. See `select` for syntax."")","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,2,186,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","<a name=""nav""></a>
+[Description](#description) | [Examples](#examples) | [Usage](#usage) | [Arguments](#arguments) | [Select Options](#select-options) | [Common Options](#common-options)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,3,26,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","<a name=""description""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,4,66,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","## Description [↩](#nav)
+Select columns from CSV data efficiently.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,5,342,False,[],"This command lets you manipulate the columns in CSV data. You can re-order,
+duplicate, reverse or drop them. Columns can be referenced by index or by
+name if there is a header row (duplicate column names can be disambiguated with
+more indexing). Column ranges can also be specified. Finally, columns can be
+selected using regular expressions.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,6,23,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","<a name=""examples""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,7,59,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","## Examples [↩](#nav)
+> Select the first and fourth columns","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,8,29,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1,4
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,9,39,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Select the first 4 columns (by index),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,10,29,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1-4
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,11,38,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Select the first 4 columns (by name),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,12,41,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select Header1-Header4
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,13,39,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Ignore the first 2 columns (by range),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,14,28,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 3-
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,15,39,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Ignore the first 2 columns (by index),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,16,32,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select '!1-2'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,17,38,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Select the third column named 'Foo':,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,18,34,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 'Foo[2]'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,19,82,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","> Select the first and last columns, _ is a special character for the last column:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,20,29,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1,_
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,21,31,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Reverse the order of columns:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,22,29,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select _-1
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,23,42,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> select columns starting with 'a' (regex),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,24,30,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select /^a/
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,25,37,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> select columns with a digit (regex),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,26,38,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select '/^.*\d.*$/'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,27,53,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","> remove SSN, account_no and password columns (regex)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,28,54,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select '!/SSN|account_no|password/'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,29,64,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Sort the columns lexicographically (i.e. by their byte values),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,30,35,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1- --sort
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,31,40,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Select some columns and then sort them,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,32,40,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1,4,5-7 --sort
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,33,31,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Randomly shuffle the columns:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,34,37,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1- --random
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,35,42,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Randomly shuffle the columns with a seed,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,36,47,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1- --random --seed 42
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,37,56,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Select some columns and then shuffle them with a seed:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,38,52,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 1,4,5-7 --random --seed 42
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,39,79,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Re-order and duplicate columns arbitrarily using different types of selectors,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,40,68,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select 3-1,Header3-Header1,Header1,Foo[2],Header1
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,41,56,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]",> Quote column names that conflict with selector syntax:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,42,72,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","```console
+qsv select '\""Date - Opening\"",\""Date - Actual Closing\""'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,43,96,True,"[""245afa09-be7e-56de-9a7a-f895fd5aa81a""]","For more examples, see [tests](https://github.com/dathere/qsv/blob/master/tests/test_select.rs).","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,44,78,True,"[""7ad0d07f-a2a3-5552-a285-2e102136d0f9""]",See also <https://github.com/dathere/qsv/wiki/Selection-and-Inspection#select>,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,45,20,True,"[""7ad0d07f-a2a3-5552-a285-2e102136d0f9""]","<a name=""usage""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,46,96,True,"[""7ad0d07f-a2a3-5552-a285-2e102136d0f9""]","Usage [↩](#nav)
+```console
+qsv select [options] [--] <selection> [<input>]
+qsv select --help
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,47,24,True,"[""7ad0d07f-a2a3-5552-a285-2e102136d0f9""]","<a name=""arguments""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,48,443,False,[],"Arguments [↩](#nav)
+| &nbsp;&nbsp;Argument&nbsp;&nbsp;&nbsp; | Description |
+|----------|-------------|
+| &nbsp;`<selection>`&nbsp; | The columns to select. You can select columns by index, by name, by range, by regex and any combination of these. If the first character is '!', the selection will be inverted. If the selection contains embedded spaces or characters that conflict with selector syntax, it must be quoted. See examples above. |","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,49,29,True,"[""7ad0d07f-a2a3-5552-a285-2e102136d0f9""]","<a name=""select-options""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,50,458,False,[],"Select Options [↩](#nav)
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |
+|--------|------|-------------|--------|
+| &nbsp;`‑R,`<br>`‑‑random`&nbsp; | flag | Randomly shuffle the columns in the selection. |  |
+| &nbsp;`‑‑seed`&nbsp; | integer | Seed for the random number generator. |  |
+| &nbsp;`‑S,`<br>`‑‑sort`&nbsp; | flag | Sort the selected columns lexicographically, i.e. by their byte values. |  |","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,51,29,True,"[""7ad0d07f-a2a3-5552-a285-2e102136d0f9""]","<a name=""common-options""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,52,628,False,[],"Common Options [↩](#nav)
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |
+|--------|------|-------------|--------|
+| &nbsp;`‑h,`<br>`‑‑help`&nbsp; | flag | Display this message |  |
+| &nbsp;`‑o,`<br>`‑‑output`&nbsp; | string | Write output to <file> instead of stdout. |  |
+| &nbsp;`‑n,`<br>`‑‑no‑headers`&nbsp; | flag | When set, the first row will not be interpreted as headers. (i.e., They are not searched, analyzed, sliced, etc.) |  |
+| &nbsp;`‑d,`<br>`‑‑delimiter`&nbsp; | string | The field delimiter for reading CSV data. Must be a single character. (default: ,) |  |","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case001_qsv_select,select,1,53,177,True,"[""7ad0d07f-a2a3-5552-a285-2e102136d0f9""]","---
+**Source:** [`src/cmd/select.rs`](https://github.com/dathere/qsv/blob/master/src/cmd/select.rs)
+| **[Table of Contents](TableOfContents.md)** | **[README](../../README.md)**","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,0,259,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","> Sorts CSV data in [lexicographical](https://en.wikipedia.org/wiki/Lexicographic_order), [natural](https://en.wikipedia.org/wiki/Natural_sort_order), numerical, reverse, unique or random (with optional seed) order (Also see `extsort` & `sortcheck` commands).","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,1,550,False,[],"**[Table of Contents](TableOfContents.md)** | **Source: [src/cmd/sort.rs](https://github.com/dathere/qsv/blob/master/src/cmd/sort.rs)** | [🤯](TableOfContents.md#legend ""loads entire CSV into memory, though `dedup`, `stats` & `transpose` have \""streaming\"" modes as well."")[🚀](TableOfContents.md#legend ""multithreaded even without an index."")[👆](TableOfContents.md#legend ""has powerful column selector support. See `select` for syntax."")[🎲](TableOfContents.md#legend ""randomly generated or randomized output with a --seed option for reproducibility."")","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,2,184,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","<a name=""nav""></a>
+[Description](#description) | [Usage](#usage) | [Sort Options](#sort-options) | [Random Sorting Options](#random-sorting-options) | [Common Options](#common-options)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,3,26,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","<a name=""description""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,4,109,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","Description [↩](#nav)
+Sorts CSV data in lexicographical, natural, numerical, reverse, unique or random order.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,5,160,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","Note that this requires reading all of the CSV data into memory. If
+you need to sort a large file that may not fit into memory, use the
+extsort command instead.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,6,156,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","For examples, see <https://github.com/dathere/qsv/blob/master/tests/test_sort.rs>.
+See also <https://github.com/dathere/qsv/wiki/Transform-and-Reshape#sort>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,7,20,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","<a name=""usage""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,8,75,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","Usage [↩](#nav)
+```console
+qsv sort [options] [<input>]
+qsv sort --help
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,9,27,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","<a name=""sort-options""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,10,1269,False,[],"Sort Options [↩](#nav)
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |
+|--------|------|-------------|--------|
+| &nbsp;`‑s,`<br>`‑‑select`&nbsp; | string | Select a subset of columns to sort. See 'qsv select --help' for the format details. |  |
+| &nbsp;`‑N,`<br>`‑‑numeric`&nbsp; | flag | Compare according to string numerical value |  |
+| &nbsp;`‑‑natural`&nbsp; | flag | Compare strings using natural sort order (treats numbers within strings as actual numbers, e.g. ""data1.txt"", ""data2.txt"", ""data10.txt"", as opposed to ""data1.txt"", ""data10.txt"", ""data2.txt"" when sorting lexicographically) <https://en.wikipedia.org/wiki/Natural_sort_order> When combined with --numeric, --natural takes precedence. |  |
+| &nbsp;`‑R,`<br>`‑‑reverse`&nbsp; | flag | Reverse order |  |
+| &nbsp;`‑i,`<br>`‑‑ignore‑case`&nbsp; | flag | Compare strings disregarding case. Has no effect when numeric comparison is selected (i.e. when --numeric is used without --natural). |  |
+| &nbsp;`‑u,`<br>`‑‑unique`&nbsp; | flag | When set, identical consecutive lines will be dropped to keep only one line per sorted value. The same comparison mode used to sort the input is also used here, so unique-equality always agrees with the sort. |  |","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,11,37,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","<a name=""random-sorting-options""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,12,1254,False,[],"Random Sorting Options [↩](#nav)
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |
+|--------|------|-------------|--------|
+| &nbsp;`‑‑random`&nbsp; | flag | Randomize (scramble) the data by row. When set, the numeric, natural, and ignore-case comparison flags still apply to unique-filtering (if --unique is also set). The reverse flag has no effect on unique-filter equality and is ignored for the shuffle itself. |  |
+| &nbsp;`‑‑seed`&nbsp; | integer | Random Number Generator (RNG) seed to use if --random is set |  |
+| &nbsp;`‑‑rng`&nbsp; | string | The RNG algorithm to use if --random is set. | `standard` |
+| &nbsp;`‑j,`<br>`‑‑jobs`&nbsp; | integer | The number of jobs to run in parallel. When not set, the number of jobs is set to the number of CPUs detected. |  |
+| &nbsp;`‑‑faster`&nbsp; | flag | When set, the sort will be faster. This is done by using a faster sorting algorithm that is not ""stable"" (i.e. the order of identical values is not guaranteed to be preserved). It has the added side benefit that the sort will also be in-place (i.e. does not allocate), which is useful for sorting large files that will otherwise NOT fit in memory using the default allocating stable sort. |  |","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,13,29,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","<a name=""common-options""></a>","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,14,883,False,[],"Common Options [↩](#nav)
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Option&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Type | Description | Default |
+|--------|------|-------------|--------|
+| &nbsp;`‑h,`<br>`‑‑help`&nbsp; | flag | Display this message |  |
+| &nbsp;`‑o,`<br>`‑‑output`&nbsp; | string | Write output to <file> instead of stdout. |  |
+| &nbsp;`‑n,`<br>`‑‑no‑headers`&nbsp; | flag | When set, the first row will not be interpreted as headers. Namely, it will be sorted with the rest of the rows. Otherwise, the first row will always appear as the header row in the output. |  |
+| &nbsp;`‑d,`<br>`‑‑delimiter`&nbsp; | string | The field delimiter for reading CSV data. Must be a single character. (default: ,) |  |
+| &nbsp;`‑‑memcheck`&nbsp; | flag | Check if there is enough memory to load the entire CSV into memory using CONSERVATIVE heuristics. Ignored if --random or --faster is set. |  |","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case002_qsv_sort,sort,1,15,173,True,"[""939e2088-3c3a-5b52-a18d-6e50ca62de2b""]","---
+**Source:** [`src/cmd/sort.rs`](https://github.com/dathere/qsv/blob/master/src/cmd/sort.rs)
+| **[Table of Contents](TableOfContents.md)** | **[README](../../README.md)**","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,0,88,True,[],"<!---MARKER_GEN_START-->
+Copy files/folders between a container and the local filesystem","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,1,196,True,[],"Use '-' as the source to read a tar archive from stdin
+and extract it to a directory destination in a container.
+Use '-' as the destination to stream a tar archive of a
+container source to stdout.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,2,46,True,[],"### Aliases
+`docker container cp`, `docker cp`","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,3,791,False,[],"### Options
+| Name                  | Type   | Default | Description                                                                                                  |
+|:----------------------|:-------|:--------|:-------------------------------------------------------------------------------------------------------------|
+| `-a`, `--archive`     | `bool` |         | Archive mode (copy all uid/gid information)                                                                  |
+| `-L`, `--follow-link` | `bool` |         | Always follow symlinks in SRC_PATH                                                                           |
+| `-q`, `--quiet`       | `bool` |         | Suppress progress output during copy. Progress output is automatically suppressed if no terminal is attached |","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,4,22,True,[],<!---MARKER_GEN_END-->,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,5,457,False,[],"## Description
+The `docker cp` utility copies the contents of `SRC_PATH` to the `DEST_PATH`.
+You can copy from the container's file system to the local machine or the
+reverse, from the local filesystem to the container. If `-` is specified for
+either the `SRC_PATH` or `DEST_PATH`, you can also stream a tar archive from
+`STDIN` or to `STDOUT`. The `CONTAINER` can be a running or stopped container.
+The `SRC_PATH` or `DEST_PATH` can be a file or directory.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,6,466,False,[],"The `docker cp` command assumes container paths are relative to the container's
+`/` (root) directory. This means supplying the initial forward slash is optional;
+The command sees `compassionate_darwin:/tmp/foo/myfile.txt` and
+`compassionate_darwin:tmp/foo/myfile.txt` as identical. Local machine paths can
+be an absolute or relative value. The command interprets a local machine's
+relative paths as relative to the current working directory where `docker cp` is
+run.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,7,696,False,[],"The `cp` command behaves like the Unix `cp -a` command in that directories are
+copied recursively with permissions preserved if possible. Ownership is set to
+the user and primary group at the destination. For example, files copied to a
+container are created with `UID:GID` of the root user. Files copied to the local
+machine are created with the `UID:GID` of the user which invoked the `docker cp`
+command. However, if you specify the `-a` option, `docker cp` sets the ownership
+to the user and primary group at the source.
+If you specify the `-L` option, `docker cp` follows any symbolic link
+in the `SRC_PATH`.  `docker cp` doesn't create parent directories for
+`DEST_PATH` if they don't exist.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,8,128,True,"[""770febe2-ee74-5a3f-bcaf-4fe54846c365""]","Assuming a path separator of `/`, a first argument of `SRC_PATH` and second
+argument of `DEST_PATH`, the behavior is as follows:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,9,1153,True,"[""770febe2-ee74-5a3f-bcaf-4fe54846c365""]","- `SRC_PATH` specifies a file
+    - `DEST_PATH` does not exist
+        - the file is saved to a file created at `DEST_PATH`
+    - `DEST_PATH` does not exist and ends with `/`
+        - Error condition: the destination directory must exist.
+    - `DEST_PATH` exists and is a file
+        - the destination is overwritten with the source file's contents
+    - `DEST_PATH` exists and is a directory
+        - the file is copied into this directory using the basename from
+          `SRC_PATH`
+- `SRC_PATH` specifies a directory
+    - `DEST_PATH` does not exist
+        - `DEST_PATH` is created as a directory and the *contents* of the source
+           directory are copied into this directory
+    - `DEST_PATH` exists and is a file
+        - Error condition: cannot copy a directory to a file
+    - `DEST_PATH` exists and is a directory
+        - `SRC_PATH` does not end with `/.` (that is: _slash_ followed by _dot_)
+            - the source directory is copied into this directory
+        - `SRC_PATH` does end with `/.` (that is: _slash_ followed by _dot_)
+            - the *content* of the source directory is copied into this
+              directory","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,10,257,True,"[""770febe2-ee74-5a3f-bcaf-4fe54846c365""]","The command requires `SRC_PATH` and `DEST_PATH` to exist according to the above
+rules. If `SRC_PATH` is local and is a symbolic link, the symbolic link, not
+the target, is copied by default. To copy the link target and not the link, specify
+the `-L` option.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,11,304,True,[],"A colon (`:`) is used as a delimiter between `CONTAINER` and its path. You can
+also use `:` when specifying paths to a `SRC_PATH` or `DEST_PATH` on a local
+machine, for example  `file:name.txt`. If you use a `:` in a local machine path,
+you must be explicit with a relative or absolute path, for example:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,12,45,True,[],`/path/to/file:name.txt` or `./file:name.txt`,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,13,44,True,[],"## Examples
+Copy a local file into container","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,14,54,True,[],"```console
+$ docker cp ./some_file CONTAINER:/work
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,15,39,True,[],Copy files from container to local path,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,16,61,True,[],"```console
+$ docker cp CONTAINER:/var/logs/ /tmp/app_logs
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,17,77,True,[],Copy a file from container to stdout. Note `cp` command produces a tar stream,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,18,82,True,[],"```console
+$ docker cp CONTAINER:/var/logs/app.log - | tar x -O | grep ""ERROR""
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,19,399,False,[],"### Corner cases
+It isn't possible to copy certain system files such as resources under
+`/proc`, `/sys`, `/dev`, [tmpfs](container_run.md#tmpfs), and mounts created by
+the user in the container. However, you can still copy such files by manually
+running `tar` in `docker exec`. Both of the following examples do the same thing
+in different ways (consider `SRC_PATH` and `DEST_PATH` are directories):","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,20,111,True,[],"```console
+$ docker exec CONTAINER tar Ccf $(dirname SRC_PATH) - $(basename SRC_PATH) | tar Cxf DEST_PATH -
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,21,114,True,[],"```console
+$ tar Ccf $(dirname SRC_PATH) - $(basename SRC_PATH) | docker exec -i CONTAINER tar Cxf DEST_PATH -
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case003_docker_cp,# cp,1,22,315,True,[],"Using `-` as the `SRC_PATH` streams the contents of `STDIN` as a tar archive.
+The command extracts the content of the tar to the `DEST_PATH` in container's
+filesystem. In this case, `DEST_PATH` must specify a directory. Using `-` as
+the `DEST_PATH` streams the contents of the resource as a tar archive to `STDOUT`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,input001\git-restore.txt,1,0,29,True,"[""3d0dfa2f-72ce-5ec7-99c1-51f5135cbfeb""]","git-restore(1)
+==============","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,NAME,1,0,45,True,"[""cb589c34-76b1-5acc-8c08-07341f346673""]","----
+git-restore - Restore working tree files","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,SYNOPSIS,1,0,323,True,"[""ce07e23b-073a-5ed2-953d-d918a8b89c5c""]","--------
+[verse]
+'git restore' [<options>] [--source=<tree>] [--staged] [--worktree] [--] <pathspec>...
+'git restore' [<options>] [--source=<tree>] [--staged] [--worktree] --pathspec-from-file=<file> [--pathspec-file-nul]
+'git restore' (-p|--patch) [<options>] [--source=<tree>] [--staged] [--worktree] [--] [<pathspec>...]","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,DESCRIPTION,1,0,200,True,"[""a139b2af-09e5-5296-b88d-078b00382049""]","-----------
+Restore specified paths in the working tree with some contents from a
+restore source. If a path is tracked but does not exist in the restore
+source, it will be removed to match the source.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,DESCRIPTION,1,1,156,True,"[""a139b2af-09e5-5296-b88d-078b00382049""]","The command can also be used to restore the content in the index with
+`--staged`, or restore both the working tree and the index with
+`--staged --worktree`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,DESCRIPTION,1,2,151,True,"[""a139b2af-09e5-5296-b88d-078b00382049""]","By default, if `--staged` is given, the contents are restored from `HEAD`,
+otherwise from the index. Use `--source` to restore from a different commit.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,DESCRIPTION,1,3,97,True,"[""a139b2af-09e5-5296-b88d-078b00382049""]","See ""Reset, restore and revert"" in linkgit:git[1] for the differences
+between the three commands.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,DESCRIPTION,1,4,54,True,[],THIS COMMAND IS EXPERIMENTAL. THE BEHAVIOR MAY CHANGE.,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,0,521,True,"[""0f0b837e-e400-5aa2-9764-1e63dd60ad30""]","-------
+-s <tree>::
+--source=<tree>::
+	Restore the working tree files with the content from the given
+	tree. It is common to specify the source tree by naming a
+	commit, branch or tag associated with it.
++
+If not specified, the contents are restored from `HEAD` if `--staged` is
+given, otherwise from the index.
++
+As a special case, you may use `""A...B""` as a shortcut for the
+merge base of `A` and `B` if there is exactly one merge base. You can
+leave out at most one of `A` and `B`, in which case it defaults to `HEAD`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,1,311,True,"[""0f0b837e-e400-5aa2-9764-1e63dd60ad30"", ""7065d033-23bf-54c2-ad44-8f748912f88a""]","-p::
+--patch::
+	Interactively select hunks in the difference between the
+	restore source and the restore location. See the ``Interactive
+	Mode'' section of linkgit:git-add[1] to learn how to operate
+	the `--patch` mode.
++
+Note that `--patch` can accept no pathspec and will prompt to restore
+all modified paths.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,2,221,True,"[""7065d033-23bf-54c2-ad44-8f748912f88a""]","-W::
+--worktree::
+-S::
+--staged::
+	Specify the restore location. If neither option is specified,
+	by default the working tree is restored. Specifying `--staged`
+	will only restore the index. Specifying both restores both.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,3,75,True,"[""7065d033-23bf-54c2-ad44-8f748912f88a""]","-q::
+--quiet::
+	Quiet, suppress feedback messages. Implies `--no-progress`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,4,264,True,"[""763da6d6-7704-52e7-8a0e-655de8cf8da5""]","--progress::
+--no-progress::
+	Progress status is reported on the standard error stream
+	by default when it is attached to a terminal, unless `--quiet`
+	is specified. This flag enables progress reporting even if not
+	attached to a terminal, regardless of `--quiet`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,5,418,True,"[""763da6d6-7704-52e7-8a0e-655de8cf8da5""]","--ours::
+--theirs::
+	When restoring files in the working tree from the index, use
+	stage #2 ('ours') or #3 ('theirs') for unmerged paths.
+	This option cannot be used when checking out paths from a
+	tree-ish (i.e. with the `--source` option).
++
+Note that during `git rebase` and `git pull --rebase`, 'ours' and
+'theirs' may appear swapped. See the explanation of the same options
+in linkgit:git-checkout[1] for details.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,6,230,True,"[""763da6d6-7704-52e7-8a0e-655de8cf8da5""]","-m::
+--merge::
+	When restoring files on the working tree from the index,
+	recreate the conflicted merge in the unmerged paths.
+	This option cannot be used when checking out paths from a
+	tree-ish (i.e. with the `--source` option).","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,7,241,True,[],"--conflict=<style>::
+	The same as `--merge` option above, but changes the way the
+	conflicting hunks are presented, overriding the
+	`merge.conflictStyle` configuration variable.  Possible values
+	are ""merge"" (default), ""diff3"", and ""zdiff3"".","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,8,262,True,[],"--ignore-unmerged::
+	When restoring files on the working tree from the index, do
+	not abort the operation if there are unmerged entries and
+	neither `--ours`, `--theirs`, `--merge` or `--conflict` is
+	specified. Unmerged paths on the working tree are left alone.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,9,271,True,[],"--ignore-skip-worktree-bits::
+	In sparse checkout mode, the default is to only update entries
+	matched by `<pathspec>` and sparse patterns in
+	$GIT_DIR/info/sparse-checkout. This option ignores the sparse
+	patterns and unconditionally restores any files in
+	`<pathspec>`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,10,517,False,[],"--recurse-submodules::
+--no-recurse-submodules::
+	If `<pathspec>` names an active submodule and the restore location
+	includes the working tree, the submodule will only be updated if
+	this option is given, in which case its working tree will be
+	restored to the commit recorded in the superproject, and any local
+	modifications overwritten. If nothing (or
+	`--no-recurse-submodules`) is used, submodules working trees will
+	not be updated. Just like linkgit:git-checkout[1], this will detach
+	`HEAD` of the submodule.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,11,253,True,[],"--overlay::
+--no-overlay::
+	In overlay mode, the command never removes files when
+	restoring. In no-overlay mode, tracked files that do not
+	appear in the `--source` tree are removed, to make them match
+	`<tree>` exactly. The default is no-overlay mode.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,12,386,False,[],"--pathspec-from-file=<file>::
+	Pathspec is passed in `<file>` instead of commandline args. If
+	`<file>` is exactly `-` then standard input is used. Pathspec
+	elements are separated by LF or CR/LF. Pathspec elements can be
+	quoted as explained for the configuration variable `core.quotePath`
+	(see linkgit:git-config[1]). See also `--pathspec-file-nul` and
+	global `--literal-pathspecs`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,13,198,True,[],"--pathspec-file-nul::
+	Only meaningful with `--pathspec-from-file`. Pathspec elements are
+	separated with NUL character and all other characters are taken
+	literally (including newlines and quotes).","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,14,54,True,[],"\--::
+	Do not interpret any more arguments as options.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,OPTIONS,1,15,132,True,[],"<pathspec>...::
+	Limits the paths affected by the operation.
++
+For more details, see the 'pathspec' entry in linkgit:gitglossary[7].","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,0,8,True,"[""ce07e23b-073a-5ed2-953d-d918a8b89c5c"", ""a139b2af-09e5-5296-b88d-078b00382049"", ""0f0b837e-e400-5aa2-9764-1e63dd60ad30"", ""35ea93d5-b53f-5fa0-a924-57e00c09ddc3"", ""1fb0ab79-cea5-5ac1-aa8c-3a10a0024fe7""]",--------,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,1,162,True,[],"The following sequence switches to the `master` branch, reverts the
+`Makefile` to two revisions back, deletes hello.c by mistake, and gets
+it back from the index.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,2,153,True,[],"------------
+$ git switch master
+$ git restore --source master~2 Makefile  <1>
+$ rm -f hello.c
+$ git restore hello.c                     <2>
+------------","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,3,72,True,[],"<1> take a file out of another commit
+<2> restore hello.c from the index","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,4,90,True,[],"If you want to restore _all_ C source files to match the version in
+the index, you can say","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,5,45,True,[],"------------
+$ git restore '*.c'
+------------","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,6,225,True,[],"Note the quotes around `*.c`.  The file `hello.c` will also be
+restored, even though it is no longer in the working tree, because the
+file globbing is used to match entries in the index (not in the
+working tree by the shell).","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,7,45,True,[],To restore all files in the current directory,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,8,41,True,[],"------------
+$ git restore .
+------------","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,9,91,True,[],"or to restore all working tree files with 'top' pathspec magic (see
+linkgit:gitglossary[7])","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,10,42,True,[],"------------
+$ git restore :/
+------------","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,11,110,True,"[""35ea93d5-b53f-5fa0-a924-57e00c09ddc3""]","To restore a file in the index to match the version in `HEAD` (this is
+the same as using linkgit:git-reset[1])","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,12,56,True,"[""35ea93d5-b53f-5fa0-a924-57e00c09ddc3""]","------------
+$ git restore --staged hello.c
+------------","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,13,106,True,"[""35ea93d5-b53f-5fa0-a924-57e00c09ddc3""]","or you can restore both the index and the working tree (this is the same
+as using linkgit:git-checkout[1])","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,14,81,True,"[""35ea93d5-b53f-5fa0-a924-57e00c09ddc3""]","------------
+$ git restore --source=HEAD --staged --worktree hello.c
+------------","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,15,60,True,"[""35ea93d5-b53f-5fa0-a924-57e00c09ddc3""]",or the short form which is more practical but less readable:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,EXAMPLES,1,16,55,True,[],"------------
+$ git restore -s@ -SW hello.c
+------------","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,SEE ALSO,1,0,54,True,"[""1fb0ab79-cea5-5ac1-aa8c-3a10a0024fe7""]","--------
+linkgit:git-checkout[1],
+linkgit:git-reset[1]","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case004_git_restore,GIT,1,0,36,True,"[""1031e16b-a3d8-53ff-8dfa-a5c2c80ca1e4""]","---
+Part of the linkgit:git[1] suite","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,0,381,False,[],"This guide is intended to give an elementary description of ripgrep and an
+overview of its capabilities. This guide assumes that ripgrep is
+[installed](README.md#installation)
+and that readers have passing familiarity with using command line tools. This
+also assumes a Unix-like system, although most commands are probably easily
+translatable to any command line shell environment.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,1,451,False,[],"### Table of Contents
+* [Basics](#basics)
+* [Recursive search](#recursive-search)
+* [Automatic filtering](#automatic-filtering)
+* [Manual filtering: globs](#manual-filtering-globs)
+* [Manual filtering: file types](#manual-filtering-file-types)
+* [Replacements](#replacements)
+* [Configuration file](#configuration-file)
+* [File encoding](#file-encoding)
+* [Binary data](#binary-data)
+* [Preprocessor](#preprocessor)
+* [Common options](#common-options)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,2,298,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","Basics
+ripgrep is a command line tool that searches your files for patterns that
+you give it. ripgrep behaves as if reading each file line by line. If a line
+matches the pattern provided to ripgrep, then that line will be printed. If a
+line does not match the pattern, then the line is not printed.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,3,259,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","The best way to see how this works is with an example. To show an example, we
+need something to search. Let's try searching ripgrep's source code. First
+grab a ripgrep source archive from
+https://github.com/BurntSushi/ripgrep/archive/0.7.1.zip
+and extract it:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,4,432,False,[],"```
+$ curl -LO https://github.com/BurntSushi/ripgrep/archive/0.7.1.zip
+$ unzip 0.7.1.zip
+$ cd ripgrep-0.7.1
+$ ls
+benchsuite  grep       tests         Cargo.toml       LICENSE-MIT
+ci          ignore     wincolor      CHANGELOG.md     README.md
+complete    pkg        appveyor.yml  compile          snapcraft.yaml
+doc         src        build.rs      COPYING          UNLICENSE
+globset     termcolor  Cargo.lock    HomebrewFormula
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,5,92,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","Let's try our first search by looking for all occurrences of the word `fast`
+in `README.md`:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,6,334,False,[],"```
+$ rg fast README.md
+75:  faster than both. (N.B. It is not, strictly speaking, a ""drop-in"" replacement
+88:  color and full Unicode support. Unlike GNU grep, `ripgrep` stays fast while
+119:### Is it really faster than everything else?
+124:Summarizing, `ripgrep` is fast because:
+129:  optimizations to make searching very fast.
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,7,220,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","(**Note:** If you see an error message from ripgrep saying that it didn't
+search any files, then re-run ripgrep with the `--debug` flag. One likely cause
+of this is that you have a `*` rule in a `$HOME/.gitignore` file.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,8,309,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","So what happened here? ripgrep read the contents of `README.md`, and for each
+line that contained `fast`, ripgrep printed it to your terminal. ripgrep also
+included the line number for each line by default. If your terminal supports
+colors, then your output might actually look something like this screenshot:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,9,154,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]",[![A screenshot of a sample search ripgrep](https://burntsushi.net/stuff/ripgrep-guide-sample.png)](https://burntsushi.net/stuff/ripgrep-guide-sample.png),"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,10,410,False,[],"In this example, we searched for something called a ""literal"" string. This
+means that our pattern was just some normal text that we asked ripgrep to
+find. But ripgrep supports the ability to specify patterns via [regular
+expressions](https://en.wikipedia.org/wiki/Regular_expression). As an example,
+what if we wanted to find all lines have a word that contains `fast` followed
+by some number of other letters?","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,11,165,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","```
+$ rg 'fast\w+' README.md
+75:  faster than both. (N.B. It is not, strictly speaking, a ""drop-in"" replacement
+119:### Is it really faster than everything else?
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,12,509,False,[],"In this example, we used the pattern `fast\w+`. This pattern tells ripgrep to
+look for any lines containing the letters `fast` followed by *one or more*
+word-like characters. Namely, `\w` matches characters that compose words (like
+`a` and `L` but unlike `.` and ` `). The `+` after the `\w` means, ""match the
+previous pattern one or more times."" This means that the word `fast` won't
+match because there are no word characters following the final `t`. But a word
+like `faster` will. `faste` would also match!","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,13,48,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]",Here's a different variation on this same theme:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,14,339,False,[],"```
+$ rg 'fast\w*' README.md
+75:  faster than both. (N.B. It is not, strictly speaking, a ""drop-in"" replacement
+88:  color and full Unicode support. Unlike GNU grep, `ripgrep` stays fast while
+119:### Is it really faster than everything else?
+124:Summarizing, `ripgrep` is fast because:
+129:  optimizations to make searching very fast.
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,15,318,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","In this case, we used `fast\w*` for our pattern instead of `fast\w+`. The `*`
+means that it should match *zero* or more times. In this case, ripgrep will
+print the same lines as the pattern `fast`, but if your terminal supports
+colors, you'll notice that `faster` will be highlighted instead of just the
+`fast` prefix.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,16,175,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","It is beyond the scope of this guide to provide a full tutorial on regular
+expressions, but ripgrep's specific syntax is documented here:
+https://docs.rs/regex/*/regex/#syntax","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,17,331,False,[],"Recursive search
+In the previous section, we showed how to use ripgrep to search a single file.
+In this section, we'll show how to use ripgrep to search an entire directory
+of files. In fact, *recursively* searching your current working directory is
+the default mode of operation for ripgrep, which means doing this is very
+simple.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,18,117,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","Using our unzipped archive of ripgrep source code, here's how to find all
+function definitions whose name is `write`:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,19,78,True,"[""ac2ea4f5-c2c3-51bf-be25-7a9265205354""]","```
+$ rg 'fn write\('
+src/printer.rs
+469:    fn write(&mut self, buf: &[u8]) {","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,20,815,False,[],"termcolor/src/lib.rs
+227:    fn write(&mut self, b: &[u8]) -> io::Result<usize> {
+250:    fn write(&mut self, b: &[u8]) -> io::Result<usize> {
+428:    fn write(&mut self, b: &[u8]) -> io::Result<usize> { self.wtr.write(b) }
+441:    fn write(&mut self, b: &[u8]) -> io::Result<usize> { self.wtr.write(b) }
+454:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+511:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+848:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+915:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+949:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+1114:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+1348:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+1353:    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,21,253,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]","(**Note:** We escape the `(` here because `(` has special significance inside
+regular expressions. You could also use `rg -F 'fn write('` to achieve the
+same thing, where `-F` interprets your pattern as a literal string instead of
+a regular expression.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,22,189,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]","In this example, we didn't specify a file at all. Instead, ripgrep defaulted
+to searching your current directory in the absence of a path. In general,
+`rg foo` is equivalent to `rg foo ./`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,23,318,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]","This particular search showed us results in both the `src` and `termcolor`
+directories. The `src` directory is the core ripgrep code where as `termcolor`
+is a dependency of ripgrep (and is used by other tools). What if we only wanted
+to search core ripgrep code? Well, that's easy, just specify the directory you
+want:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,24,86,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]","```
+$ rg 'fn write\(' src
+src/printer.rs
+469:    fn write(&mut self, buf: &[u8]) {
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,25,171,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]","Here, ripgrep limited its search to the `src` directory. Another way of doing
+this search would be to `cd` into the `src` directory and simply use `rg 'fn
+write\('` again.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,26,188,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]","Automatic filtering
+After recursive search, ripgrep's most important feature is what it *doesn't*
+search. By default, when you search a directory, ripgrep will ignore all of
+the following:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,27,800,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]","1. Files and directories that match glob patterns in these three categories:
+      1. `.gitignore` globs (including global and repo-specific globs). This
+         includes `.gitignore` files in parent directories that are part of the
+         same `git` repository. (Unless the `--no-require-git` flag is given.)
+      2. `.ignore` globs, which take precedence over all gitignore globs
+         when there's a conflict. This includes `.ignore` files in parent
+         directories.
+      3. `.rgignore` globs, which take precedence over all `.ignore` globs
+         when there's a conflict. This includes `.rgignore` files in parent
+         directories.
+2. Hidden files and directories.
+3. Binary files. (ripgrep considers any file with a `NUL` byte to be binary.)
+4. Symbolic links aren't followed.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,28,75,True,"[""4a5c4fa0-dd82-511b-999e-01fcf1c1ae5e""]",All of these things can be toggled using various flags provided by ripgrep:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,29,441,True,"[""6efdeaf9-32ee-56f9-8f00-e158f1b28760""]","1. You can disable all ignore-related filtering with the `--no-ignore` flag.
+2. Hidden files and directories can be searched with the `--hidden` (`-.` for
+short) flag.
+3. Binary files can be searched via the `--text` (`-a` for short) flag.
+   Be careful with this flag! Binary files may emit control characters to your
+   terminal, which might cause strange behavior.
+4. ripgrep can follow symlinks with the `--follow` (`-L` for short) flag.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,30,634,False,[],"As a special convenience, ripgrep also provides a flag called `--unrestricted`
+(`-u` for short). Repeated uses of this flag will cause ripgrep to disable
+more and more of its filtering. That is, `-u` will disable `.gitignore`
+handling, `-uu` will search hidden files and directories and `-uuu` will search
+binary files. This is useful when you're using ripgrep and you aren't sure
+whether its filtering is hiding results from you. Tacking on a couple `-u`
+flags is a quick way to find out. (Use the `--debug` flag if you're still
+perplexed, and if that doesn't help,
+[file an issue](https://github.com/BurntSushi/ripgrep/issues/new).)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,31,303,True,"[""6efdeaf9-32ee-56f9-8f00-e158f1b28760""]","ripgrep's `.gitignore` handling actually goes a bit beyond just `.gitignore`
+files. ripgrep will also respect repository specific rules found in
+`$GIT_DIR/info/exclude`, as well as any global ignore rules in your
+`core.excludesFile` (which is usually `$XDG_CONFIG_HOME/git/ignore` on
+Unix-like systems).","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,1,32,209,True,"[""6efdeaf9-32ee-56f9-8f00-e158f1b28760""]","Sometimes you want to search files that are in your `.gitignore`, so it is
+possible to specify additional ignore rules or overrides in a `.ignore`
+(application agnostic) or `.rgignore` (ripgrep specific) file.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,0,73,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","For example, let's say you have a `.gitignore` file that looks like this:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,1,12,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","```
+log/
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,2,333,False,[],"This generally means that any `log` directory won't be tracked by `git`.
+However, perhaps it contains useful output that you'd like to include in your
+searches, but you still don't want to track it in `git`. You can achieve this
+by creating a `.ignore` file in the same directory as the `.gitignore` file
+with the following contents:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,3,13,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","```
+!log/
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,4,241,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","ripgrep treats `.ignore` files with higher precedence than `.gitignore` files
+(and treats `.rgignore` files with higher precedence than `.ignore` files).
+This means ripgrep will see the `!log/` whitelist rule first and search that
+directory.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,5,164,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","Like `.gitignore`, a `.ignore` file can be placed in any directory. Its rules
+will be processed with respect to the directory it resides in, just like
+`.gitignore`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,6,311,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","To process `.gitignore` and `.ignore` files case insensitively, use the flag
+`--ignore-file-case-insensitive`. This is especially useful on case insensitive
+file systems like those on Windows and macOS. Note though that this can come
+with a significant performance penalty, and is therefore disabled by default.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,7,120,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","For a more in depth description of how glob patterns in a `.gitignore` file
+are interpreted, please see `man gitignore`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,8,260,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","Manual filtering: globs
+In the previous section, we talked about ripgrep's filtering that it does by
+default. It is ""automatic"" because it reacts to your environment. That is, it
+uses already existing `.gitignore` files to produce more relevant search
+results.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,9,289,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","In addition to automatic filtering, ripgrep also provides more manual or ad hoc
+filtering. This comes in two varieties: additional glob patterns specified in
+your ripgrep commands and file type filtering. This section covers glob
+patterns while the next section covers file type filtering.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,10,188,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","In our ripgrep source code (see [Basics](#basics) for instructions on how to
+get a source archive to search), let's say we wanted to see which things depend
+on `clap`, our argument parser.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,11,17,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]",We could do this:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,12,35,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","```
+$ rg clap
+[lots of results]
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,13,219,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","But this shows us many things, and we're only interested in where we wrote
+`clap` as a dependency. Instead, we could limit ourselves to TOML files, which
+is how dependencies are communicated to Rust's build tool, Cargo:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,14,74,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","```
+$ rg clap -g '*.toml'
+Cargo.toml
+35:clap = ""2.26""
+51:clap = ""2.26""
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,15,179,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","The `-g '*.toml'` syntax says, ""make sure every file searched matches this
+glob pattern."" Note that we put `'*.toml'` in single quotes to prevent our
+shell from expanding the `*`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,16,76,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","If we wanted, we could tell ripgrep to search anything *but* `*.toml` files:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,17,48,True,"[""f15da809-9edd-5c18-9f4c-1a6455bb9883""]","```
+$ rg clap -g '!*.toml'
+[lots of results]
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,18,398,False,[],"This will give you a lot of results again as above, but they won't include
+files ending with `.toml`. Note that the use of a `!` here to mean ""negation""
+is a bit non-standard, but it was chosen to be consistent with how globs in
+`.gitignore` files are written. (Although, the meaning is reversed. In
+`.gitignore` files, a `!` prefix means whitelist, and on the command line, a
+`!` means blacklist.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,19,189,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","Globs are interpreted in exactly the same way as `.gitignore` patterns. That
+is, later globs will override earlier globs. For example, the following command
+will search only `*.toml` files:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,20,42,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg clap -g '!*.toml' -g '*.toml'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,21,341,False,[],"Interestingly, reversing the order of the globs in this case will match
+nothing, since the presence of at least one non-blacklist glob will institute a
+requirement that every file searched must match at least one glob. In this
+case, the blacklist glob takes precedence over the previous glob and prevents
+any file from being searched at all!","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,22,219,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","Manual filtering: file types
+Over time, you might notice that you use the same glob patterns over and over.
+For example, you might find yourself doing a lot of searches where you only
+want to see results for Rust files:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,23,31,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg 'fn run' -g '*.rs'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,24,89,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","Instead of writing out the glob every time, you can use ripgrep's support for
+file types:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,25,33,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg 'fn run' --type rust
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,26,20,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2"", ""0cd51647-dd75-58c3-88af-08e530de2205""]","or, more succinctly,","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,27,28,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg 'fn run' -trust
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,28,328,False,[],"The way the `--type` flag functions is simple. It acts as a name that is
+assigned to one or more globs that match the relevant files. This lets you
+write a single type that might encompass a broad range of file extensions. For
+example, if you wanted to search C files, you'd have to check both C source
+files and C header files:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,29,36,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg 'int main' -g '*.{c,h}'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,30,38,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]",or you could just use the C file type:,"Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,31,27,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg 'int main' -tc
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,32,72,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","Just as you can write blacklist globs, you can blacklist file types too:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,33,33,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg clap --type-not rust
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,34,20,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2"", ""0cd51647-dd75-58c3-88af-08e530de2205""]","or, more succinctly,","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,35,24,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg clap -Trust
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,36,98,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","That is, `-t` means ""include files of this type"" where as `-T` means ""exclude
+files of this type.""","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,37,59,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","To see the globs that make up a type, run `rg --type-list`:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,38,115,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg --type-list | rg '^make:'
+make: *.mak, *.mk, GNUmakefile, Gnumakefile, Makefile, gnumakefile, makefile
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,39,266,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","By default, ripgrep comes with a bunch of pre-defined types. Generally, these
+types correspond to well known public formats. But you can define your own
+types as well. For example, perhaps you frequently search ""web"" files, which
+consist of JavaScript, HTML and CSS:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,40,93,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg --type-add 'web:*.html' --type-add 'web:*.css' --type-add 'web:*.js' -tweb title
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,41,20,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2"", ""0cd51647-dd75-58c3-88af-08e530de2205""]","or, more succinctly,","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,42,57,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg --type-add 'web:*.{html,css,js}' -tweb title
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,43,182,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","The above command defines a new type, `web`, corresponding to the glob
+`*.{html,css,js}`. It then applies the new filter with `-tweb` and searches for
+the pattern `title`. If you ran","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,44,57,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+$ rg --type-add 'web:*.{html,css,js}' --type-list
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,45,111,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","Then you would see your `web` type show up in the list, even though it is not
+part of ripgrep's built-in types.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,46,276,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","It is important to stress here that the `--type-add` flag only applies to the
+current command. It does not add a new file type and save it somewhere in a
+persistent form. If you want a type to be available in every ripgrep command,
+then you should either create a shell alias:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,47,54,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2""]","```
+alias rg=""rg --type-add 'web:*.{html,css,js}'""
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,48,154,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","or add `--type-add=web:*.{html,css,js}` to your ripgrep configuration file.
+([Configuration files](#configuration-file) are covered in more detail later.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,49,410,False,[],"The special `all` file type
+A special option supported by the `--type` flag is `all`. `--type all` looks
+for a match in any of the supported file types listed by `--type-list`,
+including those added on the command line using `--type-add`. It's equivalent
+to the command `rg --type agda --type asciidoc --type asm ...`, where `...`
+stands for a list of `--type` flags for the rest of the types in `--type-list`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,50,469,False,[],"As an example, let's suppose you have a shell script in your current directory,
+`my-shell-script`, which includes a shell library, `my-shell-library.bash`.
+Both `rg --type sh` and `rg --type all` would only search for matches in
+`my-shell-library.bash`, not `my-shell-script`, because the globs matched
+by the `sh` file type don't include files without an extension. On the
+other hand, `rg --type-not all` would search `my-shell-script` but not
+`my-shell-library.bash`.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,51,227,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","Replacements
+ripgrep provides a limited ability to modify its output by replacing matched
+text with some other text. This is easiest to explain with an example. Remember
+when we searched for the word `fast` in ripgrep's README?","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,52,334,False,[],"```
+$ rg fast README.md
+75:  faster than both. (N.B. It is not, strictly speaking, a ""drop-in"" replacement
+88:  color and full Unicode support. Unlike GNU grep, `ripgrep` stays fast while
+119:### Is it really faster than everything else?
+124:Summarizing, `ripgrep` is fast because:
+129:  optimizations to make searching very fast.
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,53,114,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","What if we wanted to *replace* all occurrences of `fast` with `FAST`? That's
+easy with ripgrep's `--replace` flag:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,54,349,False,[],"```
+$ rg fast README.md --replace FAST
+75:  FASTer than both. (N.B. It is not, strictly speaking, a ""drop-in"" replacement
+88:  color and full Unicode support. Unlike GNU grep, `ripgrep` stays FAST while
+119:### Is it really FASTer than everything else?
+124:Summarizing, `ripgrep` is FAST because:
+129:  optimizations to make searching very FAST.
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,55,20,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2"", ""0cd51647-dd75-58c3-88af-08e530de2205""]","or, more succinctly,","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,56,42,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","```
+$ rg fast README.md -r FAST
+[snip]
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,57,220,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","In essence, the `--replace` flag applies *only* to the matching portion of text
+in the output. If you instead wanted to replace an entire line of text, then
+you need to include the entire line in your match. For example:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,58,86,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","```
+$ rg '^.*fast.*$' README.md -r FAST
+75:FAST
+88:FAST
+119:FAST
+124:FAST
+129:FAST
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,59,126,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","Alternatively, you can combine the `--only-matching` (or `-o` for short) with
+the `--replace` flag to achieve the same result:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,60,101,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","```
+$ rg fast README.md --only-matching --replace FAST
+75:FAST
+88:FAST
+119:FAST
+124:FAST
+129:FAST
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,61,20,True,"[""5373afc5-80db-5942-9c1f-45700b1bbdf2"", ""0cd51647-dd75-58c3-88af-08e530de2205""]","or, more succinctly,","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,62,43,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","```
+$ rg fast README.md -or FAST
+[snip]
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,63,478,False,[],"Finally, replacements can include capturing groups. For example, let's say
+we wanted to find all occurrences of `fast` followed by another word and
+join them together with a dash. The pattern we might use for that is
+`fast\s+(\w+)`, which matches `fast`, followed by any amount of whitespace,
+followed by any number of ""word"" characters. We put the `\w+` in a ""capturing
+group"" (indicated by parentheses) so that we can reference it later in our
+replacement string. For example:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,64,175,True,"[""0cd51647-dd75-58c3-88af-08e530de2205""]","```
+$ rg 'fast\s+(\w+)' README.md -r 'fast-$1'
+88:  color and full Unicode support. Unlike GNU grep, `ripgrep` stays fast-while
+124:Summarizing, `ripgrep` is fast-because:
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,2,65,355,False,[],"Our replacement string here, `fast-$1`, consists of `fast-` followed by the
+contents of the capturing group at index `1`. (Capturing groups actually start
+at index 0, but the `0`th capturing group always corresponds to the entire
+match. The capturing group at index `1` always corresponds to the first
+explicit capturing group found in the regex pattern.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,0,165,True,[],"Capturing groups can also be named, which is sometimes more convenient than
+using the indices. For example, the following command is equivalent to the
+above command:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,1,186,True,[],"```
+$ rg 'fast\s+(?P<word>\w+)' README.md -r 'fast-$word'
+88:  color and full Unicode support. Unlike GNU grep, `ripgrep` stays fast-while
+124:Summarizing, `ripgrep` is fast-because:
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,2,185,True,[],"It is important to note that ripgrep **will never modify your files**. The
+`--replace` flag only controls ripgrep's output. (And there is no flag to let
+you do a replacement in a file.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,3,202,True,"[""70484645-df40-5401-aa60-cb9ad440fb18""]","Configuration file
+It is possible that ripgrep's default options aren't suitable in every case.
+For that reason, and because shell aliases aren't always convenient, ripgrep
+supports configuration files.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,4,416,False,[],"Setting up a configuration file is simple. ripgrep will not look in any
+predetermined directory for a config file automatically. Instead, you need to
+set the `RIPGREP_CONFIG_PATH` environment variable to the file path of your
+config file. Once the environment variable is set, open the file and just type
+in the flags you want set automatically. There are only two rules for
+describing the format of the config file:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,5,151,True,"[""70484645-df40-5401-aa60-cb9ad440fb18""]","1. Every line is a shell argument, after trimming whitespace.
+2. Lines starting with `#` (optionally preceded by any amount of whitespace)
+are ignored.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,6,110,True,"[""70484645-df40-5401-aa60-cb9ad440fb18""]","In particular, there is no escaping. Each line is given to ripgrep as a single
+command line argument verbatim.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,7,99,True,[],"Here's an example of a configuration file, which demonstrates some of the
+formatting peculiarities:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,8,146,True,[],"```
+$ cat $HOME/.ripgreprc
+# Don't let ripgrep vomit really long lines to my terminal, and show a preview.
+--max-columns=150
+--max-columns-preview","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,9,52,True,[],"# Add my 'web' type.
+--type-add
+web:*.{html,css,js}*","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,10,71,True,[],"# Search hidden files / directories (e.g. dotfiles) by default
+--hidden","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,11,72,True,[],"# Using glob patterns to include/exclude files or folders
+--glob=!.git/*","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,12,19,True,[],"# or
+--glob
+!.git/*","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,13,61,True,[],"# Set the colors.
+--colors=line:none
+--colors=line:style:bold","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,14,49,True,[],"# Because who cares about case!?
+--smart-case
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,15,460,False,[],"When we use a flag that has a value, we either put the flag and the value on
+the same line but delimited by an `=` sign (e.g., `--max-columns=150`), or we
+put the flag and the value on two different lines. This is because ripgrep's
+argument parser knows to treat the single argument `--max-columns=150` as a
+flag with a value, but if we had written `--max-columns 150` in our
+configuration file, then ripgrep's argument parser wouldn't know what to do
+with it.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,16,93,True,[],"Putting the flag and value on different lines is exactly equivalent and is a
+matter of style.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,17,94,True,[],"Comments are encouraged so that you remember what the config is doing. Empty
+lines are OK too.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,18,637,False,[],"So let's say you're using the above configuration file, but while you're at a
+terminal, you really want to be able to see lines longer than 150 columns. What
+do you do? Thankfully, all you need to do is pass `--max-columns 0` (or `-M0`
+for short) on the command line, which will override your configuration file's
+setting. This works because ripgrep's configuration file is *prepended* to the
+explicit arguments you give it on the command line. Since flags given later
+override flags given earlier, everything works as expected. This works for most
+other flags as well, and each flag's documentation states which other flags
+override it.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,19,280,True,[],"If you're confused about what configuration file ripgrep is reading arguments
+from, then running ripgrep with the `--debug` flag should help clarify things.
+The debug output should note what config file is being loaded and the arguments
+that have been read from the configuration.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,20,317,True,[],"Finally, if you want to make absolutely sure that ripgrep *isn't* reading a
+configuration file, then you can pass the `--no-config` flag, which will always
+prevent ripgrep from reading extraneous configuration from the environment,
+regardless of what other methods of configuration are added to ripgrep in the
+future.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,21,153,True,"[""fb0b641f-ba01-5692-9f68-0d0b47be787a""]","File encoding
+[Text encoding](https://en.wikipedia.org/wiki/Character_encoding) is a complex
+topic, but we can try to summarize its relevancy to ripgrep:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,22,532,True,"[""fb0b641f-ba01-5692-9f68-0d0b47be787a""]","* Files are generally just a bundle of bytes. There is no reliable way to know
+  their encoding.
+* Either the encoding of the pattern must match the encoding of the files being
+  searched, or a form of transcoding must be performed that converts either the
+  pattern or the file to the same encoding as the other.
+* ripgrep tends to work best on plain text files, and among plain text files,
+  the most popular encodings likely consist of ASCII, latin1 or UTF-8. As
+  a special exception, UTF-16 is prevalent in Windows environments","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,23,105,True,"[""fb0b641f-ba01-5692-9f68-0d0b47be787a"", ""0bd66aa5-b88a-5f80-8440-b4ee811d1978""]","In light of the above, here is how ripgrep behaves when `--encoding auto` is
+given, which is the default:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,24,1521,True,"[""0bd66aa5-b88a-5f80-8440-b4ee811d1978""]","* All input is assumed to be ASCII compatible (which means every byte that
+  corresponds to an ASCII codepoint actually is an ASCII codepoint). This
+  includes ASCII itself, latin1 and UTF-8.
+* ripgrep works best with UTF-8. For example, ripgrep's regular expression
+  engine supports Unicode features. Namely, character classes like `\w` will
+  match all word characters by Unicode's definition and `.` will match any
+  Unicode codepoint instead of any byte. These constructions assume UTF-8,
+  so they simply won't match when they come across bytes in a file that aren't
+  UTF-8.
+* To handle the UTF-16 case, ripgrep will do something called ""BOM sniffing""
+  by default. That is, the first three bytes of a file will be read, and if
+  they correspond to a UTF-16 BOM, then ripgrep will transcode the contents of
+  the file from UTF-16 to UTF-8, and then execute the search on the transcoded
+  version of the file. (This incurs a performance penalty since transcoding
+  is needed in addition to regex searching.) If the file contains invalid
+  UTF-16, then the Unicode replacement codepoint is substituted in place of
+  invalid code units.
+* To handle other cases, ripgrep provides a `-E/--encoding` flag, which permits
+  you to specify an encoding from the
+  [Encoding Standard](https://encoding.spec.whatwg.org/#concept-encoding-get).
+  ripgrep will assume *all* files searched are the encoding specified (unless
+  the file has a BOM) and will perform a transcoding step just like in the
+  UTF-16 case described above.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,25,487,False,[],"By default, ripgrep will not require its input be valid UTF-8. That is, ripgrep
+can and will search arbitrary bytes. The key here is that if you're searching
+content that isn't UTF-8, then the usefulness of your pattern will degrade. If
+you're searching bytes that aren't ASCII compatible, then it's likely the
+pattern won't find anything. With all that said, this mode of operation is
+important, because it lets you find ASCII or UTF-8 *within* files that are
+otherwise arbitrary bytes.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,26,363,False,[],"As a special case, the `-E/--encoding` flag supports the value `none`, which
+will completely disable all encoding related logic, including BOM sniffing.
+When `-E/--encoding` is set to `none`, ripgrep will search the raw bytes of
+the underlying file with no transcoding step. For example, here's how you might
+search the raw UTF-16 encoding of the string `Шерлок`:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,27,78,True,"[""0bd66aa5-b88a-5f80-8440-b4ee811d1978""]","```
+$ rg '(?-u)\(\x045\x04@\x04;\x04>\x04:\x04' -E none -a some-utf16-file
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,28,154,True,[],"Of course, that's just an example meant to show how one can drop down into
+raw bytes. Namely, the simpler command works as you might expect automatically:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,29,37,True,[],"```
+$ rg 'Шерлок' some-utf16-file
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,30,361,False,[],"Finally, it is possible to disable ripgrep's Unicode support from within the
+regular expression. For example, let's say you wanted `.` to match any byte
+rather than any Unicode codepoint. (You might want this while searching a
+binary file, since `.` by default will not match invalid UTF-8.) You could do
+this by disabling Unicode via a regular expression flag:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,31,22,True,[],"```
+$ rg '(?-u:.)'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,32,184,True,[],"This works for any part of the pattern. For example, the following will find
+any Unicode word character followed by any ASCII word character followed by
+another Unicode word character:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,33,27,True,[],"```
+$ rg '\w(?-u:\w)\w'
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,34,429,False,[],"Binary data
+In addition to skipping hidden files and files in your `.gitignore` by default,
+ripgrep also attempts to skip binary files. ripgrep does this by default
+because binary files (like PDFs or images) are typically not things you want to
+search when searching for regex matches. Moreover, if content in a binary file
+did match, then it's possible for undesirable binary data to be printed to your
+terminal and wreak havoc.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,35,429,False,[],"Unfortunately, unlike skipping hidden files and respecting your `.gitignore`
+rules, a file cannot as easily be classified as binary. In order to figure out
+whether a file is binary, the most effective heuristic that balances
+correctness with performance is to simply look for `NUL` bytes. At that point,
+the determination is simple: a file is considered ""binary"" if and only if it
+contains a `NUL` byte somewhere in its contents.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,36,369,False,[],"The issue is that while most binary files will have a `NUL` byte toward the
+beginning of its contents, this is not necessarily true. The `NUL` byte might
+be the very last byte in a large file, but that file is still considered
+binary. While this leads to a fair amount of complexity inside ripgrep's
+implementation, it also results in some unintuitive user experiences.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,3,37,88,True,[],"At a high level, ripgrep operates in three different modes with respect to
+binary files:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,0,2036,True,"[""a63d4665-a308-5e71-9d77-2564880d45db""]","1. The default mode is to attempt to remove binary files from a search
+   completely. This is meant to mirror how ripgrep removes hidden files and
+   files in your `.gitignore` automatically. That is, as soon as a file is
+   detected as binary, searching stops. If a match was already printed (because
+   it was detected long before a `NUL` byte), then ripgrep will print a warning
+   message indicating that the search stopped prematurely. This default mode
+   **only applies to files searched by ripgrep as a result of recursive
+   directory traversal**, which is consistent with ripgrep's other automatic
+   filtering. For example, `rg foo .file` will search `.file` even though it
+   is hidden. Similarly, `rg foo binary-file` will search `binary-file` in
+   ""binary"" mode automatically.
+2. Binary mode is similar to the default mode, except it will not always
+   stop searching after it sees a `NUL` byte. Namely, in this mode, ripgrep
+   will continue searching a file that is known to be binary until the first
+   of two conditions is met: 1) the end of the file has been reached or 2) a
+   match is or has been seen. This means that in binary mode, if ripgrep
+   reports no matches, then there are no matches in the file. When a match does
+   occur, ripgrep prints a message similar to one it prints when in its default
+   mode indicating that the search has stopped prematurely. This mode can be
+   forcefully enabled for all files with the `--binary` flag. The purpose of
+   binary mode is to provide a way to discover matches in all files, but to
+   avoid having binary data dumped into your terminal.
+3. Text mode completely disables all binary detection and searches all files
+   as if they were text. This is useful when searching a file that is
+   predominantly text but contains a `NUL` byte, or if you are specifically
+   trying to search binary data. This mode can be enabled with the `-a/--text`
+   flag. Note that when using this mode on very large binary files, it is
+   possible for ripgrep to use a lot of memory.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,1,224,True,"[""a63d4665-a308-5e71-9d77-2564880d45db"", ""54659e52-f1dd-56e8-908f-02789e173e39""]","Unfortunately, there is one additional complexity in ripgrep that can make it
+difficult to reason about binary files. That is, the way binary detection works
+depends on the way that ripgrep searches your files. Specifically:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,2,249,True,"[""54659e52-f1dd-56e8-908f-02789e173e39""]","* When ripgrep uses memory maps, then binary detection is only performed on the
+  first few kilobytes of the file in addition to every matching line.
+* When ripgrep doesn't use memory maps, then binary detection is performed on
+  all bytes searched.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,3,351,False,[],"This means that whether a file is detected as binary or not can change based
+on the internal search strategy used by ripgrep. If you prefer to keep
+ripgrep's binary file detection consistent, then you can disable memory maps
+via the `--no-mmap` flag. (The cost will be a small performance regression when
+searching very large files on some platforms.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,4,308,True,"[""54659e52-f1dd-56e8-908f-02789e173e39""]","Preprocessor
+In ripgrep, a preprocessor is any type of command that can be run to transform
+the input of every file before ripgrep searches it. This makes it possible to
+search virtually any kind of content that can be automatically converted to
+text without having to teach ripgrep how to read said content.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,5,388,False,[],"One common example is searching PDFs. PDFs are first and foremost meant to be
+displayed to users. But PDFs often have text streams in them that can be useful
+to search. In our case, we want to search Bruce Watson's excellent
+dissertation,
+[Taxonomies and Toolkits of Regular Language Algorithms](https://burntsushi.net/stuff/1995-watson.pdf).
+After downloading it, let's try searching it:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,6,62,True,[],"```
+$ rg 'The Commentz-Walter algorithm' 1995-watson.pdf
+$
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,7,330,False,[],"Surely, a dissertation on regular language algorithms would mention
+Commentz-Walter. Indeed it does, but our search isn't picking it up because
+PDFs are a binary format, and the text shown in the PDF may not be encoded as
+simple contiguous UTF-8. Namely, even passing the `-a/--text` flag to ripgrep
+will not make our search work.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,8,254,True,[],"One way to fix this is to convert the PDF to plain text first. This won't work
+well for all PDFs, but does great in a lot of cases. (Note that the tool we
+use, `pdftotext`, is part of the [poppler](https://poppler.freedesktop.org)
+PDF rendering library.)","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,9,658,False,[],"```
+$ pdftotext 1995-watson.pdf > 1995-watson.txt
+$ rg 'The Commentz-Walter algorithm' 1995-watson.txt
+316:The Commentz-Walter algorithms : : : : : : : : : : : : : : :
+7165:4.4 The Commentz-Walter algorithms
+10062:in input string S , we obtain the Boyer-Moore algorithm. The Commentz-Walter algorithm
+17218:The Commentz-Walter algorithm (and its variants) displayed more interesting behaviour,
+17249:Aho-Corasick algorithms are used extensively. The Commentz-Walter algorithms are used
+17297: The Commentz-Walter algorithms (CW). In all versions of the CW algorithms, a common program skeleton is used with di erent shift functions. The CW algorithms are
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,10,537,False,[],"But having to explicitly convert every file can be a pain, especially when you
+have a directory full of PDF files. Instead, we can use ripgrep's preprocessor
+feature to search the PDF. ripgrep's `--pre` flag works by taking a single
+command name and then executing that command for every file that it searches.
+ripgrep passes the file path as the first and only argument to the command and
+also sends the contents of the file to stdin. So let's write a simple shell
+script that wraps `pdftotext` in a way that conforms to this interface:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,11,30,True,[],"```
+$ cat preprocess
+#!/bin/sh","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,12,22,True,[],"exec pdftotext - -
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,13,98,True,[],"With `preprocess` in the same directory as `1995-watson.pdf`, we can now use it
+to search the PDF:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,14,631,False,[],"```
+$ rg --pre ./preprocess 'The Commentz-Walter algorithm' 1995-watson.pdf
+316:The Commentz-Walter algorithms : : : : : : : : : : : : : : :
+7165:4.4 The Commentz-Walter algorithms
+10062:in input string S , we obtain the Boyer-Moore algorithm. The Commentz-Walter algorithm
+17218:The Commentz-Walter algorithm (and its variants) displayed more interesting behaviour,
+17249:Aho-Corasick algorithms are used extensively. The Commentz-Walter algorithms are used
+17297: The Commentz-Walter algorithms (CW). In all versions of the CW algorithms, a common program skeleton is used with di erent shift functions. The CW algorithms are
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,15,231,True,[],"Note that `preprocess` must be resolvable to a command that ripgrep can read.
+The simplest way to do this is to put your preprocessor command in a directory
+that is in your `PATH` (or equivalent), or otherwise use an absolute path.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,16,94,True,[],"As a bonus, this turns out to be quite a bit faster than other specialized PDF
+grepping tools:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,17,85,True,[],"```
+$ time rg --pre ./preprocess 'The Commentz-Walter algorithm' 1995-watson.pdf -c
+6","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,18,65,True,[],"real    0.697
+user    0.684
+sys     0.007
+maxmem  16 MB
+faults  0","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,19,67,True,[],"$ time pdfgrep 'The Commentz-Walter algorithm' 1995-watson.pdf -c
+6","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,20,69,True,[],"real    1.336
+user    1.310
+sys     0.023
+maxmem  16 MB
+faults  0
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,21,118,True,[],"If you wind up needing to search a lot of PDFs, then ripgrep's parallelism can
+make the speed difference even greater.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,22,150,True,[],"A more robust preprocessor
+One of the problems with the aforementioned preprocessor is that it will fail
+if you try to search a file that isn't a PDF:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,23,437,False,[],"```
+$ echo foo > not-a-pdf
+$ rg --pre ./preprocess 'The Commentz-Walter algorithm' not-a-pdf
+not-a-pdf: preprocessor command failed: '""./preprocess"" ""not-a-pdf""':
+-------------------------------------------------------------------------------
+Syntax Warning: May not be a PDF file (continuing anyway)
+Syntax Error: Couldn't find trailer dictionary
+Syntax Error: Couldn't find trailer dictionary
+Syntax Error: Couldn't read xref table
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,24,138,True,[],"To fix this, we can make our preprocessor script a bit more robust by only
+running `pdftotext` when we think the input is a non-empty PDF:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,25,32,True,[],"```
+$ cat preprocessor
+#!/bin/sh","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,26,175,True,[],"case ""$1"" in
+*.pdf)
+  # The -s flag ensures that the file is non-empty.
+  if [ -s ""$1"" ]; then
+    exec pdftotext - -
+  else
+    exec cat
+  fi
+  ;;
+*)
+  exec cat
+  ;;
+esac
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,27,220,True,[],"We can even extend our preprocessor to search other kinds of files. Sometimes
+we don't always know the file type from the file name, so we can use the `file`
+utility to ""sniff"" the type of the file based on its contents:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,28,29,True,[],"```
+$ cat processor
+#!/bin/sh","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,29,261,True,[],"case ""$1"" in
+*.pdf)
+  # The -s flag ensures that the file is non-empty.
+  if [ -s ""$1"" ]; then
+    exec pdftotext - -
+  else
+    exec cat
+  fi
+  ;;
+*)
+  case $(file ""$1"") in
+  *Zstandard*)
+    exec pzstd -cdq
+    ;;
+  *)
+    exec cat
+    ;;
+  esac
+  ;;
+esac
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,30,543,False,[],"Reducing preprocessor overhead
+There is one more problem with the above approach: it requires running a
+preprocessor for every single file that ripgrep searches. If every file needs
+a preprocessor, then this is OK. But if most don't, then this can substantially
+slow down searches because of the overhead of launching new processors. You
+can avoid this by telling ripgrep to only invoke the preprocessor when the file
+path matches a glob. For example, consider the performance difference even when
+searching a repository as small as ripgrep's:","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,31,194,True,[],"```
+$ time rg --pre pre-rg 'fn is_empty' -c
+crates/globset/src/lib.rs:1
+crates/matcher/src/lib.rs:2
+crates/ignore/src/overrides.rs:1
+crates/ignore/src/gitignore.rs:1
+crates/ignore/src/types.rs:1","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,32,64,True,[],"real    0.138
+user    0.485
+sys     0.209
+maxmem  7 MB
+faults  0","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,33,209,True,[],"$ time rg --pre pre-rg --pre-glob '*.pdf' 'fn is_empty' -c
+crates/globset/src/lib.rs:1
+crates/ignore/src/types.rs:1
+crates/ignore/src/gitignore.rs:1
+crates/ignore/src/overrides.rs:1
+crates/matcher/src/lib.rs:2","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,34,68,True,[],"real    0.008
+user    0.010
+sys     0.002
+maxmem  7 MB
+faults  0
+```","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,4,35,251,True,[],"Common options
+ripgrep has a lot of flags. Too many to keep in your head at once. This section
+is intended to give you a sampling of some of the most important and frequently
+used options that will likely impact how you use ripgrep on a regular basis.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
+case005_ripgrep_guide,## User Guide,5,0,1727,True,"[""537a599f-098a-5369-b93c-b2655d520cc7""]","* `-h`: Show ripgrep's condensed help output.
+* `--help`: Show ripgrep's longer form help output. (Nearly what you'd find in
+  ripgrep's man page, so pipe it into a pager!)
+* `-i/--ignore-case`: When searching for a pattern, ignore case differences.
+  That is `rg -i fast` matches `fast`, `fASt`, `FAST`, etc.
+* `-S/--smart-case`: This is similar to `--ignore-case`, but disables itself
+  if the pattern contains any uppercase letters. Usually this flag is put into
+  alias or a config file.
+* `-F/--fixed-strings`: Disable regular expression matching and treat the pattern
+   as a literal string.
+* `-w/--word-regexp`: Require that all matches of the pattern be surrounded
+  by word boundaries. That is, given `pattern`, the `--word-regexp` flag will
+  cause ripgrep to behave as if `pattern` were actually `\b(?:pattern)\b`.
+* `-c/--count`: Report a count of total matched lines.
+* `--files`: Print the files that ripgrep *would* search, but don't actually
+  search them.
+* `-a/--text`: Search binary files as if they were plain text.
+* `-U/--multiline`: Permit matches to span multiple lines.
+* `-z/--search-zip`: Search compressed files (gzip, bzip2, lzma, xz, lz4,
+  brotli, zstd). This is disabled by default.
+* `-C/--context`: Show the lines surrounding a match.
+* `--sort path`: Force ripgrep to sort its output by file name. (This disables
+  parallelism, so it might be slower.)
+* `-L/--follow`: Follow symbolic links while recursively searching.
+* `-M/--max-columns`: Limit the length of lines printed by ripgrep.
+* `--debug`: Shows ripgrep's debug output. This is useful for understanding
+  why a particular file might be ignored from search, or what kinds of
+  configuration ripgrep is loading from the environment.","Text containment diagnostic, not semantic rule adjudication; unmatched kept paragraphs can be split or excluded during grouping."
