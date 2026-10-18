@@ -1,0 +1,493 @@
+{
+  "task_id": "lockdate_compliance_gate_001",
+  "test_id": "tc_001",
+  "setup_code": "import math\nimport numpy as np",
+  "function_name": "solve",
+  "solution_code": "def solve(input_data):\n    # Document-specific constants\n    # (Constraints for the Author Liaison Agent, chunk 4/10)\n    TIER1_LABEL = \"Tier 1\"\n    MAX_PANELISTS_TIER1 = 3  # Session fidelity example: max 3 panelists\n\n    # (Question 2, chunk 7/10)\n    BRAND_SCORE_MIN = 9.0  # If below, cannot proceed\n\n    # (Constraints for the Author Liaison Agent, chunk 4/10)\n    PAYMENT_SUBMIT_DAYS_AFTER_RETURN = 7  # payment submission timing rule\n\n    # (Question 4 + sponsorship governance mention, chunk 9/10)\n    # Financial Lock Date is document-defined; hardcode for tool behavior.\n    FINANCIAL_LOCK_DATE = \"2026-04-01\"\n\n    # (Question 2, chunk 7/10)\n    REQUIRED_CLAUSE_CODE = \"Force Majeure Clause\"\n\n    def parse_date(s):\n        if s is None:\n            return None\n        y, m, d = s.split(\"-\")\n        return (int(y), int(m), int(d))\n\n    def date_leq(a, b):\n        return parse_date(a) <= parse_date(b)\n\n    def add_days(date_s, days):\n        # Simple Gregorian add using Python-free approach via ordinal conversion\n        y, m, d = parse_date(date_s)\n        mdays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]\n        def is_leap(yy):\n            return (yy % 4 == 0 and yy % 100 != 0) or (yy % 400 == 0)\n        def to_ordinal(yy, mm, dd):\n            # days before year\n            days_total = 0\n            for yr in range(1, yy):\n                days_total += 366 if is_leap(yr) else 365\n            # days before month\n            for mo in range(1, mm):\n                if mo == 2:\n                    days_total += 29 if is_leap(yy) else 28\n                else:\n                    days_total += mdays[mo-1]\n            days_total += dd\n            return days_total\n        def from_ordinal(n):\n            yy = 1\n            while True:\n                dy = 366 if is_leap(yy) else 365\n                if n > dy:\n                    n -= dy\n                    yy += 1\n                else:\n                    break\n            mm = 1\n            while True:\n                if mm == 2:\n                    dm = 29 if is_leap(yy) else 28\n                else:\n                    dm = mdays[mm-1]\n                if n > dm:\n                    n -= dm\n                    mm += 1\n                else:\n                    break\n            dd = n\n            return f\"{yy:04d}-{mm:02d}-{dd:02d}\"\n        return from_ordinal(to_ordinal(y, m, d) + days)\n\n    current_date = input_data[\"current_date\"]\n    author = input_data[\"author\"]\n    session = input_data[\"session\"]\n    marketing = input_data[\"marketing_request\"]\n    constraints = input_data[\"media_constraints\"]\n    finance = input_data[\"finance\"]\n    sponsorship = input_data[\"sponsorship\"]\n\n    blocks = []\n    holds = []\n    actions = []\n\n    # 1) Session fidelity for Tier 1\n    if author.get(\"tier\") == TIER1_LABEL and session.get(\"revised_panelists\") is not None:\n        if session[\"revised_panelists\"] > MAX_PANELISTS_TIER1:\n            blocks.append(\"SESSION_FIDELITY_VIOLATION\")\n            actions.append(\"ISSUE_SFVR_TO_CURATOR_AND_DIRECTOR\")\n            if session.get(\"sponsor_requires_change\"):\n                actions.append(\"PROPOSE_ALT_SESSION_OR_SEEK_AUTHOR_AMENDMENT\")\n\n    # 2) Media governance: simple constraint parsing from Media Constraint Log lines\n    # Document examples include timing restrictions and approval requirements.\n    # Implement two constraint types:\n    # - \"Image Use: No high-res photos before YYYY-MM-DD\"\n    # - \"Quotes: Approval required for all uses\"\n    asset_type = marketing.get(\"asset_type\")\n    date_needed = marketing.get(\"date_needed\")\n\n    for line in constraints:\n        if line.startswith(\"Image Use: No high-res photos before \") and asset_type == \"image_high_res\":\n            cutoff = line.split(\"before \", 1)[1].strip()\n            if date_leq(date_needed, cutoff):\n                holds.append(\"MEDIA_CONSTRAINT_VIOLATION\")\n                actions.append(\"HOLD_MARKETING_REQUEST\")\n                break\n        if line.strip() == \"Quotes: Approval required for all uses\" and asset_type == \"quote\":\n            holds.append(\"MEDIA_APPROVAL_REQUIRED\")\n            actions.append(\"REQUEST_AUTHOR_MEDIA_APPROVAL\")\n            break\n\n    # 3) Sponsorship governance\n    if sponsorship.get(\"has_incorrect_classifications\"):\n        # If already past lock date, treat as block; otherwise hold.\n        if date_leq(FINANCIAL_LOCK_DATE, current_date):\n            blocks.append(\"SPONSORSHIP_LOCKDATE_BREACH\")\n        else:\n            holds.append(\"SPONSORSHIP_CLASSIFICATION_CORRECTION\")\n        actions.append(\"CORRECT_SPONSORSHIP_CLASSIFICATIONS\")\n\n    bcs = sponsorship.get(\"brand_consistency_score\")\n    if bcs is not None and bcs < BRAND_SCORE_MIN:\n        blocks.append(\"BRAND_SCORE_TOO_LOW\")\n        actions.append(\"RENEGOTIATE_SPONSORSHIP_OR_DECLINE\")\n\n    # 4) Compliance governance: required clause before finalization/archiving\n    clause_codes = [c.get(\"code\") for c in author.get(\"contract\", {}).get(\"clauses\", [])]\n    stage = author.get(\"contract\", {}).get(\"stage\")\n    wants_final = stage in (\"signed\", \"finalizing\", \"archiving\")\n    if wants_final and REQUIRED_CLAUSE_CODE not in clause_codes:\n        blocks.append(\"MISSING_FORCE_MAJEURE\")\n        actions.append(\"ADD_FORCE_MAJEURE_CLAUSE\")\n\n    # 5) Finance governance gate\n    returned_date = author.get(\"contract\", {}).get(\"returned_date\")\n    if wants_final:\n        if not finance.get(\"payment_schedule_submitted\"):\n            blocks.append(\"PAYMENT_SCHEDULE_NOT_SUBMITTED\")\n            actions.append(\"SUBMIT_PAYMENT_SCHEDULE\")\n        if not finance.get(\"finance_reviewed\"):\n            blocks.append(\"FINANCE_REVIEW_REQUIRED\")\n            actions.append(\"REQUEST_FINANCE_REVIEW\")\n\n    # Extension conflict: if extension requested and returned_date exists, check submission deadline\n    if finance.get(\"extension_requested\") and returned_date is not None:\n        deadline = add_days(returned_date, PAYMENT_SUBMIT_DAYS_AFTER_RETURN)\n        # If today is after deadline, it's a conflict; otherwise hold with escalation.\n        if date_leq(deadline, current_date):\n            blocks.append(\"PAYMENT_EXTENSION_CONFLICT\")\n        else:\n            holds.append(\"PAYMENT_EXTENSION_RISK\")\n        actions.append(\"ESCALATE_PAYMENT_TIMING_TO_DIRECTOR\")\n\n    # Deterministic ordering\n    blocks = sorted(set(blocks))\n    holds = sorted(set(holds))\n    actions = sorted(set(actions))\n\n    overall_status = \"PASS\"\n    if blocks:\n        overall_status = \"BLOCK\"\n    elif holds:\n        overall_status = \"HOLD\"\n\n    return {\n        \"overall_status\": overall_status,\n        \"blocks\": blocks,\n        \"holds\": holds,\n        \"required_actions\": actions\n    }\n",
+  "test_cases": [
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "signed",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": 4,
+          "sponsor_requires_change": true
+        },
+        "marketing_request": {
+          "asset_type": "image_high_res",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": true,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": 9.4
+        }
+      },
+      "expected_output": {
+        "overall_status": "BLOCK",
+        "blocks": [
+          "SESSION_FIDELITY_VIOLATION"
+        ],
+        "holds": [],
+        "required_actions": [
+          "ISSUE_SFVR_TO_CURATOR_AND_DIRECTOR",
+          "PROPOSE_ALT_SESSION_OR_SEEK_AUTHOR_AMENDMENT"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "signed",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": 3,
+          "sponsor_requires_change": true
+        },
+        "marketing_request": {
+          "asset_type": "image_high_res",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [
+          "Image Use: No high-res photos before "
+        ],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": true,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": 9.2
+        }
+      },
+      "expected_output": {
+        "overall_status": "HOLD",
+        "blocks": [],
+        "holds": [
+          "MEDIA_CONSTRAINT_VIOLATION"
+        ],
+        "required_actions": [
+          "HOLD_MARKETING_REQUEST"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "signed",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": 5,
+          "sponsor_requires_change": true
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": true,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": 9.6
+        }
+      },
+      "expected_output": {
+        "overall_status": "PASS",
+        "blocks": [],
+        "holds": [],
+        "required_actions": []
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "signed",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": []
+          }
+        },
+        "session": {
+          "original_panelists": 2,
+          "revised_panelists": null,
+          "sponsor_requires_change": false
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": true,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": null
+        }
+      },
+      "expected_output": {
+        "overall_status": "BLOCK",
+        "blocks": [
+          "MISSING_FORCE_MAJEURE"
+        ],
+        "holds": [],
+        "required_actions": [
+          "ADD_FORCE_MAJEURE_CLAUSE"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "archiving",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": null,
+          "sponsor_requires_change": false
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": false,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": null
+        }
+      },
+      "expected_output": {
+        "overall_status": "BLOCK",
+        "blocks": [
+          "FINANCE_REVIEW_REQUIRED"
+        ],
+        "holds": [],
+        "required_actions": [
+          "REQUEST_FINANCE_REVIEW"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "finalizing",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": null,
+          "sponsor_requires_change": false
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": false,
+          "finance_reviewed": true,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": null
+        }
+      },
+      "expected_output": {
+        "overall_status": "BLOCK",
+        "blocks": [
+          "PAYMENT_SCHEDULE_NOT_SUBMITTED"
+        ],
+        "holds": [],
+        "required_actions": [
+          "SUBMIT_PAYMENT_SCHEDULE"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "invited",
+            "returned_date": null,
+            "signature_date": null,
+            "clauses": []
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": null,
+          "sponsor_requires_change": false
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [
+          "Quotes: Approval required for all uses"
+        ],
+        "finance": {
+          "payment_schedule_submitted": false,
+          "finance_reviewed": false,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": null
+        }
+      },
+      "expected_output": {
+        "overall_status": "HOLD",
+        "blocks": [],
+        "holds": [
+          "MEDIA_APPROVAL_REQUIRED"
+        ],
+        "required_actions": [
+          "REQUEST_AUTHOR_MEDIA_APPROVAL"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "signed",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": null,
+          "sponsor_requires_change": false
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": true,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": true,
+          "brand_consistency_score": 9.3
+        }
+      },
+      "expected_output": {
+        "overall_status": "HOLD",
+        "blocks": [],
+        "holds": [
+          "SPONSORSHIP_CLASSIFICATION_CORRECTION"
+        ],
+        "required_actions": [
+          "CORRECT_SPONSORSHIP_CLASSIFICATIONS"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "signed",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": null,
+          "sponsor_requires_change": false
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": true,
+          "extension_requested": false
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": true,
+          "brand_consistency_score": 9.1
+        }
+      },
+      "expected_output": {
+        "overall_status": "BLOCK",
+        "blocks": [
+          "SPONSORSHIP_LOCKDATE_BREACH"
+        ],
+        "holds": [],
+        "required_actions": [
+          "CORRECT_SPONSORSHIP_CLASSIFICATIONS"
+        ]
+      }
+    },
+    {
+      "input": {
+        "current_date": "2026-04-01",
+        "author": {
+          "author_id": "author",
+          "tier": "Tier 1",
+          "contract": {
+            "stage": "signed",
+            "returned_date": "2026-04-01",
+            "signature_date": "2026-04-01",
+            "clauses": [
+              {
+                "code": "Force Majeure Clause",
+                "text": "FM present"
+              }
+            ]
+          }
+        },
+        "session": {
+          "original_panelists": 3,
+          "revised_panelists": null,
+          "sponsor_requires_change": false
+        },
+        "marketing_request": {
+          "asset_type": "quote",
+          "date_needed": "2026-04-01"
+        },
+        "media_constraints": [],
+        "finance": {
+          "payment_schedule_submitted": true,
+          "finance_reviewed": true,
+          "extension_requested": true
+        },
+        "sponsorship": {
+          "has_incorrect_classifications": false,
+          "brand_consistency_score": 8.95
+        }
+      },
+      "expected_output": {
+        "overall_status": "BLOCK",
+        "blocks": [
+          "BRAND_SCORE_TOO_LOW",
+          "PAYMENT_EXTENSION_CONFLICT"
+        ],
+        "holds": [],
+        "required_actions": [
+          "ESCALATE_PAYMENT_TIMING_TO_DIRECTOR",
+          "RENEGOTIATE_SPONSORSHIP_OR_DECLINE"
+        ]
+      }
+    }
+  ],
+  "timeout_seconds": 120
+}

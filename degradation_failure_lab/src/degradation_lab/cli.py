@@ -27,8 +27,18 @@ def main():
     p = sub.add_parser('evaluation-init'); p.add_argument('--run', required=True)
     p.add_argument('--evaluation-id', default='initial_review')
     p = sub.add_parser('evaluation-validate'); p.add_argument('--file', required=True)
+    p = sub.add_parser('downstream-check', help='Zero-model Harbor/Skill/Git Oracle checks')
+    p.add_argument('--section', choices=('all', 'preflight', 'skills', 'oracle', 'harbor'), default='all')
+    p.add_argument('--run-id')
     args = parser.parse_args()
     root = Path(args.root).resolve()
+    if args.command == 'downstream-check':
+        import sys
+        sys.path.insert(0, str(root))
+        from downstream_eval.checks import run_checks
+        result = run_checks(root, args.section, args.run_id)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return {'PASS': 0, 'FAIL': 1, 'BLOCKED': 2}[result['infra_status']]
     if args.command in ('list','validate'):
         manager = CaseManager(root)
         cases = manager.list_cases()

@@ -320,3 +320,7 @@ python scripts/lab.py aggregate --case case001_qsv_select --out results/aggregat
 - [ ] 执行 `verify --out` 并检查 `verification.json`。
 - [ ] 人工审查 R1–R7，填写并验证 `evaluation` 文件。
 - [ ] 执行 `aggregate`，明确尚未审核的记录。
+
+## P0 下游零模型验证
+
+运行 `python scripts/lab.py downstream-check --section all`。实现、固定版本和未验证边界见 [downstream_eval/README.md](downstream_eval/README.md)。返回码 2 表示 BLOCKED，不能视为通过。该命令不会调用生成模型或 Agent 模型。

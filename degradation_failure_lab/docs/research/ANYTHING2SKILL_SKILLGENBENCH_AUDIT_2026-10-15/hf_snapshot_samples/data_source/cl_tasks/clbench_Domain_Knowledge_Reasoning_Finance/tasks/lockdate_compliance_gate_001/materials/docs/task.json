@@ -1,0 +1,74 @@
+{
+  "task_id": "lockdate_compliance_gate_001",
+  "type": "governance_gate_tool",
+  "question": "Implement a function `solve(input_data)` that acts as a **Lock-date Compliance Gate** for sponsor-driven program changes.\n\nINPUT: a dict with keys:\n- 'current_date': string (ISO 'YYYY-MM-DD') — today's date used for deadline comparisons\n- 'author': object with fields:\n  - 'author_id': string\n  - 'tier': string — author tier label\n  - 'contract': object with fields:\n    - 'stage': string — current contract stage label\n    - 'returned_date': string|null — date contract was returned\n    - 'signature_date': string|null — date contract was signed\n    - 'clauses': array of objects { 'code': string, 'text': string }\n- 'session': object with fields:\n  - 'original_panelists': int — panelist count in original proposal\n  - 'revised_panelists': int|null — panelist count in revised proposal (null if no revision)\n  - 'sponsor_requires_change': boolean — whether sponsor is driving the revision\n- 'marketing_request': object with fields:\n  - 'asset_type': string — requested asset type label\n  - 'date_needed': string (ISO) — when marketing needs the asset\n- 'media_constraints': array of strings — constraint lines from the Media Constraint Log for this author\n- 'finance': object with fields:\n  - 'payment_schedule_submitted': boolean — whether a payment schedule was submitted\n  - 'finance_reviewed': boolean — whether Finance Officer reviewed for cash-flow alignment\n  - 'extension_requested': boolean — whether Finance requested a deadline extension\n- 'sponsorship': object with fields:\n  - 'has_incorrect_classifications': boolean — whether sponsorship deal report has incorrect classifications\n  - 'brand_consistency_score': float|null — projected score for the relevant sponsorship (null if not applicable)\n\nOUTPUT: a dict with keys (shallow, max 2 levels):\n- 'overall_status': string — one of {'PASS','HOLD','BLOCK'}\n- 'blocks': array of short string codes describing blocking issues (stable order)\n- 'holds': array of short string codes describing hold issues (stable order)\n- 'required_actions': array of short string codes describing required next actions (stable order)\n\nRULES (from the document):\n- Enforce Tier 1 session-fidelity: if a revised session violates contractual session parameters, block the change and require a formal session-fidelity memo to the required roles.\n- Enforce media governance: reject/hold marketing asset requests that violate the author’s Media Constraint Log.\n- Enforce sponsorship governance: if sponsorship classifications are incorrect, require corrections before the document’s lock-date rule.\n- Enforce finance governance: do not allow contract finalization/archiving unless Finance Officer has reviewed payment schedules for cash-flow alignment; if Finance requests an extension that conflicts with contractual timing obligations, flag the conflict and require an escalation path.\n- Enforce compliance governance: block finalization if required legal clauses are missing.\n- When constraints conflict (e.g., sponsor-driven change vs contract clause), prioritize contractual/compliance constraints and output a viable resolution path via required_actions.\n\nDeterminism requirement: ordering of 'blocks', 'holds', and 'required_actions' must be stable and deterministic.",
+  "expected_output": {
+    "format": "dict",
+    "key_results": {
+      "overall_status": "PASS|HOLD|BLOCK",
+      "blocks": [
+        "..."
+      ],
+      "holds": [
+        "..."
+      ],
+      "required_actions": [
+        "..."
+      ]
+    }
+  },
+  "info_locations": [
+    {
+      "name": "Constraints for the Author Liaison Agent",
+      "location": "Constraints for the Author Liaison Agent (chunk 4/10)",
+      "description": "Tier 1 session fidelity, media constraint enforcement, payment submission timing."
+    },
+    {
+      "name": "Output Formats",
+      "location": "Output Formats (chunk 5/10)",
+      "description": "Session Fidelity Violation Report recipients and memo nature."
+    },
+    {
+      "name": "Question 2",
+      "location": "Question 2 (chunk 7/10)",
+      "description": "Brand Consistency Score threshold, Force Majeure requirement, Finance review requirement."
+    },
+    {
+      "name": "Question 4",
+      "location": "Question 4 (chunk 9/10)",
+      "description": "Panelist limit clause conflict with sponsor request; finance extension conflict; sponsorship report incorrect classifications."
+    }
+  ],
+  "domain_knowledge_needed": [
+    {
+      "knowledge": "Tier 1 max panelists enforcement and required memo routing",
+      "in_document": true
+    },
+    {
+      "knowledge": "Brand Consistency Score go/no-go threshold",
+      "in_document": true
+    },
+    {
+      "knowledge": "Force Majeure clause required before finalization",
+      "in_document": true
+    },
+    {
+      "knowledge": "Payment submission deadline relative to contract return and finance review gate",
+      "in_document": true
+    }
+  ],
+  "reasoning_steps": [
+    "Detect session revision and evaluate Tier 1 session-fidelity vs contract constraints",
+    "Validate marketing request against media constraints",
+    "Check sponsorship classification correctness and brand score governance",
+    "Check compliance clause completeness (Force Majeure) for finalization eligibility",
+    "Apply finance gates: payment schedule submission, finance review, and extension conflict",
+    "Resolve conflicts by blocking/holding and emitting required action codes",
+    "Compute overall_status from blocks/holds with deterministic ordering"
+  ],
+  "computation_chain_length": 6,
+  "anti_contamination": {
+    "why_not_pretrain": "Correct outputs depend on document-specific thresholds, clause requirements, and governance gates.",
+    "why_skill_helps": "General reasoning helps, but exact constants and precedence come from the document."
+  }
+}

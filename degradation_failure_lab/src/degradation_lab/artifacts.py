@@ -29,7 +29,7 @@ def load_run(root, run_id):
     stages = {}
     if mid:
         # Read from this run only. Do not follow arbitrary stored absolute paths.
-        mid = inside(run, 'SkillBank/.runtime/intermediate_runs/' + Path(mid).name)
+        mid = inside(run, 'SkillBank/.runtime/intermediate_runs/' + Path(mid.replace('\\', '/')).name)
         for name in ('ingest', 'extract', 'compile', 'register'):
             path = mid/name/'result.json'
             stages[name] = read(path) if path.is_file() else {}
