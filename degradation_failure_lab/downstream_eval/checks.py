@@ -81,7 +81,7 @@ def oracle_probes(output):
             'scope': 'independent native Git fixture and raw-state Oracle; not Harbor verifier', 'records': records}
 
 
-def materialize_task(root, config, output):
+def materialize_task(root, config, output, oracle_solution=True):
     template = inside(root, config['task_template'])
     task = output / 'harbor_task'
     shutil.copytree(template, task, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
@@ -94,10 +94,11 @@ def materialize_task(root, config, output):
     for name in ('fixture.py', 'oracle.py'):
         shutil.copyfile(template / name, task / 'tests' / name)
     # This script is exclusively for the native, zero-model oracle Agent probe.
-    solution = task / 'solution'
-    solution.mkdir()
-    (solution / 'solve.sh').write_text('#!/bin/bash\nset -euo pipefail\ncd /work/repo\ngit restore --source=' +
-                                     fixture['commit_a'] + ' --staged --worktree -- target.txt\n', encoding='utf-8', newline='\n')
+    if oracle_solution:
+        solution = task / 'solution'
+        solution.mkdir()
+        (solution / 'solve.sh').write_text('#!/bin/bash\nset -euo pipefail\ncd /work/repo\ngit restore --source=' +
+                                         fixture['commit_a'] + ' --staged --worktree -- target.txt\n', encoding='utf-8', newline='\n')
     return task, fixture
 
 

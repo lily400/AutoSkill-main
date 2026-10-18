@@ -1,8 +1,17 @@
-# P0：Harbor / Terminus-2 零模型接入
+# Harbor / Terminus-2：P0 接入与 P1 真实 Agent 准备
 
 本模块建立“冻结来源 → 已有 canonical Skill → 下游环境 → 确定性判分”的测量基础设施。技能生成仍由现有 `degradation_lab` 调用原版 Anything2Skill；这里不重新生成技能，也不修改官方算法。
 
-本轮唯一任务是 `git-restore-explicit-source-both-v1`。全部入口停在无模型检查：既不运行 Terminus-2 推理，也不运行 A0/A1/Gold 或正式 Benchmark。
+唯一任务是 `git-restore-explicit-source-both-v1`。P0 检查继续禁止模型执行；P1 已完成 A0/A1/Gold 的真实初始化与请求前停止探针，付费推理仍等待用户批准。
+
+P1 最终零模型验收 `p1-ready-008` 三组 PASS：A1 首次请求包含全部 14 份索引，受控终端读取 14/14，三组使用同一实测镜像 ID。受控读取不代表模型自主读取。详见 [P1 准备报告、成本与待批准命令](docs/p1_preparation_report.md)。
+
+```powershell
+# 仅做零模型准备；使用新的唯一 run-id，不会调用付费模型。
+docker exec harbor-p0-control-20261018 python -B scripts/lab.py downstream-prepare --run-id p1-<unique-id>
+```
+
+该入口生成官方 Harbor TrialConfig 并复用原生 Trial；批准后才用官方 `harbor trials start --config` 各执行一次。P1 模型/预算见 `configs/p1_smoke.json`，不改变 `runner.lock.json` 的 P0 禁推理设置。
 
 当前 Docker 实机验收已通过：Harbor 0.24.0 固定提交、92 个冻结依赖、14 份 Skill 容器加载与发现、6 个原生 separate verifier 正反例。Windows 原生依赖安装受 MSVC 缺失影响，已改用 Linux 控制容器。详见 [完整实机报告和命令](docs/docker_validation_2026-10-18.md)。
 

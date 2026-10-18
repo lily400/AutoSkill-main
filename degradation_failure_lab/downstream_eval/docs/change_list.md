@@ -38,3 +38,9 @@
 外部依赖：`.external/harbor-2de4605/` 的12个固定官方文件及provenance，`.external/git-a52a24e/t/t2070-restore.sh`。这些是忽略的受控源码子集，不是安装成功记录。每个依赖文件的来源URL、Git blob SHA和SHA-256见版本锁。没有把整个Harbor仓库复制进研究源码。
 
 宿主文档工作区的暂存/部署/报告脚本仅用于本轮操作，未成为研究框架的第二入口。实际可持续入口仍为 scripts/lab.py，回归测试仍使用 unittest。
+
+## P1 零模型准备补充（2026-10-18）
+
+新增 `downstream_eval/p1.py`、`integration/p1_observer.py`、`configs/p1_smoke.json`、`gold/SKILL.md`、`tests/test_p1.py` 与 `docs/p1_preparation_report.md`。修改原有 `cli.py`、`checks.py`、`integration/skill_install.py`、`integration/terminus_compat.py`、任务 Agent Dockerfile 和本目录 README；仍复用原生 Harbor 工厂、Trial、终端和 separate verifier。完整逐文件作用、测试限制及拟执行命令见 [P1 报告](p1_preparation_report.md)。
+
+`p1-ready-008` 为最终三组请求前停止验收，A0/A1/Gold 全部通过且 API 调用为零；此前失败运行保留。付费配置已生成但未执行，Gold 人工签核待用户确认。官方 Anything2Skill、canonical Skill、Git fixture/Oracle/verifier 源码和原 runner.lock.json 均未改动。

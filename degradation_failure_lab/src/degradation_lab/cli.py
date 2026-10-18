@@ -30,8 +30,17 @@ def main():
     p = sub.add_parser('downstream-check', help='Zero-model Harbor/Skill/Git Oracle checks')
     p.add_argument('--section', choices=('all', 'preflight', 'skills', 'oracle', 'harbor'), default='all')
     p.add_argument('--run-id')
+    p = sub.add_parser('downstream-prepare', help='P1 zero-model preparation; never starts paid inference')
+    p.add_argument('--run-id')
     args = parser.parse_args()
     root = Path(args.root).resolve()
+    if args.command == 'downstream-prepare':
+        import sys
+        sys.path.insert(0, str(root))
+        from downstream_eval.p1 import prepare
+        result = prepare(root, args.run_id)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result['status'] == 'PASS' else 2
     if args.command == 'downstream-check':
         import sys
         sys.path.insert(0, str(root))

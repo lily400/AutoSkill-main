@@ -181,11 +181,18 @@ async def install_remote(environment, staged, remote_root, archive):
     result = await environment.exec(command, timeout_sec=30)
     if result.return_code:
         raise RuntimeError('Remote Skill install failed or destination was nonempty')
+    observed = await remote_hashes(environment, remote_root)
+    if observed != expected:
+        raise ValueError('Remote package ID/file/hash set mismatch')
+    return observed
+
+
+async def remote_hashes(environment, remote_root):
     code = ('import pathlib,hashlib,json; r=pathlib.Path(' + repr(remote_root) + '); '
             'print(json.dumps({p.relative_to(r).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() '
             'for p in r.rglob("*") if p.is_file()},sort_keys=True))')
     encoded = base64.b64encode(code.encode()).decode()
     result = await environment.exec('python3 -c ' + shlex.quote('import base64;exec(base64.b64decode(' + repr(encoded) + '))'), timeout_sec=30)
-    if result.return_code or json.loads(result.stdout) != expected:
-        raise ValueError('Remote package ID/file/hash set mismatch')
-    return expected
+    if result.return_code:
+        raise ValueError('Remote package hash inspection failed')
+    return json.loads(result.stdout)

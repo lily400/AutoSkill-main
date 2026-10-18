@@ -1,7 +1,10 @@
 FROM python:3.13.9-slim-bookworm@sha256:b685a4fa58bb19d1814d78a1ec0f0208f351452724f78b20212c984d6e124a34
 ARG GIT_DEB_VERSION=1:2.39.5-0+deb12u2
+ARG TMUX_DEB_VERSION=3.3a-3
+ARG INOTIFY_TOOLS_DEB_VERSION=3.22.6.0-4
 RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources && apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 install -y --no-install-recommends git=${GIT_DEB_VERSION} bash && rm -rf /var/lib/apt/lists/*
 ENV GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_ATTR_NOSYSTEM=1 GIT_TERMINAL_PROMPT=0
+RUN apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 install -y --no-install-recommends tmux=${TMUX_DEB_VERSION} inotify-tools=${INOTIFY_TOOLS_DEB_VERSION} && rm -rf /var/lib/apt/lists/*
 COPY fixture.py /tmp/build-fixture.py
 RUN python /tmp/build-fixture.py /work/repo > /tmp/build-output.json && rm /tmp/build-fixture.py /tmp/build-output.json
 WORKDIR /work/repo
