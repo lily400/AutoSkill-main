@@ -35,11 +35,30 @@ if ($SendOnce) {
     & docker exec $taskContainer python -B -m downstream_eval.integration.model_connectivity --run-id $RunId
     if ($LASTEXITCODE -ne 0) { throw 'No-request preflight failed. No credential loaded or model request sent.' }
 }
+$taskLeasePrevious = [Environment]::GetEnvironmentVariable('P1_BUDGET_LEASE', 'Process')
+$taskClaimed = $false
+if ($taskMode -eq 'Trial') {
+    $taskClaim = & docker exec --env P1_ALLOW_PAID $taskContainer python -B -m downstream_eval.integration.request_budget begin --config $TrialConfig
+    if ($LASTEXITCODE -ne 0) { throw 'Persistent Trial admission denied. No credential loaded or model request sent.' }
+    $taskLease = ($taskClaim | ConvertFrom-Json).lease
+    [Environment]::SetEnvironmentVariable('P1_BUDGET_LEASE', $taskLease, 'Process')
+    $taskLease = $null
+    $taskClaimed = $true
+}
+try {
 Invoke-WithAutoSkillCredential {
     if ($SendOnce) {
         & docker exec --env ZHIZENGZENG_API_KEY $taskContainer python -B -m downstream_eval.integration.model_connectivity --run-id $RunId --send-once
     } elseif ($taskMode -eq 'Trial') {
-        & docker exec --env ZHIZENGZENG_API_KEY --env P1_ALLOW_PAID $taskContainer harbor trials start --config $TrialConfig
+        $taskNativeErrorPreference = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+        & docker exec --env ZHIZENGZENG_API_KEY --env P1_ALLOW_PAID --env P1_BUDGET_LEASE $taskContainer harbor trials start --config $TrialConfig 2>&1 | ForEach-Object {
+            $taskSafeOutput = ([string]$_).Replace($env:ZHIZENGZENG_API_KEY, '[REDACTED]')
+            $taskSafeOutput = $taskSafeOutput -replace '(?i)Bearer\s+[^\s"<>]+', '[REDACTED]'
+            Write-Output $taskSafeOutput
+        }
+        } finally { $ErrorActionPreference = $taskNativeErrorPreference }
     } else {
         # Real credentials stay on Windows during offline checks; fake-key transfer is covered by the test script.
         $taskCheckCode = 'import json,os; print(json.dumps(dict(controller_persistent_credential_present=bool(os.environ.get(''ZHIZENGZENG_API_KEY'')),new_model_requests=0)))'
@@ -51,4 +70,15 @@ Invoke-WithAutoSkillCredential {
         return
     }
     if ($LASTEXITCODE -ne 0) { throw 'Harbor execution stopped. Inspect the saved result before any separately approved retry.' }
+}
+} finally {
+    try {
+        if ($taskClaimed) {
+            & docker exec --env P1_BUDGET_LEASE $taskContainer python -B -m downstream_eval.integration.request_budget finish --config $TrialConfig
+            if ($LASTEXITCODE -ne 0) { throw 'Trial stop condition reached; no later arm or repeat is allowed.' }
+        }
+    } finally {
+        [Environment]::SetEnvironmentVariable('P1_BUDGET_LEASE', $taskLeasePrevious, 'Process')
+        $taskLeasePrevious = $null
+    }
 }

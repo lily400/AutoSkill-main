@@ -138,6 +138,8 @@ def prepare(root, run_id=None):
     write(output / 'preflight.json', environment)
     if environment['status'] != 'PASS':
         return {'status': 'BLOCKED', 'path': str(output), 'reason': 'Pinned Harbor and Linux Docker are required'}
+    profile['hard_http_budget'] = {'database': '/opt/harbor-venv/p1-budgets/p1-c-20261019-001.sqlite3',
+                                   'per_arm_limit': 6, 'global_limit': 18, 'order': ['Gold', 'A0', 'A1']}
     write(output / 'profile.json', profile)
     write(output / 'runner.lock.json', lock)
     task, fixture = materialize_task(root, pilot, output, oracle_solution=False)

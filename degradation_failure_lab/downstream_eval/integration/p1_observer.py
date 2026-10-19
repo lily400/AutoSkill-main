@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from .skill_install import remote_hashes
 from .model_connectivity import OneRequest
+from .request_budget import Ledger, MeteredTransport, BudgetStop, DATABASE
 
 
 class PreModelStop(BaseException):
@@ -58,6 +59,8 @@ class P1ObservationMixin:
         if self.options.p1_mode is None:
             return
         self._p1 = json.loads(Path(self.options.p1_profile).read_text(encoding='utf-8'))
+        import litellm
+        litellm.telemetry = False
         self._p1_logs = self.logs_dir.parent / 'p1-observer'
         # The native callback only removes top-level keys; provider metadata can repeat credentials.
         logger_factory = self._llm._init_logger_fn
@@ -80,6 +83,7 @@ class P1ObservationMixin:
         self._p1_actor = 'zero_model_probe' if self.options.p1_mode == 'probe' else 'model_tool'
         self._p1_calls = self._p1_input = self._p1_watch_lines = 0
         self._p1_http_attempts = 0
+        self._p1_budget = self._p1_transport = self._p1_http_client = None
         self._p1_pid = None
         self._p1_reads = []
         self._p1_kernel_prefix = []
@@ -107,24 +111,42 @@ class P1ObservationMixin:
                 self._p1_input + estimated > budget['max_input_tokens_total']):
                 self._event('budget', status='exhausted_before_request')
                 raise RuntimeError('P1 request/input token budget exhausted')
+            if self._p1_budget is None:
+                raise RuntimeError('Persistent HTTP budget is not attached')
             self._p1_calls += 1
             self._p1_input += estimated
             self._event('model-dispatch', request_number=self._p1_calls, dispatched=True,
                         estimated_input_tokens_with_reserve=estimated)
+            self._p1_transport.input_estimate = estimated
+            self._p1_transport.last_number = None
             adapter = importlib.import_module('litellm.main').openai_chat_completions
             request = OneRequest(adapter.make_openai_chat_completion_request,
-                                 max_completion_tokens=budget['max_completion_tokens_per_request'])
+                                 max_completion_tokens=budget['max_completion_tokens_per_request'], http_client=self._p1_http_client)
             try:
-                with patch.object(adapter, 'make_openai_chat_completion_request', request.send):
+                import httpx
+                native_send = httpx.AsyncClient.send
+                async def admitted_send(client, *args, **kwargs):
+                    if client is not self._p1_http_client:
+                        raise BudgetStop('HTTP client bypassed the metered transport')
+                    return await native_send(client, *args, **kwargs)
+                with patch.object(adapter, 'make_openai_chat_completion_request', request.send), \
+                     patch.object(httpx.AsyncClient, 'send', admitted_send), \
+                     patch.object(httpx.Client, 'send', side_effect=BudgetStop('Sync HTTP model path forbidden')), \
+                     patch('litellm.aresponses', side_effect=BudgetStop('Alternate model protocol forbidden')):
                     response = await original_call(prompt=prompt, message_history=message_history or [], **call_kwargs)
+                self._p1_budget.response(self._p1_transport.last_number, response.usage)
             except BaseException as error:
+                self._p1_budget.fail(self._p1_transport.last_number, type(error).__name__)
                 self._event('model-errors', error_type=type(error).__name__, usage='unreported; not zero cost')
+                if isinstance(error, Exception):
+                    raise RuntimeError('P1 model request failed: ' + type(error).__name__) from None
                 raise
             finally:
                 self._p1_http_attempts += request.http_attempts
                 self._event('model-http', logical_request_number=self._p1_calls,
-                            http_attempts=request.http_attempts, http_status=request.http_status,
-                            total_http_attempts=self._p1_http_attempts)
+                            sdk_request_hooks=request.http_attempts, http_status=request.http_status,
+                            reserved_attempt=self._p1_transport.last_number,
+                            total_http_attempts=self._p1_budget.snapshot()['counts'][self._p1_manifest['arm']])
             usage = response.usage
             rates = self._p1['price_usd_per_million_tokens']
             fixed_rate_cost = ((usage.prompt_tokens - usage.cache_tokens) * rates['input'] +
@@ -252,6 +274,18 @@ class P1ObservationMixin:
     async def run(self, instruction, environment, context):
         if not getattr(self, '_p1', None):
             return await super().run(instruction, environment, context)
+        if self.options.p1_mode == 'paid':
+            import httpx
+            if self._p1['hard_http_budget']['database'] != DATABASE:
+                raise BudgetStop('Unexpected P1-C budget database')
+            self._p1_budget = Ledger(DATABASE)
+            arm = self._p1_manifest['arm']
+            trial = self.logs_dir.parent.name
+            lease = os.environ.get('P1_BUDGET_LEASE', '')
+            self._p1_budget.attach(arm, trial, lease)
+            self._p1_transport = MeteredTransport(self._p1_budget, arm, trial, lease)
+            self._p1_http_client = httpx.AsyncClient(transport=self._p1_transport, trust_env=False,
+                                                   follow_redirects=False, timeout=self._p1['budget']['request_timeout_sec'])
         stopped = False
         try:
             try:
@@ -273,9 +307,12 @@ class P1ObservationMixin:
             visible_ids = sorted({sid for e in self._p1_tool_events for sid, match in e['full_body_visible_ignoring_terminal_whitespace'].items() if match})
             summary = {'mode': self.options.p1_mode, 'stopped_before_model': stopped,
                        'paid_requests': self._p1_calls, 'logical_model_dispatches': self._p1_calls,
-                       'actual_http_attempts': self._p1_http_attempts, 'estimated_input_reserved': self._p1_input,
+                       'actual_http_attempts': (self._p1_budget.snapshot()['counts'][self._p1_manifest['arm']]
+                                                if self._p1_budget else 0), 'estimated_input_reserved': self._p1_input,
                        'model_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'model_tool'}),
                        'controlled_probe_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'zero_model_probe'}),
                        'full_body_visible_ids_ignoring_terminal_whitespace': visible_ids,
                        'rule_following': 'requires action and Oracle review; not inferred from model self-report'}
             (self._p1_logs / 'p1-summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+            if self._p1_http_client:
+                await self._p1_http_client.aclose()

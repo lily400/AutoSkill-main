@@ -99,7 +99,7 @@ class P1Tests(unittest.TestCase):
             (folder / 'profile.json').write_text(json.dumps(profile))
             (folder / 'manifest.json').write_text(json.dumps({'files': {}, 'metadata': {}, 'staged_root': directory}))
             kwargs = {'p1_mode': 'paid', 'p1_profile': str(folder / 'profile.json'),
-                      'p1_manifest': str(folder / 'manifest.json'), 'max_turns': 8,
+                      'p1_manifest': str(folder / 'manifest.json'), 'max_turns': profile['budget']['max_requests'],
                       'temperature': 0, 'reasoning_effort': 'none', 'enable_summarize': False}
             config = AgentConfig(import_path='downstream_eval.integration.terminus_compat:CompatibleTerminus2',
                                  model_name=profile['model']['name'], kwargs=kwargs)
@@ -114,15 +114,15 @@ class P1Tests(unittest.TestCase):
                  patch('litellm.acompletion', side_effect=AssertionError('Provider must not be called')) as provider:
                 with self.assertRaisesRegex(ValueError, 'controls'):
                     asyncio.run(agent._llm.call(prompt='probe', max_completion_tokens=999))
-                agent._p1_calls = 8
+                agent._p1_calls = profile['budget']['max_requests']
                 with self.assertRaisesRegex(RuntimeError, 'budget'):
                     asyncio.run(agent._llm.call(prompt='probe', max_completion_tokens=2048, num_retries=0, timeout=45))
                 agent._p1_calls = 0
                 provider.side_effect = RuntimeError('transient provider boundary')
-                with self.assertRaisesRegex(RuntimeError, 'transient provider boundary'):
+                with self.assertRaisesRegex(RuntimeError, 'Persistent HTTP budget'):
                     asyncio.run(agent._llm.call(prompt='probe', max_completion_tokens=2048, num_retries=0, timeout=45))
-                self.assertEqual(provider.call_count, 1)
-                self.assertEqual(agent._p1_calls, 1)
+                self.assertEqual(provider.call_count, 0)
+                self.assertEqual(agent._p1_calls, 0)
                 provider.reset_mock()
                 agent.options.p1_mode = 'probe'
                 with self.assertRaises(PreModelStop):

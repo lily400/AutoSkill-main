@@ -38,8 +38,9 @@ def settings(profile):
 
 
 class OneRequest:
-    def __init__(self, sender, max_completion_tokens=16):
+    def __init__(self, sender, max_completion_tokens=16, http_client=None):
         self.sender = sender
+        self.http_client = http_client
         self.max_completion_tokens = max_completion_tokens
         self.attempts = 0
         self.http_attempts = 0
@@ -67,13 +68,16 @@ class OneRequest:
             data.get('temperature') != 0 or data.get('reasoning_effort') != 'none'):
             raise ValueError('Wire parameters differ from the approved request')
         self.attempts += 1
-        http_client = client._client
+        original_client = client._client
+        http_client = self.http_client or original_client
+        client._client = http_client
         previous_hooks = http_client.event_hooks
         try:
             http_client.event_hooks = {'request': [self.before_http], 'response': [self.after_http]}
             result = await self.sender(*args, **kwargs)
         finally:
             http_client.event_hooks = previous_hooks
+            client._client = original_client
         response = result[1]
         usage = response.usage
         self.response = {'returned_model': response.model,
