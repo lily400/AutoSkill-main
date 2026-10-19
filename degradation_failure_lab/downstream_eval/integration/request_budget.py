@@ -12,6 +12,7 @@ import httpx
 
 ORDER = ('Gold', 'A0', 'A1')
 DATABASE = '/opt/harbor-venv/p1-budgets/p1-c-20261019-001.sqlite3'
+RECOVERY_DATABASE = '/opt/harbor-venv/p1-budgets/p1-c-20261019-001-recovery-001.sqlite3'
 
 
 class BudgetStop(BaseException):
@@ -49,6 +50,34 @@ class Ledger:
             db.commit()
         return cls(path)
 
+    @staticmethod
+    def zero_consumption_parent(path):
+        path = Path(path)
+        digest = sha(path)
+        with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True)) as db:
+            if (db.execute('SELECT count(*) FROM attempts').fetchone()[0] != 0 or
+                db.execute("SELECT count(*) FROM arms WHERE state='RUNNING'").fetchone()[0] or
+                db.execute("SELECT state,pid FROM arms WHERE arm='Gold'").fetchone() != ('STOPPED', None) or
+                db.execute('SELECT halt FROM policy').fetchone()[0] != 'TRIAL_STOP_CONDITION'):
+                raise BudgetStop('Recovery requires the stopped, zero-consumption pre-Agent failure')
+            policy = json.loads(db.execute('SELECT data FROM policy').fetchone()[0])
+        if sha(path) != digest:
+            raise BudgetStop('Parent ledger changed during read-only inspection')
+        return {'database': str(path), 'sha256': digest, 'counts': dict.fromkeys(ORDER, 0)}, policy
+
+    @classmethod
+    def create_recovery(cls, path, policy, parent):
+        lineage, original = cls.zero_consumption_parent(parent)
+        if policy.get('scope') != original.get('scope') or policy['budget'] != original['budget']:
+            raise BudgetStop('Recovery cannot obtain a different scope or budget')
+        return cls.create(path, dict(policy, recovered_from=lineage))
+
+    @staticmethod
+    def check_parent(policy):
+        parent = policy.get('recovered_from')
+        if parent and sha(parent['database']) != parent['sha256']:
+            raise BudgetStop('Original ledger changed; cumulative budget cannot be guaranteed')
+
     @contextmanager
     def transaction(self):
         # mode=rw is deliberate: a missing/corrupt ledger must never recreate an empty budget.
@@ -81,6 +110,7 @@ class Ledger:
     def begin(self, arm, trial):
         with self.transaction() as db:
             policy = self.policy(db)
+            self.check_parent(policy)
             for path, expected in policy['files'].items():
                 if sha(path) != expected:
                     raise BudgetStop('Frozen execution file changed')
@@ -101,6 +131,7 @@ class Ledger:
 
     def attach(self, arm, trial, lease):
         with self.transaction() as db:
+            self.check_parent(self.policy(db))
             row = self.owner(db, arm, trial, lease, attached=False)
             if row['pid'] is not None:
                 raise BudgetStop('A process already attached; restarting cannot obtain a new budget')
@@ -109,6 +140,7 @@ class Ledger:
     def reserve(self, arm, trial, lease, input_estimate):
         with self.transaction() as db:
             policy = self.policy(db)
+            self.check_parent(policy)
             if db.execute('SELECT halt FROM policy').fetchone()[0]:
                 raise BudgetStop('Experiment stopped after an unknown or failed request')
             if db.execute('SELECT count(*) FROM attempts').fetchone()[0] >= 18:
@@ -166,7 +198,8 @@ class Ledger:
             attempts = [dict(row) for row in db.execute('SELECT * FROM attempts ORDER BY n')]
             arms = [dict(row) for row in db.execute('SELECT arm,trial,state,pid,evidence FROM arms ORDER BY rowid')]
             halt = db.execute('SELECT halt FROM policy').fetchone()[0]
-        return {'arms': arms, 'attempts': attempts, 'global_reserved_attempts': len(attempts),
+            lineage = self.policy(db).get('recovered_from')
+        return {'recovered_from': lineage, 'arms': arms, 'attempts': attempts, 'global_reserved_attempts': len(attempts),
                 'counts': {arm: sum(a['arm'] == arm for a in attempts) for arm in ORDER},
                 'halt': halt, 'actual_cost': 'UNKNOWN',
                 'count_note': 'Committed transport reservations include unknown pre-send/in-flight outcomes; never refunded.'}
@@ -201,14 +234,28 @@ class MeteredTransport(httpx.AsyncBaseTransport):
         await self.inner.aclose()
 
 
+def ledger_for_profile(profile):
+    path = profile['hard_http_budget']['database']
+    if path not in (DATABASE, RECOVERY_DATABASE) or profile['budget']['max_requests'] != 6:
+        raise BudgetStop('P1-C frozen six-request profile required')
+    ledger = Ledger(path)
+    with ledger.transaction() as db:
+        policy = ledger.policy(db)
+        ledger.check_parent(policy)
+        if path == RECOVERY_DATABASE:
+            parent = policy.get('recovered_from', {})
+            if parent.get('database') != DATABASE or parent.get('counts') != dict.fromkeys(ORDER, 0):
+                raise BudgetStop('Recovery ledger lacks the original zero-consumption allocation')
+    return ledger
+
+
 def trial_context(config_path):
     config = json.loads(Path(config_path).read_text())
     profile_path = Path(config['agent']['kwargs']['p1_profile'])
     profile = json.loads(profile_path.read_text())
-    if profile['hard_http_budget']['database'] != DATABASE or profile['budget']['max_requests'] != 6:
-        raise BudgetStop('P1-C frozen six-request profile required')
+    ledger = ledger_for_profile(profile)
     arm = json.loads(Path(config['agent']['kwargs']['p1_manifest']).read_text())['arm']
-    return config, profile_path.parent, Ledger(DATABASE), arm
+    return config, profile_path.parent, ledger, arm
 
 
 def trial_evidence(config, root, arm):

@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 from .skill_install import remote_hashes
 from .model_connectivity import OneRequest
-from .request_budget import Ledger, MeteredTransport, BudgetStop, DATABASE
+from .request_budget import MeteredTransport, BudgetStop, ledger_for_profile
 
 
 class PreModelStop(BaseException):
@@ -276,9 +276,7 @@ class P1ObservationMixin:
             return await super().run(instruction, environment, context)
         if self.options.p1_mode == 'paid':
             import httpx
-            if self._p1['hard_http_budget']['database'] != DATABASE:
-                raise BudgetStop('Unexpected P1-C budget database')
-            self._p1_budget = Ledger(DATABASE)
+            self._p1_budget = ledger_for_profile(self._p1)
             arm = self._p1_manifest['arm']
             trial = self.logs_dir.parent.name
             lease = os.environ.get('P1_BUDGET_LEASE', '')

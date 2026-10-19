@@ -174,6 +174,38 @@ os._exit(17)
         self.assertTrue(evidence['infra_ok'])
         self.assertFalse(evidence['task_success'])
 
+    def test_zero_consumption_recovery_keeps_parent_immutable_and_caps(self):
+        lease = self.ledger.begin('Gold', 'case-Gold')
+        self.ledger.finish('Gold', 'case-Gold', lease, dict(GOOD, infra_ok=False))
+        original = self.ledger.path.read_bytes()
+        recovered = Ledger.create_recovery(self.root / 'recovery.sqlite3', self.policy, self.ledger.path)
+        with self.assertRaises(FileExistsError):
+            Ledger.create_recovery(recovered.path, self.policy, self.ledger.path)
+        self.ledger = recovered
+        self.test_transport_1_to_6_allowed_7_blocked_18_allowed_19_blocked()
+        self.assertEqual(original, (self.root / 'budget.sqlite3').read_bytes())
+        self.assertEqual(recovered.snapshot()['recovered_from']['counts'], {'Gold': 0, 'A0': 0, 'A1': 0})
+
+    def test_recovery_refuses_consumed_unknown_or_changed_parent(self):
+        lease = self.admit('Gold')
+        number = self.ledger.reserve('Gold', 'case-Gold', lease, 100)
+        self.ledger.fail(number, 'SimulatedCrash')
+        self.ledger.finish('Gold', 'case-Gold', lease, dict(GOOD, infra_ok=False))
+        with self.assertRaises(BudgetStop):
+            Ledger.create_recovery(self.root / 'rejected.sqlite3', self.policy, self.ledger.path)
+        self.assertFalse((self.root / 'rejected.sqlite3').exists())
+        parent = Ledger.create(self.root / 'zero.sqlite3', self.policy)
+        lease = parent.begin('Gold', 'case-Gold')
+        parent.finish('Gold', 'case-Gold', lease, dict(GOOD, infra_ok=False))
+        child = Ledger.create_recovery(self.root / 'child.sqlite3', self.policy, parent.path)
+        lease = child.begin('Gold', 'case-Gold')
+        child.attach('Gold', 'case-Gold', lease)
+        with parent.transaction() as db:
+            db.execute("UPDATE policy SET halt='CHANGED'")
+        with self.assertRaisesRegex(BudgetStop, 'Original ledger changed'):
+            child.reserve('Gold', 'case-Gold', lease, 100)
+        self.assertEqual(child.snapshot()['global_reserved_attempts'], 0)
+
     def test_actual_agent_SDK_path_uses_metered_client_with_fake_transport(self):
         from openai import AsyncOpenAI
         from harbor.agents.factory import AgentFactory
