@@ -1,6 +1,7 @@
 """Opt-in observation around the official agent; no replacement agent loop."""
 import asyncio
 import json
+import importlib
 import os
 import re
 import shlex
@@ -8,8 +9,10 @@ import subprocess
 import time
 from pathlib import Path, PurePosixPath
 from xml.etree import ElementTree
+from unittest.mock import patch
 
 from .skill_install import remote_hashes
+from .model_connectivity import OneRequest
 
 
 class PreModelStop(BaseException):
@@ -34,6 +37,20 @@ def body_visible(body, observation):
     return bool(body) and compact(body) in compact(observation)
 
 
+def redact_credentials(value, api_key):
+    if isinstance(value, dict):
+        return {key: redact_credentials(item, api_key) for key, item in value.items()
+                if str(key).lower().replace('_', '-') not in
+                ('api-key', 'x-api-key', 'authorization', 'proxy-authorization')}
+    if isinstance(value, (list, tuple)):
+        return [redact_credentials(item, api_key) for item in value]
+    if isinstance(value, str):
+        if api_key:
+            value = value.replace(api_key, '[REDACTED]')
+        return re.sub(r'(?i)\bBearer\s+[^\s"\x27<>]+', '[REDACTED]', value)
+    return value
+
+
 class P1ObservationMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,6 +59,17 @@ class P1ObservationMixin:
             return
         self._p1 = json.loads(Path(self.options.p1_profile).read_text(encoding='utf-8'))
         self._p1_logs = self.logs_dir.parent / 'p1-observer'
+        # The native callback only removes top-level keys; provider metadata can repeat credentials.
+        logger_factory = self._llm._init_logger_fn
+
+        def private_logger(logging_path):
+            native_logger = logger_factory(logging_path)
+            def record(data):
+                cleaned = self._llm._clean_value(data)
+                native_logger(redact_credentials(cleaned, self._llm._llm_kwargs.get('api_key')))
+            return record
+
+        self._llm._init_logger_fn = private_logger
         self._p1_manifest = json.loads(Path(self.options.p1_manifest).read_text(encoding='utf-8'))
         if self.model_name != self._p1['model']['name']:
             raise ValueError('P1 model differs from frozen profile')
@@ -51,6 +79,7 @@ class P1ObservationMixin:
             raise ValueError('P1 sampling, turn or summarization settings differ from frozen profile')
         self._p1_actor = 'zero_model_probe' if self.options.p1_mode == 'probe' else 'model_tool'
         self._p1_calls = self._p1_input = self._p1_watch_lines = 0
+        self._p1_http_attempts = 0
         self._p1_pid = None
         self._p1_reads = []
         self._p1_kernel_prefix = []
@@ -82,17 +111,27 @@ class P1ObservationMixin:
             self._p1_input += estimated
             self._event('model-dispatch', request_number=self._p1_calls, dispatched=True,
                         estimated_input_tokens_with_reserve=estimated)
+            adapter = importlib.import_module('litellm.main').openai_chat_completions
+            request = OneRequest(adapter.make_openai_chat_completion_request,
+                                 max_completion_tokens=budget['max_completion_tokens_per_request'])
             try:
-                response = await original_call(prompt=prompt, message_history=message_history or [], **call_kwargs)
-            except Exception as error:
+                with patch.object(adapter, 'make_openai_chat_completion_request', request.send):
+                    response = await original_call(prompt=prompt, message_history=message_history or [], **call_kwargs)
+            except BaseException as error:
                 self._event('model-errors', error_type=type(error).__name__, usage='unreported; not zero cost')
                 raise
+            finally:
+                self._p1_http_attempts += request.http_attempts
+                self._event('model-http', logical_request_number=self._p1_calls,
+                            http_attempts=request.http_attempts, http_status=request.http_status,
+                            total_http_attempts=self._p1_http_attempts)
             usage = response.usage
             rates = self._p1['price_usd_per_million_tokens']
             fixed_rate_cost = ((usage.prompt_tokens - usage.cache_tokens) * rates['input'] +
-                               usage.cache_tokens * rates['cached_input'] + usage.completion_tokens * rates['output']) / 1_000_000 if usage else None
+                               usage.cache_tokens * rates['cached_input'] + usage.completion_tokens * rates['output']) / 1_000_000 if usage and rates else None
             self._event('model-responses', content=response.content, model=response.model_name,
                         fixed_rate_cost_estimate_usd=fixed_rate_cost,
+                        cost_provenance='Configured verified rates if present; LiteLLM cost_usd is a model-map reference, not a provider invoice',
                         usage=({key: getattr(usage, key) for key in
                                 ('prompt_tokens', 'completion_tokens', 'cache_tokens', 'cost_usd')} if usage else None))
             return response
@@ -103,7 +142,10 @@ class P1ObservationMixin:
         # The agent mounts logs_dir; its sibling is private to the Harbor control process.
         self._p1_logs.mkdir(parents=True, exist_ok=True)
         with (self._p1_logs / ('p1-' + name + '.jsonl')).open('a', encoding='utf-8') as stream:
-            stream.write(json.dumps({'time': time.time(), **data}, ensure_ascii=False) + '\n')
+            payload = {'time': time.time(), **data}
+            llm = getattr(self, '_llm', None)
+            api_key = llm._llm_kwargs.get('api_key') if llm else None
+            stream.write(json.dumps(redact_credentials(payload, api_key), ensure_ascii=False) + '\n')
 
     async def setup(self, environment):
         await super().setup(environment)
@@ -230,7 +272,8 @@ class P1ObservationMixin:
                 await self._capture_reads()
             visible_ids = sorted({sid for e in self._p1_tool_events for sid, match in e['full_body_visible_ignoring_terminal_whitespace'].items() if match})
             summary = {'mode': self.options.p1_mode, 'stopped_before_model': stopped,
-                       'paid_requests': self._p1_calls, 'estimated_input_reserved': self._p1_input,
+                       'paid_requests': self._p1_calls, 'logical_model_dispatches': self._p1_calls,
+                       'actual_http_attempts': self._p1_http_attempts, 'estimated_input_reserved': self._p1_input,
                        'model_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'model_tool'}),
                        'controlled_probe_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'zero_model_probe'}),
                        'full_body_visible_ids_ignoring_terminal_whitespace': visible_ids,

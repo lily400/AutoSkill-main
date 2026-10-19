@@ -14,10 +14,25 @@ sys.path[:0] = [str(LAB), str(LAB / 'src')]
 from degradation_lab.io import read
 from downstream_eval.p1 import fairness_identity, gold_check
 from downstream_eval.checks import materialize_task
-from downstream_eval.integration.p1_observer import accessed_skills, body_visible, PreModelStop, P1ObservationMixin
+from downstream_eval.integration.p1_observer import accessed_skills, body_visible, PreModelStop, P1ObservationMixin, redact_credentials
 
 
 class P1Tests(unittest.TestCase):
+    def test_recursive_credential_redaction_before_native_and_observer_logs(self):
+        secret = 'FAKE_ONLY_REDACTION_FIXTURE'
+        payload = {'api_key': secret, 'nested': {'headers': {'Authorization': 'Bearer ' + secret,
+                    'X-API-KEY': secret, 'safe': 'value'}, 'api_key': secret},
+                   'text': 'Bearer arbitrary-token ' + secret, 'model': 'fixed',
+                   'items': [{'proxy_authorization': 'hidden', 'keep': 0}]}
+        cleaned = redact_credentials(payload, secret)
+        serialized = json.dumps(cleaned)
+        self.assertNotIn(secret, serialized)
+        self.assertNotIn('arbitrary-token', serialized)
+        self.assertNotIn('authorization', serialized.lower())
+        self.assertEqual(cleaned['nested']['headers'], {'safe': 'value'})
+        self.assertEqual(cleaned['model'], 'fixed')
+        self.assertEqual(cleaned['items'], [{'keep': 0}])
+
     def test_fairness_detects_model_budget_task_and_tool_changes(self):
         base = {'task': {'path': '/same'}, 'environment': {'type': 'docker'},
                 'agent': {'model_name': 'fixed', 'skills': ['a'], 'kwargs': {'max_turns': 8, 'p1_manifest': 'a'}}}

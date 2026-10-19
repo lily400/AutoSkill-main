@@ -1,5 +1,9 @@
 # Harbor / Terminus-2：P0 接入与 P1 真实 Agent 准备
 
+凭据自动加载与首次设置见 [Windows DPAPI 凭据说明](docs/p1_credentials.md)；自动加载不批准付费请求。
+
+当前供应商配置为智增增，凭据变量为 `ZHIZENGZENG_API_KEY`。2026-10-19 容器内唯一一次最小请求返回 HTTP 401；没有启动三组实验，也没有修改授权门禁。第三方实际费率尚未核实，OpenAI 价格仅作参考。见 [连通性检查、价格核查与剩余阻断](docs/p1_connectivity_2026-10-19.md)。历史 `p1-ready-008` 配置不可直接当作智增增配置复用。
+
 本模块建立“冻结来源 → 已有 canonical Skill → 下游环境 → 确定性判分”的测量基础设施。技能生成仍由现有 `degradation_lab` 调用原版 Anything2Skill；这里不重新生成技能，也不修改官方算法。
 
 唯一任务是 `git-restore-explicit-source-both-v1`。P0 检查继续禁止模型执行；P1 已完成 A0/A1/Gold 的真实初始化与请求前停止探针，付费推理仍等待用户批准。

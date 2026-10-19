@@ -1,10 +1,12 @@
 """Prepare native Harbor trials and run request-before-stop checks; never pays."""
 import asyncio
+from contextlib import asynccontextmanager
 import hashlib
 import json
 import os
 import re
 import shlex
+import subprocess
 import tempfile
 import uuid
 from pathlib import Path
@@ -55,9 +57,31 @@ async def zero_probe(config, expected_count):
     value['trial_name'] += '-zero'
     value['trials_dir'] = str(Path(value['trials_dir']).parent / 'zero_model_trials')
     parsed = TrialConfig.model_validate(value)
+    profile = read(Path(value['agent']['kwargs']['p1_profile']))
+    verifier_images = []
+    original_verifier_env = Trial._separate_verifier_env
+
+    @asynccontextmanager
+    async def observe_verifier(trial, *args, **kwargs):
+        async with original_verifier_env(trial, *args, **kwargs) as environment:
+            container = await environment._run_docker_compose_command(['ps', '-q', 'main'])
+            inspected = await asyncio.to_thread(subprocess.run,
+                ['docker', 'inspect', container.stdout.strip(), '--format', '{{.Image}}'],
+                capture_output=True, check=True)
+            image_id = inspected.stdout.decode().strip()
+            expected = profile.get('frozen_verifier_image_id')
+            if expected and image_id != expected:
+                raise RuntimeError('P1 verifier image differs from the frozen image')
+            frozen = 'harbor-p1-verifier:sha256-' + image_id.split(':')[-1]
+            await asyncio.to_thread(subprocess.run, ['docker', 'tag', image_id, frozen],
+                                    capture_output=True, check=True)
+            verifier_images.append({'image_id': image_id, 'frozen_image': frozen})
+            yield environment
+
     # Independent tripwire: no fake model response can make this probe pass.
     with patch('litellm.acompletion', side_effect=AssertionError('Model API forbidden')) as completion, \
-         patch('litellm.aresponses', side_effect=AssertionError('Model API forbidden')) as responses:
+         patch('litellm.aresponses', side_effect=AssertionError('Model API forbidden')) as responses, \
+         patch.object(Trial, '_separate_verifier_env', observe_verifier):
         trial = await Trial.create(parsed)
         result = await trial.run()
         api_calls = completion.call_count + responses.call_count
@@ -86,11 +110,13 @@ async def zero_probe(config, expected_count):
           len(summary.get('full_body_visible_ids_ignoring_terminal_whitespace', [])) == expected_count and
           raw.get('verifier_environment_mode') == 'separate' and
           (raw.get('verifier_result') or {}).get('rewards') == {'reward': 0.0} and
-          len(oracle.get('assertion_results', {})) == 9 and oracle.get('reason') is None)
+          len(oracle.get('assertion_results', {})) == 9 and oracle.get('reason') is None and len(verifier_images) == 1)
     return {'status': 'PASS' if ok else 'FAIL', 'execution_kind': 'zero_model_pre_request_probe',
             'model_api_calls': api_calls, 'native_trial_path': str(trial.paths.trial_dir),
             'agent_class': type(trial.agent).__name__, 'summary': summary,
             'environment_image_id': isolated.get('environment_image_id'), 'frozen_image': isolated.get('frozen_image'),
+            'verifier_image_id': verifier_images[0]['image_id'] if len(verifier_images) == 1 else None,
+            'frozen_verifier_image': verifier_images[0]['frozen_image'] if len(verifier_images) == 1 else None,
             'initial_request_index_complete': index_in_prompt, 'initial_request_input_token_estimate_with_reserve': first_input,
             'native_exception': raw.get('exception_info'),
             'verifier_environment_mode': raw.get('verifier_environment_mode'),
@@ -175,28 +201,36 @@ def prepare(root, run_id=None):
         if arm == 'A0' and reports[arm]['status'] == 'PASS':
             profile['frozen_agent_image_id'] = reports[arm]['environment_image_id']
             profile['frozen_agent_image'] = reports[arm]['frozen_image']
+            profile['frozen_verifier_image_id'] = reports[arm]['verifier_image_id']
+            profile['frozen_verifier_image'] = reports[arm]['frozen_verifier_image']
             write(output / 'profile.json', profile)
             task_toml = task / 'task.toml'
             text = task_toml.read_text(encoding='utf-8').replace('[environment]\n', '[environment]\ndocker_image = "' + profile['frozen_agent_image'] + '"\n')
+            text = text.replace('[verifier.environment]\n', '[verifier.environment]\ndocker_image = "' + profile['frozen_verifier_image'] + '"\n')
             task_toml.write_text(text, encoding='utf-8', newline='\n')
     image_ids = {arm: report['environment_image_id'] for arm, report in reports.items()}
     image_consistent = len(set(image_ids.values())) == 1 and all(image_ids.values())
-    write(output / 'fairness.json', {'status': 'PASS' if image_consistent else 'FAIL', 'shared_config_hashes': identities,
+    verifier_ids = {arm: report['verifier_image_id'] for arm, report in reports.items()}
+    verifier_consistent = len(set(verifier_ids.values())) == 1 and all(verifier_ids.values())
+    write(output / 'fairness.json', {'status': 'PASS' if image_consistent and verifier_consistent else 'FAIL', 'shared_config_hashes': identities,
           'fixture': fixture, 'task_files': inventory(task), 'expected_skill_counts': {'A0': 0, 'A1': 14, 'Gold': 1},
           'instruction_sha256': sha256(task / 'instruction.md'), 'independent_environments': True,
-          'actual_environment_image_ids': image_ids, 'frozen_image': profile.get('frozen_agent_image')})
+          'actual_environment_image_ids': image_ids, 'frozen_image': profile.get('frozen_agent_image'),
+          'actual_verifier_image_ids': verifier_ids, 'frozen_verifier_image': profile.get('frozen_verifier_image')})
     rates = profile['price_usd_per_million_tokens']
-    per_arm = (budget['max_input_tokens_total'] * rates['input'] + budget['max_requests'] * budget['max_completion_tokens_per_request'] * rates['output']) / 1_000_000
-    result = {'status': 'PASS' if image_consistent and all(r['status'] == 'PASS' for r in reports.values()) else 'FAIL',
+    per_arm = ((budget['max_input_tokens_total'] * rates['input'] + budget['max_requests'] * budget['max_completion_tokens_per_request'] * rates['output']) / 1_000_000) if rates else None
+    result = {'status': 'PASS' if image_consistent and verifier_consistent and all(r['status'] == 'PASS' for r in reports.values()) else 'FAIL',
               'execution_kind': 'zero_model_preparation_only', 'path': str(output),
               'real_agent_execution': 'AWAITING_USER_APPROVAL', 'model_api_calls': 0,
               'api_key_present': bool(os.environ.get(model['api_key_environment_variable'])),
               'model': model, 'arms': reports, 'gold_review': gold_review,
-              'estimated_budget_cost_usd_all_three': per_arm * 3,
+              'estimated_budget_cost_usd_all_three': per_arm * 3 if per_arm is not None else None,
+              'pricing_status': profile.get('pricing_status', 'fixed_reference_rates'),
               'cost_note': 'Token-budget estimate; actual provider usage, unreported failed requests and taxes are not verified',
               'proposed_commands': {arm: ['harbor', 'trials', 'start', '--config', str(output / 'configs' / (arm + '.json'))] for arm in profile['arms']},
               'remaining_blockers': ['Explicit user approval for paid inference', 'Human sign-off on Gold rule'] +
-                                    ([] if os.environ.get(model['api_key_environment_variable']) else ['OPENAI_API_KEY is absent from control process'])}
+                                    ([] if os.environ.get(model['api_key_environment_variable']) else [model['api_key_environment_variable'] + ' is absent from control process']) +
+                                    ([] if rates else ['Provider account tariff is unverified; no actual budget cost calculated'])}
     write(output / 'result.json', result)
     write(output / 'artifact_manifest.json', inventory(output))
     return {'status': result['status'], 'path': str(output), 'model_api_calls': 0,
