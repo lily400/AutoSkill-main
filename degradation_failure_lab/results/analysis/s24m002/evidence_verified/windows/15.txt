@@ -1,0 +1,54 @@
+FEED_STORAGES
+Default: `{}`
+
+A dict containing additional feed storage backends supported by your project.
+The keys are URI schemes and the values are paths to storage classes.
+
+FEED_STORAGE_FTP_ACTIVE
+Default: `False`
+
+Whether to use the active connection mode when exporting feeds to an FTP server
+(`True`) or use the passive connection mode instead (`False`, default).
+
+For information about FTP connection modes, see [What is the difference between
+active and passive FTP?](https://stackoverflow.com/a/1699163).
+
+FEED_STORAGE_S3_ACL
+Default: `''` (empty string)
+
+A string containing a custom ACL for feeds exported to Amazon S3 by your project.
+
+For a complete list of available values, access the [Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl) section on Amazon S3 docs.
+
+FEED_STORAGES_BASE
+Default:
+
+```
+{
+    "": "scrapy.extensions.feedexport.FileFeedStorage",
+    "file": "scrapy.extensions.feedexport.FileFeedStorage",
+    "stdout": "scrapy.extensions.feedexport.StdoutFeedStorage",
+    "s3": "scrapy.extensions.feedexport.S3FeedStorage",
+    "ftp": "scrapy.extensions.feedexport.FTPFeedStorage",
+}
+```
+
+A dict containing the built-in feed storage backends supported by Scrapy. You
+can disable any of these backends by assigning `None` to their URI scheme in
+`FEED_STORAGES`. E.g., to disable the built-in FTP storage backend
+(without replacement), place this in your `settings.py`:
+
+```
+FEED_STORAGES = {
+    "ftp": None,
+}
+```
+
+FEED_EXPORTERS
+Default: `{}`
+
+A dict containing additional exporters supported by your project. The keys are
+serialization formats and the values are paths to [Item exporter](exporters.html#topics-exporters) classes.
+
+FEED_EXPORTERS_BASE
+Default:

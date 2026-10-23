@@ -115,11 +115,26 @@ class ExperimentRunner:
         write(target/'status.json', {'state':'PREPARED', 'real_generation':False, 'updated_at':utc()})
         return target
 
-    def run(self, case_id, condition_id, run_id=None):
-        _, _, _, config = self.resolve(case_id, condition_id)
+    def run(self, case_id, condition_id, run_id=None, resume_from=None):
+        if resume_from:
+            from .artifacts import resolve_run
+            identity, parent = resolve_run(self.root, resume_from)
+            if (identity['case_id'], identity['condition_id']) != (case_id, condition_id):
+                raise ValueError('Resume case/condition mismatch')
+            bundle, config = {'case':read(parent/'case.json')}, read(parent/'config.json')
+            validate_config(config)
+        else:
+            bundle, _, _, config = self.resolve(case_id, condition_id)
+        gate_path = bundle['case'].get('execution_gate')
+        if gate_path and read(inside(self.root, gate_path)).get('status') != 'PASS':
+            raise RuntimeError('BLOCKED: execution gate has not passed: ' + gate_path)
         if not os.environ.get(config['credential_env']):
             raise RuntimeError('BLOCKED: set environment variable ' + config['credential_env'])
-        target = self.prepare(case_id, condition_id, run_id)
+        if resume_from:
+            from .resume import prepare_resume
+            target = prepare_resume(self.root, resume_from, run_id)
+        else:
+            target = self.prepare(case_id, condition_id, run_id)
         from .adapter import execute
         try:
             code = execute(target)

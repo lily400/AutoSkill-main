@@ -1,0 +1,35 @@
+--- flask_json.md
++++ flask_json.md
+@@ -13,10 +13,6 @@
+ To implement a provider for a specific library, subclass this base
+ class and implement at least :meth:`dumps` and :meth:`loads`. All
+ other methods have default implementations.
+-
+-To use a different provider, either subclass ``Flask`` and set
+-:attr:`~flask.Flask.json_provider_class` to a provider class, or set
+-:attr:`app.json <flask.Flask.json>` to an instance of the class.
+ 
+ :param app: An application instance. This will be stored as a
+     :class:`weakref.proxy` on the :attr:`_app` attribute.
+@@ -209,10 +205,6 @@
+ json_provider_class: type[JSONProvider] = DefaultJSONProvider
+ ```
+ 
+-A subclass of :class:`~flask.json.provider.JSONProvider`. An
+-instance is created and assigned to :attr:`app.json` when creating
+-the app.
+-
+ The default, :class:`~flask.json.provider.DefaultJSONProvider`, uses
+ Python's built-in :mod:`json` library. A different provider can use
+ a different JSON library.
+@@ -228,10 +220,6 @@
+ Provides access to JSON methods. Functions in ``flask.json``
+ will call methods on this provider when the application context
+ is active. Used for handling JSON requests and responses.
+-
+-An instance of :attr:`json_provider_class`. Can be customized by
+-changing that attribute on a subclass, or by assigning to this
+-attribute afterwards.
+ 
+ The default, :class:`~flask.json.provider.DefaultJSONProvider`,
+ uses Python's built-in :mod:`json` library. A different provider

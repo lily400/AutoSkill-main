@@ -271,12 +271,15 @@ class P1ObservationMixin:
         self._event('tool-actions', **event)
         return result
 
+    def _budget_ledger(self):
+        return ledger_for_profile(self._p1)
+
     async def run(self, instruction, environment, context):
         if not getattr(self, '_p1', None):
             return await super().run(instruction, environment, context)
         if self.options.p1_mode == 'paid':
             import httpx
-            self._p1_budget = ledger_for_profile(self._p1)
+            self._p1_budget = self._budget_ledger()
             arm = self._p1_manifest['arm']
             trial = self.logs_dir.parent.name
             lease = os.environ.get('P1_BUDGET_LEASE', '')

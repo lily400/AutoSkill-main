@@ -28,6 +28,9 @@ class SourceManager:
         path = inside(self.root, relative)
         if sha256(path) != source['sha256']: raise ValueError('Source hash mismatch: ' + source['source_id'])
         if 'bytes' in source and path.stat().st_size != source['bytes']: raise ValueError('Source byte count mismatch')
+        provenance = source.get('provenance')
+        if provenance and sha256(inside(self.root, provenance['file'])) != provenance['sha256']:
+            raise ValueError('Source preparation provenance changed')
         if source['classification'] == 'OFFICIAL_PAPER_DATA' and not source['paper_snapshot_verified']:
             raise ValueError('Paper snapshot must be explicitly verified')
         if source['classification'] != 'CUSTOM_TEST_DATA':
@@ -100,6 +103,8 @@ class CaseManager:
             else:
                 if not Path(item['path']).as_posix().startswith('data/condition_inputs/'):
                     raise ValueError('Degraded input must live under data/condition_inputs')
-                if item['sha256'] == source['sha256']:
-                    raise ValueError('Degraded input must differ from original; duplicated clean bytes are not a degradation')
+        if condition['kind'] == 'degraded' and all(
+            item['sha256'] == self.sources.sources[item['source_id']]['sha256']
+            for item in manifest['inputs']):
+            raise ValueError('Degraded input must differ from original; duplicated clean bytes are not a degradation')
         return condition, manifest

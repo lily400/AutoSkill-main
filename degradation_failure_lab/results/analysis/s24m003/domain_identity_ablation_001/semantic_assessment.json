@@ -1,0 +1,70 @@
+{
+  "method": "人工逐字段阅读原始候选及原版Plan本地接受结果；未调用模型评审；关键词只作证据定位，不作自动语义评分。",
+  "preregistered_metrics_sha256": "2a89f7e2753e324b46f4a2402e84a5257c893d4904a21739b4eb68db1025cdda",
+  "A": {
+    "raw_candidates": 0,
+    "native_accepted": 0,
+    "ftp_default_overwrite_true": "NO_CANDIDATE",
+    "explicit_false_appends": "NO_CANDIDATE",
+    "appe_exception": "NO_CANDIDATE",
+    "wrong_backend_generalization": "NOT_APPLICABLE_NO_CANDIDATE",
+    "complete_target_rule": false,
+    "candidates": []
+  },
+  "B": {
+    "raw_candidates": 3,
+    "native_accepted": 3,
+    "ftp_default_overwrite_true": "EXPLICIT_CORRECT",
+    "explicit_false_appends": "NOT_EXPLICIT_NOT_A_FALSE_ASSERTION",
+    "appe_exception": "EXPLICIT_CORRECT",
+    "wrong_backend_generalization": "NO_EXPLICIT_ERROR_OBSERVED",
+    "complete_target_rule": false,
+    "reason": "候选2明确写FTP默认True（覆盖）并保留部分FTP服务器不支持APPE追加；但其False（追加）说明仅明确归于本地文件系统，没有说明FTP显式设置overwrite=False时如何追加。其他候选也没有补足该对应关系。不能从标题或源码规则替候选补写语义。",
+    "candidates": [
+      {
+        "slot": 1,
+        "name": "配置 Feed 导出定义",
+        "asset_type": "session_skill",
+        "accepted_by_native_plan": true,
+        "evidence_span_hint": "The following is a list of the accepted keys and the setting that is used as a fallback value",
+        "evidence_pointer": "live/B/response.raw.json -> choices[0].message.content -> skills[0]",
+        "description_verbatim": "为 Scrapy feed 导出配置一个或多个 feed 定义，按接受键（format、encoding、fields、item_classes、item_filter、indent、overwrite、store_empty、uri_params、postprocessing 等）逐项设定，未提供时回退到对应全局设置。适用于需要把抓取到的 item 序列化并写入本地文件、FTP、S3、GCS 或标准输出的场景。",
+        "ftp_default_overwrite_true": "NOT_EXPRESSED",
+        "explicit_false_appends": "NOT_EXPRESSED",
+        "appe_exception": "NOT_EXPRESSED",
+        "wrong_backend_generalization": "NO_FTP_RULE_ASSERTION",
+        "complete_target_rule": false
+      },
+      {
+        "slot": 2,
+        "name": "按存储后端确定 overwrite 语义",
+        "asset_type": "micro_skill",
+        "accepted_by_native_plan": true,
+        "evidence_span_hint": "overwrite: whether to overwrite the file if it already exists",
+        "evidence_pointer": "live/B/response.raw.json -> choices[0].message.content -> skills[1]",
+        "description_verbatim": "根据所选存储后端决定 overwrite 取值：本地文件系统默认 False（追加），FTP 默认 True（覆盖，但部分服务器不支持 APPE 追加），S3 与 GCS 默认 True 且不支持追加，标准输出默认 False 且不支持覆盖。用于避免因追加/覆盖语义不符导致数据丢失或写入失败。",
+        "ftp_default_overwrite_true": "EXPLICIT_CORRECT",
+        "explicit_false_appends": "NOT_EXPLICIT_NOT_A_FALSE_ASSERTION",
+        "appe_exception": "EXPLICIT_CORRECT",
+        "wrong_backend_generalization": "NO_EXPLICIT_ERROR_OBSERVED",
+        "complete_target_rule": false
+      },
+      {
+        "slot": 3,
+        "name": "配置导出后处理插件链",
+        "asset_type": "micro_skill",
+        "accepted_by_native_plan": true,
+        "evidence_span_hint": "postprocessing: list of plugins to use for post-processing",
+        "evidence_pointer": "live/B/response.raw.json -> choices[0].message.content -> skills[2]",
+        "description_verbatim": "通过 postprocessing 键为 feed 指定后处理插件列表，插件按列表顺序依次执行；可选用内置插件或自定义插件。用于在序列化输出前后对 item 或文件做额外加工。",
+        "ftp_default_overwrite_true": "NOT_EXPRESSED",
+        "explicit_false_appends": "NOT_EXPRESSED",
+        "appe_exception": "NOT_EXPRESSED",
+        "wrong_backend_generalization": "NO_FTP_RULE_ASSERTION",
+        "complete_target_rule": false
+      }
+    ]
+  },
+  "scope": "只检查Plan候选中实际表达的语义；不推断Expand、最终SKILL.md、Agent理解或任务判分结果。",
+  "semantic_omission_is_not_native_schema_failure": true
+}

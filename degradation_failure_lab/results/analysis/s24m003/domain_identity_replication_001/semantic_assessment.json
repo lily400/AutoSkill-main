@@ -1,0 +1,74 @@
+{
+  "method": "人工逐字段阅读原始候选与原版Plan接受记录；不使用模型评审，不以标题或关键词命中作语义评分。",
+  "metrics_sha256": "2a89f7e2753e324b46f4a2402e84a5257c893d4904a21739b4eb68db1025cdda",
+  "A": {
+    "raw_candidate_count": 0,
+    "native_accepted_count": 0,
+    "ftp_default_overwrite_true": "NO_CANDIDATE",
+    "ftp_explicit_false_appends": "NO_CANDIDATE",
+    "some_ftp_servers_appe_exception": "NO_CANDIDATE",
+    "complete_target_rule": false,
+    "candidates": []
+  },
+  "B": {
+    "raw_candidate_count": 3,
+    "native_accepted_count": 3,
+    "ftp_default_overwrite_true": "EXPLICIT_CORRECT_SEMANTICS",
+    "ftp_explicit_false_appends": "NOT_EXPLICIT_AND_APPEND_CAPABILITY_INCORRECTLY_DENIED",
+    "some_ftp_servers_appe_exception": "LOST_AND_REPLACED_BY_UNCONDITIONAL_NO_APPEND",
+    "wrong_backend_generalization": true,
+    "complete_target_rule": false,
+    "candidates": [
+      {
+        "slot": 1,
+        "name": "配置 Feed 导出定义",
+        "asset_type": "session_skill",
+        "description_verbatim": "为 Scrapy feed 导出配置一个或多个 feed 定义，按 format、encoding、fields、overwrite、store_empty、postprocessing 等键组装导出参数，并回退到对应全局设置。适用于需要把抓取到的 item 输出到文件、FTP、S3、GCS 或标准输出时。",
+        "evidence_span_hint": "The following is a list of the accepted keys and the setting that is used as a fallback value",
+        "native_accepted": true,
+        "evidence_pointer": "live/B/response.raw.json -> choices[0].message.content -> skills[0]",
+        "ftp_default_overwrite_true": "NOT_EXPRESSED",
+        "ftp_explicit_false_appends": "NOT_EXPRESSED",
+        "some_ftp_servers_appe_exception": "NOT_EXPRESSED",
+        "reason": "全部字段未具体表达FTP默认值、FTP显式False追加或部分FTP服务器APPE条件；仅提及配置/overwrite不计完整规则。",
+        "complete_target_rule": false
+      },
+      {
+        "slot": 2,
+        "name": "按存储后端设置 overwrite 策略",
+        "asset_type": "micro_skill",
+        "description_verbatim": "根据目标存储后端选择 overwrite 默认值：本地文件系统与标准输出默认不覆盖，FTP/S3/GCS 默认覆盖且不支持追加。适用于配置导出目标时避免意外覆盖或追加失败。",
+        "evidence_span_hint": "overwrite: whether to overwrite the file if it already exists",
+        "native_accepted": true,
+        "evidence_pointer": "live/B/response.raw.json -> choices[0].message.content -> skills[1]",
+        "ftp_default_overwrite_true": "EXPLICIT_CORRECT_SEMANTICS",
+        "ftp_explicit_false_appends": "NOT_EXPLICIT_AND_APPEND_CAPABILITY_INCORRECTLY_DENIED",
+        "some_ftp_servers_appe_exception": "LOST_AND_REPLACED_BY_UNCONDITIONAL_NO_APPEND",
+        "reason": "实际description明确“FTP/S3/GCS 默认覆盖且不支持追加”。默认覆盖等价overwrite=True，无需出现字面True；但把FTP一概称为不支持追加，与源文False表示追加及仅部分FTP服务器不支持APPE的条件不符。",
+        "complete_target_rule": false
+      },
+      {
+        "slot": 3,
+        "name": "Feed 导出键与回退设置参考",
+        "asset_type": "knowledge_reference",
+        "description_verbatim": "列出 feed 定义可接受的键及其回退的全局设置，包括 format 为必填无回退、batch_item_count、encoding、fields、item_classes、item_filter、indent、item_export_kwargs、overwrite、store_empty、uri_params、postprocessing。适用于查阅导出配置项含义与默认值。",
+        "evidence_span_hint": "accepted keys and the setting that is used as a fallback value",
+        "native_accepted": true,
+        "evidence_pointer": "live/B/response.raw.json -> choices[0].message.content -> skills[2]",
+        "ftp_default_overwrite_true": "NOT_EXPRESSED",
+        "ftp_explicit_false_appends": "NOT_EXPRESSED",
+        "some_ftp_servers_appe_exception": "NOT_EXPRESSED",
+        "reason": "全部字段未具体表达FTP默认值、FTP显式False追加或部分FTP服务器APPE条件；仅提及配置/overwrite不计完整规则。",
+        "complete_target_rule": false
+      }
+    ]
+  },
+  "scope": "只评估Plan候选实际表达；没有生成完整Skill或运行Agent。Plan接受并不验证规则语义正确性。",
+  "previous_vs_current": {
+    "candidate_presence_difference_reproduced": true,
+    "same_candidate_text_reproduced": false,
+    "previous_B": "默认覆盖和部分FTP服务器APPE例外正确，FTP显式False追加未明确。",
+    "current_B": "默认覆盖正确；FTP被与S3/GCS合并为不支持追加，丢失部分服务器限定和APPE例外。",
+    "complete_target_rule_demonstrated_in_either_round": false
+  }
+}

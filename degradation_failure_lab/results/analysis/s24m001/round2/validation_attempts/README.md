@@ -1,0 +1,1 @@
+这些是本轮测试开发过程的失败/中间记录，不是验收结果。最终记录为 baseline_ok（预期缺陷复现）、patched_ok（30/30）、probe_contract（9/9）。另一次 sandbox TemporaryDirectory 路径尝试在清理时遭遇 WinError 5，未能写出 tests.json；该轮不计通过。最终仅改变测试临时目录到当前可写工作目录，没有修改系统权限或官方 writer。

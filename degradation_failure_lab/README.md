@@ -68,7 +68,7 @@ if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
 }
 ```
 
-仅 `run` 会调用付费 API。模型名称和预算以 `configs/generation/deepseek_flash.json` 为准，具体费用不能仅凭 Token 数量推算。
+`run` 和 `resume` 会调用付费 API。`run` 使用当前生成配置及案例覆盖；`resume` 沿用中断运行冻结的配置，并继承累计额度。具体费用不能仅凭 Token 数量推算。
 
 ## 3. 命令速查：要做什么，用哪条？
 
@@ -79,6 +79,8 @@ if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
 | 检查运行计划                   | `python scripts/lab.py plan --case case001_qsv_select --condition clean --repeat 1` | 否                 |
 | 运行离线单元测试               | `python -m unittest discover -s tests -v`                    | 否                 |
 | **真正生成技能**               | `python scripts/lab.py run --case case001_qsv_select --condition clean --repeat 1` | **是**             |
+| **Scrapy 完整重跑** | `python -B scripts/lab.py run --case case024_scrapy --condition clean --repeat 1 --run-id s24n001` | **是，从头调用** |
+| **Scrapy 断点恢复** | `python -B scripts/lab.py resume --run s24m005 --run-id s24r005` | **是，仅继续未完成部分** |
 | 检查已有运行                   | `python scripts/lab.py verify --run <run_id>`                | 否                 |
 | **导出 4 阶段分析数据**        | `python scripts/lab.py verify --run <run_id> --out results/exports/<run_id>` | 否                 |
 | 创建待审核的规则评价文件       | `python scripts/lab.py evaluation-init --run <run_id> --evaluation-id review001` | 否                 |
@@ -86,6 +88,73 @@ if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
 | 汇总运行与规则审核             | `python scripts/lab.py aggregate --case case001_qsv_select --out results/aggregates/case001_review` | 否                 |
 
 说明：`--case` 和 `--condition` 可接收多个值，`--repeat N` 可重复运行，每次创建新的独立 SkillBank；这也意味着多次 API 消耗。`--run-id` 只适用于单个案例、单个条件、一次重复。
+
+### 3.1 Scrapy：完整重跑与断点恢复
+
+**SSL 中断后优先使用断点恢复。** 完整重跑会再次处理已经完成的窗口，并产生重复 API 消耗；两种命令不能混用。
+
+以下命令在实验室根目录执行，沿用已配置的模型凭据：
+
+~~~powershell
+cd D:\AS\AutoSkill-main\degradation_failure_lab
+~~~
+
+#### 断点恢复：继续 s24m005（推荐）
+
+~~~powershell
+python -B scripts/lab.py resume --run s24m005 --run-id s24r005
+~~~
+
+- `--run` 是已经中断的运行 ID；`--run-id` 是本次恢复使用的全新 ID。
+- 将检查点复制到 `runs/case024_scrapy/clean/s24r005/`，保留原来的 `s24m005`，不覆盖历史请求、响应和草稿。
+- 对 s24m005，跳过 Outline 和前 7 个已完成窗口，保留 7 个草稿及 support，从第 8 个窗口的 Plan 继续；剩余提取完成后仍会执行编译和注册。
+- 沿用中断运行冻结的模型、提示词、领域配置和输入身份；继承已消耗的 HTTP/Token 额度。新 HTTP 日志从 001 编号，父运行和累计预算记录在 `resume.json`、`execution.json`。
+- 校验源码、输入、历史产物哈希和检查点身份；不匹配就停止，**不会自动退回全量重跑**。
+
+若 s24r005 再次中断，并且仍符合完整窗口断点的恢复条件，应从最近一次运行继续，另取一个新 ID：
+
+~~~powershell
+python -B scripts/lab.py resume --run s24r005 --run-id s24r006
+~~~
+
+当前只支持单文档提取阶段、完整窗口之间的断点。若窗口内部已经成功调用 Plan/Expand，却没有完整窗口检查点，入口会拒绝自动恢复，避免重发这些成功请求。失败 POST 是否已被服务端处理或计费未知，恢复失败的那一条仍可能重复服务端工作。**断点恢复没有修复 SSL 连接本身，也不保证最终 Skill 生成成功。**
+
+#### 完整重跑：明确需要从头生成时使用
+
+~~~powershell
+python -B scripts/lab.py run --case case024_scrapy --condition clean --repeat 1 --run-id s24n001
+~~~
+
+该命令使用当前案例与生成配置，创建全新的空 SkillBank，从 Outline 和第 1 个窗口开始。它不复用 s24m005 的 7 个草稿或检查点，已成功的模型请求也会重新调用，预算按新运行单独计算。只有确实需要一轮独立完整运行时才使用。
+
+所有示例新 ID 都必须尚未存在；若已存在，改用另一个短 ID，不要删除或覆盖已有目录。本节只提供命令，更新 README 不会执行这些命令。
+
+### 3.2 Scrapy Task-024：NoSkill / CleanSkill 各三次校准
+
+**工程接入已通过；以下命令才会启动真实 Agent 并调用付费模型。** 本次使用 `s24r005` 的全部 **15 个注册 Skill 包**，不是日志中某个 `skills=2` 暂存分组。未人工挑选或修补 Skill。
+
+~~~powershell
+cd D:\AS\AutoSkill-main\degradation_failure_lab
+docker start harbor-p0-control-20261018
+& .\scripts\Invoke-Scrapy024Calibration.ps1 -Experiment s24d001
+~~~
+
+唯一批次顺序为 `NoSkill1 → CleanSkill1 → NoSkill2 → CleanSkill2 → NoSkill3 → CleanSkill3`。两种条件使用同一原始 Task-024 指令、Agent、模型、工具权限、禁网环境、独立 Oracle 和预算；NoSkill 安装 0 包，CleanSkill 安装冻结的 15 个完整包。
+
+- 模型：`openai/gpt-5.4-mini-2026-03-17`，智增增端点，temperature=0，reasoning_effort=none。
+- 每任务最多 6 个模型 HTTP 请求，总计最多 36 个；单请求输出最多 2048 tokens，输入估计预留每请求最多 20,000、每任务累计最多 100,000 tokens；禁止自动重试和重定向。
+- 账户实际单价未知；以上为调用及 Token 控制，**不是人民币金额硬上限**。凭据复用已有 Windows DPAPI 入口，不在命令或文件中填写明文密钥。
+- 结果位于 `runs/downstream/scrapy-task-024/s24d001/`：`outcomes/` 保存逐次任务与规则判分、正文曝光、Token、耗时和失败类别；`trials/` 保存原生轨迹和工具日志；`budget.sqlite3` 记录持久化调用额度。
+- 批次是一次性的。中断或重复执行时会拒绝重发；保留原记录，不要删除 `batch.started`、预算数据库或换 ID 绕过限制。环境、传输或预算失败时停止；普通任务答错仍作为校准结果记录。
+- 本轮预检中的正例19/19、FTP反例18/19，以及受控正文读取，都是**无模型工程证据**，不是 Agent 对照结果。真实正文曝光需要内核读取事件与实际成功模型请求中的正文共同确认，不能从安装成功推断。
+
+只核验已经准备好的冻结文件、不调用模型：
+
+~~~powershell
+python -B scripts/scrapy024.py prepare --experiment s24d001
+~~~
+
+就绪报告：`results/analysis/scrapy_task024_downstream_readiness.md`。本批次只是 Clean 校准，不构成正式文档退化实验。
 
 ## 4. 完整示例：从 `case001_qsv_select` 的 Clean 文档生成并分析技能
 
@@ -324,3 +393,19 @@ python scripts/lab.py aggregate --case case001_qsv_select --out results/aggregat
 ## P0 下游零模型验证
 
 运行 `python scripts/lab.py downstream-check --section all`。实现、固定版本和未验证边界见 [downstream_eval/README.md](downstream_eval/README.md)。返回码 2 表示 BLOCKED，不能视为通过。该命令不会调用生成模型或 Agent 模型。
+
+
+## GitChameleon 144/164 接入（2026-10-22）
+
+仅新增两个原题及三条件配置。完整题库、答案和测试在 `.external/gitchameleon/`；Agent只接收选题公开投影。入口、目录职责与验收状态见 `docs/research/gitchameleon_import_2026-10-22/gitchameleon_import_report.md`。`case144_gch`、`case164_gch` 的付费运行受 `configs/gitchameleon_pilot/gates.json` 保护；所有前置验收通过前不会运行。
+
+
+### 固定的API凭证读取入口
+
+凭证配置统一保存在 `configs/credentials.json`。智增增密钥仍使用已存在的Windows CurrentUser DPAPI加密文件，不写入JSON或永久明文环境变量。新终端无需重新输入。
+
+零请求检查：`& .\scripts\Invoke-ProjectCredential.ps1 -CheckOnly`
+
+经授权的命令：`& .\scripts\Invoke-ProjectCredential.ps1 -Action { <运行已验收的命令> }`。入口在内存中设置子进程所需环境变量，结束后恢复；不会自行调用API。生成器与Agent仍受各自验收门和预算约束。
+
+本轮固定试跑入口：`& .\scripts\Invoke-GitChameleonPilot.ps1`；`-CheckOnly`只验证凭证。入口自动加载凭证并保留单次锁，已运行的批次不会被默默重发。

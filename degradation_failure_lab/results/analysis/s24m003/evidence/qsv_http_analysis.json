@@ -1,0 +1,1921 @@
+[
+  {
+    "http": 1,
+    "stage": "outline",
+    "request_sha256": "d67f5882332e38c1c89499f40c2b18ceed126efb538ccced7576176718292e8e",
+    "response_sha256": "078c29fb4f8bd0317e46e84001f2d72df3dd51964c2306e9b2f2a39c897821d2",
+    "system_sha256": "525fb7f123aec4be0ee815f49c16b94f48db97660a6f64dd3d9b0eec4bee42d9",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 6201,
+      "completion_tokens": 132,
+      "total_tokens": 6333,
+      "prompt_tokens_details": {
+        "cached_tokens": 6016
+      },
+      "prompt_cache_hit_tokens": 6016,
+      "prompt_cache_miss_tokens": 185
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"headings\": [{\"candidate_index\": 0, \"level\": 1}, {\"candidate_index\": 1, \"level\": 2}, {\"candidate_index\": 2, \"level\": 2}, {\"candidate_index\": 3, \"level\": 2}, {\"candidate_index\": 4, \"level\": 2}, {\"candidate_index\": 5, \"level\": 2}, {\"candidate_index\": 6, \"level\": 2}, {\"candidate_index\": 11, \"level\": 2}, {\"candidate_index\": 16, \"level\": 2}]}",
+    "parsed": {
+      "headings": [
+        {
+          "candidate_index": 0,
+          "level": 1
+        },
+        {
+          "candidate_index": 1,
+          "level": 2
+        },
+        {
+          "candidate_index": 2,
+          "level": 2
+        },
+        {
+          "candidate_index": 3,
+          "level": 2
+        },
+        {
+          "candidate_index": 4,
+          "level": 2
+        },
+        {
+          "candidate_index": 5,
+          "level": 2
+        },
+        {
+          "candidate_index": 6,
+          "level": 2
+        },
+        {
+          "candidate_index": 11,
+          "level": 2
+        },
+        {
+          "candidate_index": 16,
+          "level": 2
+        }
+      ]
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 2,
+    "stage": "plan",
+    "request_sha256": "e346e5e435b94d0c92e0fb3b1705281e31996a4d0399c9c7b7ec702dce65c2fe",
+    "response_sha256": "778fe551dc895de75f56bd8aa57da1ec5c74234eefd4c513ce2d2f4b10147773",
+    "system_sha256": "572a28771d6c510d52ee1c458bbd3ce66d8efa011408ffd8ba55ad7fa70eb37c",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 4102,
+      "completion_tokens": 957,
+      "total_tokens": 5059,
+      "prompt_tokens_details": {
+        "cached_tokens": 1152
+      },
+      "prompt_cache_hit_tokens": 1152,
+      "prompt_cache_miss_tokens": 2950
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skills\": [{\"slot\": 1, \"name\": \"CSV 列选择与重排\", \"description\": \"使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"workflow_skill\", \"granularity\": \"session\", \"objective\": \"从 CSV 数据中高效选择、重排、反转、复制或删除列。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"列选择器\", \"stage\": \"数据预处理\", \"use_when\": [\"需要从 CSV 中选择特定列\", \"需要调整列顺序或删除列\"], \"do_not_use_when\": [\"需要处理非 CSV 格式数据\", \"需要修改列内容而非选择列\"], \"success_artifact\": \"输出包含所选列的新 CSV 数据。\", \"why_distinct\": \"这是核心的列选择工作流，涵盖基本选择操作。\", \"evidence_span_hint\": \"Select columns from CSV data efficiently.\", \"confidence\": 0.9}, {\"slot\": 2, \"name\": \"正则表达式列选择\", \"description\": \"使用正则表达式选择或排除匹配特定模式的列。适用于列名有规律或需要批量选择/排除的场景。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"通过正则表达式匹配列名来选择或排除列。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"正则表达式\", \"stage\": \"数据预处理\", \"use_when\": [\"列名符合某种模式\", \"需要批量选择或排除列\"], \"do_not_use_when\": [\"列名无规律\", \"需要精确指定列\"], \"success_artifact\": \"输出匹配正则的列。\", \"why_distinct\": \"专注于正则表达式选择，是列选择的一种特定方法。\", \"evidence_span_hint\": \"select columns starting with 'a' (regex)\", \"confidence\": 0.85}, {\"slot\": 3, \"name\": \"列排序与随机打乱\", \"description\": \"使用 --sort 按字节值对列进行字典序排序，或使用 --random 随机打乱列顺序。适用于需要重新排列列的场景。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"对选定的列进行排序或随机打乱。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"排序/随机化\", \"stage\": \"数据预处理\", \"use_when\": [\"需要按列名字典序排列\", \"需要随机打乱列顺序\"], \"do_not_use_when\": [\"需要保持原始列顺序\", \"需要按列内容排序\"], \"success_artifact\": \"输出排序或打乱后的列。\", \"why_distinct\": \"专注于列的排序和随机化，是列选择后的附加操作。\", \"evidence_span_hint\": \"Sort the columns lexicographically\", \"confidence\": 0.85}, {\"slot\": 4, \"name\": \"列名冲突引用\", \"description\": \"当列名包含与选择器语法冲突的字符时，使用引号正确引用列名。适用于列名包含特殊字符的场景。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"正确引用包含特殊字符的列名以避免语法冲突。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"引用转义\", \"stage\": \"数据预处理\", \"use_when\": [\"列名包含空格、连字符等特殊字符\", \"列名与选择器语法冲突\"], \"do_not_use_when\": [\"列名简单无特殊字符\"], \"success_artifact\": \"正确解析列名并选择对应列。\", \"why_distinct\": \"处理列名引用问题，是列选择中的边界情况处理。\", \"evidence_span_hint\": \"Quote column names that conflict with selector syntax\", \"confidence\": 0.8}]}",
+    "parsed": {
+      "skills": [
+        {
+          "slot": 1,
+          "name": "CSV 列选择与重排",
+          "description": "使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。",
+          "asset_type": "session_skill",
+          "asset_node_id": "workflow_skill",
+          "granularity": "session",
+          "objective": "从 CSV 数据中高效选择、重排、反转、复制或删除列。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "列选择器",
+          "stage": "数据预处理",
+          "use_when": [
+            "需要从 CSV 中选择特定列",
+            "需要调整列顺序或删除列"
+          ],
+          "do_not_use_when": [
+            "需要处理非 CSV 格式数据",
+            "需要修改列内容而非选择列"
+          ],
+          "success_artifact": "输出包含所选列的新 CSV 数据。",
+          "why_distinct": "这是核心的列选择工作流，涵盖基本选择操作。",
+          "evidence_span_hint": "Select columns from CSV data efficiently.",
+          "confidence": 0.9
+        },
+        {
+          "slot": 2,
+          "name": "正则表达式列选择",
+          "description": "使用正则表达式选择或排除匹配特定模式的列。适用于列名有规律或需要批量选择/排除的场景。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "通过正则表达式匹配列名来选择或排除列。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "正则表达式",
+          "stage": "数据预处理",
+          "use_when": [
+            "列名符合某种模式",
+            "需要批量选择或排除列"
+          ],
+          "do_not_use_when": [
+            "列名无规律",
+            "需要精确指定列"
+          ],
+          "success_artifact": "输出匹配正则的列。",
+          "why_distinct": "专注于正则表达式选择，是列选择的一种特定方法。",
+          "evidence_span_hint": "select columns starting with 'a' (regex)",
+          "confidence": 0.85
+        },
+        {
+          "slot": 3,
+          "name": "列排序与随机打乱",
+          "description": "使用 --sort 按字节值对列进行字典序排序，或使用 --random 随机打乱列顺序。适用于需要重新排列列的场景。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "对选定的列进行排序或随机打乱。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "排序/随机化",
+          "stage": "数据预处理",
+          "use_when": [
+            "需要按列名字典序排列",
+            "需要随机打乱列顺序"
+          ],
+          "do_not_use_when": [
+            "需要保持原始列顺序",
+            "需要按列内容排序"
+          ],
+          "success_artifact": "输出排序或打乱后的列。",
+          "why_distinct": "专注于列的排序和随机化，是列选择后的附加操作。",
+          "evidence_span_hint": "Sort the columns lexicographically",
+          "confidence": 0.85
+        },
+        {
+          "slot": 4,
+          "name": "列名冲突引用",
+          "description": "当列名包含与选择器语法冲突的字符时，使用引号正确引用列名。适用于列名包含特殊字符的场景。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "正确引用包含特殊字符的列名以避免语法冲突。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "引用转义",
+          "stage": "数据预处理",
+          "use_when": [
+            "列名包含空格、连字符等特殊字符",
+            "列名与选择器语法冲突"
+          ],
+          "do_not_use_when": [
+            "列名简单无特殊字符"
+          ],
+          "success_artifact": "正确解析列名并选择对应列。",
+          "why_distinct": "处理列名引用问题，是列选择中的边界情况处理。",
+          "evidence_span_hint": "Quote column names that conflict with selector syntax",
+          "confidence": 0.8
+        }
+      ]
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here.",
+    "window_ordinal": 1,
+    "window_id": "245afa09-be7e-56de-9a7a-f895fd5aa81a",
+    "excerpt_sha256": "158b9003da6d2bcb05c81c4013d86ab7feaa3a7c5f7878cdc54fe956295ba268",
+    "excerpt_chars": 2362,
+    "input_chars": 14480,
+    "candidate_count": 4,
+    "section": {
+      "heading": "select",
+      "level": 1,
+      "span": {
+        "start": 9,
+        "end": 2716
+      },
+      "unit_type": "window",
+      "heading_path": [
+        "select"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [],
+      "subsection_headings": [
+        "## Description [↩](#nav)",
+        "## Examples [↩](#nav)",
+        "Usage [↩](#nav)",
+        "Arguments [↩](#nav)",
+        "Select Options [↩](#nav)",
+        "Common Options [↩](#nav)"
+      ],
+      "context_snippets": [],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+    },
+    "domain": "qsv",
+    "taxonomy": {
+      "taxonomy_id": "qsv",
+      "domain_type": "qsv",
+      "display_name": "Default",
+      "default_base_type": "session_skill",
+      "family_axis": "",
+      "default_family_name": "未分类技能",
+      "domain_root": {
+        "id": "default",
+        "name": "通用技能领域",
+        "name_zh": "通用技能领域",
+        "name_en": "General Skill Domain"
+      },
+      "visible_levels": {
+        "root_label": "总技能",
+        "family_bucket_label": "Family技能",
+        "level_labels": {
+          "1": "一级技能",
+          "2": "二级技能",
+          "3": "微技能"
+        }
+      },
+      "family_candidates": [],
+      "asset_types": [
+        {
+          "base_type": "macro_protocol",
+          "label": "macro_protocol",
+          "description": "Cross-phase or multi-stage reusable protocol.",
+          "aliases": [
+            "macro_protocol",
+            "protocol",
+            "macro"
+          ]
+        },
+        {
+          "base_type": "session_skill",
+          "label": "workflow_skill",
+          "description": "One reusable workflow-level skill or session-sized scaffold.",
+          "aliases": [
+            "session_skill",
+            "workflow_skill",
+            "session",
+            "skill"
+          ]
+        },
+        {
+          "base_type": "micro_skill",
+          "label": "micro_skill",
+          "description": "One tightly scoped move or mini-sequence.",
+          "aliases": [
+            "micro_skill",
+            "micro",
+            "micro_intervention"
+          ]
+        },
+        {
+          "base_type": "safety_rule",
+          "label": "safety_rule",
+          "description": "Safety, escalation, compliance, or guardrail rule.",
+          "aliases": [
+            "safety_rule",
+            "safety",
+            "risk_rule",
+            "policy"
+          ]
+        },
+        {
+          "base_type": "knowledge_reference",
+          "label": "knowledge_reference",
+          "description": "Reference-style knowledge asset with limited direct execution content.",
+          "aliases": [
+            "knowledge_reference",
+            "knowledge",
+            "reference"
+          ]
+        }
+      ],
+      "asset_tree": [
+        {
+          "id": "family_root",
+          "label_zh": "总技能",
+          "label_en": "Family Root",
+          "base_type": "macro_protocol",
+          "level": 0,
+          "parent": "",
+          "visible_role": "root",
+          "allowed_children": [
+            "macro_skill",
+            "workflow_skill",
+            "safety_rule_node",
+            "knowledge_reference_node",
+            "safety_module"
+          ],
+          "aliases": [
+            "family_root",
+            "总技能",
+            "Family Root"
+          ],
+          "default_for_base_type": false,
+          "extractable": false,
+          "synthesized": true
+        },
+        {
+          "id": "macro_skill",
+          "label_zh": "一级技能",
+          "label_en": "First-Level Skill",
+          "base_type": "macro_protocol",
+          "level": 1,
+          "parent": "family_root",
+          "visible_role": "parent",
+          "allowed_children": [
+            "workflow_skill"
+          ],
+          "aliases": [
+            "macro_skill",
+            "一级技能",
+            "macro_framework",
+            "First-Level Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "workflow_skill",
+          "label_zh": "二级技能",
+          "label_en": "Second-Level Skill",
+          "base_type": "session_skill",
+          "level": 2,
+          "parent": "macro_skill",
+          "visible_role": "parent",
+          "allowed_children": [
+            "micro_skill_node"
+          ],
+          "aliases": [
+            "workflow_skill",
+            "二级技能",
+            "session_framework",
+            "Second-Level Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "micro_skill_node",
+          "label_zh": "微技能",
+          "label_en": "Micro Skill",
+          "base_type": "micro_skill",
+          "level": 3,
+          "parent": "workflow_skill",
+          "visible_role": "leaf",
+          "allowed_children": [],
+          "aliases": [
+            "micro_skill_node",
+            "微技能",
+            "micro_intervention",
+            "Micro Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "safety_module",
+          "label_zh": "一级技能",
+          "label_en": "Safety Module",
+          "base_type": "safety_rule",
+          "level": 1,
+          "parent": "family_root",
+          "visible_role": "parent",
+          "allowed_children": [
+            "safety_rule_node"
+          ],
+          "aliases": [
+            "safety_module",
+            "风险模块",
+            "safety_parent",
+            "一级技能",
+            "Safety Module"
+          ],
+          "default_for_base_type": false,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "safety_rule_node",
+          "label_zh": "二级技能",
+          "label_en": "Safety Skill",
+          "base_type": "safety_rule",
+          "level": 2,
+          "parent": "safety_module",
+          "visible_role": "leaf",
+          "allowed_children": [],
+          "aliases": [
+            "safety_rule_node",
+            "safety_rule",
+            "risk_rule",
+            "二级技能",
+            "Safety Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "knowledge_reference_node",
+          "label_zh": "一级技能",
+          "label_en": "Reference Skill",
+          "base_type": "knowledge_reference",
+          "level": 1,
+          "parent": "family_root",
+          "visible_role": "leaf",
+          "allowed_children": [],
+          "aliases": [
+            "knowledge_reference_node",
+            "knowledge_reference",
+            "reference",
+            "一级技能",
+            "Reference Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        }
+      ]
+    },
+    "code_fence_markers": 36
+  },
+  {
+    "http": 3,
+    "stage": "expand",
+    "request_sha256": "4f95f608312d069a4b93d7fb2a6119e865219d5894070360945d444852b48695",
+    "response_sha256": "1222d6351e8b78aa79c711f658acf4f4379cdf41f703be8c41e089042fa5d367",
+    "system_sha256": "f95e46bbd8d0879d1a2a95c042f3b45c3bd3ae286143fe9440ab3f33e31bbcb2",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 4241,
+      "completion_tokens": 906,
+      "total_tokens": 5147,
+      "prompt_tokens_details": {
+        "cached_tokens": 1024
+      },
+      "prompt_cache_hit_tokens": 1024,
+      "prompt_cache_miss_tokens": 3217
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skill\": {\"name\": \"CSV 列选择与重排\", \"description\": \"使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。\", \"prompt\": \"使用 qsv select 对 CSV 数据执行列级操作。根据目标选择合适的选择器语法：索引（如 1,4）、范围（如 1-4、3-）、名称（如 Header1-Header4）、正则（如 /^a/）、排除（如 !1-2）、末列特殊字符 _、重复名称索引（如 Foo[2]）。可组合多种选择器实现重排与复制。需要排序时加 --sort，需要随机打乱时加 --random（可配合 --seed 复现）。列名与选择器语法冲突时用引号包裹。\", \"triggers\": [\"需要从 CSV 中选择特定列\", \"需要调整列顺序或删除列\", \"需要按名称、索引、范围或正则筛选列\", \"需要反转、复制或随机打乱列顺序\"], \"tags\": [\"qsv\", \"select\", \"csv\", \"列选择\", \"列重排\", \"数据预处理\"], \"asset_type\": \"session_skill\", \"asset_node_id\": \"workflow_skill\", \"granularity\": \"session\", \"objective\": \"从 CSV 数据中高效选择、重排、反转、复制或删除列。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"列选择器\", \"stage\": \"数据预处理\", \"applicable_signals\": [\"输入为 CSV 格式数据\", \"需要提取或调整列顺序\", \"需要按列名或列索引定位列\", \"需要删除敏感或不需要的列\"], \"intervention_moves\": [\"按索引选择列：qsv select 1,4\", \"按范围选择列：qsv select 1-4 或 qsv select 3-\", \"按名称选择列：qsv select Header1-Header4\", \"排除列：qsv select '!1-2'\", \"使用末列特殊字符：qsv select 1,_\", \"反转列顺序：qsv select _-1\", \"正则选择列：qsv select /^a/\", \"正则排除列：qsv select '!/SSN|account_no|password/'\", \"排序：qsv select 1- --sort\", \"随机打乱：qsv select 1- --random --seed 42\", \"组合选择器重排与复制：qsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\", \"列名冲突时加引号：qsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\"], \"contraindications\": [\"需要处理非 CSV 格式数据\", \"需要修改列内容而非选择列\"], \"workflow_steps\": [\"确认输入为 CSV 数据并明确目标列\", \"根据列位置或名称选择合适的选择器语法\", \"组合选择器实现重排、复制或删除\", \"按需添加 --sort 或 --random 选项\", \"执行 qsv select 并验证输出列符合预期\"], \"constraints\": [\"仅适用于 CSV 格式数据\", \"仅执行列选择与重排，不修改列内容\", \"列名与选择器语法冲突时需用引号包裹\"], \"cautions\": [\"正则排除敏感列时需确认匹配范围，避免误删或遗漏\", \"使用 --random 时建议配合 --seed 以保证可复现\"], \"output_contract\": \"输出包含所选列的新 CSV 数据。\", \"examples\": [{\"input\": \"选择第一和第四列\", \"output\": \"qsv select 1,4\"}, {\"input\": \"删除 SSN、account_no 和 password 列\", \"output\": \"qsv select '!/SSN|account_no|password/'\"}, {\"input\": \"反转列顺序\", \"output\": \"qsv select _-1\"}], \"relation_type\": \"support\", \"risk_class\": \"low\", \"confidence\": 0.9}}",
+    "parsed": {
+      "skill": {
+        "name": "CSV 列选择与重排",
+        "description": "使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。",
+        "prompt": "使用 qsv select 对 CSV 数据执行列级操作。根据目标选择合适的选择器语法：索引（如 1,4）、范围（如 1-4、3-）、名称（如 Header1-Header4）、正则（如 /^a/）、排除（如 !1-2）、末列特殊字符 _、重复名称索引（如 Foo[2]）。可组合多种选择器实现重排与复制。需要排序时加 --sort，需要随机打乱时加 --random（可配合 --seed 复现）。列名与选择器语法冲突时用引号包裹。",
+        "triggers": [
+          "需要从 CSV 中选择特定列",
+          "需要调整列顺序或删除列",
+          "需要按名称、索引、范围或正则筛选列",
+          "需要反转、复制或随机打乱列顺序"
+        ],
+        "tags": [
+          "qsv",
+          "select",
+          "csv",
+          "列选择",
+          "列重排",
+          "数据预处理"
+        ],
+        "asset_type": "session_skill",
+        "asset_node_id": "workflow_skill",
+        "granularity": "session",
+        "objective": "从 CSV 数据中高效选择、重排、反转、复制或删除列。",
+        "domain": "qsv",
+        "task_family": "CSV 列操作",
+        "method_family": "列选择器",
+        "stage": "数据预处理",
+        "applicable_signals": [
+          "输入为 CSV 格式数据",
+          "需要提取或调整列顺序",
+          "需要按列名或列索引定位列",
+          "需要删除敏感或不需要的列"
+        ],
+        "intervention_moves": [
+          "按索引选择列：qsv select 1,4",
+          "按范围选择列：qsv select 1-4 或 qsv select 3-",
+          "按名称选择列：qsv select Header1-Header4",
+          "排除列：qsv select '!1-2'",
+          "使用末列特殊字符：qsv select 1,_",
+          "反转列顺序：qsv select _-1",
+          "正则选择列：qsv select /^a/",
+          "正则排除列：qsv select '!/SSN|account_no|password/'",
+          "排序：qsv select 1- --sort",
+          "随机打乱：qsv select 1- --random --seed 42",
+          "组合选择器重排与复制：qsv select 3-1,Header3-Header1,Header1,Foo[2],Header1",
+          "列名冲突时加引号：qsv select '\"Date - Opening\",\"Date - Actual Closing\"'"
+        ],
+        "contraindications": [
+          "需要处理非 CSV 格式数据",
+          "需要修改列内容而非选择列"
+        ],
+        "workflow_steps": [
+          "确认输入为 CSV 数据并明确目标列",
+          "根据列位置或名称选择合适的选择器语法",
+          "组合选择器实现重排、复制或删除",
+          "按需添加 --sort 或 --random 选项",
+          "执行 qsv select 并验证输出列符合预期"
+        ],
+        "constraints": [
+          "仅适用于 CSV 格式数据",
+          "仅执行列选择与重排，不修改列内容",
+          "列名与选择器语法冲突时需用引号包裹"
+        ],
+        "cautions": [
+          "正则排除敏感列时需确认匹配范围，避免误删或遗漏",
+          "使用 --random 时建议配合 --seed 以保证可复现"
+        ],
+        "output_contract": "输出包含所选列的新 CSV 数据。",
+        "examples": [
+          {
+            "input": "选择第一和第四列",
+            "output": "qsv select 1,4"
+          },
+          {
+            "input": "删除 SSN、account_no 和 password 列",
+            "output": "qsv select '!/SSN|account_no|password/'"
+          },
+          {
+            "input": "反转列顺序",
+            "output": "qsv select _-1"
+          }
+        ],
+        "relation_type": "support",
+        "risk_class": "low",
+        "confidence": 0.9
+      }
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 4,
+    "stage": "expand",
+    "request_sha256": "943b6fde0b39c113c162033340dd7b0f6f53fa22f0e5dbb421e2c9e8df524874",
+    "response_sha256": "8772c5cb1acc2cc0df2eea90f0fc0b70e69c4b09c2bcedfca5c4081e60ee5a15",
+    "system_sha256": "f95e46bbd8d0879d1a2a95c042f3b45c3bd3ae286143fe9440ab3f33e31bbcb2",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 4203,
+      "completion_tokens": 663,
+      "total_tokens": 4866,
+      "prompt_tokens_details": {
+        "cached_tokens": 3840
+      },
+      "prompt_cache_hit_tokens": 3840,
+      "prompt_cache_miss_tokens": 363
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skill\": {\"name\": \"正则表达式列选择\", \"description\": \"使用正则表达式匹配列名，从 CSV 数据中选择或排除符合模式的列。适用于列名具有规律、需要按模式批量选择或排除列的场景。\", \"prompt\": \"当需要按列名模式批量选择或排除列时，使用 qsv select 的正则表达式选择器。\\n\\n执行步骤：\\n1. 确认列名具有可描述的模式（如统一前缀、包含数字、特定关键词）。\\n2. 选择匹配模式：使用 /pattern/ 形式选择匹配的列，例如 qsv select /^a/ 选择以 a 开头的列。\\n3. 排除匹配模式：使用 !/pattern/ 形式排除匹配的列，例如 qsv select '!/SSN|account_no|password/' 移除敏感列。\\n4. 如模式包含特殊字符或空格，用引号包裹选择器。\\n5. 验证输出列是否符合预期。\\n\\n注意：正则表达式匹配的是列名而非列内容；若列名无规律或需精确指定列，应改用索引或列名选择器。\", \"triggers\": [\"列名符合某种模式\", \"需要批量选择或排除列\", \"需要按列名模式移除敏感列\"], \"tags\": [\"qsv\", \"select\", \"regex\", \"column-selection\", \"csv\"], \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"通过正则表达式匹配列名来选择或排除列。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"正则表达式\", \"stage\": \"数据预处理\", \"applicable_signals\": [\"列名具有统一前缀或后缀\", \"列名包含特定关键词或数字模式\", \"需要批量排除敏感列\"], \"intervention_moves\": [\"使用 /pattern/ 选择匹配列\", \"使用 !/pattern/ 排除匹配列\", \"对含特殊字符的模式加引号\"], \"contraindications\": [\"列名无规律\", \"需要精确指定列\", \"需要按列内容而非列名筛选\"], \"workflow_steps\": [\"确认列名模式\", \"构造正则选择器\", \"执行 qsv select 命令\", \"验证输出列\"], \"constraints\": [\"正则表达式匹配列名而非列内容\", \"模式含特殊字符时需加引号\"], \"cautions\": [\"正则过于宽泛可能匹配到非预期列\", \"排除敏感列后应确认输出不含敏感数据\"], \"output_contract\": \"输出匹配正则的列。\", \"examples\": [{\"input\": \"选择以 'a' 开头的列\", \"output\": \"qsv select /^a/\"}, {\"input\": \"移除 SSN、account_no 和 password 列\", \"output\": \"qsv select '!/SSN|account_no|password/'\"}], \"relation_type\": \"support\", \"risk_class\": \"low\", \"confidence\": 0.85}}",
+    "parsed": {
+      "skill": {
+        "name": "正则表达式列选择",
+        "description": "使用正则表达式匹配列名，从 CSV 数据中选择或排除符合模式的列。适用于列名具有规律、需要按模式批量选择或排除列的场景。",
+        "prompt": "当需要按列名模式批量选择或排除列时，使用 qsv select 的正则表达式选择器。\n\n执行步骤：\n1. 确认列名具有可描述的模式（如统一前缀、包含数字、特定关键词）。\n2. 选择匹配模式：使用 /pattern/ 形式选择匹配的列，例如 qsv select /^a/ 选择以 a 开头的列。\n3. 排除匹配模式：使用 !/pattern/ 形式排除匹配的列，例如 qsv select '!/SSN|account_no|password/' 移除敏感列。\n4. 如模式包含特殊字符或空格，用引号包裹选择器。\n5. 验证输出列是否符合预期。\n\n注意：正则表达式匹配的是列名而非列内容；若列名无规律或需精确指定列，应改用索引或列名选择器。",
+        "triggers": [
+          "列名符合某种模式",
+          "需要批量选择或排除列",
+          "需要按列名模式移除敏感列"
+        ],
+        "tags": [
+          "qsv",
+          "select",
+          "regex",
+          "column-selection",
+          "csv"
+        ],
+        "asset_type": "micro_skill",
+        "asset_node_id": "micro_skill_node",
+        "granularity": "micro",
+        "objective": "通过正则表达式匹配列名来选择或排除列。",
+        "domain": "qsv",
+        "task_family": "CSV 列操作",
+        "method_family": "正则表达式",
+        "stage": "数据预处理",
+        "applicable_signals": [
+          "列名具有统一前缀或后缀",
+          "列名包含特定关键词或数字模式",
+          "需要批量排除敏感列"
+        ],
+        "intervention_moves": [
+          "使用 /pattern/ 选择匹配列",
+          "使用 !/pattern/ 排除匹配列",
+          "对含特殊字符的模式加引号"
+        ],
+        "contraindications": [
+          "列名无规律",
+          "需要精确指定列",
+          "需要按列内容而非列名筛选"
+        ],
+        "workflow_steps": [
+          "确认列名模式",
+          "构造正则选择器",
+          "执行 qsv select 命令",
+          "验证输出列"
+        ],
+        "constraints": [
+          "正则表达式匹配列名而非列内容",
+          "模式含特殊字符时需加引号"
+        ],
+        "cautions": [
+          "正则过于宽泛可能匹配到非预期列",
+          "排除敏感列后应确认输出不含敏感数据"
+        ],
+        "output_contract": "输出匹配正则的列。",
+        "examples": [
+          {
+            "input": "选择以 'a' 开头的列",
+            "output": "qsv select /^a/"
+          },
+          {
+            "input": "移除 SSN、account_no 和 password 列",
+            "output": "qsv select '!/SSN|account_no|password/'"
+          }
+        ],
+        "relation_type": "support",
+        "risk_class": "low",
+        "confidence": 0.85
+      }
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 5,
+    "stage": "expand",
+    "request_sha256": "a961f838fb7970a225a24002f9f8ceabd78c398a4e0b8b1fee3577b4db3b10af",
+    "response_sha256": "4f4303b9d747797fb588f19663c59326ff785ac26ae35fd016c772d9b073efaf",
+    "system_sha256": "f95e46bbd8d0879d1a2a95c042f3b45c3bd3ae286143fe9440ab3f33e31bbcb2",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 4220,
+      "completion_tokens": 575,
+      "total_tokens": 4795,
+      "prompt_tokens_details": {
+        "cached_tokens": 3840
+      },
+      "prompt_cache_hit_tokens": 3840,
+      "prompt_cache_miss_tokens": 380
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skill\": {\"name\": \"列排序与随机打乱\", \"description\": \"对选定的 CSV 列进行字典序排序或随机打乱，用于在列选择之后重新排列列顺序。\", \"prompt\": \"在已确定要操作的列集合后，使用 qsv select 的 --sort 选项按列名字节值进行字典序排序，或使用 --random 选项随机打乱列顺序。可配合 --seed 使随机打乱结果可复现。\", \"triggers\": [\"需要按列名字典序排列列\", \"需要随机打乱列顺序\", \"需要在列选择后重新排列列\"], \"tags\": [\"qsv\", \"select\", \"列操作\", \"排序\", \"随机化\"], \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"对选定的列进行排序或随机打乱。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"排序/随机化\", \"stage\": \"数据预处理\", \"applicable_signals\": [\"需要按列名字典序排列\", \"需要随机打乱列顺序\"], \"intervention_moves\": [\"使用 --sort 按字节值对列进行字典序排序\", \"使用 --random 随机打乱列顺序\", \"使用 --random --seed 使随机打乱可复现\"], \"contraindications\": [\"需要保持原始列顺序\", \"需要按列内容排序\"], \"workflow_steps\": [\"确定要操作的列集合（如 1- 表示全部列）\", \"选择 --sort 进行字典序排序，或选择 --random 进行随机打乱\", \"如需可复现的随机结果，附加 --seed 指定种子\", \"执行 qsv select 命令并检查输出列顺序\"], \"constraints\": [\"--sort 按列名的字节值排序，而非按列内容\", \"--random 打乱列顺序，不改变列内容\"], \"cautions\": [\"随机打乱结果默认不可复现，如需复现须指定 --seed\"], \"output_contract\": \"输出排序或打乱后的列。\", \"examples\": [{\"input\": \"qsv select 1- --sort\", \"output\": \"按列名字典序排列的列\", \"notes\": \"字典序排序\"}, {\"input\": \"qsv select 1- --random --seed 42\", \"output\": \"以种子 42 随机打乱后的列\", \"notes\": \"可复现的随机打乱\"}], \"relation_type\": \"support\", \"risk_class\": \"low\", \"confidence\": 0.85}}",
+    "parsed": {
+      "skill": {
+        "name": "列排序与随机打乱",
+        "description": "对选定的 CSV 列进行字典序排序或随机打乱，用于在列选择之后重新排列列顺序。",
+        "prompt": "在已确定要操作的列集合后，使用 qsv select 的 --sort 选项按列名字节值进行字典序排序，或使用 --random 选项随机打乱列顺序。可配合 --seed 使随机打乱结果可复现。",
+        "triggers": [
+          "需要按列名字典序排列列",
+          "需要随机打乱列顺序",
+          "需要在列选择后重新排列列"
+        ],
+        "tags": [
+          "qsv",
+          "select",
+          "列操作",
+          "排序",
+          "随机化"
+        ],
+        "asset_type": "micro_skill",
+        "asset_node_id": "micro_skill_node",
+        "granularity": "micro",
+        "objective": "对选定的列进行排序或随机打乱。",
+        "domain": "qsv",
+        "task_family": "CSV 列操作",
+        "method_family": "排序/随机化",
+        "stage": "数据预处理",
+        "applicable_signals": [
+          "需要按列名字典序排列",
+          "需要随机打乱列顺序"
+        ],
+        "intervention_moves": [
+          "使用 --sort 按字节值对列进行字典序排序",
+          "使用 --random 随机打乱列顺序",
+          "使用 --random --seed 使随机打乱可复现"
+        ],
+        "contraindications": [
+          "需要保持原始列顺序",
+          "需要按列内容排序"
+        ],
+        "workflow_steps": [
+          "确定要操作的列集合（如 1- 表示全部列）",
+          "选择 --sort 进行字典序排序，或选择 --random 进行随机打乱",
+          "如需可复现的随机结果，附加 --seed 指定种子",
+          "执行 qsv select 命令并检查输出列顺序"
+        ],
+        "constraints": [
+          "--sort 按列名的字节值排序，而非按列内容",
+          "--random 打乱列顺序，不改变列内容"
+        ],
+        "cautions": [
+          "随机打乱结果默认不可复现，如需复现须指定 --seed"
+        ],
+        "output_contract": "输出排序或打乱后的列。",
+        "examples": [
+          {
+            "input": "qsv select 1- --sort",
+            "output": "按列名字典序排列的列",
+            "notes": "字典序排序"
+          },
+          {
+            "input": "qsv select 1- --random --seed 42",
+            "output": "以种子 42 随机打乱后的列",
+            "notes": "可复现的随机打乱"
+          }
+        ],
+        "relation_type": "support",
+        "risk_class": "low",
+        "confidence": 0.85
+      }
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 6,
+    "stage": "expand",
+    "request_sha256": "443a8349c573408ee920bf693a7d7eae3f14fdcf6493049ea21ba2fc64539c7f",
+    "response_sha256": "c56160b0ed60eb1b68c6f570b16d50121456937fde837ff700621cbc1702fae2",
+    "system_sha256": "f95e46bbd8d0879d1a2a95c042f3b45c3bd3ae286143fe9440ab3f33e31bbcb2",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 4216,
+      "completion_tokens": 565,
+      "total_tokens": 4781,
+      "prompt_tokens_details": {
+        "cached_tokens": 3840
+      },
+      "prompt_cache_hit_tokens": 3840,
+      "prompt_cache_miss_tokens": 376
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skill\": {\"name\": \"列名冲突引用\", \"description\": \"当 CSV 列名包含空格、连字符等与选择器语法冲突的字符时，使用引号正确引用列名，从而在 qsv select 中准确选中目标列。适用于列名含特殊字符、直接书写会被解析为选择器语法的场景。\", \"prompt\": \"在执行 qsv select 选择列时，先检查目标列名是否包含空格、连字符或其他与选择器语法冲突的字符。若存在冲突，用引号将列名整体包裹后再传入选择器，确保列名被当作字面名称而非选择器表达式解析。\", \"triggers\": [\"列名包含空格或连字符等特殊字符\", \"列名与选择器语法冲突\", \"直接书写列名导致解析错误或选中错误列\"], \"tags\": [\"qsv\", \"select\", \"列选择\", \"引用转义\", \"特殊字符\"], \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"正确引用包含特殊字符的列名以避免语法冲突。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"引用转义\", \"stage\": \"数据预处理\", \"applicable_signals\": [\"列名包含空格、连字符等特殊字符\", \"列名与选择器语法冲突\"], \"intervention_moves\": [\"识别列名中与选择器语法冲突的字符\", \"用引号包裹冲突列名后传入选择器\"], \"contraindications\": [\"列名简单无特殊字符时无需引用\"], \"workflow_steps\": [\"检查目标列名是否包含空格、连字符等特殊字符\", \"若存在冲突，用引号将列名整体包裹\", \"将引用后的列名作为选择器参数执行 qsv select\", \"确认选中列与预期一致\"], \"constraints\": [\"仅在列名与选择器语法冲突时使用引用\", \"引用需包裹完整列名\"], \"cautions\": [\"引用不当可能导致列名被误解析\"], \"output_contract\": \"正确解析列名并选择对应列。\", \"examples\": [{\"input\": \"列名为 'Date - Opening' 与 'Date - Actual Closing'，需选择这两列\", \"output\": \"qsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\", \"notes\": \"用引号包裹含空格和连字符的列名以避免语法冲突\"}], \"relation_type\": \"support\", \"risk_class\": \"low\", \"confidence\": 0.8}}",
+    "parsed": {
+      "skill": {
+        "name": "列名冲突引用",
+        "description": "当 CSV 列名包含空格、连字符等与选择器语法冲突的字符时，使用引号正确引用列名，从而在 qsv select 中准确选中目标列。适用于列名含特殊字符、直接书写会被解析为选择器语法的场景。",
+        "prompt": "在执行 qsv select 选择列时，先检查目标列名是否包含空格、连字符或其他与选择器语法冲突的字符。若存在冲突，用引号将列名整体包裹后再传入选择器，确保列名被当作字面名称而非选择器表达式解析。",
+        "triggers": [
+          "列名包含空格或连字符等特殊字符",
+          "列名与选择器语法冲突",
+          "直接书写列名导致解析错误或选中错误列"
+        ],
+        "tags": [
+          "qsv",
+          "select",
+          "列选择",
+          "引用转义",
+          "特殊字符"
+        ],
+        "asset_type": "micro_skill",
+        "asset_node_id": "micro_skill_node",
+        "granularity": "micro",
+        "objective": "正确引用包含特殊字符的列名以避免语法冲突。",
+        "domain": "qsv",
+        "task_family": "CSV 列操作",
+        "method_family": "引用转义",
+        "stage": "数据预处理",
+        "applicable_signals": [
+          "列名包含空格、连字符等特殊字符",
+          "列名与选择器语法冲突"
+        ],
+        "intervention_moves": [
+          "识别列名中与选择器语法冲突的字符",
+          "用引号包裹冲突列名后传入选择器"
+        ],
+        "contraindications": [
+          "列名简单无特殊字符时无需引用"
+        ],
+        "workflow_steps": [
+          "检查目标列名是否包含空格、连字符等特殊字符",
+          "若存在冲突，用引号将列名整体包裹",
+          "将引用后的列名作为选择器参数执行 qsv select",
+          "确认选中列与预期一致"
+        ],
+        "constraints": [
+          "仅在列名与选择器语法冲突时使用引用",
+          "引用需包裹完整列名"
+        ],
+        "cautions": [
+          "引用不当可能导致列名被误解析"
+        ],
+        "output_contract": "正确解析列名并选择对应列。",
+        "examples": [
+          {
+            "input": "列名为 'Date - Opening' 与 'Date - Actual Closing'，需选择这两列",
+            "output": "qsv select '\"Date - Opening\",\"Date - Actual Closing\"'",
+            "notes": "用引号包裹含空格和连字符的列名以避免语法冲突"
+          }
+        ],
+        "relation_type": "support",
+        "risk_class": "low",
+        "confidence": 0.8
+      }
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 7,
+    "stage": "plan",
+    "request_sha256": "f9a6b2d7f234c39f756a73bcae2ad8962e2614e050d85ba42ac02b49ea64b513",
+    "response_sha256": "86f80b289b3efcf3acfc3b3f82ace388aab30f4927e905564f819c92bc3cbdc1",
+    "system_sha256": "572a28771d6c510d52ee1c458bbd3ce66d8efa011408ffd8ba55ad7fa70eb37c",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 3485,
+      "completion_tokens": 5,
+      "total_tokens": 3490,
+      "prompt_tokens_details": {
+        "cached_tokens": 1792
+      },
+      "prompt_cache_hit_tokens": 1792,
+      "prompt_cache_miss_tokens": 1693
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skills\": []}",
+    "parsed": {
+      "skills": []
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here.",
+    "window_ordinal": 2,
+    "window_id": "7ad0d07f-a2a3-5552-a285-2e102136d0f9",
+    "excerpt_sha256": "979fcec926bb7326b1ddac8897c3ddca1dac42e2c6a81e44649bd39702882b72",
+    "excerpt_chars": 465,
+    "input_chars": 12472,
+    "candidate_count": 0,
+    "section": {
+      "heading": "select",
+      "level": 1,
+      "span": {
+        "start": 2718,
+        "end": 4718
+      },
+      "unit_type": "window",
+      "heading_path": [
+        "select"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [],
+      "subsection_headings": [
+        "## Description [↩](#nav)",
+        "## Examples [↩](#nav)",
+        "Usage [↩](#nav)",
+        "Arguments [↩](#nav)",
+        "Select Options [↩](#nav)",
+        "Common Options [↩](#nav)"
+      ],
+      "context_snippets": [],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "> Select, re-order, reverse, duplicate or drop columns."
+    },
+    "domain": "qsv",
+    "taxonomy": {
+      "taxonomy_id": "qsv",
+      "domain_type": "qsv",
+      "display_name": "Default",
+      "default_base_type": "session_skill",
+      "family_axis": "",
+      "default_family_name": "未分类技能",
+      "domain_root": {
+        "id": "default",
+        "name": "通用技能领域",
+        "name_zh": "通用技能领域",
+        "name_en": "General Skill Domain"
+      },
+      "visible_levels": {
+        "root_label": "总技能",
+        "family_bucket_label": "Family技能",
+        "level_labels": {
+          "1": "一级技能",
+          "2": "二级技能",
+          "3": "微技能"
+        }
+      },
+      "family_candidates": [],
+      "asset_types": [
+        {
+          "base_type": "macro_protocol",
+          "label": "macro_protocol",
+          "description": "Cross-phase or multi-stage reusable protocol.",
+          "aliases": [
+            "macro_protocol",
+            "protocol",
+            "macro"
+          ]
+        },
+        {
+          "base_type": "session_skill",
+          "label": "workflow_skill",
+          "description": "One reusable workflow-level skill or session-sized scaffold.",
+          "aliases": [
+            "session_skill",
+            "workflow_skill",
+            "session",
+            "skill"
+          ]
+        },
+        {
+          "base_type": "micro_skill",
+          "label": "micro_skill",
+          "description": "One tightly scoped move or mini-sequence.",
+          "aliases": [
+            "micro_skill",
+            "micro",
+            "micro_intervention"
+          ]
+        },
+        {
+          "base_type": "safety_rule",
+          "label": "safety_rule",
+          "description": "Safety, escalation, compliance, or guardrail rule.",
+          "aliases": [
+            "safety_rule",
+            "safety",
+            "risk_rule",
+            "policy"
+          ]
+        },
+        {
+          "base_type": "knowledge_reference",
+          "label": "knowledge_reference",
+          "description": "Reference-style knowledge asset with limited direct execution content.",
+          "aliases": [
+            "knowledge_reference",
+            "knowledge",
+            "reference"
+          ]
+        }
+      ],
+      "asset_tree": [
+        {
+          "id": "family_root",
+          "label_zh": "总技能",
+          "label_en": "Family Root",
+          "base_type": "macro_protocol",
+          "level": 0,
+          "parent": "",
+          "visible_role": "root",
+          "allowed_children": [
+            "macro_skill",
+            "workflow_skill",
+            "safety_rule_node",
+            "knowledge_reference_node",
+            "safety_module"
+          ],
+          "aliases": [
+            "family_root",
+            "总技能",
+            "Family Root"
+          ],
+          "default_for_base_type": false,
+          "extractable": false,
+          "synthesized": true
+        },
+        {
+          "id": "macro_skill",
+          "label_zh": "一级技能",
+          "label_en": "First-Level Skill",
+          "base_type": "macro_protocol",
+          "level": 1,
+          "parent": "family_root",
+          "visible_role": "parent",
+          "allowed_children": [
+            "workflow_skill"
+          ],
+          "aliases": [
+            "macro_skill",
+            "一级技能",
+            "macro_framework",
+            "First-Level Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "workflow_skill",
+          "label_zh": "二级技能",
+          "label_en": "Second-Level Skill",
+          "base_type": "session_skill",
+          "level": 2,
+          "parent": "macro_skill",
+          "visible_role": "parent",
+          "allowed_children": [
+            "micro_skill_node"
+          ],
+          "aliases": [
+            "workflow_skill",
+            "二级技能",
+            "session_framework",
+            "Second-Level Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "micro_skill_node",
+          "label_zh": "微技能",
+          "label_en": "Micro Skill",
+          "base_type": "micro_skill",
+          "level": 3,
+          "parent": "workflow_skill",
+          "visible_role": "leaf",
+          "allowed_children": [],
+          "aliases": [
+            "micro_skill_node",
+            "微技能",
+            "micro_intervention",
+            "Micro Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "safety_module",
+          "label_zh": "一级技能",
+          "label_en": "Safety Module",
+          "base_type": "safety_rule",
+          "level": 1,
+          "parent": "family_root",
+          "visible_role": "parent",
+          "allowed_children": [
+            "safety_rule_node"
+          ],
+          "aliases": [
+            "safety_module",
+            "风险模块",
+            "safety_parent",
+            "一级技能",
+            "Safety Module"
+          ],
+          "default_for_base_type": false,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "safety_rule_node",
+          "label_zh": "二级技能",
+          "label_en": "Safety Skill",
+          "base_type": "safety_rule",
+          "level": 2,
+          "parent": "safety_module",
+          "visible_role": "leaf",
+          "allowed_children": [],
+          "aliases": [
+            "safety_rule_node",
+            "safety_rule",
+            "risk_rule",
+            "二级技能",
+            "Safety Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        },
+        {
+          "id": "knowledge_reference_node",
+          "label_zh": "一级技能",
+          "label_en": "Reference Skill",
+          "base_type": "knowledge_reference",
+          "level": 1,
+          "parent": "family_root",
+          "visible_role": "leaf",
+          "allowed_children": [],
+          "aliases": [
+            "knowledge_reference_node",
+            "knowledge_reference",
+            "reference",
+            "一级技能",
+            "Reference Skill"
+          ],
+          "default_for_base_type": true,
+          "extractable": true,
+          "synthesized": false
+        }
+      ]
+    },
+    "code_fence_markers": 2
+  },
+  {
+    "http": 8,
+    "stage": "compile",
+    "request_sha256": "43006593856a873cc4a7ea9a48bbc93966721e1e1773e98910ef36fd4d723e39",
+    "response_sha256": "d4ce8717f597e023d5e9e320f96cfc6feb046928c0159bf005538632a7d0d95f",
+    "system_sha256": "40fdafc1b903a62524a3bdd5b2f79a8528487787784bb6679068f9e9654b0e34",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 2626,
+      "completion_tokens": 1100,
+      "total_tokens": 3726,
+      "prompt_tokens_details": {
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 2370
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\n  \"skills\": [\n    {\n      \"name\": \"CSV 列选择与重排\",\n      \"description\": \"使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。\",\n      \"prompt\": \"使用 qsv select 对 CSV 数据执行列级操作。根据目标选择合适的选择器语法：索引（如 1,4）、范围（如 1-4、3-）、名称（如 Header1-Header4）、正则（如 /^a/）、排除（如 !1-2）、末列特殊字符 _、重复名称索引（如 Foo[2]）。可组合多种选择器实现重排与复制。需要排序时加 --sort，需要随机打乱时加 --random（可配合 --seed 复现）。列名与选择器语法冲突时用引号包裹。\",\n      \"asset_type\": \"session_skill\",\n      \"asset_node_id\": \"workflow_skill\",\n      \"granularity\": \"session\",\n      \"objective\": \"从 CSV 数据中高效选择、重排、反转、复制或删除列。\",\n      \"domain\": \"qsv\",\n      \"task_family\": \"CSV 列操作\",\n      \"method_family\": \"列选择器\",\n      \"stage\": \"数据预处理\",\n      \"applicable_signals\": [\n        \"输入为 CSV 格式数据\",\n        \"需要提取或调整列顺序\",\n        \"需要按列名或列索引定位列\",\n        \"需要删除敏感或不需要的列\"\n      ],\n      \"intervention_moves\": [\n        \"按索引选择列：qsv select 1,4\",\n        \"按范围选择列：qsv select 1-4 或 qsv select 3-\",\n        \"按名称选择列：qsv select Header1-Header4\",\n        \"排除列：qsv select '!1-2'\",\n        \"使用末列特殊字符：qsv select 1,_\",\n        \"反转列顺序：qsv select _-1\",\n        \"正则选择列：qsv select /^a/\",\n        \"正则排除列：qsv select '!/SSN|account_no|password/'\",\n        \"排序：qsv select 1- --sort\",\n        \"随机打乱：qsv select 1- --random --seed 42\",\n        \"组合选择器重排与复制：qsv select 3-1,Header3-Header1,Header1,Foo[2],Header1\",\n        \"列名冲突时加引号：qsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\"\n      ],\n      \"contraindications\": [\n        \"需要处理非 CSV 格式数据\",\n        \"需要修改列内容而非选择列\"\n      ],\n      \"triggers\": [\n        \"需要从 CSV 中选择特定列\",\n        \"需要调整列顺序或删除列\",\n        \"需要按名称、索引、范围或正则筛选列\",\n        \"需要反转、复制或随机打乱列顺序\"\n      ],\n      \"workflow_steps\": [\n        \"确认输入为 CSV 数据并明确目标列\",\n        \"根据列位置或名称选择合适的选择器语法\",\n        \"组合选择器实现重排、复制或删除\",\n        \"按需添加 --sort 或 --random 选项\",\n        \"执行 qsv select 并验证输出列符合预期\"\n      ],\n      \"constraints\": [\n        \"仅适用于 CSV 格式数据\",\n        \"仅执行列选择与重排，不修改列内容\",\n        \"列名与选择器语法冲突时需用引号包裹\"\n      ],\n      \"cautions\": [\n        \"正则排除敏感列时需确认匹配范围，避免误删或遗漏\",\n        \"使用 --random 时建议配合 --seed 以保证可复现\"\n      ],\n      \"output_contract\": [\n        \"输出包含所选列的新 CSV 数据。\"\n      ],\n      \"examples\": [\n        {\n          \"input\": \"选择第一和第四列\",\n          \"output\": \"qsv select 1,4\",\n          \"notes\": \"\"\n        },\n        {\n          \"input\": \"删除 SSN、account_no 和 password 列\",\n          \"output\": \"qsv select '!/SSN|account_no|password/'\",\n          \"notes\": \"\"\n        },\n        {\n          \"input\": \"反转列顺序\",\n          \"output\": \"qsv select _-1\",\n          \"notes\": \"\"\n        }\n      ],\n      \"tags\": [\n        \"qsv\",\n        \"select\",\n        \"csv\",\n        \"列选择\",\n        \"列重排\",\n        \"数据预处理\"\n      ],\n      \"confidence\": 0.9,\n      \"risk_class\": \"low\",\n      \"support_ids\": [\n        \"819cec2f-0f64-5faa-baec-06919fde83af\"\n      ],\n      \"source_draft_ids\": [\n        \"def5f116-bce7-54b1-afcd-cbfb3db8c337\"\n      ]\n    }\n  ]\n}",
+    "parsed": {
+      "skills": [
+        {
+          "name": "CSV 列选择与重排",
+          "description": "使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。",
+          "prompt": "使用 qsv select 对 CSV 数据执行列级操作。根据目标选择合适的选择器语法：索引（如 1,4）、范围（如 1-4、3-）、名称（如 Header1-Header4）、正则（如 /^a/）、排除（如 !1-2）、末列特殊字符 _、重复名称索引（如 Foo[2]）。可组合多种选择器实现重排与复制。需要排序时加 --sort，需要随机打乱时加 --random（可配合 --seed 复现）。列名与选择器语法冲突时用引号包裹。",
+          "asset_type": "session_skill",
+          "asset_node_id": "workflow_skill",
+          "granularity": "session",
+          "objective": "从 CSV 数据中高效选择、重排、反转、复制或删除列。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "列选择器",
+          "stage": "数据预处理",
+          "applicable_signals": [
+            "输入为 CSV 格式数据",
+            "需要提取或调整列顺序",
+            "需要按列名或列索引定位列",
+            "需要删除敏感或不需要的列"
+          ],
+          "intervention_moves": [
+            "按索引选择列：qsv select 1,4",
+            "按范围选择列：qsv select 1-4 或 qsv select 3-",
+            "按名称选择列：qsv select Header1-Header4",
+            "排除列：qsv select '!1-2'",
+            "使用末列特殊字符：qsv select 1,_",
+            "反转列顺序：qsv select _-1",
+            "正则选择列：qsv select /^a/",
+            "正则排除列：qsv select '!/SSN|account_no|password/'",
+            "排序：qsv select 1- --sort",
+            "随机打乱：qsv select 1- --random --seed 42",
+            "组合选择器重排与复制：qsv select 3-1,Header3-Header1,Header1,Foo[2],Header1",
+            "列名冲突时加引号：qsv select '\"Date - Opening\",\"Date - Actual Closing\"'"
+          ],
+          "contraindications": [
+            "需要处理非 CSV 格式数据",
+            "需要修改列内容而非选择列"
+          ],
+          "triggers": [
+            "需要从 CSV 中选择特定列",
+            "需要调整列顺序或删除列",
+            "需要按名称、索引、范围或正则筛选列",
+            "需要反转、复制或随机打乱列顺序"
+          ],
+          "workflow_steps": [
+            "确认输入为 CSV 数据并明确目标列",
+            "根据列位置或名称选择合适的选择器语法",
+            "组合选择器实现重排、复制或删除",
+            "按需添加 --sort 或 --random 选项",
+            "执行 qsv select 并验证输出列符合预期"
+          ],
+          "constraints": [
+            "仅适用于 CSV 格式数据",
+            "仅执行列选择与重排，不修改列内容",
+            "列名与选择器语法冲突时需用引号包裹"
+          ],
+          "cautions": [
+            "正则排除敏感列时需确认匹配范围，避免误删或遗漏",
+            "使用 --random 时建议配合 --seed 以保证可复现"
+          ],
+          "output_contract": [
+            "输出包含所选列的新 CSV 数据。"
+          ],
+          "examples": [
+            {
+              "input": "选择第一和第四列",
+              "output": "qsv select 1,4",
+              "notes": ""
+            },
+            {
+              "input": "删除 SSN、account_no 和 password 列",
+              "output": "qsv select '!/SSN|account_no|password/'",
+              "notes": ""
+            },
+            {
+              "input": "反转列顺序",
+              "output": "qsv select _-1",
+              "notes": ""
+            }
+          ],
+          "tags": [
+            "qsv",
+            "select",
+            "csv",
+            "列选择",
+            "列重排",
+            "数据预处理"
+          ],
+          "confidence": 0.9,
+          "risk_class": "low",
+          "support_ids": [
+            "819cec2f-0f64-5faa-baec-06919fde83af"
+          ],
+          "source_draft_ids": [
+            "def5f116-bce7-54b1-afcd-cbfb3db8c337"
+          ]
+        }
+      ]
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 9,
+    "stage": "compile",
+    "request_sha256": "60da73fbf8be355bdda9d069f100974813f2de22888fb12116f500f6c04a07dc",
+    "response_sha256": "b0945b0042785c5045b5e5ef4491115f247be52016f65d7fac2e309a4d18eb75",
+    "system_sha256": "40fdafc1b903a62524a3bdd5b2f79a8528487787784bb6679068f9e9654b0e34",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 2386,
+      "completion_tokens": 833,
+      "total_tokens": 3219,
+      "prompt_tokens_details": {
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 2130
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\n  \"skills\": [\n    {\n      \"name\": \"正则表达式列选择\",\n      \"description\": \"使用正则表达式匹配列名，从 CSV 数据中选择或排除符合模式的列。适用于列名具有规律、需要按模式批量选择或排除列的场景。\",\n      \"prompt\": \"当需要按列名模式批量选择或排除列时，使用 qsv select 的正则表达式选择器。\\n\\n执行步骤：\\n1. 确认列名具有可描述的模式（如统一前缀、包含数字、特定关键词）。\\n2. 选择匹配模式：使用 /pattern/ 形式选择匹配的列，例如 qsv select /^a/ 选择以 a 开头的列。\\n3. 排除匹配模式：使用 !/pattern/ 形式排除匹配的列，例如 qsv select '!/SSN|account_no|password/' 移除敏感列。\\n4. 如模式包含特殊字符或空格，用引号包裹选择器。\\n5. 验证输出列是否符合预期。\\n\\n注意：正则表达式匹配的是列名而非列内容；若列名无规律或需精确指定列，应改用索引或列名选择器。\",\n      \"asset_type\": \"micro_skill\",\n      \"asset_node_id\": \"micro_skill_node\",\n      \"granularity\": \"micro\",\n      \"objective\": \"通过正则表达式匹配列名来选择或排除列。\",\n      \"domain\": \"qsv\",\n      \"task_family\": \"CSV 列操作\",\n      \"method_family\": \"正则表达式\",\n      \"stage\": \"数据预处理\",\n      \"applicable_signals\": [\n        \"列名具有统一前缀或后缀\",\n        \"列名包含特定关键词或数字模式\",\n        \"需要批量排除敏感列\"\n      ],\n      \"intervention_moves\": [\n        \"使用 /pattern/ 选择匹配列\",\n        \"使用 !/pattern/ 排除匹配列\",\n        \"对含特殊字符的模式加引号\"\n      ],\n      \"contraindications\": [\n        \"列名无规律\",\n        \"需要精确指定列\",\n        \"需要按列内容而非列名筛选\"\n      ],\n      \"triggers\": [\n        \"列名符合某种模式\",\n        \"需要批量选择或排除列\",\n        \"需要按列名模式移除敏感列\"\n      ],\n      \"workflow_steps\": [\n        \"确认列名模式\",\n        \"构造正则选择器\",\n        \"执行 qsv select 命令\",\n        \"验证输出列\"\n      ],\n      \"constraints\": [\n        \"正则表达式匹配列名而非列内容\",\n        \"模式含特殊字符时需加引号\"\n      ],\n      \"cautions\": [\n        \"正则过于宽泛可能匹配到非预期列\",\n        \"排除敏感列后应确认输出不含敏感数据\"\n      ],\n      \"output_contract\": [\n        \"输出匹配正则的列。\"\n      ],\n      \"examples\": [\n        {\n          \"input\": \"选择以 'a' 开头的列\",\n          \"output\": \"qsv select /^a/\",\n          \"notes\": \"\"\n        },\n        {\n          \"input\": \"移除 SSN、account_no 和 password 列\",\n          \"output\": \"qsv select '!/SSN|account_no|password/'\",\n          \"notes\": \"\"\n        }\n      ],\n      \"tags\": [\n        \"qsv\",\n        \"select\",\n        \"regex\",\n        \"column-selection\",\n        \"csv\"\n      ],\n      \"confidence\": 0.85,\n      \"risk_class\": \"low\",\n      \"support_ids\": [\n        \"76983d71-789e-5f48-b781-ff2ec59ba71b\"\n      ],\n      \"source_draft_ids\": [\n        \"0e55a3de-b1dc-50cf-93fb-2259c51f7403\"\n      ]\n    }\n  ]\n}",
+    "parsed": {
+      "skills": [
+        {
+          "name": "正则表达式列选择",
+          "description": "使用正则表达式匹配列名，从 CSV 数据中选择或排除符合模式的列。适用于列名具有规律、需要按模式批量选择或排除列的场景。",
+          "prompt": "当需要按列名模式批量选择或排除列时，使用 qsv select 的正则表达式选择器。\n\n执行步骤：\n1. 确认列名具有可描述的模式（如统一前缀、包含数字、特定关键词）。\n2. 选择匹配模式：使用 /pattern/ 形式选择匹配的列，例如 qsv select /^a/ 选择以 a 开头的列。\n3. 排除匹配模式：使用 !/pattern/ 形式排除匹配的列，例如 qsv select '!/SSN|account_no|password/' 移除敏感列。\n4. 如模式包含特殊字符或空格，用引号包裹选择器。\n5. 验证输出列是否符合预期。\n\n注意：正则表达式匹配的是列名而非列内容；若列名无规律或需精确指定列，应改用索引或列名选择器。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "通过正则表达式匹配列名来选择或排除列。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "正则表达式",
+          "stage": "数据预处理",
+          "applicable_signals": [
+            "列名具有统一前缀或后缀",
+            "列名包含特定关键词或数字模式",
+            "需要批量排除敏感列"
+          ],
+          "intervention_moves": [
+            "使用 /pattern/ 选择匹配列",
+            "使用 !/pattern/ 排除匹配列",
+            "对含特殊字符的模式加引号"
+          ],
+          "contraindications": [
+            "列名无规律",
+            "需要精确指定列",
+            "需要按列内容而非列名筛选"
+          ],
+          "triggers": [
+            "列名符合某种模式",
+            "需要批量选择或排除列",
+            "需要按列名模式移除敏感列"
+          ],
+          "workflow_steps": [
+            "确认列名模式",
+            "构造正则选择器",
+            "执行 qsv select 命令",
+            "验证输出列"
+          ],
+          "constraints": [
+            "正则表达式匹配列名而非列内容",
+            "模式含特殊字符时需加引号"
+          ],
+          "cautions": [
+            "正则过于宽泛可能匹配到非预期列",
+            "排除敏感列后应确认输出不含敏感数据"
+          ],
+          "output_contract": [
+            "输出匹配正则的列。"
+          ],
+          "examples": [
+            {
+              "input": "选择以 'a' 开头的列",
+              "output": "qsv select /^a/",
+              "notes": ""
+            },
+            {
+              "input": "移除 SSN、account_no 和 password 列",
+              "output": "qsv select '!/SSN|account_no|password/'",
+              "notes": ""
+            }
+          ],
+          "tags": [
+            "qsv",
+            "select",
+            "regex",
+            "column-selection",
+            "csv"
+          ],
+          "confidence": 0.85,
+          "risk_class": "low",
+          "support_ids": [
+            "76983d71-789e-5f48-b781-ff2ec59ba71b"
+          ],
+          "source_draft_ids": [
+            "0e55a3de-b1dc-50cf-93fb-2259c51f7403"
+          ]
+        }
+      ]
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 10,
+    "stage": "compile",
+    "request_sha256": "ca5511b3c3249952b4f983e0bd49c6aa57bcc99ac2a812e8faf88ad4ae14b8df",
+    "response_sha256": "2c6f25434a87cea369284268c2c2f843a83f1343ca7caa19a34bb541541d1ac8",
+    "system_sha256": "40fdafc1b903a62524a3bdd5b2f79a8528487787784bb6679068f9e9654b0e34",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 2290,
+      "completion_tokens": 630,
+      "total_tokens": 2920,
+      "prompt_tokens_details": {
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 2034
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skills\": [{\"name\": \"列排序与随机打乱\", \"description\": \"对选定的 CSV 列进行字典序排序或随机打乱，用于在列选择之后重新排列列顺序。\", \"prompt\": \"在已确定要操作的列集合后，使用 qsv select 的 --sort 选项按列名字节值进行字典序排序，或使用 --random 选项随机打乱列顺序。可配合 --seed 使随机打乱结果可复现。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"对选定的列进行排序或随机打乱。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"排序/随机化\", \"stage\": \"数据预处理\", \"applicable_signals\": [\"需要按列名字典序排列\", \"需要随机打乱列顺序\"], \"intervention_moves\": [\"使用 --sort 按字节值对列进行字典序排序\", \"使用 --random 随机打乱列顺序\", \"使用 --random --seed 使随机打乱可复现\"], \"contraindications\": [\"需要保持原始列顺序\", \"需要按列内容排序\"], \"triggers\": [\"需要按列名字典序排列列\", \"需要随机打乱列顺序\", \"需要在列选择后重新排列列\"], \"workflow_steps\": [\"确定要操作的列集合（如 1- 表示全部列）\", \"选择 --sort 进行字典序排序，或选择 --random 进行随机打乱\", \"如需可复现的随机结果，附加 --seed 指定种子\", \"执行 qsv select 命令并检查输出列顺序\"], \"constraints\": [\"--sort 按列名的字节值排序，而非按列内容\", \"--random 打乱列顺序，不改变列内容\"], \"cautions\": [\"随机打乱结果默认不可复现，如需复现须指定 --seed\"], \"output_contract\": [\"输出排序或打乱后的列。\"], \"examples\": [{\"input\": \"qsv select 1- --sort\", \"output\": \"按列名字典序排列的列\", \"notes\": \"字典序排序\"}, {\"input\": \"qsv select 1- --random --seed 42\", \"output\": \"以种子 42 随机打乱后的列\", \"notes\": \"可复现的随机打乱\"}], \"tags\": [\"qsv\", \"select\", \"列操作\", \"排序\", \"随机化\"], \"confidence\": 0.85, \"risk_class\": \"low\", \"support_ids\": [\"df120f38-3d43-51b7-a677-74f37e20013f\"], \"source_draft_ids\": [\"89f8089b-9739-5ad3-ae4e-f2298dd209c8\"]}]}",
+    "parsed": {
+      "skills": [
+        {
+          "name": "列排序与随机打乱",
+          "description": "对选定的 CSV 列进行字典序排序或随机打乱，用于在列选择之后重新排列列顺序。",
+          "prompt": "在已确定要操作的列集合后，使用 qsv select 的 --sort 选项按列名字节值进行字典序排序，或使用 --random 选项随机打乱列顺序。可配合 --seed 使随机打乱结果可复现。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "对选定的列进行排序或随机打乱。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "排序/随机化",
+          "stage": "数据预处理",
+          "applicable_signals": [
+            "需要按列名字典序排列",
+            "需要随机打乱列顺序"
+          ],
+          "intervention_moves": [
+            "使用 --sort 按字节值对列进行字典序排序",
+            "使用 --random 随机打乱列顺序",
+            "使用 --random --seed 使随机打乱可复现"
+          ],
+          "contraindications": [
+            "需要保持原始列顺序",
+            "需要按列内容排序"
+          ],
+          "triggers": [
+            "需要按列名字典序排列列",
+            "需要随机打乱列顺序",
+            "需要在列选择后重新排列列"
+          ],
+          "workflow_steps": [
+            "确定要操作的列集合（如 1- 表示全部列）",
+            "选择 --sort 进行字典序排序，或选择 --random 进行随机打乱",
+            "如需可复现的随机结果，附加 --seed 指定种子",
+            "执行 qsv select 命令并检查输出列顺序"
+          ],
+          "constraints": [
+            "--sort 按列名的字节值排序，而非按列内容",
+            "--random 打乱列顺序，不改变列内容"
+          ],
+          "cautions": [
+            "随机打乱结果默认不可复现，如需复现须指定 --seed"
+          ],
+          "output_contract": [
+            "输出排序或打乱后的列。"
+          ],
+          "examples": [
+            {
+              "input": "qsv select 1- --sort",
+              "output": "按列名字典序排列的列",
+              "notes": "字典序排序"
+            },
+            {
+              "input": "qsv select 1- --random --seed 42",
+              "output": "以种子 42 随机打乱后的列",
+              "notes": "可复现的随机打乱"
+            }
+          ],
+          "tags": [
+            "qsv",
+            "select",
+            "列操作",
+            "排序",
+            "随机化"
+          ],
+          "confidence": 0.85,
+          "risk_class": "low",
+          "support_ids": [
+            "df120f38-3d43-51b7-a677-74f37e20013f"
+          ],
+          "source_draft_ids": [
+            "89f8089b-9739-5ad3-ae4e-f2298dd209c8"
+          ]
+        }
+      ]
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 11,
+    "stage": "compile",
+    "request_sha256": "12807a31550f662257f73439e8fcf4c51a241a6bd78b0ffcc3680ef6c1a23427",
+    "response_sha256": "494c32895944e42b6f8f54d2318d7b69b72c2c42454e6e5a7c88216b629c8023",
+    "system_sha256": "40fdafc1b903a62524a3bdd5b2f79a8528487787784bb6679068f9e9654b0e34",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 2285,
+      "completion_tokens": 607,
+      "total_tokens": 2892,
+      "prompt_tokens_details": {
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 2029
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\"skills\": [{\"name\": \"引用冲突列名进行 qsv select\", \"description\": \"当 CSV 列名包含空格、连字符等与 qsv select 选择器语法冲突的字符时，用引号正确引用列名，从而准确选中目标列。\", \"prompt\": \"在执行 qsv select 选择列时，先检查目标列名是否包含空格、连字符或其他与选择器语法冲突的字符。若存在冲突，用引号将列名整体包裹后再传入选择器，确保列名被当作字面名称而非选择器表达式解析。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"正确引用包含特殊字符的列名以避免语法冲突。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"引用转义\", \"stage\": \"数据预处理\", \"applicable_signals\": [\"列名包含空格、连字符等特殊字符\", \"列名与选择器语法冲突\"], \"intervention_moves\": [\"识别列名中与选择器语法冲突的字符\", \"用引号包裹冲突列名后传入选择器\"], \"contraindications\": [\"列名简单无特殊字符时无需引用\"], \"triggers\": [\"列名包含空格或连字符等特殊字符\", \"列名与选择器语法冲突\", \"直接书写列名导致解析错误或选中错误列\"], \"workflow_steps\": [\"检查目标列名是否包含空格、连字符等特殊字符\", \"若存在冲突，用引号将列名整体包裹\", \"将引用后的列名作为选择器参数执行 qsv select\", \"确认选中列与预期一致\"], \"constraints\": [\"仅在列名与选择器语法冲突时使用引用\", \"引用需包裹完整列名\"], \"cautions\": [\"引用不当可能导致列名被误解析\"], \"output_contract\": [\"正确解析列名并选择对应列。\"], \"examples\": [{\"input\": \"列名为 'Date - Opening' 与 'Date - Actual Closing'，需选择这两列\", \"output\": \"qsv select '\\\"Date - Opening\\\",\\\"Date - Actual Closing\\\"'\", \"notes\": \"用引号包裹含空格和连字符的列名以避免语法冲突\"}], \"tags\": [\"qsv\", \"select\", \"列选择\", \"引用转义\", \"特殊字符\"], \"confidence\": 0.8, \"risk_class\": \"low\", \"support_ids\": [\"01b26d5a-543b-550f-9b28-34d3399135f3\"], \"source_draft_ids\": [\"1bb58b76-1f3a-555d-ae51-b3173a8dcbc6\"]}]}",
+    "parsed": {
+      "skills": [
+        {
+          "name": "引用冲突列名进行 qsv select",
+          "description": "当 CSV 列名包含空格、连字符等与 qsv select 选择器语法冲突的字符时，用引号正确引用列名，从而准确选中目标列。",
+          "prompt": "在执行 qsv select 选择列时，先检查目标列名是否包含空格、连字符或其他与选择器语法冲突的字符。若存在冲突，用引号将列名整体包裹后再传入选择器，确保列名被当作字面名称而非选择器表达式解析。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "正确引用包含特殊字符的列名以避免语法冲突。",
+          "domain": "qsv",
+          "task_family": "CSV 列操作",
+          "method_family": "引用转义",
+          "stage": "数据预处理",
+          "applicable_signals": [
+            "列名包含空格、连字符等特殊字符",
+            "列名与选择器语法冲突"
+          ],
+          "intervention_moves": [
+            "识别列名中与选择器语法冲突的字符",
+            "用引号包裹冲突列名后传入选择器"
+          ],
+          "contraindications": [
+            "列名简单无特殊字符时无需引用"
+          ],
+          "triggers": [
+            "列名包含空格或连字符等特殊字符",
+            "列名与选择器语法冲突",
+            "直接书写列名导致解析错误或选中错误列"
+          ],
+          "workflow_steps": [
+            "检查目标列名是否包含空格、连字符等特殊字符",
+            "若存在冲突，用引号将列名整体包裹",
+            "将引用后的列名作为选择器参数执行 qsv select",
+            "确认选中列与预期一致"
+          ],
+          "constraints": [
+            "仅在列名与选择器语法冲突时使用引用",
+            "引用需包裹完整列名"
+          ],
+          "cautions": [
+            "引用不当可能导致列名被误解析"
+          ],
+          "output_contract": [
+            "正确解析列名并选择对应列。"
+          ],
+          "examples": [
+            {
+              "input": "列名为 'Date - Opening' 与 'Date - Actual Closing'，需选择这两列",
+              "output": "qsv select '\"Date - Opening\",\"Date - Actual Closing\"'",
+              "notes": "用引号包裹含空格和连字符的列名以避免语法冲突"
+            }
+          ],
+          "tags": [
+            "qsv",
+            "select",
+            "列选择",
+            "引用转义",
+            "特殊字符"
+          ],
+          "confidence": 0.8,
+          "risk_class": "low",
+          "support_ids": [
+            "01b26d5a-543b-550f-9b28-34d3399135f3"
+          ],
+          "source_draft_ids": [
+            "1bb58b76-1f3a-555d-ae51-b3173a8dcbc6"
+          ]
+        }
+      ]
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 12,
+    "stage": "register",
+    "request_sha256": "1fb58a434c57ebcfe8877b3df63a94ee595ba016e3c610a11b503b5d9217ad76",
+    "response_sha256": "4de311062fefb473b931dbb21ac1f96b44d715ec157606eef23db0eb6f5a37f7",
+    "system_sha256": "849912798a69d78138d549399381e62599128e4129df83a2732d56a85be56a33",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 256,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 1691,
+      "completion_tokens": 256,
+      "total_tokens": 1947,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1691
+    },
+    "finish_reason": "length",
+    "choice_count": 1,
+    "raw_content": "{\n  \"action\": \"create\",\n  \"target_skill_ids\": [],\n  \"reason\": \"候选技能覆盖 qsv select 的列选择与重排核心能力，与同批微技能（正则选择、排序/随机、引用冲突列名）互补而非重复，且无冲突证据，适合作为会话级技能保留。\",\n  \"resolved_skill\": {\n    \"skill_id\": \"f4c4df75-6ea6-5d4d-b30c-d7e825084300\",\n    \"name\": \"CSV 列选择与重排\",\n    \"description\": \"使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。\",\n    \"asset_type\": \"session_skill\",\n    \"granularity\": \"session\",\n    \"asset_node_id\": \"workflow_skill\",\n    \"asset_level\": 2,\n    \"objective\": \"从 CSV 数据中高效选择、重排、反转、复制或删除列。\",\n    \"domain\": \"qsv\",\n    \"task_family\": \"CSV 列操作\",\n   ",
+    "parsed": null,
+    "strict_json_parse_error": "Expecting property name enclosed in double quotes: line 16 column 4 (char 573)",
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 13,
+    "stage": "register",
+    "request_sha256": "6dc0b3769e36dd168cca77e88cca571b534b6e920283ae1394a07752f923947b",
+    "response_sha256": "48bdbe284664f7f4a708ce72be5a45214e6edc7ada2b43c224cc7f0343adbeb3",
+    "system_sha256": "849912798a69d78138d549399381e62599128e4129df83a2732d56a85be56a33",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 256,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 1691,
+      "completion_tokens": 256,
+      "total_tokens": 1947,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1691
+    },
+    "finish_reason": "length",
+    "choice_count": 1,
+    "raw_content": "{\n  \"action\": \"create\",\n  \"target_skill_ids\": [],\n  \"reason\": \"候选技能聚焦于使用正则表达式匹配列名进行选择或排除，与同批次的列排序、引用冲突列名及通用列选择技能在方法族和干预动作上均有明确区分，具备独立可执行价值，且无支持冲突证据，应保留为新技能。\",\n  \"resolved_skill\": {\n    \"skill_id\": \"bd72bc3b-8c84-59c2-9fd4-5caba1a5350b\",\n    \"name\": \"正则表达式列选择\",\n    \"description\": \"使用正则表达式匹配列名，从 CSV 数据中选择或排除符合模式的列。适用于列名具有规律、需要按模式批量选择或排除列的场景。\",\n    \"asset_type\": \"micro_skill\",\n    \"granularity\": \"micro\",\n    \"asset_node_id\": \"micro_skill_node\",\n    \"asset_level\": 3,\n    \"objective\": \"通过正则表达式匹配列名来选择或排除列。\",\n    \"domain\": \"qsv\",\n    \"task_family\": \"CSV 列操作\",\n    \"method_family\": \"",
+    "parsed": null,
+    "strict_json_parse_error": "Unterminated string starting at: line 16 column 22 (char 580)",
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 14,
+    "stage": "register",
+    "request_sha256": "bc5c2749aecb9583a1747d46564c1b3f2db65cc17c980fcab5b214a45ab3a6f5",
+    "response_sha256": "7f0722a208e1b00912d4340e5a77536cd7a106b2b19032156ec103055dcb9bfc",
+    "system_sha256": "849912798a69d78138d549399381e62599128e4129df83a2732d56a85be56a33",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 256,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 1691,
+      "completion_tokens": 256,
+      "total_tokens": 1947,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1691
+    },
+    "finish_reason": "length",
+    "choice_count": 1,
+    "raw_content": "{\"action\": \"create\", \"target_skill_ids\": [], \"reason\": \"Distinct micro skill for column sorting/randomization via qsv select --sort/--random; no existing skills and no same-batch redundancy (peer session skill covers broader selection but this is a focused, non-duplicative capability).\", \"resolved_skill\": {\"skill_id\": \"500c276a-5f59-5af9-86f5-4c0fbf4ad1be\", \"name\": \"列排序与随机打乱\", \"description\": \"对选定的 CSV 列进行字典序排序或随机打乱，用于在列选择之后重新排列列顺序。\", \"asset_type\": \"micro_skill\", \"granularity\": \"micro\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"对选定的列进行排序或随机打乱。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"排序/随机化\", \"stage\": \"数据预处理\", \"workflow_steps\": [\"确定要操作的列集合（如 1- 表示全部列）\",",
+    "parsed": null,
+    "strict_json_parse_error": "Expecting value: line 1 column 710 (char 709)",
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 15,
+    "stage": "register",
+    "request_sha256": "597c8033b8ebeedc7878b5ef6a0f2046927e9848eb1be8cdfdc80ab03522ffcf",
+    "response_sha256": "55aae571063461d971698936829fc91e880a5c017549f3d48337448cf11bf481",
+    "system_sha256": "849912798a69d78138d549399381e62599128e4129df83a2732d56a85be56a33",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 256,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 1691,
+      "completion_tokens": 256,
+      "total_tokens": 1947,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1691
+    },
+    "finish_reason": "length",
+    "choice_count": 1,
+    "raw_content": "{\n  \"action\": \"create\",\n  \"target_skill_ids\": [],\n  \"reason\": \"候选技能聚焦于 qsv select 中特殊字符列名的引用转义，与同批候选（正则选择、排序打乱、通用列选择）在方法族和干预动作上互补，无重复或冲突，且支持证据明确，应保留为独立微技能。\",\n  \"resolved_skill\": {\n    \"skill_id\": \"b0592fe3-a3d5-539a-af63-d33035c20003\",\n    \"name\": \"引用冲突列名进行 qsv select\",\n    \"description\": \"当 CSV 列名包含空格、连字符等与 qsv select 选择器语法冲突的字符时，用引号正确引用列名，从而准确选中目标列。\",\n    \"asset_type\": \"micro_skill\",\n    \"granularity\": \"micro\",\n    \"asset_node_id\": \"micro_skill_node\",\n    \"asset_level\": 3,\n    \"objective\": \"正确引用包含特殊字符的列名以避免语法冲突。\",\n    \"domain\": \"qsv\",\n    \"task_family\": \"CSV 列操作\",\n    \"method",
+    "parsed": null,
+    "strict_json_parse_error": "Unterminated string starting at: line 16 column 5 (char 577)",
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 16,
+    "stage": "register",
+    "request_sha256": "132b0f7f2f91f2717493604ff966df154acc55ad49d769e227c5704d00b347fa",
+    "response_sha256": "cd72ecf552e27858c780b0286dafd3bf1933105676330130561c235d6c41066b",
+    "system_sha256": "a243e28b52ce53ae53232f5678fcd86743be4e1a2755624c0dccf7b9ece18edd",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 128,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 697,
+      "completion_tokens": 103,
+      "total_tokens": 800,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 697
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\n  \"decision\": \"attach\",\n  \"parent_skill_id\": \"f4c4df75-6ea6-5d4d-b30c-d7e825084300\",\n  \"confidence\": 0.85,\n  \"reason\": \"The parent workflow 'CSV 列选择与重排' explicitly covers selecting columns by name or index and has a natural handoff point where regex-based column selection can be invoked as a sub-skill for pattern-based column selection.\"\n}",
+    "parsed": {
+      "decision": "attach",
+      "parent_skill_id": "f4c4df75-6ea6-5d4d-b30c-d7e825084300",
+      "confidence": 0.85,
+      "reason": "The parent workflow 'CSV 列选择与重排' explicitly covers selecting columns by name or index and has a natural handoff point where regex-based column selection can be invoked as a sub-skill for pattern-based column selection."
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 17,
+    "stage": "register",
+    "request_sha256": "207e0574010764a948f6e7a1fc4248681bb9f0edc1c905a126af196bff655ac3",
+    "response_sha256": "57d3c87ee0b95ec77e8ec2bb87179d6f95378a21c1786b2ff372001346d65020",
+    "system_sha256": "a243e28b52ce53ae53232f5678fcd86743be4e1a2755624c0dccf7b9ece18edd",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 128,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 735,
+      "completion_tokens": 107,
+      "total_tokens": 842,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 735
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\n  \"decision\": \"attach\",\n  \"parent_skill_id\": \"f4c4df75-6ea6-5d4d-b30c-d7e825084300\",\n  \"confidence\": 0.9,\n  \"reason\": \"The child skill (column sorting/shuffling) is a specific sub-operation of the parent workflow 'CSV 列选择与重排', which explicitly includes adding --sort or --random options as a step, making it a natural handoff point.\"\n}",
+    "parsed": {
+      "decision": "attach",
+      "parent_skill_id": "f4c4df75-6ea6-5d4d-b30c-d7e825084300",
+      "confidence": 0.9,
+      "reason": "The child skill (column sorting/shuffling) is a specific sub-operation of the parent workflow 'CSV 列选择与重排', which explicitly includes adding --sort or --random options as a step, making it a natural handoff point."
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  },
+  {
+    "http": 18,
+    "stage": "register",
+    "request_sha256": "a788c94c1db749301dbd8ed5e9975bcddc3e459afc18f72bcdf33bb8abaec6a0",
+    "response_sha256": "d7d22ce067114e05bc66b3207c13273034b660af018f4bf82e915ef6844bedc8",
+    "system_sha256": "a243e28b52ce53ae53232f5678fcd86743be4e1a2755624c0dccf7b9ece18edd",
+    "model_requested": "deepseek-flash",
+    "model_returned": "deepseek-flash",
+    "request_options": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 128,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "usage": {
+      "prompt_tokens": 720,
+      "completion_tokens": 94,
+      "total_tokens": 814,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 720
+    },
+    "finish_reason": "stop",
+    "choice_count": 1,
+    "raw_content": "{\n  \"decision\": \"attach\",\n  \"parent_skill_id\": \"f4c4df75-6ea6-5d4d-b30c-d7e825084300\",\n  \"confidence\": 0.85,\n  \"reason\": \"The child skill handles quoting special-character column names when using qsv select, which is a natural sub-step within the parent's workflow of selecting and reordering CSV columns by name or index.\"\n}",
+    "parsed": {
+      "decision": "attach",
+      "parent_skill_id": "f4c4df75-6ea6-5d4d-b30c-d7e825084300",
+      "confidence": 0.85,
+      "reason": "The child skill handles quoting special-character column names when using qsv select, which is a natural sub-step within the parent's workflow of selecting and reordering CSV columns by name or index."
+    },
+    "strict_json_parse_error": null,
+    "endpoint": "https://api.deepseek.com/v1/chat/completions",
+    "native_tolerant_parser_note": "Strict JSON failure does not establish native parser failure; no native fallback branch is inferred here."
+  }
+]

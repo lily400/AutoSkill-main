@@ -116,6 +116,8 @@ def _looks_like_front_matter_heading(heading: str, *, preview: str = "") -> bool
     if normalized in _NON_CONTENT_HEADING_MARKERS:
         return True
     preview_text = str(preview or "").strip()
+    # URI user-info and inline code are not author/contact evidence.
+    preview_text = re.sub(r"`[^`\n]*`|[A-Za-z][A-Za-z0-9+.-]*://\S+", "", preview_text)
     if preview_text and _CONTACT_LINE_RE.search(preview_text):
         return True
     if _AUTHOR_HEADING_RE.fullmatch(text) and len(text) <= 24:

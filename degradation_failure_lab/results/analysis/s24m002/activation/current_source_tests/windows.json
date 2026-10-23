@@ -1,0 +1,1601 @@
+[
+  {
+    "window_id": "c7f1346d-619e-5140-852a-7a1bea01448a",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "input001\\feed-exports.md",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 2,
+    "anchor_hits": [],
+    "text": "# Feed exports — Scrapy 2.14.1 documentation\n\n- Feed exports\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/feed-exports.rst)\n\n---",
+    "span": {
+      "start": 0,
+      "end": 159
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "input001\\feed-exports.md",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "input001\\feed-exports.md"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "Feed exports"
+      ],
+      "subsection_headings": [],
+      "heading_number": "",
+      "heading_kind": "",
+      "section_summary": "# Feed exports — Scrapy 2.14.1 documentation",
+      "section_chunk_index": 0,
+      "section_chunk_count": 0,
+      "section_chunk_span": {},
+      "original_section_span": {}
+    }
+  },
+  {
+    "window_id": "9f2f758a-af66-5685-bf5a-851ab6e8977c",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 3,
+    "paragraph_end": 5,
+    "anchor_hits": [],
+    "text": "Serialization formats\nFor serializing the scraped data, the feed exports use the [Item exporters](exporters.html#topics-exporters). These formats are supported out of the box:\n\n- JSON\n- JSON lines\n- CSV\n- XML\n\nBut you can also extend the supported format through the\n`FEED_EXPORTERS` setting.",
+    "span": {
+      "start": 870,
+      "end": 1162
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "edc9ea14-6817-5840-ae4c-ae182ccde91a",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 5,
+    "paragraph_end": 12,
+    "anchor_hits": [],
+    "text": "But you can also extend the supported format through the\n`FEED_EXPORTERS` setting.\n\nJSON\n- Value for the `format` key in the `FEEDS` setting: `json`\n- Exporter used: [`JsonItemExporter`](exporters.html#scrapy.exporters.JsonItemExporter)\n- See [this warning](exporters.html#json-with-large-data) if you’re using JSON with\nlarge feeds.\n\nJSON lines\n- Value for the `format` key in the `FEEDS` setting: `jsonlines`\n- Exporter used: [`JsonLinesItemExporter`](exporters.html#scrapy.exporters.JsonLinesItemExporter)\n\nCSV\n- Value for the `format` key in the `FEEDS` setting: `csv`\n- Exporter used: [`CsvItemExporter`](exporters.html#scrapy.exporters.CsvItemExporter)\n- To specify columns to export, their order and their column names, use\n`FEED_EXPORT_FIELDS`. Other feed exporters can also use this\noption, but it is important for CSV because unlike many other export\nformats CSV uses a fixed header.\n\nXML\n- Value for the `format` key in the `FEEDS` setting: `xml`\n- Exporter used: [`XmlItemExporter`](exporters.html#scrapy.exporters.XmlItemExporter)\n\nPickle\n- Value for the `format` key in the `FEEDS` setting: `pickle`\n- Exporter used: [`PickleItemExporter`](exporters.html#scrapy.exporters.PickleItemExporter)\n\nMarshal\n- Value for the `format` key in the `FEEDS` setting: `marshal`\n- Exporter used: [`MarshalItemExporter`](exporters.html#scrapy.exporters.MarshalItemExporter)\n\nStorages\nWhen using the feed exports you define where to store the feed using one or multiple [URIs](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)\n(through the `FEEDS` setting). The feed exports supports multiple\nstorage backend types which are defined by the URI scheme.",
+    "span": {
+      "start": 1080,
+      "end": 2737
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "6764ad44-bbdb-5cc0-b4f5-57c5ad1282cd",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 13,
+    "paragraph_end": 15,
+    "anchor_hits": [],
+    "text": "The storages backends supported out of the box are:\n\n- Local filesystem\n- FTP\n- S3 (requires [boto3](https://github.com/boto/boto3))\n- Google Cloud Storage (GCS) (requires [google-cloud-storage](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python))\n- Standard output\n\nSome storage backends may be unavailable if the required external libraries are\nnot available. For example, the S3 backend is only available if the [boto3](https://github.com/boto/boto3)\nlibrary is installed.",
+    "span": {
+      "start": 2739,
+      "end": 3253
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "440152e5-ed73-585d-a005-76593e6cbae5",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 16,
+    "paragraph_end": 18,
+    "anchor_hits": [],
+    "text": "Storage URI parameters\nThe storage URI can also contain parameters that get replaced when the feed is\nbeing created. These parameters are:\n\n- `%(time)s` - gets replaced by a timestamp when the feed is being created\n- `%(name)s` - gets replaced by the spider name\n\nAny other named parameter gets replaced by the spider attribute of the same\nname. For example, `%(site_id)s` would get replaced by the `spider.site_id`\nattribute the moment the feed is being created.",
+    "span": {
+      "start": 3255,
+      "end": 3718
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "64726da3-f930-5c92-8764-6c661cfeb978",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 19,
+    "paragraph_end": 21,
+    "anchor_hits": [],
+    "text": "Here are some examples to illustrate:\n\n- Store in FTP using one directory per spider:\n  - `ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json`\n- Store in S3 using one directory per spider:\n  - `s3://mybucket/scraping/feeds/%(name)s/%(time)s.json`\n\n[Spider arguments](spiders.html#spiderargs) become spider attributes, hence\nthey can also be used as storage URI parameters.",
+    "span": {
+      "start": 3720,
+      "end": 4115
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "f3c11cdc-df3d-5478-a3d1-bd4a55804399",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 22,
+    "paragraph_end": 24,
+    "anchor_hits": [],
+    "text": "Local filesystem\nThe feeds are stored in the local filesystem.\n\n- URI scheme: `file`\n- Example URI: `file:///tmp/export.csv`\n- Required external libraries: none\n\nNote that for the local filesystem storage (only) you can omit the scheme if\nyou specify an absolute path like `/tmp/export.csv` (Unix systems only).\nAlternatively you can also use a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path) object.",
+    "span": {
+      "start": 4117,
+      "end": 4547
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "46ab7f77-11d6-5d1e-b804-77fc9667671f",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 25,
+    "paragraph_end": 27,
+    "anchor_hits": [],
+    "text": "FTP\nThe feeds are stored in a FTP server.\n\n- URI scheme: `ftp`\n- Example URI: `ftp://user:pass@ftp.example.com/path/to/export.csv`\n- Required external libraries: none\n\nFTP supports two different connection modes: [active or passive](https://stackoverflow.com/a/1699163). Scrapy uses the passive connection\nmode by default. To use the active connection mode instead, set the\n`FEED_STORAGE_FTP_ACTIVE` setting to `True`.",
+    "span": {
+      "start": 4549,
+      "end": 4967
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "b61fdf9f-ffc6-546f-8579-2a6e66599163",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 31,
+    "paragraph_end": 33,
+    "anchor_hits": [],
+    "text": "S3\nThe feeds are stored on [Amazon S3](https://aws.amazon.com/s3/).\n\n- URI scheme: `s3`\n- Example URIs:\n  - `s3://mybucket/path/to/export.csv`\n  - `s3://aws_key:aws_secret@mybucket/path/to/export.csv`\n- Required external libraries: [boto3](https://github.com/boto/boto3) >= 1.20.0\n\nThe AWS credentials can be passed as user/password in the URI, or they can be\npassed through the following settings:",
+    "span": {
+      "start": 5205,
+      "end": 5603
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "75709173-7a4d-5c3a-93dd-7bb775ed914c",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 33,
+    "paragraph_end": 35,
+    "anchor_hits": [
+      "session"
+    ],
+    "text": "The AWS credentials can be passed as user/password in the URI, or they can be\npassed through the following settings:\n\n- [`AWS_ACCESS_KEY_ID`](settings.html#std-setting-AWS_ACCESS_KEY_ID)\n- [`AWS_SECRET_ACCESS_KEY`](settings.html#std-setting-AWS_SECRET_ACCESS_KEY)\n- [`AWS_SESSION_TOKEN`](settings.html#std-setting-AWS_SESSION_TOKEN) (only needed for [temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html))\n\nYou can also define a custom ACL, custom endpoint, and region name for exported\nfeeds using these settings:",
+    "span": {
+      "start": 5487,
+      "end": 6049
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "58311ec6-2c13-501c-8cf1-97fe50d6b102",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 35,
+    "paragraph_end": 37,
+    "anchor_hits": [],
+    "text": "You can also define a custom ACL, custom endpoint, and region name for exported\nfeeds using these settings:\n\n- `FEED_STORAGE_S3_ACL`\n- [`AWS_ENDPOINT_URL`](settings.html#std-setting-AWS_ENDPOINT_URL)\n- [`AWS_REGION_NAME`](settings.html#std-setting-AWS_REGION_NAME)\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.",
+    "span": {
+      "start": 5942,
+      "end": 6301
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "7f5c9570-e363-5238-a1da-d29be7e49b94",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 40,
+    "paragraph_end": 42,
+    "anchor_hits": [],
+    "text": "Google Cloud Storage (GCS)\nThe feeds are stored on [Google Cloud Storage](https://cloud.google.com/storage/).\n\n- URI scheme: `gs`\n- Example URIs:\n  - `gs://mybucket/path/to/export.csv`\n- Required external libraries: [google-cloud-storage](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python).\n\nFor more information about authentication, please refer to [Google Cloud documentation](https://cloud.google.com/docs/authentication).",
+    "span": {
+      "start": 6444,
+      "end": 6910
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "ec00a689-c7df-572f-aec5-56c8d383bd8c",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 43,
+    "paragraph_end": 45,
+    "anchor_hits": [],
+    "text": "You can set a *Project ID* and *Access Control List (ACL)* through the following settings:\n\n- [`FEED_STORAGE_GCS_ACL`](settings.html#std-setting-FEED_STORAGE_GCS_ACL)\n- [`GCS_PROJECT_ID`](settings.html#std-setting-GCS_PROJECT_ID)\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.",
+    "span": {
+      "start": 6912,
+      "end": 7236
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "602e9b10-f68b-59c6-9f91-4460816f8f0d",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 48,
+    "paragraph_end": 50,
+    "anchor_hits": [],
+    "text": "Standard output\nThe feeds are written to the standard output of the Scrapy process.\n\n- URI scheme: `stdout`\n- Example URI: `stdout:`\n- Required external libraries: none\n\nDelayed file delivery\nAs indicated above, some of the described storage backends use delayed file\ndelivery.",
+    "span": {
+      "start": 7379,
+      "end": 7656
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9934
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "8f7371ee-c456-54ba-959a-48c918321369",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 9,
+    "paragraph_end": 22,
+    "anchor_hits": [],
+    "text": "Accepted `feed_options` parameters:\n\n- gzip_compresslevel\n- gzip_mtime\n- gzip_filename\n\nSee [`gzip.GzipFile`](https://docs.python.org/3/library/gzip.html#gzip.GzipFile) for more info about parameters.\n\nCompresses received data using [lzma](https://en.wikipedia.org/wiki/Lempel–Ziv–Markov_chain_algorithm).\n\nAccepted `feed_options` parameters:\n\n- lzma_format\n- lzma_check\n- lzma_preset\n- lzma_filters\n\n`lzma_filters` cannot be used in pypy version 7.3.1 and older.\n\nSee [`lzma.LZMAFile`](https://docs.python.org/3/library/lzma.html#lzma.LZMAFile) for more info about parameters.\n\nCompresses received data using [bz2](https://en.wikipedia.org/wiki/Bzip2).\n\nAccepted `feed_options` parameters:\n\n- bz2_compresslevel\n\nSee [`bz2.BZ2File`](https://docs.python.org/3/library/bz2.html#bz2.BZ2File) for more info about parameters.",
+    "span": {
+      "start": 11437,
+      "end": 13083
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9936,
+        "end": 19740
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "9f60fee5-605f-5e94-9157-93ee5b76beef",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 26,
+    "paragraph_end": 28,
+    "anchor_hits": [],
+    "text": "**Parameters:**\n\n- **file** – file-like object having at least the write, tell and close methods implemented\n- **feed_options** ([`dict`](https://docs.python.org/3/library/stdtypes.html#dict)) – feed-specific options\n\n**write(*self*, *data*)**",
+    "span": {
+      "start": 13237,
+      "end": 13480
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9936,
+        "end": 19740
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "e4048ad7-d095-537b-b115-1098c34530b8",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 35,
+    "paragraph_end": 37,
+    "anchor_hits": [],
+    "text": "Settings\nThese are the settings used for configuring the feed exports:\n\n- `FEEDS` (mandatory)\n- `FEED_EXPORT_ENCODING`\n- `FEED_STORE_EMPTY`\n- `FEED_EXPORT_FIELDS`\n- `FEED_EXPORT_INDENT`\n- `FEED_STORAGES`\n- `FEED_STORAGE_FTP_ACTIVE`\n- `FEED_STORAGE_S3_ACL`\n- `FEED_EXPORTERS`\n- `FEED_EXPORT_BATCH_ITEM_COUNT`\n\nFEEDS\nDefault: `{}`",
+    "span": {
+      "start": 14101,
+      "end": 14429
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9936,
+        "end": 19740
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "08edca37-0bfc-5bfc-bcb2-1e04d7ba55b0",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 43,
+    "paragraph_end": 50,
+    "anchor_hits": [],
+    "text": "The following is a list of the accepted keys and the setting that is used\nas a fallback value if that key is not provided for a specific feed definition:\n\n- `format`: the serialization format.\n\nThis setting is mandatory, there is no fallback value.\n- `batch_item_count`: falls back to\n`FEED_EXPORT_BATCH_ITEM_COUNT`.\n- `encoding`: falls back to `FEED_EXPORT_ENCODING`.\n- `fields`: falls back to `FEED_EXPORT_FIELDS`.\n- `item_classes`: list of [item classes](items.html#topics-items) to export.\n\nIf undefined or empty, all items are exported.\n- `item_filter`: a filter class to filter items to export.\n\n`ItemFilter` is used be default.\n- `indent`: falls back to `FEED_EXPORT_INDENT`.\n- `item_export_kwargs`: [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) with keyword arguments for the corresponding [item exporter class](exporters.html#topics-exporters).\n- `overwrite`: whether to overwrite the file if it already exists\n(`True`) or append to its content (`False`).\n\nThe default value depends on the storage backend:\n  - Local filesystem: `False`\n  - FTP: `True`\n\nSome FTP servers may not support appending to files (the\n`APPE` FTP command).\n  - S3: `True` (appending is not supported)\n  - Google Cloud Storage (GCS): `True` (appending is not supported)\n  - Standard output: `False` (overwriting is not supported)\n- `store_empty`: falls back to `FEED_STORE_EMPTY`.\n- `uri_params`: falls back to `FEED_URI_PARAMS`.\n- `postprocessing`: list of plugins to use for post-processing.\n\nThe plugins will be used in the order of the list passed.",
+    "span": {
+      "start": 15603,
+      "end": 17155
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9936,
+        "end": 19740
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "a29ef054-984c-563a-beef-4adda3a8376a",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 10,
+    "paragraph_end": 12,
+    "anchor_hits": [],
+    "text": "When generating multiple output files, you must use at least one of the following\nplaceholders in the feed URI to indicate how the different output file names are\ngenerated:\n\n- `%(batch_time)s` - gets replaced by a timestamp when the feed is being created\n(e.g. `2020-03-28T14-45-08.237134`)\n- `%(batch_id)d` - gets replaced by the 1-based sequence number of the batch.\n\nUse [printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting) to\nalter the number format. For example, to make the batch ID a 5-digit\nnumber by introducing leading zeroes as needed, use `%(batch_id)05d`\n(e.g. `3` becomes `00003`, `123` becomes `00123`).",
+    "span": {
+      "start": 21442,
+      "end": 22112
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 3,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 19742,
+        "end": 24267
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "def7ec47-ec09-5913-8e84-6557ffc6d43e",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 25,
+    "paragraph_end": 31,
+    "anchor_hits": [],
+    "text": "**Parameters:**\n\n- **params** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) –\n\ndefault key-value pairs\n\nSpecifically:\n  - `batch_id`: ID of the file batch. See\n`FEED_EXPORT_BATCH_ITEM_COUNT`.\n\nIf `FEED_EXPORT_BATCH_ITEM_COUNT` is `0`, `batch_id`\nis always `1`.\n  - `batch_time`: UTC date and time, in ISO format with `:`\nreplaced with `-`.\n\nSee `FEED_EXPORT_BATCH_ITEM_COUNT`.\n  - `time`: `batch_time`, with microseconds set to `0`.\n- **spider** ([*scrapy.Spider*](spiders.html#scrapy.Spider)) – source spider of the feed items\n\nThe function should return a new dictionary, modifying\nthe received `params` in-place is deprecated.",
+    "span": {
+      "start": 23265,
+      "end": 23913
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 3,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 19742,
+        "end": 24267
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  },
+  {
+    "window_id": "5472787f-2450-519a-aa01-8959126c7b11",
+    "doc_id": "145c3349-f7eb-5a01-8b5d-a8e4789f2a4f",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+    "unit_title": "input001\\feed-exports.md",
+    "section_heading": "Feed exports",
+    "section_level": 1,
+    "paragraph_start": 32,
+    "paragraph_end": 36,
+    "anchor_hits": [],
+    "text": "For example, to include the [`name`](spiders.html#scrapy.Spider.name) of the\nsource spider in the feed URI:\n\n1. Define the following function somewhere in your project:\n\n```\n# myproject/utils.py\ndef uri_params(params, spider):\n    return {**params, \"spider_name\": spider.name}\n```\n2. Point `FEED_URI_PARAMS` to that function in your settings:\n\n```\n# myproject/settings.py\nFEED_URI_PARAMS = \"myproject.utils.uri_params\"\n```\n3. Use `%(spider_name)s` in your feed URI:\n\n```\nscrapy crawl <spider_name> -o \"%(spider_name)s.jsonl\"\n```",
+    "span": {
+      "start": 23915,
+      "end": 24443
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Feed exports",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m001\\inputs\\input001\\feed-exports.md",
+      "heading_path": [
+        "Feed exports"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\feed-exports.md"
+      ],
+      "subsection_headings": [
+        "Serialization formats",
+        "JSON",
+        "JSON lines",
+        "CSV",
+        "XML",
+        "Pickle",
+        "Marshal",
+        "Storages",
+        "Storage URI parameters",
+        "Local filesystem",
+        "FTP",
+        "S3",
+        "Google Cloud Storage (GCS)",
+        "Standard output",
+        "Delayed file delivery",
+        "Item filtering",
+        "ItemFilter",
+        "Post-Processing",
+        "Built-in Plugins",
+        "Custom Plugins",
+        "Settings",
+        "FEEDS",
+        "FEED_EXPORT_ENCODING",
+        "FEED_EXPORT_FIELDS",
+        "FEED_EXPORT_INDENT",
+        "FEED_STORE_EMPTY",
+        "FEED_STORAGES",
+        "FEED_STORAGE_FTP_ACTIVE",
+        "FEED_STORAGE_S3_ACL",
+        "FEED_STORAGES_BASE",
+        "FEED_EXPORTERS",
+        "FEED_EXPORTERS_BASE",
+        "FEED_EXPORT_BATCH_ITEM_COUNT",
+        "FEED_URI_PARAMS"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "One of the most frequently required features when implementing scrapers is",
+      "section_chunk_index": 3,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 19742,
+        "end": 24267
+      },
+      "original_section_span": {
+        "start": 176,
+        "end": 24629
+      }
+    }
+  }
+]

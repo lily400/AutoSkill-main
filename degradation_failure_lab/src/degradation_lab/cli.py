@@ -20,6 +20,9 @@ def main():
         p.add_argument('--condition', nargs='+')
         p.add_argument('--repeat', type=int, default=1)
         if name=='run': p.add_argument('--run-id', help='Only for a single case/condition/repeat')
+    p = sub.add_parser('resume', help='Continue an interrupted Plan in a new run; invokes paid model API')
+    p.add_argument('--run', required=True, help='Interrupted run id')
+    p.add_argument('--run-id', required=True, help='New globally unique run id')
     p = sub.add_parser('verify'); p.add_argument('--run', required=True)
     p.add_argument('--out', help='Project-relative external sidecar directory')
     p = sub.add_parser('aggregate'); p.add_argument('--out', default='results/aggregates/current')
@@ -60,6 +63,13 @@ def main():
         result = {'cases':cases, 'sources':list(manager.sources.sources), 'status':'VALID'}
         if args.command == 'validate':
             result['upstream_path'] = str(official_source)
+    elif args.command == 'resume':
+        from .artifacts import resolve_run
+        identity, _ = resolve_run(root, args.run)
+        path, code = ExperimentRunner(root).run(identity['case_id'], identity['condition_id'],
+                                               args.run_id, resume_from=args.run)
+        print(json.dumps({'path':str(path), 'exit_code':code}, ensure_ascii=False, indent=2))
+        return int(bool(code))
     elif args.command in ('plan','run'):
         manager = CaseManager(root)
         runner = ExperimentRunner(root, manager)

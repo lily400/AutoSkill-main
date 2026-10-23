@@ -46,7 +46,7 @@ class Ledger:
             ''')
             db.execute('INSERT INTO policy VALUES (1, ?, NULL)', (json.dumps(policy, sort_keys=True),))
             db.executemany('INSERT INTO arms(arm,trial,state) VALUES (?,?,?)',
-                           [(arm, policy['trials'][arm], 'NEW') for arm in ORDER])
+                           [(arm, policy['trials'][arm], 'NEW') for arm in policy.get('order', ORDER)])
             db.commit()
         return cls(path)
 
@@ -121,7 +121,8 @@ class Ledger:
                 raise BudgetStop('Trial already admitted; restart and repeat are forbidden')
             if db.execute("SELECT 1 FROM arms WHERE state='RUNNING'").fetchone():
                 raise BudgetStop('Concurrent Trial admission is forbidden')
-            for previous in ORDER[:ORDER.index(arm)]:
+            order = tuple(policy.get('order', ORDER))
+            for previous in order[:order.index(arm)]:
                 if db.execute('SELECT state FROM arms WHERE arm=?', (previous,)).fetchone()[0] != 'DONE':
                     raise BudgetStop('Previous arm did not meet its continuation conditions')
             lease = secrets.token_hex(32)
@@ -143,10 +144,11 @@ class Ledger:
             self.check_parent(policy)
             if db.execute('SELECT halt FROM policy').fetchone()[0]:
                 raise BudgetStop('Experiment stopped after an unknown or failed request')
-            if db.execute('SELECT count(*) FROM attempts').fetchone()[0] >= 18:
-                raise BudgetStop('Global HTTP limit 18 reached')
-            if db.execute('SELECT count(*) FROM attempts WHERE arm=?', (arm,)).fetchone()[0] >= 6:
-                raise BudgetStop('Arm HTTP limit 6 reached')
+            global_limit, arm_limit = policy.get('global_limit', 18), policy.get('per_trial_limit', 6)
+            if db.execute('SELECT count(*) FROM attempts').fetchone()[0] >= global_limit:
+                raise BudgetStop(f'Global HTTP limit {global_limit} reached')
+            if db.execute('SELECT count(*) FROM attempts WHERE arm=?', (arm,)).fetchone()[0] >= arm_limit:
+                raise BudgetStop(f'Arm HTTP limit {arm_limit} reached')
             self.owner(db, arm, trial, lease)
             if db.execute("SELECT 1 FROM attempts WHERE state='RESERVED'").fetchone():
                 raise BudgetStop('Concurrent or unknown in-flight request; no further dispatch allowed')
@@ -199,8 +201,9 @@ class Ledger:
             arms = [dict(row) for row in db.execute('SELECT arm,trial,state,pid,evidence FROM arms ORDER BY rowid')]
             halt = db.execute('SELECT halt FROM policy').fetchone()[0]
             lineage = self.policy(db).get('recovered_from')
+            order = tuple(self.policy(db).get('order', ORDER))
         return {'recovered_from': lineage, 'arms': arms, 'attempts': attempts, 'global_reserved_attempts': len(attempts),
-                'counts': {arm: sum(a['arm'] == arm for a in attempts) for arm in ORDER},
+                'counts': {arm: sum(a['arm'] == arm for a in attempts) for arm in order},
                 'halt': halt, 'actual_cost': 'UNKNOWN',
                 'count_note': 'Committed transport reservations include unknown pre-send/in-flight outcomes; never refunded.'}
 

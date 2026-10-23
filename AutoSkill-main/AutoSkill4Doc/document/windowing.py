@@ -7,6 +7,7 @@ task blocks that are more likely to yield one clean child skill candidate.
 
 from __future__ import annotations
 
+import hashlib
 import re
 import uuid
 from dataclasses import dataclass
@@ -111,7 +112,7 @@ _DIALOGUE_LINE_RE = re.compile(
     r"^\s*(咨询师|来访者|治疗师|个案|访谈者|interviewer|therapist|counselor|client|patient)\s*[:：]",
     re.IGNORECASE,
 )
-_BULLET_RE = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+")
+_BULLET_RE = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+", re.MULTILINE)
 _REFERENCE_LINE_RE = re.compile(
     r"^\s*(?:\[\d+\]|\(\d+\)|\d+\.\s+.+\b(?:19|20)\d{2}[a-z]?\b.+|.+\bdoi\b.+|https?://\S+)",
     re.IGNORECASE,
@@ -469,7 +470,8 @@ def _window_from_blocks(
     section_md = dict(section.metadata or {})
     heading_path = list(section_md.get("heading_path") or [section.heading])
     parent_heading = str(section_md.get("parent_heading") or "").strip()
-    key = f"{record.doc_id}:{section.heading}:{paragraph_start}:{paragraph_end}:{effective_strategy}"
+    text_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    key = f"{record.doc_id}:{section.heading}:{paragraph_start}:{paragraph_end}:{effective_strategy}:{start}:{end}:{text_hash}"
     return StrictWindow(
         window_id=str(uuid.uuid5(uuid.NAMESPACE_URL, f"autoskill4doc-window:{key}")),
         doc_id=record.doc_id,

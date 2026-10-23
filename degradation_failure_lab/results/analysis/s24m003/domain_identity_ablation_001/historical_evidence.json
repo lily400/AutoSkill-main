@@ -1,0 +1,95 @@
+{
+  "scrapy_http019": {
+    "request": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m003\\http\\019\\request.json",
+    "request_sha256": "670bde12f3ceb64ccd0c9206cbf844860499e4de1ce5ef473644ca052a7385bb",
+    "response": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m003\\http\\019\\response.json",
+    "response_sha256": "5cee685f54c03ddeeb30af4800d6ead22d7f862d7c20a897770eb1132ff07c2a",
+    "system_fingerprint": "e72d3c7f663d3e1383b00b3884cb4501",
+    "raw_content": "{\"skills\": []}",
+    "raw_candidates": 0,
+    "usage": {
+      "prompt_tokens": 3969,
+      "completion_tokens": 5,
+      "total_tokens": 3974,
+      "prompt_tokens_details": {
+        "cached_tokens": 1792
+      },
+      "prompt_cache_hit_tokens": 1792,
+      "prompt_cache_miss_tokens": 2177
+    },
+    "request_parameters": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "document_domain": "",
+    "taxonomy_domain_type": "default",
+    "taxonomy_id": "default"
+  },
+  "qsv_historical_http002": {
+    "request": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case001_qsv_select\\clean\\raecd75e08b34\\http\\002\\request.json",
+    "request_sha256": "e346e5e435b94d0c92e0fb3b1705281e31996a4d0399c9c7b7ec702dce65c2fe",
+    "response": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case001_qsv_select\\clean\\raecd75e08b34\\http\\002\\response.json",
+    "response_sha256": "778fe551dc895de75f56bd8aa57da1ec5c74234eefd4c513ce2d2f4b10147773",
+    "system_fingerprint": "aeb56401ca74e127821c4f9126dcb669",
+    "raw_content": "{\"skills\": [{\"slot\": 1, \"name\": \"CSV 列选择与重排\", \"description\": \"使用 qsv select 按索引、名称、范围或正则选择、重排、反转、复制或删除 CSV 列。适用于需要从 CSV 中提取或调整列顺序的场景。\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"workflow_skill\", \"granularity\": \"session\", \"objective\": \"从 CSV 数据中高效选择、重排、反转、复制或删除列。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"列选择器\", \"stage\": \"数据预处理\", \"use_when\": [\"需要从 CSV 中选择特定列\", \"需要调整列顺序或删除列\"], \"do_not_use_when\": [\"需要处理非 CSV 格式数据\", \"需要修改列内容而非选择列\"], \"success_artifact\": \"输出包含所选列的新 CSV 数据。\", \"why_distinct\": \"这是核心的列选择工作流，涵盖基本选择操作。\", \"evidence_span_hint\": \"Select columns from CSV data efficiently.\", \"confidence\": 0.9}, {\"slot\": 2, \"name\": \"正则表达式列选择\", \"description\": \"使用正则表达式选择或排除匹配特定模式的列。适用于列名有规律或需要批量选择/排除的场景。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"通过正则表达式匹配列名来选择或排除列。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"正则表达式\", \"stage\": \"数据预处理\", \"use_when\": [\"列名符合某种模式\", \"需要批量选择或排除列\"], \"do_not_use_when\": [\"列名无规律\", \"需要精确指定列\"], \"success_artifact\": \"输出匹配正则的列。\", \"why_distinct\": \"专注于正则表达式选择，是列选择的一种特定方法。\", \"evidence_span_hint\": \"select columns starting with 'a' (regex)\", \"confidence\": 0.85}, {\"slot\": 3, \"name\": \"列排序与随机打乱\", \"description\": \"使用 --sort 按字节值对列进行字典序排序，或使用 --random 随机打乱列顺序。适用于需要重新排列列的场景。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"对选定的列进行排序或随机打乱。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"排序/随机化\", \"stage\": \"数据预处理\", \"use_when\": [\"需要按列名字典序排列\", \"需要随机打乱列顺序\"], \"do_not_use_when\": [\"需要保持原始列顺序\", \"需要按列内容排序\"], \"success_artifact\": \"输出排序或打乱后的列。\", \"why_distinct\": \"专注于列的排序和随机化，是列选择后的附加操作。\", \"evidence_span_hint\": \"Sort the columns lexicographically\", \"confidence\": 0.85}, {\"slot\": 4, \"name\": \"列名冲突引用\", \"description\": \"当列名包含与选择器语法冲突的字符时，使用引号正确引用列名。适用于列名包含特殊字符的场景。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"正确引用包含特殊字符的列名以避免语法冲突。\", \"domain\": \"qsv\", \"task_family\": \"CSV 列操作\", \"method_family\": \"引用转义\", \"stage\": \"数据预处理\", \"use_when\": [\"列名包含空格、连字符等特殊字符\", \"列名与选择器语法冲突\"], \"do_not_use_when\": [\"列名简单无特殊字符\"], \"success_artifact\": \"正确解析列名并选择对应列。\", \"why_distinct\": \"处理列名引用问题，是列选择中的边界情况处理。\", \"evidence_span_hint\": \"Quote column names that conflict with selector syntax\", \"confidence\": 0.8}]}",
+    "raw_candidates": 4,
+    "usage": {
+      "prompt_tokens": 4102,
+      "completion_tokens": 957,
+      "total_tokens": 5059,
+      "prompt_tokens_details": {
+        "cached_tokens": 1152
+      },
+      "prompt_cache_hit_tokens": 1152,
+      "prompt_cache_miss_tokens": 2950
+    },
+    "request_parameters": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "document_domain": "qsv",
+    "taxonomy_domain_type": "qsv",
+    "taxonomy_id": "qsv"
+  },
+  "qsv_probe": {
+    "request": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\results\\analysis\\s24m003\\qsv_probe_001\\live_001\\request.json",
+    "request_sha256": "e346e5e435b94d0c92e0fb3b1705281e31996a4d0399c9c7b7ec702dce65c2fe",
+    "response": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\results\\analysis\\s24m003\\qsv_probe_001\\live_001\\response.raw.json",
+    "response_sha256": "a96c71b46dcbafddc44484a61373d9e3ac43b431c11f03c76ebf235fb75c2b33",
+    "system_fingerprint": "e72d3c7f663d3e1383b00b3884cb4501",
+    "raw_content": "{\"skills\": [{\"slot\": 1, \"name\": \"CSV 列选择与重排\", \"description\": \"使用 qsv select 按索引、名称、范围、正则或排除语法选择、重排、反转、复制或删除 CSV 列。适用于需要从表格数据中精确抽取或调整列顺序的场景。\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"workflow_skill\", \"granularity\": \"session\", \"objective\": \"按指定选择器从 CSV 中选出目标列并输出所需列顺序\", \"domain\": \"qsv\", \"task_family\": \"column_selection\", \"method_family\": \"selector_syntax\", \"stage\": \"data_transformation\", \"use_when\": [\"需要按列名或索引抽取子集列\", \"需要重排、反转或复制列\", \"需要按正则或排除规则删除敏感列\"], \"do_not_use_when\": [\"需要按行过滤而非列选择\", \"输入不是 CSV 或表格数据\"], \"success_artifact\": \"输出仅含目标列且顺序符合选择器定义的 CSV\", \"why_distinct\": \"这是 select 的核心列选择工作流，区别于排序/随机化等附加变换。\", \"evidence_span_hint\": \"Select columns from CSV data efficiently.\", \"confidence\": 0.9}, {\"slot\": 2, \"name\": \"列排序与随机化变换\", \"description\": \"在列选择基础上使用 --sort 按字节序排序或使用 --random（可配 --seed）随机打乱列顺序。适用于需要规范化列序或可复现的随机列排列。\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"granularity\": \"micro\", \"objective\": \"对选定列执行确定性排序或可复现随机打乱\", \"domain\": \"qsv\", \"task_family\": \"column_ordering\", \"method_family\": \"sort_shuffle_flags\", \"stage\": \"data_transformation\", \"use_when\": [\"需要按字典序规范化列顺序\", \"需要随机打乱列且要求可复现\"], \"do_not_use_when\": [\"需要保持原始列顺序\", \"需要按行排序而非列排序\"], \"success_artifact\": \"列顺序已按排序或带种子的随机规则重排的 CSV\", \"why_distinct\": \"这是作用于列顺序的独立变换开关，与基础列选择分离。\", \"evidence_span_hint\": \"--sort / --random --seed 42\", \"confidence\": 0.8}, {\"slot\": 3, \"name\": \"选择器语法引用\", \"description\": \"提供 qsv select 选择器语法参考：索引、范围、名称、_ 末列、[n] 同名第 n 列、/regex/ 正则、! 排除、引号转义冲突列名。用于构造或校验选择器表达式。\", \"asset_type\": \"knowledge_reference\", \"asset_node_id\": \"knowledge_reference_node\", \"granularity\": \"micro\", \"objective\": \"为构造正确的列选择器表达式提供语法依据\", \"domain\": \"qsv\", \"task_family\": \"selector_syntax\", \"method_family\": \"syntax_reference\", \"stage\": \"reference\", \"use_when\": [\"不确定选择器写法\", \"列名与选择器语法冲突需转义\"], \"do_not_use_when\": [\"已有明确选择器表达式无需查询\"], \"success_artifact\": \"可直接用于 qsv select 的合法选择器表达式\", \"why_distinct\": \"这是语法参考知识，而非执行工作流本身。\", \"evidence_span_hint\": \"Select Options / 引号转义冲突列名\", \"confidence\": 0.7}]}",
+    "raw_candidates": 3,
+    "usage": {
+      "prompt_tokens": 4102,
+      "completion_tokens": 812,
+      "total_tokens": 4914,
+      "prompt_tokens_details": {
+        "cached_tokens": 256
+      },
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 3846
+    },
+    "request_parameters": {
+      "model": "deepseek-flash",
+      "temperature": 0.0,
+      "stream": false,
+      "max_tokens": 16384,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "document_domain": "qsv",
+    "taxonomy_domain_type": "qsv",
+    "taxonomy_id": "qsv"
+  }
+}

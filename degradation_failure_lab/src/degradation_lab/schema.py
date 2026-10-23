@@ -34,12 +34,14 @@ SCHEMAS = {
             'OFFICIAL_PAPER_DATA', 'RECONSTRUCTED_OFFICIAL_SOURCE', 'CUSTOM_TEST_DATA']},
         'paper_snapshot_verified': {'type': 'boolean'}, 'local_path': STR,
         'bytes': {'type': 'integer', 'minimum': 1},
-        'variant': {'enum': ['clean']}, 'transform': {'const': None}
-    }, ('corresponding_cli_command', 'bytes', 'variant', 'transform')),
+        'variant': {'enum': ['clean']}, 'transform': {'const': None},
+        'provenance': obj({'file': STR, 'sha256': HASH})
+    }, ('corresponding_cli_command', 'bytes', 'variant', 'transform', 'provenance')),
     'case': obj({'schema_version': {'const': 1}, 'case_id': CASE_ID, 'dataset_id': ID,
         'title': STR, 'source_ids': array(ID, 1, True), 'generation_config': STR,
         'pipeline_overrides': obj({'domain': STR, 'domain_type': STR, 'family_name': STR},
-                                 ('domain', 'domain_type', 'family_name'))}),
+                                 ('domain', 'domain_type', 'family_name')),
+        'execution_gate': STR}, ('execution_gate',)),
     'rules': obj({'schema_version': {'const': 1}, 'case_id': CASE_ID,
         'classification': {'const': 'CUSTOM_TEST_DATA'}, 'provenance': obj({
             'file': STR, 'sha256': HASH}, ('file', 'sha256')),

@@ -1,0 +1,60 @@
+{
+  "current_phase": "OFFLINE_DESIGN_ONLY",
+  "execution_authorized_now": false,
+  "current_model_http_limit": 0,
+  "proposed_future_max_http_requests": 2,
+  "future_per_arm_limit": 1,
+  "requires_new_task_authorization": true,
+  "future_order": [
+    "A",
+    "B"
+  ],
+  "future_arms": {
+    "A": {
+      "request_sha256": "edec566353ca7e3d55abdabf56b44ad80662cdeb8839bd863ac7ed288c1c023c",
+      "excerpt_sha256": "50633e25c245a5767379d5e04d7dbcb30913a51b4a5da9465b61091fd2e03b07",
+      "system_sha256": "d32195e344f8cf116404920393e420ddef8129a57b1f854ba5e4ade2d47927dd",
+      "user_sha256": "8cc66cf89fb722329fd7567db9a58f03beb40fa3330013c677db5b14039f39d4",
+      "role": "original excerpt with frozen scrapy external identity"
+    },
+    "B": {
+      "request_sha256": "3d5193a46be9999e0e6c13745dcf2cecf970c8e168c5419721c9e3fea023dabf",
+      "excerpt_sha256": "895ca2e7f30a7caae8beb9c8a8faaf583eba668db2b71680f000ac1f933cefda",
+      "system_sha256": "d32195e344f8cf116404920393e420ddef8129a57b1f854ba5e4ade2d47927dd",
+      "user_sha256": "d6e67f0abfb75b030a9ef84c3fa81fe92bfa6217cc618bf55e43e449c904379f",
+      "role": "synthetic table presentation; not original Clean document"
+    }
+  },
+  "endpoint": "https://api.deepseek.com/v1/chat/completions",
+  "request_parameters": {
+    "model": "deepseek-flash",
+    "temperature": 0.0,
+    "stream": false,
+    "max_tokens": 16384,
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "timeout_s": 180,
+  "transport_retries": 0,
+  "redirects": 0,
+  "json_repair_requests": 0,
+  "outline_expand_compile_register_agent_calls": 0,
+  "future_request_body_rule": "Read the frozen A/B request files as bytes; revalidate hashes and only-excerpt diff before any call; do not reconstruct or update model-visible IDs/metadata.",
+  "future_gate": "Use existing tested single-attempt transport and two-attempt persistent gate, after a separately reviewed input binding/order adapter. Do not run the old default/scrapy identity runner on these new arms without checking its fixed binding.",
+  "future_failure_rule": "A failed arm consumes its attempt; the other frozen arm may run once within the same two-attempt authorization. Never retry failures, fix JSON, alter parameters, or replace an arm to seek success.",
+  "stop_before_any_call": [
+    "No explicit new task authorization",
+    "Any input/source/constructor hash or field diff mismatch",
+    "Semantic audit fails or changes",
+    "Credential unavailable",
+    "Cannot demonstrate at most two attempts/no retries/no redirects"
+  ],
+  "stop_after_pair": [
+    "Both attempts used regardless of outcome",
+    "Record different/missing fingerprints as confounded, not proof of presentation effect",
+    "No automatic reverse-order replication, extra arm, prompt edit, Expand, Agent or full lab run"
+  ],
+  "future_replication": "One new pair is exploratory; reverse order and additional preregistered pairs require their own task authorization and budget. Do not use historical A as a substitute for a contemporaneous control.",
+  "actual_model_responses_for_this_design": null
+}

@@ -1,0 +1,293 @@
+{
+  "version": "gch-doc-projection-v1",
+  "converter_sha256": "5edacfe922dc28a9e7f749ada0ae88d45dd56660ba321be1b4963f4813fe7a2d",
+  "conversion": "AST docs + exact API signatures + static add_newdoc string; no module execution, no rendered HTML input, no Skill extraction",
+  "blocks": [
+    {
+      "key": "JSONProvider",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        19,
+        35
+      ],
+      "signature": "class JSONProvider:",
+      "body": "A standard set of JSON operations for an application. Subclasses\nof this can be used to customize JSON behavior or use different\nJSON libraries.\n\nTo implement a provider for a specific library, subclass this base\nclass and implement at least :meth:`dumps` and :meth:`loads`. All\nother methods have default implementations.\n\nTo use a different provider, either subclass ``Flask`` and set\n:attr:`~flask.Flask.json_provider_class` to a provider class, or set\n:attr:`app.json <flask.Flask.json>` to an instance of the class.\n\n:param app: An application instance. This will be stored as a\n    :class:`weakref.proxy` on the :attr:`_app` attribute.\n\n.. versionadded:: 2.2",
+      "input_heading_line": 3,
+      "input_body_start_line": 9,
+      "input_body_end_line": 24
+    },
+    {
+      "key": "JSONProvider.dumps",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        41,
+        45
+      ],
+      "signature": "    def dumps(self, obj: t.Any, **kwargs: t.Any) -> str:",
+      "body": "Serialize data as JSON.\n\n:param obj: The data to serialize.\n:param kwargs: May be passed to the underlying JSON library.",
+      "input_heading_line": 26,
+      "input_body_start_line": 32,
+      "input_body_end_line": 35
+    },
+    {
+      "key": "JSONProvider.dump",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        49,
+        55
+      ],
+      "signature": "    def dump(self, obj: t.Any, fp: t.IO[str], **kwargs: t.Any) -> None:",
+      "body": "Serialize data as JSON and write to a file.\n\n:param obj: The data to serialize.\n:param fp: A file opened for writing text. Should use the UTF-8\n    encoding to be valid JSON.\n:param kwargs: May be passed to the underlying JSON library.",
+      "input_heading_line": 37,
+      "input_body_start_line": 43,
+      "input_body_end_line": 48
+    },
+    {
+      "key": "JSONProvider.loads",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        59,
+        63
+      ],
+      "signature": "    def loads(self, s: str | bytes, **kwargs: t.Any) -> t.Any:",
+      "body": "Deserialize data as JSON.\n\n:param s: Text or UTF-8 bytes.\n:param kwargs: May be passed to the underlying JSON library.",
+      "input_heading_line": 50,
+      "input_body_start_line": 56,
+      "input_body_end_line": 59
+    },
+    {
+      "key": "JSONProvider.load",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        67,
+        71
+      ],
+      "signature": "    def load(self, fp: t.IO[t.AnyStr], **kwargs: t.Any) -> t.Any:",
+      "body": "Deserialize data as JSON read from a file.\n\n:param fp: A file opened for reading text or UTF-8 bytes.\n:param kwargs: May be passed to the underlying JSON library.",
+      "input_heading_line": 61,
+      "input_body_start_line": 67,
+      "input_body_end_line": 70
+    },
+    {
+      "key": "JSONProvider.response",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        89,
+        102
+      ],
+      "signature": "    def response(self, *args: t.Any, **kwargs: t.Any) -> Response:",
+      "body": "Serialize the given arguments as JSON, and return a\n:class:`~flask.Response` object with the ``application/json``\nmimetype.\n\nThe :func:`~flask.json.jsonify` function calls this method for\nthe current application.\n\nEither positional or keyword arguments can be given, not both.\nIf no arguments are given, ``None`` is serialized.\n\n:param args: A single value to serialize, or multiple values to\n    treat as a list to serialize.\n:param kwargs: Treat as a dict to serialize.",
+      "input_heading_line": 72,
+      "input_body_start_line": 78,
+      "input_body_end_line": 90
+    },
+    {
+      "key": "DefaultJSONProvider",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        124,
+        135
+      ],
+      "signature": "class DefaultJSONProvider(JSONProvider):",
+      "body": "Provide JSON operations using Python's built-in :mod:`json`\nlibrary. Serializes the following additional data types:\n\n-   :class:`datetime.datetime` and :class:`datetime.date` are\n    serialized to :rfc:`822` strings. This is the same as the HTTP\n    date format.\n-   :class:`uuid.UUID` is serialized to a string.\n-   :class:`dataclasses.dataclass` is passed to\n    :func:`dataclasses.asdict`.\n-   :class:`~markupsafe.Markup` (or any object with a ``__html__``\n    method) will call the ``__html__`` method to get a string.",
+      "input_heading_line": 92,
+      "input_body_start_line": 98,
+      "input_body_end_line": 108
+    },
+    {
+      "key": "DefaultJSONProvider.default",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        140,
+        143
+      ],
+      "signature": "default: t.Callable[[t.Any], t.Any]",
+      "body": "Apply this function to any object that :meth:`json.dumps` does\nnot know how to serialize. It should return a valid JSON type or\nraise a ``TypeError``.",
+      "input_heading_line": 110,
+      "input_body_start_line": 116,
+      "input_body_end_line": 118
+    },
+    {
+      "key": "DefaultJSONProvider.ensure_ascii",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        146,
+        149
+      ],
+      "signature": "ensure_ascii = True",
+      "body": "Replace non-ASCII characters with escape sequences. This may be\nmore compatible with some clients, but can be disabled for better\nperformance and size.",
+      "input_heading_line": 120,
+      "input_body_start_line": 126,
+      "input_body_end_line": 128
+    },
+    {
+      "key": "DefaultJSONProvider.sort_keys",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        152,
+        156
+      ],
+      "signature": "sort_keys = True",
+      "body": "Sort the keys in any serialized dicts. This may be useful for\nsome caching situations, but can be disabled for better performance.\nWhen enabled, keys must all be strings, they are not converted\nbefore sorting.",
+      "input_heading_line": 130,
+      "input_body_start_line": 136,
+      "input_body_end_line": 139
+    },
+    {
+      "key": "DefaultJSONProvider.compact",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        159,
+        162
+      ],
+      "signature": "compact: bool | None = None",
+      "body": "If ``True``, or ``None`` out of debug mode, the :meth:`response`\noutput will not add indentation, newlines, or spaces. If ``False``,\nor ``None`` in debug mode, it will use a non-compact representation.",
+      "input_heading_line": 141,
+      "input_body_start_line": 147,
+      "input_body_end_line": 149
+    },
+    {
+      "key": "DefaultJSONProvider.mimetype",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        165,
+        165
+      ],
+      "signature": "mimetype = \"application/json\"",
+      "body": "The mimetype set in :meth:`response`.",
+      "input_heading_line": 151,
+      "input_body_start_line": 157,
+      "input_body_end_line": 157
+    },
+    {
+      "key": "DefaultJSONProvider.dumps",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        168,
+        176
+      ],
+      "signature": "    def dumps(self, obj: t.Any, **kwargs: t.Any) -> str:",
+      "body": "Serialize data as JSON to a string.\n\nKeyword arguments are passed to :func:`json.dumps`. Sets some\nparameter defaults from the :attr:`default`,\n:attr:`ensure_ascii`, and :attr:`sort_keys` attributes.\n\n:param obj: The data to serialize.\n:param kwargs: Passed to :func:`json.dumps`.",
+      "input_heading_line": 159,
+      "input_body_start_line": 165,
+      "input_body_end_line": 172
+    },
+    {
+      "key": "DefaultJSONProvider.loads",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        183,
+        187
+      ],
+      "signature": "    def loads(self, s: str | bytes, **kwargs: t.Any) -> t.Any:",
+      "body": "Deserialize data as JSON from a string or bytes.\n\n:param s: Text or UTF-8 bytes.\n:param kwargs: Passed to :func:`json.loads`.",
+      "input_heading_line": 174,
+      "input_body_start_line": 180,
+      "input_body_end_line": 183
+    },
+    {
+      "key": "DefaultJSONProvider.response",
+      "raw_file": "flask-3.0.0/src/flask/json/provider.py",
+      "raw_sha256": "5412922bbe6ddceb13bd9dcdd7407716cbbbf8d7697eb198725e35828409deaf",
+      "source_lines": [
+        191,
+        205
+      ],
+      "signature": "    def response(self, *args: t.Any, **kwargs: t.Any) -> Response:",
+      "body": "Serialize the given arguments as JSON, and return a\n:class:`~flask.Response` object with it. The response mimetype\nwill be \"application/json\" and can be changed with\n:attr:`mimetype`.\n\nIf :attr:`compact` is ``False`` or debug mode is enabled, the\noutput will be formatted to be easier to read.\n\nEither positional or keyword arguments can be given, not both.\nIf no arguments are given, ``None`` is serialized.\n\n:param args: A single value to serialize, or multiple values to\n    treat as a list to serialize.\n:param kwargs: Treat as a dict to serialize.",
+      "input_heading_line": 185,
+      "input_body_start_line": 191,
+      "input_body_end_line": 204
+    },
+    {
+      "key": "App.json_provider_class",
+      "raw_file": "flask-3.0.0/src/flask/sansio/app.py",
+      "raw_sha256": "9d958214c396f2a2bde4293d52f0f3c6fb3042bf9ca0b26120569afce5686c27",
+      "source_lines": [
+        229,
+        238
+      ],
+      "signature": "json_provider_class: type[JSONProvider] = DefaultJSONProvider",
+      "body": "A subclass of :class:`~flask.json.provider.JSONProvider`. An\ninstance is created and assigned to :attr:`app.json` when creating\nthe app.\n\nThe default, :class:`~flask.json.provider.DefaultJSONProvider`, uses\nPython's built-in :mod:`json` library. A different provider can use\na different JSON library.\n\n.. versionadded:: 2.2",
+      "input_heading_line": 206,
+      "input_body_start_line": 212,
+      "input_body_end_line": 220
+    },
+    {
+      "key": "App.json",
+      "raw_file": "flask-3.0.0/src/flask/sansio/app.py",
+      "raw_sha256": "9d958214c396f2a2bde4293d52f0f3c6fb3042bf9ca0b26120569afce5686c27",
+      "source_lines": [
+        328,
+        341
+      ],
+      "signature": "self.json: JSONProvider",
+      "body": "Provides access to JSON methods. Functions in ``flask.json``\nwill call methods on this provider when the application context\nis active. Used for handling JSON requests and responses.\n\nAn instance of :attr:`json_provider_class`. Can be customized by\nchanging that attribute on a subclass, or by assigning to this\nattribute afterwards.\n\nThe default, :class:`~flask.json.provider.DefaultJSONProvider`,\nuses Python's built-in :mod:`json` library. A different provider\ncan use a different JSON library.\n\n.. versionadded:: 2.2",
+      "input_heading_line": 222,
+      "input_body_start_line": 228,
+      "input_body_end_line": 240
+    },
+    {
+      "key": "flask.json.jsonify",
+      "raw_file": "flask-3.0.0/src/flask/json/__init__.py",
+      "raw_sha256": "a5db69a0ad9bd1bd6eed2c5bc777de33b55686c236d25d72180bdb616c5ac6f7",
+      "source_lines": [
+        139,
+        169
+      ],
+      "signature": "def jsonify(*args: t.Any, **kwargs: t.Any) -> Response:",
+      "body": "Serialize the given arguments as JSON, and return a\n:class:`~flask.Response` object with the ``application/json``\nmimetype. A dict or list returned from a view will be converted to a\nJSON response automatically without needing to call this.\n\nThis requires an active request or application context, and calls\n:meth:`app.json.response() <flask.json.provider.JSONProvider.response>`.\n\nIn debug mode, the output is formatted with indentation to make it\neasier to read. This may also be controlled by the provider.\n\nEither positional or keyword arguments can be given, not both.\nIf no arguments are given, ``None`` is serialized.\n\n:param args: A single value to serialize, or multiple values to\n    treat as a list to serialize.\n:param kwargs: Treat as a dict to serialize.\n\n.. versionchanged:: 2.2\n    Calls ``current_app.json.response``, allowing an app to override\n    the behavior.\n\n.. versionchanged:: 2.0.2\n    :class:`decimal.Decimal` is supported by converting to a string.\n\n.. versionchanged:: 0.11\n    Added support for serializing top-level arrays. This was a\n    security risk in ancient browsers. See :ref:`security-json`.\n\n.. versionadded:: 0.2",
+      "input_heading_line": 242,
+      "input_body_start_line": 248,
+      "input_body_end_line": 277
+    },
+    {
+      "key": "numpy.unique",
+      "raw_file": "numpy-v1.25.1/numpy/lib/arraysetops.py",
+      "raw_sha256": "189d91864cc826621bc321ba8772ce1533d783ada433db5c5756beeed75b56e5",
+      "source_lines": [
+        141,
+        271
+      ],
+      "signature": "def unique(ar, return_index=False, return_inverse=False,\n           return_counts=False, axis=None, *, equal_nan=True):",
+      "body": "Find the unique elements of an array.\n\nReturns the sorted unique elements of an array. There are three optional\noutputs in addition to the unique elements:\n\n* the indices of the input array that give the unique values\n* the indices of the unique array that reconstruct the input array\n* the number of times each unique value comes up in the input array\n\nParameters\n----------\nar : array_like\n    Input array. Unless `axis` is specified, this will be flattened if it\n    is not already 1-D.\nreturn_index : bool, optional\n    If True, also return the indices of `ar` (along the specified axis,\n    if provided, or in the flattened array) that result in the unique array.\nreturn_inverse : bool, optional\n    If True, also return the indices of the unique array (for the specified\n    axis, if provided) that can be used to reconstruct `ar`.\nreturn_counts : bool, optional\n    If True, also return the number of times each unique item appears\n    in `ar`.\naxis : int or None, optional\n    The axis to operate on. If None, `ar` will be flattened. If an integer,\n    the subarrays indexed by the given axis will be flattened and treated\n    as the elements of a 1-D array with the dimension of the given axis,\n    see the notes for more details.  Object arrays or structured arrays\n    that contain objects are not supported if the `axis` kwarg is used. The\n    default is None.\n\n    .. versionadded:: 1.13.0\n\nequal_nan : bool, optional\n    If True, collapses multiple NaN values in the return array into one.\n\n    .. versionadded:: 1.24\n\nReturns\n-------\nunique : ndarray\n    The sorted unique values.\nunique_indices : ndarray, optional\n    The indices of the first occurrences of the unique values in the\n    original array. Only provided if `return_index` is True.\nunique_inverse : ndarray, optional\n    The indices to reconstruct the original array from the\n    unique array. Only provided if `return_inverse` is True.\nunique_counts : ndarray, optional\n    The number of times each of the unique values comes up in the\n    original array. Only provided if `return_counts` is True.\n\n    .. versionadded:: 1.9.0\n\nSee Also\n--------\nnumpy.lib.arraysetops : Module with a number of other functions for\n                        performing set operations on arrays.\nrepeat : Repeat elements of an array.\n\nNotes\n-----\nWhen an axis is specified the subarrays indexed by the axis are sorted.\nThis is done by making the specified axis the first dimension of the array\n(move the axis to the first dimension to keep the order of the other axes)\nand then flattening the subarrays in C order. The flattened subarrays are\nthen viewed as a structured type with each element given a label, with the\neffect that we end up with a 1-D array of structured types that can be\ntreated in the same way as any other 1-D array. The result is that the\nflattened subarrays are sorted in lexicographic order starting with the\nfirst element.\n\n.. versionchanged: NumPy 1.21\n    If nan values are in the input array, a single nan is put\n    to the end of the sorted unique values.\n\n    Also for complex arrays all NaN values are considered equivalent\n    (no matter whether the NaN is in the real or imaginary part).\n    As the representant for the returned array the smallest one in the\n    lexicographical order is chosen - see np.sort for how the lexicographical\n    order is defined for complex arrays.\n\nExamples\n--------\n>>> np.unique([1, 1, 2, 2, 3, 3])\narray([1, 2, 3])\n>>> a = np.array([[1, 1], [2, 3]])\n>>> np.unique(a)\narray([1, 2, 3])\n\nReturn the unique rows of a 2D array\n\n>>> a = np.array([[1, 0, 0], [1, 0, 0], [2, 3, 4]])\n>>> np.unique(a, axis=0)\narray([[1, 0, 0], [2, 3, 4]])\n\nReturn the indices of the original array that give the unique values:\n\n>>> a = np.array(['a', 'b', 'b', 'c', 'a'])\n>>> u, indices = np.unique(a, return_index=True)\n>>> u\narray(['a', 'b', 'c'], dtype='<U1')\n>>> indices\narray([0, 1, 3])\n>>> a[indices]\narray(['a', 'b', 'c'], dtype='<U1')\n\nReconstruct the input array from the unique values and inverse:\n\n>>> a = np.array([1, 2, 6, 4, 2, 3, 2])\n>>> u, indices = np.unique(a, return_inverse=True)\n>>> u\narray([1, 2, 3, 4, 6])\n>>> indices\narray([0, 1, 4, 3, 1, 2, 1])\n>>> u[indices]\narray([1, 2, 6, 4, 2, 3, 2])\n\nReconstruct the input values from the unique values and counts:\n\n>>> a = np.array([1, 2, 6, 4, 2, 3, 2])\n>>> values, counts = np.unique(a, return_counts=True)\n>>> values\narray([1, 2, 3, 4, 6])\n>>> counts\narray([1, 3, 1, 1, 1])\n>>> np.repeat(values, counts)\narray([1, 2, 2, 2, 3, 4, 6])    # original order not preserved",
+      "input_heading_line": 3,
+      "input_body_start_line": 10,
+      "input_body_end_line": 137
+    },
+    {
+      "key": "numpy.ndarray.tolist",
+      "raw_file": "numpy-v1.25.1/numpy/core/_add_newdocs.py",
+      "raw_sha256": "dfd24569e0cf376390952c1fa58ebf26af5f3b9bcc2fc64c17c278653c7f9ebb",
+      "source_lines": [
+        4392,
+        4452
+      ],
+      "signature": "",
+      "body": "a.tolist()\n\nReturn the array as an ``a.ndim``-levels deep nested list of Python scalars.\n\nReturn a copy of the array data as a (nested) Python list.\nData items are converted to the nearest compatible builtin Python type, via\nthe `~numpy.ndarray.item` function.\n\nIf ``a.ndim`` is 0, then since the depth of the nested list is 0, it will\nnot be a list at all, but a simple Python scalar.\n\nParameters\n----------\nnone\n\nReturns\n-------\ny : object, or list of object, or list of list of object, or ...\n    The possibly nested list of array elements.\n\nNotes\n-----\nThe array may be recreated via ``a = np.array(a.tolist())``, although this\nmay sometimes lose precision.\n\nExamples\n--------\nFor a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,\nexcept that ``tolist`` changes numpy scalars to Python scalars:\n\n>>> a = np.uint32([1, 2])\n>>> a_list = list(a)\n>>> a_list\n[1, 2]\n>>> type(a_list[0])\n<class 'numpy.uint32'>\n>>> a_tolist = a.tolist()\n>>> a_tolist\n[1, 2]\n>>> type(a_tolist[0])\n<class 'int'>\n\nAdditionally, for a 2D array, ``tolist`` applies recursively:\n\n>>> a = np.array([[1, 2], [3, 4]])\n>>> list(a)\n[array([1, 2]), array([3, 4])]\n>>> a.tolist()\n[[1, 2], [3, 4]]\n\nThe base case for this recursion is a 0D array:\n\n>>> a = np.array(1)\n>>> list(a)\nTraceback (most recent call last):\n  ...\nTypeError: iteration over a 0-d array\n>>> a.tolist()\n1",
+      "input_heading_line": 139,
+      "input_body_start_line": 141,
+      "input_body_end_line": 199
+    }
+  ],
+  "source_scope": "Complete selected official documentation blocks; entire upstream source files preserved separately; no full-site claim",
+  "known_limits": [
+    "RST cross-reference markup retained, not rewritten",
+    "Raw source line ranges are authoritative; whitespace dedent is recorded",
+    "Dynamic decorators are not executed; current selected APIs have statically located required text"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "version": "content_form_metrics_v1",
+  "frozen_at_utc": "2026-10-23T11:18:31.254966+00:00",
+  "new_model_calls_at_registration": 0,
+  "scope": "Plan response only; not canonical Skill, downstream Agent or official candidate-admission changes.",
+  "generation_success": "Strict JSON object with skills list length >0; record raw count independent of native acceptance or semantic quality.",
+  "native_plan_acceptance": "Record the original Plan local parser accepted count on a saved-response stub after a future authorized request, without network repair or Expand. No Plan stage executed in this task.",
+  "semantic_inspection": "Read every actual candidate field, cite field paths and verbatim evidence. Titles/keywords/evidence_span_hint alone never establish correctness; no judge-model requests.",
+  "semantic_values": [
+    "CORRECT_EXPLICIT",
+    "OMITTED",
+    "INCORRECT",
+    "AMBIGUOUS",
+    "NOT_APPLICABLE_NO_CANDIDATE"
+  ],
+  "criteria": {
+    "default_behavior": "Candidate explicitly links FTP and default overwrite=True/overwriting. Correct semantic paraphrase allowed without literal True.",
+    "explicit_parameter": "Candidate explicitly links FTP overwrite=False to choosing append behavior, with server-capability condition; general append mention or local False alone does not pass.",
+    "exception": "Candidate preserves conditional/subset scope of FTP server append/APPE support. May name APPE with equivalent language; unconditional FTP cannot append fails, universal append guarantee fails.",
+    "backend_scope": "Do not transfer S3/GCS no-append prohibition to FTP, FTP APPE caveat to all backends, local False default to FTP, or stdout no-overwrite to FTP.",
+    "auxiliary_inventory": "Record explicit Local=False, S3/GCS=True with no append, stdout=False with no overwrite when discussed. A focused FTP candidate need not list every unrelated backend; omission is separate from wrong scope."
+  },
+  "candidate_complete": "One native-accepted candidate must jointly satisfy default, explicit False and APPE/subset exception, with no wrong backend scope. Do not union unrelated candidates to claim a single complete contract.",
+  "run_complete": "At least one such complete native candidate AND no native-accepted candidate contradicts the target rule. Also record cross-candidate coverage and contradiction flags separately.",
+  "valid_outcomes": {
+    "NO_CANDIDATES": "Legal complete JSON skills=[]: generation absent, semantics not expressed, not an API/parse error and not a false assertion.",
+    "COMPLETE_TARGET_RULE": "Nonempty, native accepted, same candidate meets all primary relations and scope; no native conflicting target claims.",
+    "NONEMPTY_RULE_ERROR": "Nonempty but at least one explicit wrong target relation/scope; cannot label extraction success even if other candidates are correct.",
+    "NONEMPTY_PARTIAL": "No explicit target error but required relations omitted; cannot fill from source or predicted Expand.",
+    "NONEMPTY_UNRELATED": "Nonempty but no candidate expresses the FTP target rule.",
+    "NOT_NATIVE_ACCEPTED": "Raw skills nonempty but original Plan accepts none; keep rejection distinct from generation and semantic measures.",
+    "UNASSESSABLE": "Transport/HTTP failure, truncated response, invalid strict JSON/schema, or genuinely ambiguous semantic evidence. Preserve any observed counts but do not code as a legal empty plan."
+  },
+  "primary_observables": [
+    "generation_success",
+    "native_plan_accepted_count",
+    "run_complete",
+    "target_rule_error_present"
+  ],
+  "always_record": [
+    "HTTP status",
+    "raw envelope and content",
+    "strict JSON status",
+    "raw candidate count",
+    "native accepted count",
+    "all candidate fields",
+    "request/response hashes",
+    "model",
+    "system_fingerprint",
+    "finish_reason",
+    "usage including cache",
+    "elapsed time",
+    "attempts",
+    "order",
+    "failure phase"
+  ],
+  "preregistration_limit": "Design criteria only, no future experimental outcome has been observed. Does not retrospectively rescore old reports."
+}

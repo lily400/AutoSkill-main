@@ -14,9 +14,25 @@ def execute(run):
     upstream = Path(read(run/'environment.json')['upstream_path'])
     before = read(run/'upstream_before.json')
     store = run/'SkillBank'
-    if list(store.iterdir()): raise RuntimeError('SkillBank must be empty before execution')
+    resume = read(run/'resume.json') if (run/'resume.json').is_file() else None
+    if resume:
+        from .io import inventory
+        from .resume import checked_finder, guard_request
+        if inventory(store) != resume['seed_skillbank']:
+            raise RuntimeError('Copied checkpoint changed before execution')
+        parent = Path(resume['parent_path'])
+        if sha256(parent/'artifact_manifest.json') != resume['parent_manifest_sha256'] or any(
+                sha256(parent/p) != h for p,h in read(parent/'artifact_manifest.json').items()):
+            raise RuntimeError('Parent run changed before recovery')
+    elif list(store.iterdir()):
+        raise RuntimeError('SkillBank must be empty before execution')
     input_manifest = read(run/'input_manifest.json')
-    source = run/'inputs'
+    if resume and (code_inventory(upstream) != before or any(
+            sha256(Path(i['execution_path'])) != i['sha256'] for i in input_manifest['inputs'])):
+        raise RuntimeError('Frozen source or upstream changed before recovery')
+    source = Path(resume['source_path']) if resume else run/'inputs'
+    prior_attempts = resume['prior_http_attempts'] if resume else 0
+    prior_usage = resume['prior_usage_totals'] if resume else {}
     invocation = read(run/'invocation.json')
     invocation.update(real_generation=True, argv=[sys.executable, '-B', *sys.argv], python=sys.version)
     write_json(run/'invocation.json', invocation)
@@ -72,8 +88,8 @@ def execute(run):
         def send_once(attempt_index):
             nonlocal logical_id
             with lock:
-                tokens=sum(c.get('usage',{}).get('total_tokens',0) for c in calls)
-                if len(calls)>=cfg['max_http_calls'] or tokens>=cfg['max_observed_total_tokens']:
+                tokens=prior_usage.get('total_tokens',0)+sum(c.get('usage',{}).get('total_tokens',0) for c in calls)
+                if prior_attempts+len(calls)>=cfg['max_http_calls'] or tokens>=cfg['max_observed_total_tokens']:
                     raise RuntimeError('P0 external observation budget exhausted')
                 n=len(calls)+1
                 if logical_id is None: logical_id=n
@@ -88,6 +104,8 @@ def execute(run):
                         rec['stack'].append({'file':frame.f_code.co_filename,
                                              'function':frame.f_code.co_name,'line':frame.f_lineno})
                     frame=frame.f_back
+                if resume:
+                    guard_request(resume, payload, rec['stack'])
                 calls.append(rec)
             call_dir=run/'http'/f'{n:03d}'
             write_json(call_dir/'request.json',json.loads(redact(json.dumps(payload,ensure_ascii=False))))
@@ -125,16 +143,22 @@ def execute(run):
                         'sync_visible_skill_tree','_upsert_store_skill','load_file_units'):
                 counts[f'{frame.f_code.co_filename}:{frame.f_code.co_firstlineno}:{name}'] += 1
 
+    if resume:
+        import importlib
+        pipeline_module = importlib.import_module('AutoSkill4Doc.pipeline')
+        original_finder = pipeline_module.find_intermediate_run_by_resume_key
+        pipeline_module.find_intermediate_run_by_resume_key = checked_finder(original_finder, resume)
     OpenAIChatLLM._post_json = observed
     ConfiguredOpenAIChatLLM._post_json = observed
     sys.setprofile(trace)
     threading.setprofile(trace)
     exit_code = 1
     try:
-        log('Official public API starting: snapshotted inputs, empty independent SkillBank')
+        log('Official public API starting: ' + ('resume copied checkpoint; completed windows must not be resent' if resume else
+            'snapshotted inputs, empty independent SkillBank'))
         result = extract_from_doc(sdk=sdk, file_path=str(source),
             registry_root=str(store / '.runtime/document_registry'),
-            metadata={'case_id': invocation['case_id'], 'condition_id':invocation['condition_id'], 'lab_run_id':run.name, 'input_manifest':input_manifest},
+            metadata={'case_id': invocation['case_id'], 'condition_id':invocation['condition_id'], 'lab_run_id':resume['pipeline_run_id'] if resume else run.name, 'input_manifest':input_manifest},
             continue_on_error=False, dry_run=False, logger=log, **cfg['pipeline'])
         write_json(run / 'official_result.json', result)
         exit_code = 0 if result.get('total_skill_specs',0)>0 and not result.get('errors') and result.get('status')=='completed' else 2
@@ -145,6 +169,8 @@ def execute(run):
     finally:
         sys.setprofile(None)
         threading.setprofile(None)
+        if resume:
+            pipeline_module.find_intermediate_run_by_resume_key = original_finder
         OpenAIChatLLM._post_json = original_base
         ConfiguredOpenAIChatLLM._post_json = original_custom
         write_json(run / 'official_call_trace.json',dict(counts))
@@ -152,6 +178,9 @@ def execute(run):
         write_json(run / 'upstream_after.json',after)
         write_json(run / 'execution.json',{'ended_at':utc(),'exit_code':exit_code,'upstream_unchanged':before==after,
             'http_attempts':len(calls),'http_successes':sum(c.get('success',False) for c in calls),
+            'cumulative_http_attempts':prior_attempts+len(calls),
+            'cumulative_usage_totals':{k:prior_usage.get(k,0)+sum(c.get('usage',{}).get(k,0) for c in calls)
+                for k in ('prompt_tokens','completion_tokens','total_tokens')},
             'usage_totals':{k:sum(c.get('usage',{}).get(k,0) for c in calls) for k in ('prompt_tokens','completion_tokens','total_tokens')},
             'billed_cost':None,'cost_status':'NOT_PROVIDED_BY_API; no fabricated cost estimate',
             'budget_note':'Token threshold is checked before the next request; one response can exceed the threshold.',

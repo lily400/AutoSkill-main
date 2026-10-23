@@ -1,0 +1,102 @@
+[
+  {
+    "rule_id": "R1",
+    "claim": "FTP未显式覆盖参数时默认overwrite=True，即覆盖已有内容。",
+    "support": "DIRECT_DEFAULT_PLUS_SHARED_PARAMETER_DEFINITION",
+    "quote_ids": [
+      "definition",
+      "default_scope",
+      "ftp",
+      "ftp_repeat",
+      "ftp_context"
+    ],
+    "limits": "重复支持136–137只作旁证，不插入任一excerpt；不推出FTP永远只能覆盖。",
+    "source_quote_sha256": {
+      "definition": "106acfb111e0817fb42242227352a32d88aaff840293cfa74604c4c170c08ac5",
+      "default_scope": "a7076c76a48a3ad5c70c641e715afbe01cdc4a3d29d363784b4eeb0d39611a27",
+      "ftp": "e05ead8ed2c6d928751c328bd591db995a23c1675ac3d856eae40a129d7428ae",
+      "ftp_repeat": "1f00abce85a4d9721ddc493ad4270c78df043594c39aa00cccb5e601c65000ba",
+      "ftp_context": "194c70fdb369b9bac093b6326724e59700af5cf27d8ded57f3867cc9c3d042ea"
+    },
+    "claim_sha256": "eed7feeb01ed1b235500c2722775f80c9230ddbad36662ecd61d5ab1180a7bad"
+  },
+  {
+    "rule_id": "R2",
+    "claim": "显式overwrite=False选择追加语义；FTP追加仍受服务器能力条件约束，不保证每次成功。",
+    "support": "COMPOSITION_OF_SHARED_DEFINITION_FTP_SCOPE_AND_CAVEAT",
+    "quote_ids": [
+      "definition",
+      "ftp",
+      "appe"
+    ],
+    "limits": "原文没有逐字句子同时写出FTP+显式False；关系由参数定义、FTP行和例外组合得到。未补写连接方式、执行步骤或成功保证。",
+    "source_quote_sha256": {
+      "definition": "106acfb111e0817fb42242227352a32d88aaff840293cfa74604c4c170c08ac5",
+      "ftp": "e05ead8ed2c6d928751c328bd591db995a23c1675ac3d856eae40a129d7428ae",
+      "appe": "6dffb6c3c7e50360e6d148734a8be22039c3d5a5e173eb181b2ca6a1de1297ef"
+    },
+    "claim_sha256": "587da0b5e646c55721efe7b7e985e0dce8c7c225d4d65d985120a271c41a4d99"
+  },
+  {
+    "rule_id": "R3",
+    "claim": "部分FTP服务器可能不支持追加到文件（APPE命令）。",
+    "support": "DIRECT_QUALIFIED_STATEMENT",
+    "quote_ids": [
+      "appe"
+    ],
+    "limits": "保留Some/may；没有证明某具体服务器支持或不支持APPE。",
+    "source_quote_sha256": {
+      "appe": "6dffb6c3c7e50360e6d148734a8be22039c3d5a5e173eb181b2ca6a1de1297ef"
+    },
+    "claim_sha256": "9eb4e90c2f3dee7b0915e2ecec1e130f1bce275b9b37e20f0a0537fce8d0cf96"
+  },
+  {
+    "rule_id": "R4",
+    "claim": "不能从部分FTP服务器可能不支持APPE，推出所有FTP服务器均不支持追加。",
+    "support": "SCOPE_GUARD_NOT_AN_EXTRA_POSITIVE_FACT",
+    "quote_ids": [
+      "appe"
+    ],
+    "limits": "这是禁止无根据泛化的审计约束，不是原文新增句子，也不据Some推导某服务器必然支持。",
+    "source_quote_sha256": {
+      "appe": "6dffb6c3c7e50360e6d148734a8be22039c3d5a5e173eb181b2ca6a1de1297ef"
+    },
+    "claim_sha256": "c313bdeb48264eaa8510d22b2f50046cbe6a9117d09ff41ec8067c3fc51273bc"
+  },
+  {
+    "rule_id": "R5",
+    "claim": "S3与GCS默认True且不支持追加；此限制不应移植到FTP。",
+    "support": "DIRECT_BACKEND_ROWS_PLUS_SCOPE_GUARD",
+    "quote_ids": [
+      "ftp",
+      "appe",
+      "s3",
+      "gcs"
+    ],
+    "limits": "不将FTP的部分服务器限定与S3/GCS的后端限制合并。",
+    "source_quote_sha256": {
+      "ftp": "e05ead8ed2c6d928751c328bd591db995a23c1675ac3d856eae40a129d7428ae",
+      "appe": "6dffb6c3c7e50360e6d148734a8be22039c3d5a5e173eb181b2ca6a1de1297ef",
+      "s3": "531f2797a93d93ecbbe634779ca0a01913b3570df0b6512cd3b7b9e775f83f0c",
+      "gcs": "389842c29227b58781d5145ca69779045c1de4a2b6b2f3364d23fec1b7316e28"
+    },
+    "claim_sha256": "286d3ec8ac14835cb78c6924c3c6027a92fc8edb2dc61cb91567e92e71456098"
+  },
+  {
+    "rule_id": "R6",
+    "claim": "本地默认False；标准输出默认False且不支持覆盖；这些默认值和限制保持各自后端作用域。",
+    "support": "DIRECT_ROWS_PLUS_SHARED_DEFINITION",
+    "quote_ids": [
+      "definition",
+      "local",
+      "stdout"
+    ],
+    "limits": "原文未给本地后端额外能力保证；空表格单元不等于无限制。",
+    "source_quote_sha256": {
+      "definition": "106acfb111e0817fb42242227352a32d88aaff840293cfa74604c4c170c08ac5",
+      "local": "f47ede724d7be24936c70b2d5c568cc51d5d92222dff3ba0b505468ee8e6414d",
+      "stdout": "c4c67fec66dbcb0fe0b1feadbd27861452127f7d92484f271da3b21e8fa1da49"
+    },
+    "claim_sha256": "7a49487994f329bd4b482b587e2205b7d7a54f37050c6ad5ea10502e03d0cc29"
+  }
+]

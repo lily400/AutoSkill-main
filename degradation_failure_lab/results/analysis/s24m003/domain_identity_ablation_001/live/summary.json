@@ -1,0 +1,233 @@
+{
+  "arms": {
+    "A": {
+      "model": "deepseek-flash",
+      "system_fingerprint": "e72d3c7f663d3e1383b00b3884cb4501",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3969,
+        "completion_tokens": 5,
+        "total_tokens": 3974,
+        "prompt_tokens_details": {
+          "cached_tokens": 3835
+        },
+        "prompt_cache_hit_tokens": 3835,
+        "prompt_cache_miss_tokens": 134
+      },
+      "strict_json_valid": true,
+      "candidates": [],
+      "candidate_count": 0,
+      "native_parser_state": "EMPTY_PLAN",
+      "native_candidates": [],
+      "native_candidate_count": 0,
+      "state": "EMPTY_PLAN",
+      "http_status": 200,
+      "wire_response_sha256": "e12c3654cef1e05b6c8e95d7d0114dbfe50ff83cb2ff6a71b9c93792cfdd064d",
+      "saved_response_sha256": "e12c3654cef1e05b6c8e95d7d0114dbfe50ff83cb2ff6a71b9c93792cfdd064d",
+      "credential_redaction_required": false,
+      "http_model_request_attempts": 1,
+      "retries": 0,
+      "json_repair_requests": 0,
+      "outline_calls": 0,
+      "expand_calls": 0,
+      "compile_calls": 0,
+      "register_calls": 0,
+      "elapsed_s": 1.1590627999976277,
+      "request_sha256": "670bde12f3ceb64ccd0c9206cbf844860499e4de1ce5ef473644ca052a7385bb",
+      "price_and_cost": "UNKNOWN"
+    },
+    "B": {
+      "model": "deepseek-flash",
+      "system_fingerprint": "e72d3c7f663d3e1383b00b3884cb4501",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 3972,
+        "completion_tokens": 1050,
+        "total_tokens": 5022,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 3716
+      },
+      "strict_json_valid": true,
+      "candidates": [
+        {
+          "slot": 1,
+          "name": "配置 Feed 导出定义",
+          "description": "为 Scrapy feed 导出配置一个或多个 feed 定义，按接受键（format、encoding、fields、item_classes、item_filter、indent、overwrite、store_empty、uri_params、postprocessing 等）逐项设定，未提供时回退到对应全局设置。适用于需要把抓取到的 item 序列化并写入本地文件、FTP、S3、GCS 或标准输出的场景。",
+          "asset_type": "session_skill",
+          "asset_node_id": "workflow_skill",
+          "granularity": "session",
+          "objective": "生成一份完整、可执行的 feed 导出配置，明确每个 feed 的格式、存储后端与各键取值或回退来源。",
+          "domain": "scrapy",
+          "task_family": "feed_export_configuration",
+          "method_family": "settings_and_feed_definition",
+          "stage": "export_setup",
+          "use_when": [
+            "需要将抓取结果导出为 JSON/JSONL/CSV/XML/Pickle/Marshal 等格式",
+            "需要指定导出目标为本地文件、FTP、S3、GCS 或标准输出",
+            "需要控制导出字段、编码、缩进或批量条数"
+          ],
+          "do_not_use_when": [
+            "仅需在内存中处理 item、不涉及持久化导出",
+            "未确定序列化格式（format 为必填且无回退值）"
+          ],
+          "success_artifact": "一份按 feed 定义组织的配置清单，每个 feed 均含必填 format 及显式或回退的其余键值。",
+          "why_distinct": "这是面向单个 feed 定义配置的会话级脚手架，区别于仅针对某一键（如 overwrite 或 postprocessing）的微技能。",
+          "evidence_span_hint": "The following is a list of the accepted keys and the setting that is used as a fallback value",
+          "confidence": 0.82
+        },
+        {
+          "slot": 2,
+          "name": "按存储后端确定 overwrite 语义",
+          "description": "根据所选存储后端决定 overwrite 取值：本地文件系统默认 False（追加），FTP 默认 True（覆盖，但部分服务器不支持 APPE 追加），S3 与 GCS 默认 True 且不支持追加，标准输出默认 False 且不支持覆盖。用于避免因追加/覆盖语义不符导致数据丢失或写入失败。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "为给定存储后端选定正确的 overwrite 值并识别追加/覆盖能力限制。",
+          "domain": "scrapy",
+          "task_family": "feed_export_configuration",
+          "method_family": "storage_backend_semantics",
+          "stage": "export_setup",
+          "use_when": [
+            "配置 feed 的 overwrite 键",
+            "在 FTP、S3、GCS 或标准输出之间切换导出目标"
+          ],
+          "do_not_use_when": [
+            "存储后端尚未确定",
+            "导出目标为不支持写入的只读位置"
+          ],
+          "success_artifact": "明确的 overwrite 取值及对应后端追加/覆盖能力说明。",
+          "why_distinct": "这是围绕单一键 overwrite 与后端语义的紧耦合微决策，不覆盖整体 feed 定义。",
+          "evidence_span_hint": "overwrite: whether to overwrite the file if it already exists",
+          "confidence": 0.78
+        },
+        {
+          "slot": 3,
+          "name": "配置导出后处理插件链",
+          "description": "通过 postprocessing 键为 feed 指定后处理插件列表，插件按列表顺序依次执行；可选用内置插件或自定义插件。用于在序列化输出前后对 item 或文件做额外加工。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "按所需顺序组装并应用 feed 后处理插件链。",
+          "domain": "scrapy",
+          "task_family": "feed_export_configuration",
+          "method_family": "postprocessing_plugin_chain",
+          "stage": "export_postprocessing",
+          "use_when": [
+            "需要对导出结果做额外加工（如过滤、转换、压缩等）",
+            "需要复用内置或自定义后处理插件"
+          ],
+          "do_not_use_when": [
+            "无需对导出结果做任何后处理",
+            "插件执行顺序无关且无明确加工需求"
+          ],
+          "success_artifact": "按顺序排列的后处理插件列表，并说明各插件作用。",
+          "why_distinct": "聚焦 postprocessing 单一键与插件顺序语义，区别于整体 feed 定义配置。",
+          "evidence_span_hint": "postprocessing: list of plugins to use for post-processing",
+          "confidence": 0.72
+        }
+      ],
+      "candidate_count": 3,
+      "native_parser_state": "NONEMPTY_PLAN_TARGET_REVIEW_REQUIRED",
+      "native_candidates": [
+        {
+          "slot": 1,
+          "name": "配置 Feed 导出定义",
+          "description": "为 Scrapy feed 导出配置一个或多个 feed 定义，按接受键（format、encoding、fields、item_classes、item_filter、indent、overwrite、store_empty、uri_params、postprocessing 等）逐项设定，未提供时回退到对应全局设置。适用于需要把抓取到的 item 序列化并写入本地文件、FTP、S3、GCS 或标准输出的场景。",
+          "asset_type": "session_skill",
+          "asset_node_id": "workflow_skill",
+          "granularity": "session",
+          "objective": "生成一份完整、可执行的 feed 导出配置，明确每个 feed 的格式、存储后端与各键取值或回退来源。",
+          "domain": "scrapy",
+          "task_family": "feed_export_configuration",
+          "method_family": "settings_and_feed_definition",
+          "stage": "export_setup",
+          "use_when": [
+            "需要将抓取结果导出为 JSON/JSONL/CSV/XML/Pickle/Marshal 等格式",
+            "需要指定导出目标为本地文件、FTP、S3、GCS 或标准输出",
+            "需要控制导出字段、编码、缩进或批量条数"
+          ],
+          "do_not_use_when": [
+            "仅需在内存中处理 item、不涉及持久化导出",
+            "未确定序列化格式（format 为必填且无回退值）"
+          ],
+          "success_artifact": "一份按 feed 定义组织的配置清单，每个 feed 均含必填 format 及显式或回退的其余键值。",
+          "why_distinct": "这是面向单个 feed 定义配置的会话级脚手架，区别于仅针对某一键（如 overwrite 或 postprocessing）的微技能。",
+          "evidence_span_hint": "The following is a list of the accepted keys and the setting that is used as a fallback value",
+          "confidence": 0.82
+        },
+        {
+          "slot": 2,
+          "name": "按存储后端确定 overwrite 语义",
+          "description": "根据所选存储后端决定 overwrite 取值：本地文件系统默认 False（追加），FTP 默认 True（覆盖，但部分服务器不支持 APPE 追加），S3 与 GCS 默认 True 且不支持追加，标准输出默认 False 且不支持覆盖。用于避免因追加/覆盖语义不符导致数据丢失或写入失败。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "为给定存储后端选定正确的 overwrite 值并识别追加/覆盖能力限制。",
+          "domain": "scrapy",
+          "task_family": "feed_export_configuration",
+          "method_family": "storage_backend_semantics",
+          "stage": "export_setup",
+          "use_when": [
+            "配置 feed 的 overwrite 键",
+            "在 FTP、S3、GCS 或标准输出之间切换导出目标"
+          ],
+          "do_not_use_when": [
+            "存储后端尚未确定",
+            "导出目标为不支持写入的只读位置"
+          ],
+          "success_artifact": "明确的 overwrite 取值及对应后端追加/覆盖能力说明。",
+          "why_distinct": "这是围绕单一键 overwrite 与后端语义的紧耦合微决策，不覆盖整体 feed 定义。",
+          "evidence_span_hint": "overwrite: whether to overwrite the file if it already exists",
+          "confidence": 0.78
+        },
+        {
+          "slot": 3,
+          "name": "配置导出后处理插件链",
+          "description": "通过 postprocessing 键为 feed 指定后处理插件列表，插件按列表顺序依次执行；可选用内置插件或自定义插件。用于在序列化输出前后对 item 或文件做额外加工。",
+          "asset_type": "micro_skill",
+          "asset_node_id": "micro_skill_node",
+          "granularity": "micro",
+          "objective": "按所需顺序组装并应用 feed 后处理插件链。",
+          "domain": "scrapy",
+          "task_family": "feed_export_configuration",
+          "method_family": "postprocessing_plugin_chain",
+          "stage": "export_postprocessing",
+          "use_when": [
+            "需要对导出结果做额外加工（如过滤、转换、压缩等）",
+            "需要复用内置或自定义后处理插件"
+          ],
+          "do_not_use_when": [
+            "无需对导出结果做任何后处理",
+            "插件执行顺序无关且无明确加工需求"
+          ],
+          "success_artifact": "按顺序排列的后处理插件列表，并说明各插件作用。",
+          "why_distinct": "聚焦 postprocessing 单一键与插件顺序语义，区别于整体 feed 定义配置。",
+          "evidence_span_hint": "postprocessing: list of plugins to use for post-processing",
+          "confidence": 0.72
+        }
+      ],
+      "native_candidate_count": 3,
+      "state": "NONEMPTY_PLAN",
+      "http_status": 200,
+      "wire_response_sha256": "c6b68a7987a1ea81572f6d9bd01759ad32f611939e626e5820b90edfb2b2368e",
+      "saved_response_sha256": "c6b68a7987a1ea81572f6d9bd01759ad32f611939e626e5820b90edfb2b2368e",
+      "credential_redaction_required": false,
+      "http_model_request_attempts": 1,
+      "retries": 0,
+      "json_repair_requests": 0,
+      "outline_calls": 0,
+      "expand_calls": 0,
+      "compile_calls": 0,
+      "register_calls": 0,
+      "elapsed_s": 6.337991300038993,
+      "request_sha256": "edec566353ca7e3d55abdabf56b44ad80662cdeb8839bd863ac7ed288c1c023c",
+      "price_and_cost": "UNKNOWN"
+    }
+  },
+  "http_model_request_attempts": 2,
+  "retries": 0,
+  "other_model_calls": 0
+}

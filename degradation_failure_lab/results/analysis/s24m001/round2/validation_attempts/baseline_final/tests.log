@@ -1,0 +1,148 @@
+test_reference_asset_with_constraints_does_not_require_workflow (test_preprocessing.NativeAdmissionTest.test_reference_asset_with_constraints_does_not_require_workflow) ... ok
+test_reference_without_execution_or_constraint_content_is_rejected (test_preprocessing.NativeAdmissionTest.test_reference_without_execution_or_constraint_content_is_rejected) ... ok
+test_dialogue_and_long_unstructured_prose_are_still_filtered (test_preprocessing.PreprocessingFixTest.test_dialogue_and_long_unstructured_prose_are_still_filtered) ... ok
+test_intro_before_long_parameter_list_is_retained (test_preprocessing.PreprocessingFixTest.test_intro_before_long_parameter_list_is_retained) ... FAIL
+test_long_exception_then_indented_list_is_retained (test_preprocessing.PreprocessingFixTest.test_long_exception_then_indented_list_is_retained) ... FAIL
+test_real_author_contact_and_abstract_are_still_noise (test_preprocessing.PreprocessingFixTest.test_real_author_contact_and_abstract_are_still_noise) ... ok
+test_uri_userinfo_is_not_author_evidence (test_preprocessing.PreprocessingFixTest.test_uri_userinfo_is_not_author_evidence) ... 
+  test_uri_userinfo_is_not_author_evidence (test_preprocessing.PreprocessingFixTest.test_uri_userinfo_is_not_author_evidence) (heading='FTP') ... FAIL
+  test_uri_userinfo_is_not_author_evidence (test_preprocessing.PreprocessingFixTest.test_uri_userinfo_is_not_author_evidence) (heading='SSH') ... FAIL
+  test_uri_userinfo_is_not_author_evidence (test_preprocessing.PreprocessingFixTest.test_uri_userinfo_is_not_author_evidence) (heading='API') ... FAIL
+test_window_identity_includes_location_and_content (test_preprocessing.PreprocessingFixTest.test_window_identity_includes_location_and_content) ... FAIL
+test_checkpoint_keeps_every_window_and_resume_identity (test_preprocessing.ScrapyFidelityTest.test_checkpoint_keeps_every_window_and_resume_identity) ... ERROR
+test_fidelity_gate_rejects_missing_definition_exception_and_wrong_default (test_preprocessing.ScrapyFidelityTest.test_fidelity_gate_rejects_missing_definition_exception_and_wrong_default) ... ok
+test_ftp_section_and_duplicate_support_survive (test_preprocessing.ScrapyFidelityTest.test_ftp_section_and_duplicate_support_survive) ... FAIL
+test_historical_windows_fail_target_fidelity_gate (test_preprocessing.ScrapyFidelityTest.test_historical_windows_fail_target_fidelity_gate) ... ok
+test_main_rule_and_exception_share_one_actual_window (test_preprocessing.ScrapyFidelityTest.test_main_rule_and_exception_share_one_actual_window) ... FAIL
+test_window_ids_are_unique (test_preprocessing.ScrapyFidelityTest.test_window_ids_are_unique) ... FAIL
+
+======================================================================
+ERROR: test_checkpoint_keeps_every_window_and_resume_identity (test_preprocessing.ScrapyFidelityTest.test_checkpoint_keeps_every_window_and_resume_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 83, in test_checkpoint_keeps_every_window_and_resume_identity
+    writer.write_extract_window_progress(record=self.record, window=window, supports=[], drafts=[])
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AS\AutoSkill-main\AutoSkill-main\AutoSkill4Doc\store\intermediate.py", line 301, in write_extract_window_progress
+    self._write_json(f"extract/windows/{doc_name}/{window_name}.json", payload)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AS\AutoSkill-main\AutoSkill-main\AutoSkill4Doc\store\intermediate.py", line 1377, in _write_json
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\lily\\Documents\\ChatGPT\\回归解决退化文档\\audit_2026-10-15\\scrapy024_preflight\\calibration_evidence\\s24m001_round2_staging\\round2\\baseline_final\\checkpoint_contract\\.runtime\\intermediate_runs\\offline-contract\\extract/windows/145c3349-f7eb-5a01-8b5d-a8e4789f2a4f'
+
+======================================================================
+FAIL: test_intro_before_long_parameter_list_is_retained (test_preprocessing.PreprocessingFixTest.test_intro_before_long_parameter_list_is_retained)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 27, in test_intro_before_long_parameter_list_is_retained
+    self.assertEqual([text], [b.text for b in blocks])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['Request options are described below.\n- [532 chars]on.'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'Request options are described below.\n- `timeout`: Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion. Wait for completion.'
+
++ []
+- ['Request options are described below.\n'
+-  '- `timeout`: Wait for completion. Wait for completion. Wait for completion. '
+-  'Wait for completion. Wait for completion. Wait for completion. Wait for '
+-  'completion. Wait for completion. Wait for completion. Wait for completion. '
+-  'Wait for completion. Wait for completion. Wait for completion. Wait for '
+-  'completion. Wait for completion. Wait for completion. Wait for completion. '
+-  'Wait for completion. Wait for completion. Wait for completion. Wait for '
+-  'completion. Wait for completion. Wait for completion. Wait for completion. '
+-  'Wait for completion.']
+
+======================================================================
+FAIL: test_long_exception_then_indented_list_is_retained (test_preprocessing.PreprocessingFixTest.test_long_exception_then_indented_list_is_retained)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 33, in test_long_exception_then_indented_list_is_retained
+    self.assertEqual([text], [b.text for b in w._build_paragraph_blocks(section, anchor_markers=[], priority_markers=[])])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['When the server rejects this operation, [471 chars]ed.'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'When the server rejects this operation, leave the existing object unchanged. When the server rejects this operation, leave the existing object unchanged. When the server rejects this operation, leave the existing object unchanged. When the server rejects this operation, leave the existing object unchanged. When the server rejects this operation, leave the existing object unchanged. When the server rejects this operation, leave the existing object unchanged. \n  - `retry`: disabled unless explicitly requested.'
+
++ []
+- ['When the server rejects this operation, leave the existing object unchanged. '
+-  'When the server rejects this operation, leave the existing object unchanged. '
+-  'When the server rejects this operation, leave the existing object unchanged. '
+-  'When the server rejects this operation, leave the existing object unchanged. '
+-  'When the server rejects this operation, leave the existing object unchanged. '
+-  'When the server rejects this operation, leave the existing object '
+-  'unchanged. \n'
+-  '  - `retry`: disabled unless explicitly requested.']
+
+======================================================================
+FAIL: test_uri_userinfo_is_not_author_evidence (test_preprocessing.PreprocessingFixTest.test_uri_userinfo_is_not_author_evidence) (heading='FTP')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 15, in test_uri_userinfo_is_not_author_evidence
+    self.assertFalse(_looks_like_front_matter_heading(heading, preview=preview))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_uri_userinfo_is_not_author_evidence (test_preprocessing.PreprocessingFixTest.test_uri_userinfo_is_not_author_evidence) (heading='SSH')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 15, in test_uri_userinfo_is_not_author_evidence
+    self.assertFalse(_looks_like_front_matter_heading(heading, preview=preview))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_uri_userinfo_is_not_author_evidence (test_preprocessing.PreprocessingFixTest.test_uri_userinfo_is_not_author_evidence) (heading='API')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 15, in test_uri_userinfo_is_not_author_evidence
+    self.assertFalse(_looks_like_front_matter_heading(heading, preview=preview))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_window_identity_includes_location_and_content (test_preprocessing.PreprocessingFixTest.test_window_identity_includes_location_and_content)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 49, in test_window_identity_includes_location_and_content
+    self.assertNotEqual(first, make("Default retry is disabled.", 500))
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '2b10f451-a1d3-555c-896a-c21cd306ae8f' == '2b10f451-a1d3-555c-896a-c21cd306ae8f'
+
+======================================================================
+FAIL: test_ftp_section_and_duplicate_support_survive (test_preprocessing.ScrapyFidelityTest.test_ftp_section_and_duplicate_support_survive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 62, in test_ftp_section_and_duplicate_support_survive
+    self.assertIsNotNone(ftp)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^
+AssertionError: unexpectedly None
+
+======================================================================
+FAIL: test_main_rule_and_exception_share_one_actual_window (test_preprocessing.ScrapyFidelityTest.test_main_rule_and_exception_share_one_actual_window)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 74, in test_main_rule_and_exception_share_one_actual_window
+    self.assertGreaterEqual(len(good), 1)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+AssertionError: 0 not greater than or equal to 1
+
+======================================================================
+FAIL: test_window_ids_are_unique (test_preprocessing.ScrapyFidelityTest.test_window_ids_are_unique)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight\calibration_evidence\s24m001_round2_staging\round2\test_preprocessing.py", line 77, in test_window_ids_are_unique
+    self.assertEqual(len(self.windows), len({window.window_id for window in self.windows}))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 18 != 17
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.077s
+
+FAILED (failures=9, errors=1)

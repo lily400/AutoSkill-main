@@ -1,0 +1,130 @@
+{
+  "status": "PASS",
+  "version": "gch-doc-projection-v1",
+  "blocks": 20,
+  "assertions": {
+    "all_blocks_equal_official_doc_strings_after_standard_dedent": true,
+    "exact_unique_signature_with_default": true,
+    "static_add_newdoc_tolist_preserved": true,
+    "flask_app_initialization_and_instance_condition_preserved": true,
+    "source_implementation_statements_excluded": true,
+    "no_problem_solution_or_tests_in_conversion": true
+  },
+  "clean_inputs": {
+    "flask_json.md": {
+      "sha256": "3c6cb8d5de8cbe744111604e3dba749e60bbe3ff83695f613c1bf142028b8058",
+      "bytes": 7670
+    },
+    "numpy_unique.md": {
+      "sha256": "bd805b24e6f1a90b067f59e335f2f937c671958ccb0d60cc8b2c5c175e8c6f46",
+      "bytes": 6109
+    }
+  },
+  "degradations": [
+    {
+      "task_id": "144",
+      "condition_id": "c01",
+      "semantic_label": "Relevant Degradation",
+      "operator": "paragraph_delete_v1",
+      "file": "data/condition_inputs/gitchameleon/144/c01/flask_json.md",
+      "clean_sha256": "3c6cb8d5de8cbe744111604e3dba749e60bbe3ff83695f613c1bf142028b8058",
+      "sha256": "6e79bdd54361fee1e1ed2152c0b8464dd0ac6316ff17d6e80f3bac523f3c8311",
+      "target": "F-JSON-INSTALL",
+      "deletions": [
+        {
+          "clean_start_line": 17,
+          "chars": 198,
+          "text": "To use a different provider, either subclass ``Flask`` and set\n:attr:`~flask.Flask.json_provider_class` to a provider class, or set\n:attr:`app.json <flask.Flask.json>` to an instance of the class.\n\n"
+        },
+        {
+          "clean_start_line": 208,
+          "chars": 138,
+          "text": "A subclass of :class:`~flask.json.provider.JSONProvider`. An\ninstance is created and assigned to :attr:`app.json` when creating\nthe app.\n\n"
+        },
+        {
+          "clean_start_line": 224,
+          "chars": 151,
+          "text": "An instance of :attr:`json_provider_class`. Can be customized by\nchanging that attribute on a subclass, or by assigning to this\nattribute afterwards.\n\n"
+        }
+      ],
+      "deleted_chars": 487,
+      "diff_file": "data/condition_inputs/gitchameleon/144/c01/flask_json.md.diff"
+    },
+    {
+      "task_id": "144",
+      "condition_id": "c02",
+      "semantic_label": "Irrelevant Degradation",
+      "operator": "paragraph_delete_v1",
+      "file": "data/condition_inputs/gitchameleon/144/c02/flask_json.md",
+      "clean_sha256": "3c6cb8d5de8cbe744111604e3dba749e60bbe3ff83695f613c1bf142028b8058",
+      "sha256": "5888c8a7fe44aeaedda3f195427cf681fd028b5d0ae48a4551cb611524133adb",
+      "target": "ensure_ascii/sort_keys/compact documentation; not required for numeric sets",
+      "deletions": [
+        {
+          "clean_start_line": 136,
+          "chars": 211,
+          "text": "Sort the keys in any serialized dicts. This may be useful for\nsome caching situations, but can be disabled for better performance.\nWhen enabled, keys must all be strings, they are not converted\nbefore sorting.\n\n"
+        },
+        {
+          "clean_start_line": 142,
+          "chars": 203,
+          "text": "If ``True``, or ``None`` out of debug mode, the :meth:`response`\noutput will not add indentation, newlines, or spaces. If ``False``,\nor ``None`` in debug mode, it will use a non-compact representation.\n\n"
+        }
+      ],
+      "deleted_chars": 414,
+      "diff_file": "data/condition_inputs/gitchameleon/144/c02/flask_json.md.diff"
+    },
+    {
+      "task_id": "164",
+      "condition_id": "c01",
+      "semantic_label": "Relevant Degradation",
+      "operator": "paragraph_delete_v1",
+      "file": "data/condition_inputs/gitchameleon/164/c01/numpy_unique.md",
+      "clean_sha256": "bd805b24e6f1a90b067f59e335f2f937c671958ccb0d60cc8b2c5c175e8c6f46",
+      "sha256": "14786fa5b63606daa4a8e932eac2062a450c5c1e436ad0aac84c015554d0b3af",
+      "target": "N-UNIQUE-NAN",
+      "deletions": [
+        {
+          "clean_start_line": 43,
+          "chars": 129,
+          "text": "equal_nan : bool, optional\n    If True, collapses multiple NaN values in the return array into one.\n\n    .. versionadded:: 1.24\n\n"
+        }
+      ],
+      "deleted_chars": 129,
+      "diff_file": "data/condition_inputs/gitchameleon/164/c01/numpy_unique.md.diff"
+    },
+    {
+      "task_id": "164",
+      "condition_id": "c02",
+      "semantic_label": "Irrelevant Degradation",
+      "operator": "paragraph_delete_v1",
+      "file": "data/condition_inputs/gitchameleon/164/c02/numpy_unique.md",
+      "clean_sha256": "bd805b24e6f1a90b067f59e335f2f937c671958ccb0d60cc8b2c5c175e8c6f46",
+      "sha256": "1b6bc95f185a05c100705f1f1d8ac3ba1c3c68a46919b618c2d765ef8c7c02bc",
+      "target": "return_counts optional output; task requests only unique values",
+      "deletions": [
+        {
+          "clean_start_line": 30,
+          "chars": 114,
+          "text": "return_counts : bool, optional\n    If True, also return the number of times each unique item appears\n    in `ar`.\n"
+        }
+      ],
+      "deleted_chars": 114,
+      "diff_file": "data/condition_inputs/gitchameleon/164/c02/numpy_unique.md.diff"
+    }
+  ],
+  "residual_information": [
+    "164/c01 retains equal_nan=True in the unchanged API signature and historical NaN notes; this is parameter-description deletion, not all NaN knowledge removal",
+    "144/c01 deletes three provider-installation paragraphs; default handling, jsonify description and class names remain"
+  ],
+  "size_match": {
+    "144": {
+      "relevant_chars": 487,
+      "irrelevant_chars": 414
+    },
+    "164": {
+      "relevant_chars": 129,
+      "irrelevant_chars": 114
+    }
+  }
+}
