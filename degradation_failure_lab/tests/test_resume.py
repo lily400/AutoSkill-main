@@ -13,7 +13,7 @@ sys.path.insert(0, str(LAB/'src'))
 from degradation_lab.io import inventory, read, resolve_upstream, write
 from degradation_lab.resume import prepare_resume, guard_request, checked_finder, window_key
 
-PARENT = LAB/'runs/case024_scrapy/clean/s24m005'
+PARENT = LAB/'runs/gen/sgb/case024_scrapy/clean/s24m005'
 UPSTREAM = resolve_upstream(LAB)
 sys.path.insert(0, str(UPSTREAM))
 

@@ -1,0 +1,121 @@
+{
+  "skill_id": "7c6e4142-008c-527e-97cd-842ef4911d30",
+  "name": "Feed 存储 URI 参数化配置",
+  "description": "使用 %(name)s、%(time)s 等占位符及 spider 参数构造 Feed 存储 URI，实现按 spider 或时间分目录导出到 FTP/S3 等存储。",
+  "skill_body": "根据目标存储类型（FTP、S3 等）与目录隔离需求，构造带占位符的 Feed 存储 URI 模板。\n1. 确定存储协议与基础路径（如 ftp://user:password@host/path 或 s3://bucket/path）。\n2. 在路径中插入占位符以实现隔离：按 spider 用 %(name)s，按时间用 %(time)s。\n3. 指定导出文件名与格式后缀（如 .json）。\n4. 若需使用 spider 参数，记住 spider 参数会成为 spider 属性，因此可作为存储 URI 参数引用。\n5. 输出最终 URI 模板字符串，供 FEEDS 配置使用。\n\n## Objective\n\n生成带占位符的 Feed 存储 URI，实现按 spider/时间分目录导出\n## Applicable Signals\n\n- 需要按 spider 或时间分目录存放导出文件\n- 需要将 Feed 写入 FTP 或 S3 等远程存储\n\n## Contraindications\n\n- 仅需本地单文件导出且无需目录隔离\n\n## Intervention Moves\n\n- 选择存储协议与基础路径\n- 插入 %(name)s 实现按 spider 隔离\n- 插入 %(time)s 实现按时间隔离\n- 追加文件名与格式后缀\n- 如需动态值，引用 spider 参数（作为 spider 属性）\n\n## Workflow Steps\n\n- 确定存储协议与基础路径\n- 插入 %(name)s 和/或 %(time)s 占位符\n- 指定导出文件名与格式后缀\n- 如需动态值，引用 spider 参数\n- 输出最终 URI 模板\n\n## Constraints\n\n- 占位符需与 spider 属性名一致\n- spider 参数会成为 spider 属性，可作为 URI 参数引用\n\n## Cautions\n\n- 远程存储 URI 中可能包含凭据，注意避免泄露\n\n## Output Contract\n\n- 可用的参数化存储 URI 模板（如 ftp://.../%(name)s/%(time)s.json）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: FTP 存储，按 spider 分目录\n- Therapist/Output: ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json\n\n### Example 2\n\n- Client/Input: S3 存储，按 spider 分目录\n- Therapist/Output: s3://mybucket/scraping/feeds/%(name)s/%(time)s.json",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "生成带占位符的 Feed 存储 URI，实现按 spider/时间分目录导出",
+  "domain": "scrapy",
+  "task_family": "feed_export",
+  "method_family": "uri_templating",
+  "stage": "配置",
+  "applicable_signals": [
+    "需要按 spider 或时间分目录存放导出文件",
+    "需要将 Feed 写入 FTP 或 S3 等远程存储"
+  ],
+  "contraindications": [
+    "仅需本地单文件导出且无需目录隔离"
+  ],
+  "intervention_moves": [
+    "选择存储协议与基础路径",
+    "插入 %(name)s 实现按 spider 隔离",
+    "插入 %(time)s 实现按时间隔离",
+    "追加文件名与格式后缀",
+    "如需动态值，引用 spider 参数（作为 spider 属性）"
+  ],
+  "triggers": [
+    "需要按 spider 或时间分目录存放导出文件",
+    "需要将 Feed 写入 FTP 或 S3 等远程存储"
+  ],
+  "workflow_steps": [
+    "确定存储协议与基础路径",
+    "插入 %(name)s 和/或 %(time)s 占位符",
+    "指定导出文件名与格式后缀",
+    "如需动态值，引用 spider 参数",
+    "输出最终 URI 模板"
+  ],
+  "constraints": [
+    "占位符需与 spider 属性名一致",
+    "spider 参数会成为 spider 属性，可作为 URI 参数引用"
+  ],
+  "cautions": [
+    "远程存储 URI 中可能包含凭据，注意避免泄露"
+  ],
+  "output_contract": [
+    "可用的参数化存储 URI 模板（如 ftp://.../%(name)s/%(time)s.json）"
+  ],
+  "examples": [
+    {
+      "input": "FTP 存储，按 spider 分目录",
+      "output": "ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json",
+      "notes": null
+    },
+    {
+      "input": "S3 存储，按 spider 分目录",
+      "output": "s3://mybucket/scraping/feeds/%(name)s/%(time)s.json",
+      "notes": null
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "feed-export",
+    "uri-templating",
+    "storage"
+  ],
+  "support_ids": [
+    "c0747914-b67b-51ab-98ed-14261db6d75a"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "e619efeb-0752-5917-a34e-67e7cc694436"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|生成带占位符的 feed 存储 uri，实现按 spider/时间分目录导出|scrapy|feed_export|uri_templating|配置|feed 存储 uri 参数化配置",
+    "change_action": "create",
+    "llm_reason": "候选技能提供 Feed URI 占位符模板配置能力，与同批次的参数替换、回调注入、批次命名技能在阶段和职责上互补，无直接冗余，且无冲突证据，保留为独立微技能。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

@@ -1,0 +1,105 @@
+{
+  "skill_id": "ae011542-b9ed-52f0-9993-0e284600e1ea",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 3c445cfa（Scrapy S3 Feed 存储后端配置）高度重叠，后者覆盖更完整（ACL、endpoint、region、overwrite），本候选冗余且信息更少。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "ae011542-b9ed-52f0-9993-0e284600e1ea",
+    "name": "配置 S3 Feed 存储",
+    "description": "将 Scrapy feed 导出配置到 Amazon S3 存储后端：使用 s3:// URI 方案，并通过 URI 内嵌凭据或相关设置提供 AWS 凭证。适用于需要把抓取结果写入 S3 的场景。",
+    "skill_body": "当需要把 Scrapy feed 导出到 Amazon S3 时，按以下要点配置：\n1. 使用 s3 URI 方案，例如 s3://<bucket>/<path>/<file>.<ext>。\n2. 确认已安装 boto3 >= 1.20.0 作为外部依赖。\n3. 提供 AWS 凭证：可在 URI 中以 user/password 形式传入（如 s3://<aws_key>:<aws_secret>@<bucket>/<path>），或通过相关设置传入。\n4. 输出可用的 s3:// feed URI 配置及凭证设置说明。\n仅覆盖 S3 存储后端配置，不涉及其他存储或序列化格式。\n\n## Objective\n\n正确配置 S3 作为 feed 导出存储后端\n## Applicable Signals\n\n- 目标存储为 Amazon S3\n- 需要 s3:// URI 方案\n- 需要配置 AWS 凭证\n\n## Contraindications\n\n- 目标存储不是 S3\n- 未安装 boto3 且无法满足依赖要求\n\n## Intervention Moves\n\n- 选择 s3 URI 方案并构造 s3://<bucket>/<path>/<file> URI\n- 确认 boto3 >= 1.20.0 已安装\n- 通过 URI 内嵌 user/password 或相关设置提供 AWS 凭证\n\n## Workflow Steps\n\n- 确认目标存储为 Amazon S3\n- 确认 boto3 >= 1.20.0 依赖已满足\n- 构造 s3://<bucket>/<path>/<file>.<ext> 形式的 feed URI\n- 选择凭证提供方式：URI 内嵌 user/password 或相关设置\n- 输出可用的 s3:// feed URI 配置及凭证设置说明\n\n## Constraints\n\n- 仅使用 s3 URI 方案\n- 依赖 boto3 >= 1.20.0\n\n## Cautions\n\n- URI 内嵌凭据会暴露在 URI 中，需注意凭证安全\n\n## Output Contract\n\n- 可用的 s3:// feed URI 配置及凭证设置说明",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "正确配置 S3 作为 feed 导出存储后端",
+    "domain": "scrapy",
+    "task_family": "feed_export_storage",
+    "method_family": "storage_backend_configuration",
+    "stage": "configuration",
+    "applicable_signals": [
+      "目标存储为 Amazon S3",
+      "需要 s3:// URI 方案",
+      "需要配置 AWS 凭证"
+    ],
+    "contraindications": [
+      "目标存储不是 S3",
+      "未安装 boto3 且无法满足依赖要求"
+    ],
+    "intervention_moves": [
+      "选择 s3 URI 方案并构造 s3://<bucket>/<path>/<file> URI",
+      "确认 boto3 >= 1.20.0 已安装",
+      "通过 URI 内嵌 user/password 或相关设置提供 AWS 凭证"
+    ],
+    "triggers": [
+      "需要将抓取结果导出到 Amazon S3",
+      "用户询问 s3:// URI 或 S3 凭据配置"
+    ],
+    "workflow_steps": [
+      "确认目标存储为 Amazon S3",
+      "确认 boto3 >= 1.20.0 依赖已满足",
+      "构造 s3://<bucket>/<path>/<file>.<ext> 形式的 feed URI",
+      "选择凭证提供方式：URI 内嵌 user/password 或相关设置",
+      "输出可用的 s3:// feed URI 配置及凭证设置说明"
+    ],
+    "constraints": [
+      "仅使用 s3 URI 方案",
+      "依赖 boto3 >= 1.20.0"
+    ],
+    "cautions": [
+      "URI 内嵌凭据会暴露在 URI 中，需注意凭证安全"
+    ],
+    "output_contract": [
+      "可用的 s3:// feed URI 配置及凭证设置说明"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "feed-export",
+      "s3",
+      "storage-backend",
+      "configuration"
+    ],
+    "support_ids": [
+      "cf9bbdda-1bc0-5180-967b-ccb6654406ed"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "1cd4df7c-7d50-5ba3-aafb-0a8c3a051f8c"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|正确配置 s3 作为 feed 导出存储后端|scrapy|feed_export_storage|storage_backend_configuration|configuration|配置 s3 feed 存储"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

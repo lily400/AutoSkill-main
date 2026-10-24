@@ -31,7 +31,8 @@ def inside(root, relative):
     target = (root / value).resolve()
     if not target.is_relative_to(root):
         raise ValueError('Path escapes project: ' + str(relative))
-    return target
+    from .relocations import relocated
+    return relocated(root,target)
 
 
 def resolve_upstream(root):

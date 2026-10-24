@@ -1,0 +1,105 @@
+{
+  "skill_id": "3c445cfa-3f7b-50b1-b612-d9b3a9b462c0",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "Distinct S3-specific feed storage configuration knowledge (custom ACL, endpoint, region, overwrite default) with no existing skills and only partial overlap with the peer S3 credential skill; complements rather than duplicates it.",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "3c445cfa-3f7b-50b1-b612-d9b3a9b462c0",
+    "name": "Scrapy S3 Feed 存储后端配置",
+    "description": "为 Scrapy feed 导出配置 S3 或 S3 兼容对象存储后端，包括自定义 ACL、endpoint 与 region，并明确 overwrite 默认行为。",
+    "skill_body": "当导出目标为 S3 或 S3 兼容对象存储时，按以下步骤配置：1) 在 FEEDS 中指定 s3:// 存储 URI；2) 如需自定义访问控制，设置 FEED_STORAGE_S3_ACL；3) 如需自定义服务端点，设置 AWS_ENDPOINT_URL；4) 如需指定区域，设置 AWS_REGION_NAME；5) 注意该存储后端在 FEEDS 中 overwrite 键的默认值为 True，若需保留历史文件应显式覆盖该默认值。\n\n## Objective\n\n正确配置 S3 存储后端参数以导出 feed\n## Applicable Signals\n\n- 导出目标为 S3 或 S3 兼容对象存储\n- 需要自定义 ACL、endpoint 或 region\n\n## Contraindications\n\n- 导出目标为本地文件系统、FTP 或标准输出\n- 仅需选择序列化格式而无需对象存储\n\n## Intervention Moves\n\n- 在 FEEDS 中指定 s3:// 存储 URI\n- 设置 FEED_STORAGE_S3_ACL 自定义 ACL\n- 设置 AWS_ENDPOINT_URL 自定义端点\n- 设置 AWS_REGION_NAME 指定区域\n- 确认 overwrite 默认值为 True 并按需覆盖\n\n## Workflow Steps\n\n- 确认导出目标为 S3 或 S3 兼容存储\n- 在 FEEDS 中配置 s3:// 存储 URI\n- 按需设置 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME\n- 核对 overwrite 默认值 True 是否符合预期，必要时显式覆盖\n\n## Constraints\n\n- 仅适用于 S3 存储后端\n- overwrite 默认值为 True，需注意覆盖已有文件的风险\n\n## Cautions\n\n- 默认 overwrite=True 可能导致已有导出文件被覆盖\n\n## Output Contract\n\n- 一份包含 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME 及 overwrite 默认值的 S3 存储配置",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "正确配置 S3 存储后端参数以导出 feed",
+    "domain": "scrapy",
+    "task_family": "feed_export",
+    "method_family": "storage_backend_config",
+    "stage": "configuration",
+    "applicable_signals": [
+      "导出目标为 S3 或 S3 兼容对象存储",
+      "需要自定义 ACL、endpoint 或 region"
+    ],
+    "contraindications": [
+      "导出目标为本地文件系统、FTP 或标准输出",
+      "仅需选择序列化格式而无需对象存储"
+    ],
+    "intervention_moves": [
+      "在 FEEDS 中指定 s3:// 存储 URI",
+      "设置 FEED_STORAGE_S3_ACL 自定义 ACL",
+      "设置 AWS_ENDPOINT_URL 自定义端点",
+      "设置 AWS_REGION_NAME 指定区域",
+      "确认 overwrite 默认值为 True 并按需覆盖"
+    ],
+    "triggers": [
+      "需要将导出结果写入 S3 或 S3 兼容存储",
+      "需要自定义 ACL、endpoint 或 region"
+    ],
+    "workflow_steps": [
+      "确认导出目标为 S3 或 S3 兼容存储",
+      "在 FEEDS 中配置 s3:// 存储 URI",
+      "按需设置 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME",
+      "核对 overwrite 默认值 True 是否符合预期，必要时显式覆盖"
+    ],
+    "constraints": [
+      "仅适用于 S3 存储后端",
+      "overwrite 默认值为 True，需注意覆盖已有文件的风险"
+    ],
+    "cautions": [
+      "默认 overwrite=True 可能导致已有导出文件被覆盖"
+    ],
+    "output_contract": [
+      "一份包含 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME 及 overwrite 默认值的 S3 存储配置"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "feed_export",
+      "s3",
+      "storage_backend",
+      "configuration"
+    ],
+    "support_ids": [
+      "1e4a1ef7-71f6-538b-8321-a16a59302796"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "44b814a7-7ba5-55e6-95ff-b31ca0b59a83"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|正确配置 s3 存储后端参数以导出 feed|scrapy|feed_export|storage_backend_config|configuration|scrapy s3 feed 存储后端配置"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

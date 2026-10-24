@@ -1,0 +1,114 @@
+{
+  "skill_id": "e71e8e20-3578-5a41-a437-402eaeb0d5f6",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "该候选技能聚焦于多文件批量导出时使用 batch_time/batch_id 占位符及 printf 格式化控制文件名，与同批其他 URI 参数化技能（time/name/spider 属性替换）在占位符类型和用途上不同，属于独立可执行能力，且无冲突证据，应保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "e71e8e20-3578-5a41-a437-402eaeb0d5f6",
+    "name": "批量输出文件命名占位符配置",
+    "description": "在生成多个输出文件时，通过在 feed URI 中使用 batch_time 或 batch_id 占位符来区分不同批次文件名，并可用 printf 风格格式化控制编号位数。适用于需要按批次拆分导出文件的抓取配置场景。",
+    "skill_body": "当需要为多文件批量导出配置 feed URI 时，确认 URI 中至少包含一个批次占位符：%(batch_time)s（创建 feed 时的时间戳）或 %(batch_id)d（从 1 开始的批次序号）。如需固定编号位数，使用 printf 风格格式化，例如 %(batch_id)05d 将 3 变为 00003。仅配置文件名占位符，不涉及序列化格式或存储后端选择。\n\n## Objective\n\n为多文件批量导出配置唯一且可读的文件名占位符\n## Applicable Signals\n\n- 导出目标为多个文件而非单一文件\n- 需要按批次或时间区分输出文件名\n\n## Contraindications\n\n- 仅导出单个输出文件\n- 不需要批次拆分\n\n## Intervention Moves\n\n- 在 feed URI 中插入 %(batch_time)s 占位符以按创建时间命名\n- 在 feed URI 中插入 %(batch_id)d 占位符以按批次序号命名\n- 使用 printf 风格格式化（如 %(batch_id)05d）控制编号位数\n\n## Workflow Steps\n\n- 确认导出场景需要生成多个输出文件\n- 在 feed URI 中选择并插入至少一个占位符：%(batch_time)s 或 %(batch_id)d\n- 如需固定编号位数，改用 printf 风格格式化，例如 %(batch_id)05d\n- 校验最终 URI 至少包含一个批次占位符\n\n## Constraints\n\n- 生成多个输出文件时，feed URI 必须至少包含一个批次占位符\n- 占位符仅限 %(batch_time)s 或 %(batch_id)d 两类\n\n## Cautions\n\n- %(batch_id)d 为从 1 开始的序号，格式化时注意位数与排序可读性\n\n## Output Contract\n\n- 包含至少一个 batch_time 或 batch_id 占位符的 feed URI 配置\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要按批次生成多个输出文件，希望批次号固定为 5 位\n- Therapist/Output: feed URI 中使用 %(batch_id)05d，例如批次 3 生成 00003、批次 123 生成 00123\n- Notes: printf 风格格式化用于控制编号位数\n\n### Example 2\n\n- Client/Input: 需要按创建时间区分多个输出文件\n- Therapist/Output: feed URI 中使用 %(batch_time)s，替换为创建 feed 时的时间戳（如 2020-03-28T14-45-08.237134）",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为多文件批量导出配置唯一且可读的文件名占位符",
+    "domain": "scrapy",
+    "task_family": "feed_export",
+    "method_family": "uri_placeholder_config",
+    "stage": "configuration",
+    "applicable_signals": [
+      "导出目标为多个文件而非单一文件",
+      "需要按批次或时间区分输出文件名"
+    ],
+    "contraindications": [
+      "仅导出单个输出文件",
+      "不需要批次拆分"
+    ],
+    "intervention_moves": [
+      "在 feed URI 中插入 %(batch_time)s 占位符以按创建时间命名",
+      "在 feed URI 中插入 %(batch_id)d 占位符以按批次序号命名",
+      "使用 printf 风格格式化（如 %(batch_id)05d）控制编号位数"
+    ],
+    "triggers": [
+      "需要生成多个输出文件",
+      "需要按批次区分导出文件名",
+      "配置 feed URI 以支持批次拆分"
+    ],
+    "workflow_steps": [
+      "确认导出场景需要生成多个输出文件",
+      "在 feed URI 中选择并插入至少一个占位符：%(batch_time)s 或 %(batch_id)d",
+      "如需固定编号位数，改用 printf 风格格式化，例如 %(batch_id)05d",
+      "校验最终 URI 至少包含一个批次占位符"
+    ],
+    "constraints": [
+      "生成多个输出文件时，feed URI 必须至少包含一个批次占位符",
+      "占位符仅限 %(batch_time)s 或 %(batch_id)d 两类"
+    ],
+    "cautions": [
+      "%(batch_id)d 为从 1 开始的序号，格式化时注意位数与排序可读性"
+    ],
+    "output_contract": [
+      "包含至少一个 batch_time 或 batch_id 占位符的 feed URI 配置"
+    ],
+    "examples": [
+      {
+        "input": "需要按批次生成多个输出文件，希望批次号固定为 5 位",
+        "output": "feed URI 中使用 %(batch_id)05d，例如批次 3 生成 00003、批次 123 生成 00123",
+        "notes": "printf 风格格式化用于控制编号位数"
+      },
+      {
+        "input": "需要按创建时间区分多个输出文件",
+        "output": "feed URI 中使用 %(batch_time)s，替换为创建 feed 时的时间戳（如 2020-03-28T14-45-08.237134）",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "feed_export",
+      "uri_placeholder",
+      "batch"
+    ],
+    "support_ids": [
+      "4d254b70-a51b-53b8-906d-abc37f8e8926"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "c28c711d-b5df-5034-a24c-ce9c67e14e31"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|为多文件批量导出配置唯一且可读的文件名占位符|scrapy|feed_export|uri_placeholder_config|configuration|批量输出文件命名占位符配置"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

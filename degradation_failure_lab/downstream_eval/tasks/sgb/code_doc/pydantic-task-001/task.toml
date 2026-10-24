@@ -1,0 +1,25 @@
+schema_version = "1.4"
+artifacts = [{source = "/workspace", destination = "workspace"}]
+
+[metadata]
+task_id = "pydantic-task-001"
+task_version = 1
+
+[agent]
+timeout_sec = 120
+
+[environment]
+docker_image = "sgb-pydantic001:demo-v1"
+build_timeout_sec = 600
+cpus = 1
+memory_mb = 256
+workdir = "/workspace"
+network_mode = "no-network"
+
+[verifier]
+environment_mode = "separate"
+timeout_sec = 60
+
+[verifier.environment]
+network_mode = "no-network"
+workdir = "/oracle"

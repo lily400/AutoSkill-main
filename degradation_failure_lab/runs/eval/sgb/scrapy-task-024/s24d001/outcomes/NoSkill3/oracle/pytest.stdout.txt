@@ -1,0 +1,179 @@
+....FFFFFF.........                                                      [100%]
+=================================== FAILURES ===================================
+_ TestFeedExportOverwriteBehavior.test_supported_backends[file:///tmp/export.json-False] _
+
+self = <eval.TestFeedExportOverwriteBehavior object at 0x74addbe2c3b0>
+uri = 'file:///tmp/export.json', expected = False
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+>       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for file:///tmp/export.json: expected False, got True
+E       assert True is False
+
+oracle/eval.py:103: AssertionError
+_ TestFeedExportOverwriteBehavior.test_supported_backends[file:///tmp/export.csv-False] _
+
+self = <eval.TestFeedExportOverwriteBehavior object at 0x74addbf7a140>
+uri = 'file:///tmp/export.csv', expected = False
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+>       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for file:///tmp/export.csv: expected False, got True
+E       assert True is False
+
+oracle/eval.py:103: AssertionError
+_ TestFeedExportOverwriteBehavior.test_supported_backends[/tmp/export.json-False] _
+
+self = <eval.TestFeedExportOverwriteBehavior object at 0x74addbf79e10>
+uri = '/tmp/export.json', expected = False
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+>       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for /tmp/export.json: expected False, got True
+E       assert True is False
+
+oracle/eval.py:103: AssertionError
+_ TestFeedExportOverwriteBehavior.test_supported_backends[ftp://server/export.json-True] _
+
+self = <eval.TestFeedExportOverwriteBehavior object at 0x74addbeb4350>
+uri = 'ftp://server/export.json', expected = True
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+>       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for ftp://server/export.json: expected True, got False
+E       assert False is True
+
+oracle/eval.py:103: AssertionError
+_ TestFeedExportOverwriteBehavior.test_supported_backends[s3://bucket/export.json-True] _
+
+self = <eval.TestFeedExportOverwriteBehavior object at 0x74addbeb4750>
+uri = 's3://bucket/export.json', expected = True
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+>       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for s3://bucket/export.json: expected True, got False
+E       assert False is True
+
+oracle/eval.py:103: AssertionError
+_ TestFeedExportOverwriteBehavior.test_supported_backends[gs://bucket/export.json-True] _
+
+self = <eval.TestFeedExportOverwriteBehavior object at 0x74addbeb1040>
+uri = 'gs://bucket/export.json', expected = True
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+>       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for gs://bucket/export.json: expected True, got False
+E       assert False is True
+
+oracle/eval.py:103: AssertionError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED oracle/eval.py::TestFeedExportOverwriteBehavior::test_supported_backends[file:///tmp/export.json-False]
+FAILED oracle/eval.py::TestFeedExportOverwriteBehavior::test_supported_backends[file:///tmp/export.csv-False]
+FAILED oracle/eval.py::TestFeedExportOverwriteBehavior::test_supported_backends[/tmp/export.json-False]
+FAILED oracle/eval.py::TestFeedExportOverwriteBehavior::test_supported_backends[ftp://server/export.json-True]
+FAILED oracle/eval.py::TestFeedExportOverwriteBehavior::test_supported_backends[s3://bucket/export.json-True]
+FAILED oracle/eval.py::TestFeedExportOverwriteBehavior::test_supported_backends[gs://bucket/export.json-True]
+6 failed, 13 passed in 0.65s

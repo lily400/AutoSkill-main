@@ -1,0 +1,249 @@
+{
+  "doc_id": "746b8660-57be-5a86-bc5c-fdd89bdae86d",
+  "title": "input001\\feed-exports.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m005\\inputs\\input001\\feed-exports.md",
+  "window_id": "601fd9d3-3489-5cf6-90f1-00e4a49d0fe5",
+  "section_heading": "Feed exports",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "c0747914-b67b-51ab-98ed-14261db6d75a",
+      "doc_id": "746b8660-57be-5a86-bc5c-fdd89bdae86d",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m005\\inputs\\input001\\feed-exports.md",
+      "section": "Feed exports",
+      "span": {
+        "start": 3720,
+        "end": 4115
+      },
+      "excerpt": "Here are some examples to illustrate:\n\n- Store in FTP using one directory per spider:\n  - `ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json`\n- Store in S3 using one directory per spider:\n  - `s3://mybucket/scraping/feeds/%(name)s/%(time)s.json`\n\n[Spider arguments](spiders.html#spiderargs) become spider attributes, hence\nthey can also be used as storage URI parameters.",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\feed-exports.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Feed 存储 URI 参数化配置",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "生成带占位符的 Feed 存储 URI，实现按 spider/时间分目录导出",
+        "task_family": "feed_export",
+        "method_family": "uri_templating",
+        "stage": "配置",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "601fd9d3-3489-5cf6-90f1-00e4a49d0fe5",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 19,
+        "paragraph_end": 21,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      },
+      "created_at": "2026-10-23T12:30:54+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "e619efeb-0752-5917-a34e-67e7cc694436",
+      "doc_id": "746b8660-57be-5a86-bc5c-fdd89bdae86d",
+      "name": "Feed 存储 URI 参数化配置",
+      "description": "使用 %(name)s、%(time)s 等占位符及 spider 参数构造 Feed 存储 URI，实现按 spider 或时间分目录导出。适用于需要将抓取结果写入 FTP/S3 等存储并做目录隔离的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "生成带占位符的 Feed 存储 URI，实现按 spider/时间分目录导出",
+      "domain": "scrapy",
+      "task_family": "feed_export",
+      "method_family": "uri_templating",
+      "stage": "配置",
+      "applicable_signals": [
+        "需要按 spider 或时间分目录存放导出文件",
+        "需要将 Feed 写入 FTP 或 S3 等远程存储"
+      ],
+      "contraindications": [
+        "仅需本地单文件导出且无需目录隔离"
+      ],
+      "intervention_moves": [
+        "选择存储协议与基础路径",
+        "插入 %(name)s 实现按 spider 隔离",
+        "插入 %(time)s 实现按时间隔离",
+        "追加文件名与格式后缀",
+        "如需动态值，引用 spider 参数（作为 spider 属性）"
+      ],
+      "workflow_steps": [
+        "确定存储协议与基础路径",
+        "插入 %(name)s 和/或 %(time)s 占位符",
+        "指定导出文件名与格式后缀",
+        "如需动态值，引用 spider 参数",
+        "输出最终 URI 模板"
+      ],
+      "triggers": [
+        "需要按 spider 或时间分目录存放导出文件",
+        "需要将 Feed 写入 FTP 或 S3 等远程存储"
+      ],
+      "constraints": [
+        "占位符需与 spider 属性名一致",
+        "spider 参数会成为 spider 属性，可作为 URI 参数引用"
+      ],
+      "cautions": [
+        "远程存储 URI 中可能包含凭据，注意避免泄露"
+      ],
+      "output_contract": [
+        "可用的参数化存储 URI 模板（如 ftp://.../%(name)s/%(time)s.json）"
+      ],
+      "examples": [
+        {
+          "input": "FTP 存储，按 spider 分目录",
+          "output": "ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json",
+          "notes": null
+        },
+        {
+          "input": "S3 存储，按 spider 分目录",
+          "output": "s3://mybucket/scraping/feeds/%(name)s/%(time)s.json",
+          "notes": null
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "c0747914-b67b-51ab-98ed-14261db6d75a"
+      ],
+      "metadata": {
+        "prompt": "根据目标存储类型（FTP、S3 等）与目录隔离需求，构造带占位符的 Feed 存储 URI 模板。\n1. 确定存储协议与基础路径（如 ftp://user:password@host/path 或 s3://bucket/path）。\n2. 在路径中插入占位符以实现隔离：按 spider 用 %(name)s，按时间用 %(time)s。\n3. 指定导出文件名与格式后缀（如 .json）。\n4. 若需使用 spider 参数，记住 spider 参数会成为 spider 属性，因此可作为存储 URI 参数引用。\n5. 输出最终 URI 模板字符串，供 FEEDS 配置使用。",
+        "tags": [
+          "scrapy",
+          "feed-export",
+          "uri-templating",
+          "storage"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Feed exports"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "601fd9d3-3489-5cf6-90f1-00e4a49d0fe5",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 19,
+        "paragraph_end": 21,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

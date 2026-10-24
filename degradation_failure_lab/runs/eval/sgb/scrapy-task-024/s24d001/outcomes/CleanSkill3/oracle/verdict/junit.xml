@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="19" time="0.516" timestamp="2026-10-23T14:01:24.982883+00:00" hostname="2138c9653521"><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_file_exists" time="0.001" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_file_not_empty" time="0.002" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_has_module_doc_or_comments" time="0.002" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_has_callable_target" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_supported_backends[file:///tmp/export.json-False]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_supported_backends[file:///tmp/export.csv-False]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_supported_backends[/tmp/export.json-False]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_supported_backends[ftp://server/export.json-True]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_supported_backends[s3://bucket/export.json-True]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_supported_backends[gs://bucket/export.json-True]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_supported_backends[stdout:-False]" time="0.000"><failure message="AssertionError: Incorrect default overwrite for stdout:: expected False, got True&#10;assert True is False">self = &lt;eval.TestFeedExportOverwriteBehavior object at 0x789c52f8c050&gt;
+uri = 'stdout:', expected = False
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+&gt;       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for stdout:: expected False, got True
+E       assert True is False
+
+oracle/eval.py:103: AssertionError</failure></testcase><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_unsupported_schemes_raise[http://example.com/export.json]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_unsupported_schemes_raise[https://example.com/export.json]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_unsupported_schemes_raise[ftps://secure-server/export.json]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_unsupported_schemes_raise[stderr:]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_unsupported_schemes_raise[mysql://db/export.json]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_unsupported_schemes_raise[unknown://somewhere/file]" time="0.000" /><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_rejects_empty_string" time="0.000"><failure message="Failed: DID NOT RAISE any of (&lt;class 'ValueError'&gt;, &lt;class 'TypeError'&gt;)">self = &lt;eval.TestFeedExportOverwriteBehavior object at 0x789c52f2f070&gt;
+
+    def test_rejects_empty_string(self):
+        module = load_agent_module()
+        func = get_target_function(module)
+&gt;       with pytest.raises((ValueError, TypeError)):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE any of (&lt;class 'ValueError'&gt;, &lt;class 'TypeError'&gt;)
+
+oracle/eval.py:125: Failed</failure></testcase><testcase classname="eval.TestFeedExportOverwriteBehavior" name="test_rejects_non_string" time="0.000" /></testsuite></testsuites>

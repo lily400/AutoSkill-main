@@ -13,7 +13,7 @@ from degradation_lab.io import read,sha256,inventory
 from downstream_eval.integration.request_budget import Ledger,BudgetStop,MeteredTransport
 from downstream_eval.integration.p1_observer import body_visible
 
-OUT=LAB/'runs/downstream/scrapy-task-024/s24d001'
+OUT=LAB/'runs/eval/sgb/scrapy-task-024/s24d001'
 PRE=Path(r'C:\Users\lily\Documents\ChatGPT\回归解决退化文档\audit_2026-10-15\scrapy024_preflight')
 ORDER=['NoSkill1','CleanSkill1','NoSkill2','CleanSkill2','NoSkill3','CleanSkill3']
 
@@ -66,7 +66,7 @@ class Scrapy024(unittest.TestCase):
         self.assertEqual(inventory(OUT/'staged/NoSkill'),{})
 
     def test_original_instruction_and_oracle_bytes_are_unchanged(self):
-        task=LAB/'downstream_eval/tasks/scrapy_task024_v1'
+        task=LAB/'downstream_eval/tasks/sgb/code_doc/scrapy-task-024'
         assets=read(OUT/'task_asset_manifest.json')
         frozen=read(task/'scorer/source_manifest.json')['frozen_inventory']
         self.assertEqual(sha256(task/'instruction.md'),assets['instruction_sha256'])
@@ -110,7 +110,7 @@ class Scrapy024(unittest.TestCase):
         profile['approval_environment_variable']='SCRAPY_TEST_ONLY'
         (self.root/'profile.json').write_text(json.dumps(profile),encoding='utf-8')
         (self.root/'manifest.json').write_text(json.dumps({'arm':ORDER[0],'metadata':{},'files':{},'staged_root':str(self.root)}),encoding='utf-8')
-        config=AgentConfig(import_path='downstream_eval.integration.scrapy_agent:ScrapyTerminus2',
+        config=AgentConfig(import_path='downstream_eval.sgb.scrapy_agent:ScrapyTerminus2',
             model_name=profile['model']['name'],model_base_url=profile['model']['base_url'],
             model_api_key_name='ZHIZENGZENG_API_KEY',model_api_format='openai_chat_completions',
             kwargs={'p1_mode':'paid','p1_profile':str(self.root/'profile.json'),'p1_manifest':str(self.root/'manifest.json'),

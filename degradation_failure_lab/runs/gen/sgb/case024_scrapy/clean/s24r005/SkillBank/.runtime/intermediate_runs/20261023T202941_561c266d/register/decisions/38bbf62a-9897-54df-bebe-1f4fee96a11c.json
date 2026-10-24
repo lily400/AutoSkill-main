@@ -1,0 +1,103 @@
+{
+  "skill_id": "38bbf62a-9897-54df-bebe-1f4fee96a11c",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "38bbf62a-9897-54df-bebe-1f4fee96a11c",
+    "name": "延迟文件交付时序处理",
+    "description": "说明部分 feed 存储后端采用延迟文件交付的时序特性，帮助调用方判断下游流程是否可以在 feed 写入后立即依赖文件存在，并据此调整等待或触发逻辑。",
+    "skill_body": "当使用支持延迟文件交付的存储后端导出 feed，且下游流程依赖 feed 文件已存在时，使用本参考知识：确认所选存储后端是否属于延迟交付类型，明确文件落盘与写入完成之间存在时序间隔，据此调整下游的等待、轮询或触发逻辑，避免在文件尚未落盘时读取。\n\n## Objective\n\n理解并应对延迟文件交付的时序约束\n## Applicable Signals\n\n- 下游流程依赖feed文件已存在\n- 所选存储后端使用延迟文件交付\n\n## Contraindications\n\n- 使用stdout等即时输出通道时无需考虑延迟交付\n\n## Intervention Moves\n\n- 识别存储后端是否采用延迟文件交付\n- 明确文件落盘与写入完成之间的时序间隔\n- 调整下游等待或触发逻辑以适配延迟\n\n## Workflow Steps\n\n- 确认当前feed使用的存储后端类型\n- 判断该后端是否属于延迟文件交付\n- 若属于，则在下游流程中加入等待或轮询，避免立即读取未落盘文件\n- 若为即时输出通道（如stdout），按正常流程处理\n\n## Constraints\n\n- 仅在存储后端支持延迟交付时适用\n- 不得假设feed写入完成后文件立即可用\n\n## Cautions\n\n- 延迟交付可能导致下游读取到不完整或不存在的文件\n\n## Output Contract\n\n- 明确延迟交付边界并调整下游等待或触发逻辑",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "理解并应对延迟文件交付的时序约束",
+    "domain": "scrapy",
+    "task_family": "feed导出",
+    "method_family": "存储后端时序",
+    "stage": "输出配置",
+    "applicable_signals": [
+      "下游流程依赖feed文件已存在",
+      "所选存储后端使用延迟文件交付"
+    ],
+    "contraindications": [
+      "使用stdout等即时输出通道时无需考虑延迟交付"
+    ],
+    "intervention_moves": [
+      "识别存储后端是否采用延迟文件交付",
+      "明确文件落盘与写入完成之间的时序间隔",
+      "调整下游等待或触发逻辑以适配延迟"
+    ],
+    "triggers": [
+      "下游流程依赖feed文件已存在",
+      "使用支持延迟交付的存储后端",
+      "需要在feed写入后立即读取导出文件"
+    ],
+    "workflow_steps": [
+      "确认当前feed使用的存储后端类型",
+      "判断该后端是否属于延迟文件交付",
+      "若属于，则在下游流程中加入等待或轮询，避免立即读取未落盘文件",
+      "若为即时输出通道（如stdout），按正常流程处理"
+    ],
+    "constraints": [
+      "仅在存储后端支持延迟交付时适用",
+      "不得假设feed写入完成后文件立即可用"
+    ],
+    "cautions": [
+      "延迟交付可能导致下游读取到不完整或不存在的文件"
+    ],
+    "output_contract": [
+      "明确延迟交付边界并调整下游等待或触发逻辑"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "feed导出",
+      "存储后端",
+      "延迟交付",
+      "时序"
+    ],
+    "support_ids": [
+      "c1665a8e-cb44-512c-8b6c-0540e033a90c"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "9d3d4906-eb6a-51a0-888b-733abe42c907"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.55,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|理解并应对延迟文件交付的时序约束|scrapy|feed导出|存储后端时序|输出配置|延迟文件交付时序处理"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

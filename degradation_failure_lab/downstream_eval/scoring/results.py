@@ -2,6 +2,8 @@
 
 
 def trial_record(value, task_key, evidence):
+    if value.get('run_kind') == 'runtime_smoke' or value.get('real_agent_outcome') is False:
+        raise ValueError('Engineering smoke/receipt records are not observed Agent trials')
     success = value.get('task_success')
     infra = value.get('infra_ok')
     if type(success) is not bool or type(infra) is not bool:
@@ -19,6 +21,8 @@ def trial_record(value, task_key, evidence):
 def summarize(rows):
     conditions = {}
     for row in rows:
+        if row.get('run_kind') == 'runtime_smoke' or row.get('real_agent_outcome') is False:
+            raise ValueError('Engineering smoke/receipt records cannot enter success-rate summaries')
         group = conditions.setdefault(row['condition'], {'observed':0,'passed':0,'failed':0,'unscorable':0})
         group['observed'] += 1; group[row['outcome']] += 1
     for group in conditions.values():

@@ -1,0 +1,588 @@
+[?2004hroot@d35393a334c1:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cd /workspace && ls -la && echo '--- docs ---' && find docs -maxdepth 2 -type f | sort && echo '--- input ---' && find input -maxdepth 2 -type f | sort && eccho '--- tests ---' && find tests -maxdepth 2 -type f | sort
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 23 13:52 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+--- docs ---
+--- input ---
+--- tests ---
+find: 'tests': No such file or directory
+[?2004hp1$ echo '--- skill files ---' && find /harbor/skills -maxdepth 2 -name 'SKILL.md' | sort | grep -E '341bd0da|27330983|34248732|3c445cfa|d376a347' && echo '--- sselected skill excerpts ---' && for f in /harbor/skills/341bd0da-1d52-5a40-87dd-44477cdec422/SKILL.md /harbor/skills/27330983-d562-5773-89a1-69b722b401e1/SKILL.mmd /harbor/skills/34248732-50cd-510d-b3ed-a71e8ef808d1/SKILL.md /harbor/skills/3c445cfa-3f7b-50b1-b612-d9b3a9b462c0/SKILL.md /harbor/skills/d376a347-de32-572a-8aa60-797627eb09ca/SKILL.md; do echo "--- $f ---"; sed -n '1,220p' "$f"; done
+[?2004l--- skill files ---
+/harbor/skills/27330983-d562-5773-89a1-69b722b401e1/SKILL.md
+/harbor/skills/341bd0da-1d52-5a40-87dd-44477cdec422/SKILL.md
+/harbor/skills/34248732-50cd-510d-b3ed-a71e8ef808d1/SKILL.md
+/harbor/skills/3c445cfa-3f7b-50b1-b612-d9b3a9b462c0/SKILL.md
+/harbor/skills/d376a347-de32-572a-8a60-797627eb09ca/SKILL.md
+--- selected skill excerpts ---
+--- /harbor/skills/341bd0da-1d52-5a40-87dd-44477cdec422/SKILL.md ---
+---
+id: "341bd0da-1d52-5a40-87dd-44477cdec422"
+name: "Feed 覆盖与追加策略选择"
+description: "依据存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并处理后端不支持追加或覆盖的情况，避免数据被意外覆盖或追加失败。用于配置 feed 输出目标时选择覆盖/追加行为。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-export"
+  - "overwrite"
+  - "storage-backend"
+  - "configuration"
+triggers:
+  - "配置 feed 的 overwrite 参数"
+  - "目标存储不支持追加（如 S3、GCS、标准输出）"
+  - "需要决定 feed 输出是覆盖还是追加已有文件"
+examples:
+  - input: "feed 目标为 S3，未指定 overwrite"
+    output: "overwrite=True（S3 默认覆盖，且不支持追加）"
+    notes: "S3 无法追加，只能覆盖"
+  - input: "feed 目标为标准输出，未指定 overwrite"
+    output: "overwrite=False（标准输出默认追加，不支持覆盖）"
+    notes: "标准输出不支持覆盖"
+---
+
+# Feed 覆盖与追加策略选择
+
+依据存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并处理后端不支持追加或覆盖的情况，避免数据被意外覆盖或追加失败。用于配置 feed 输出目标时选择覆盖/追加行为。
+
+## Prompt
+
+当需要为某个 feed 输出目标决定 overwrite 行为时：
+1. 确认目标存储后端（本地文件系统、FTP、S3、GCS、标准输出）。
+2. 若 feed 定义中显式提供了 overwrite，则采用该值；否则按后端默认值：本地文件系统 False（追加）、FTP True（覆盖）、S3 True（覆盖）、GCS True（覆盖）、标准输出 False（追加）。
+3. 检查后端限制：S3 与 GCS 不支持追加，标准输出不支持覆盖；FTP 部分服务器可能不支持 APPE 追加命令。
+4. 若所需行为与后端能力冲突，调整 overwrite 取值或更换存储后端，并向调用方说明限制。
+5. 输出最终 overwrite 取值及对应后端限制说明。
+
+## Objective
+
+为给定存储后端选择正确的 overwrite 行为
+## Applicable Signals
+
+- feed 定义中未指定 overwrite 需取默认值
+- 目标后端为 S3、GCS 或标准输出等不支持追加/覆盖的存储
+- 担心已有输出文件被覆盖或追加失败
+
+## Contraindications
+
+- 仅需选择序列化格式
+- 与 overwrite 决策无关的其他 feed 配置项
+
+## Intervention Moves
+
+- 识别目标存储后端
+- 按后端取 overwrite 默认值或采用显式配置
+- 核对后端对追加/覆盖的支持能力
+- 冲突时调整取值或更换后端并说明限制
+
+## Workflow Steps
+
+- 确认目标存储后端类型
+- 读取 feed 定义中的 overwrite（若有）
+- 否则应用后端默认值：本地文件系统 False、FTP True、S3 True、GCS True、标准输出 False
+- 检查后端限制：S3/GCS 不支持追加，标准输出不支持覆盖，部分 FTP 服务器不支持 APPE
+- 冲突时调整 overwrite 或更换后端
+- 输出 overwrite 取值与后端限制说明
+
+## Constraints
+
+- overwrite 默认值依赖存储后端，不可统一假设
+- S3 与 GCS 不支持追加，只能覆盖
+- 标准输出不支持覆盖，只能追加
+- FTP 追加依赖服务器是否支持 APPE 命令
+
+## Cautions
+
+- 部分 FTP 服务器可能不支持 APPE 追加命令，追加可能失败
+- 对不支持追加的后端设置 overwrite=False 会导致写入失败
+
+## Output Contract
+
+- 确定的 overwrite 取值及对应后端限制说明
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: feed 目标为 S3，未指定 overwrite
+- Therapist/Output: overwrite=True（S3 默认覆盖，且不支持追加）
+- Notes: S3 无法追加，只能覆盖
+
+### Example 2
+
+- Client/Input: feed 目标为标准输出，未指定 overwrite
+- Therapist/Output: overwrite=False（标准输出默认追加，不支持覆盖）
+- Notes: 标准输出不支持覆盖
+
+## Triggers
+
+- 配置 feed 的 overwrite 参数
+- 目标存储不支持追加（如 S3、GCS、标准输出）
+- 需要决定 feed 输出是覆盖还是追加已有文件
+
+## Examples
+
+### Example 1
+
+Input:
+
+  feed 目标为 S3，未指定 overwrite
+
+Output:
+
+  overwrite=True（S3 默认覆盖，且不支持追加）
+
+Notes:
+
+  S3 无法追加，只能覆盖
+
+### Example 2
+
+Input:
+
+  feed 目标为标准输出，未指定 overwrite
+
+Output:
+
+  overwrite=False（标准输出默认追加，不支持覆盖）
+
+Notes:
+
+  标准输出不支持覆盖
+--- /harbor/skills/27330983-d562-5773-89a1-69b722b401e1/SKILL.md ---
+---
+id: "27330983-d562-5773-89a1-69b722b401e1"
+name: "本地文件系统 Feed 导出配置"
+description: "配置 Scrapy feed 导出到本地文件系统：使用 file URI 方案或绝对路径，也可传入 pathlib.Path 对象。适用于需要将抓取结果落盘到本机文件的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "local_filesystem"
+  - "storage_configuration"
+triggers:
+  - "需要把抓取结果保存到本机文件"
+  - "用户询问 file:// URI 或绝对路径写法"
+  - "用户询问本地文件 feed 是否需要额外依赖"
+examples:
+  - input: "如何把抓取结果导出到本机 /tmp/export.csv？"
+    output: "使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。"
+---
+
+# 本地文件系统 Feed 导出配置
+
+配置 Scrapy feed 导出到本地文件系统：使用 file URI 方案或绝对路径，也可传入 pathlib.Path 对象。适用于需要将抓取结果落盘到本机文件的场景。
+
+## Prompt
+
+当需要把抓取结果保存到本机文件时，按以下要点给出本地文件系统 feed 配置：
+1. 使用 file URI 方案，例如 file:///tmp/export.csv。
+2. 本地文件系统存储可省略 scheme，直接给出绝对路径（仅 Unix 系统），例如 /tmp/export.csv。
+3. 也可使用 pathlib.Path 对象作为目标。
+4. 本地文件系统无需额外外部库。
+仅覆盖本地文件系统这一存储后端；远程存储或自定义存储插件不在本技能范围内。
+
+## Objective
+
+正确指定本地文件系统作为 feed 存储目标
+## Applicable Signals
+
+- 需要把抓取结果保存到本机文件
+- 用户询问 file:// URI 或绝对路径写法
+
+## Contraindications
+
+- 目标是远程存储如 FTP/S3/GCS
+- 需要自定义存储后端插件
+
+## Intervention Moves
+
+- 指定 file URI 方案（如 file:///tmp/export.csv）
+- 在 Unix 系统上可省略 scheme 直接使用绝对路径
+- 可传入 pathlib.Path 对象作为目标
+
+## Workflow Steps
+
+- 确认导出目标是本机文件系统
+- 选择 file URI 或绝对路径（Unix）或 pathlib.Path 对象
+- 确认无需额外外部库即可使用
+
+## Constraints
+
+- 省略 scheme 的绝对路径写法仅适用于 Unix 系统
+- 仅覆盖本地文件系统存储后端
+
+## Cautions
+
+- 非 Unix 系统不要依赖省略 scheme 的绝对路径写法
+
+## Output Contract
+
+- 可用的本地文件 feed URI 或绝对路径配置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 如何把抓取结果导出到本机 /tmp/export.csv？
+- Therapist/Output: 使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。
+
+## Triggers
+
+- 需要把抓取结果保存到本机文件
+- 用户询问 file:// URI 或绝对路径写法
+- 用户询问本地文件 feed 是否需要额外依赖
+
+## Examples
+
+### Example 1
+
+Input:
+
+  如何把抓取结果导出到本机 /tmp/export.csv？
+
+Output:
+
+  使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。
+--- /harbor/skills/34248732-50cd-510d-b3ed-a71e8ef808d1/SKILL.md ---
+---
+id: "34248732-50cd-510d-b3ed-a71e8ef808d1"
+name: "配置 FTP Feed 存储"
+description: "当需要将 Scrapy 抓取结果导出到 FTP 服务器时，使用 ftp:// URI 配置 feed 存储，并可按需切换主动/被动连接模式。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-export"
+  - "ftp"
+  - "storage"
+triggers:
+  - "需要将导出文件写入 FTP 服务器"
+  - "需要调整 FTP 连接模式"
+examples:
+  - input: "需要将导出文件写入 FTP 服务器"
+    output: "ftp://user:pass@ftp.example.com/path/to/export.csv"
+    notes: "默认被动连接模式"
+  - input: "需要使用主动连接模式"
+    output: "设置 FEED_STORAGE_FTP_ACTIVE = True"
+    notes: "在 ftp:// URI 基础上调整连接模式"
+---
+
+# 配置 FTP Feed 存储
+
+当需要将 Scrapy 抓取结果导出到 FTP 服务器时，使用 ftp:// URI 配置 feed 存储，并可按需切换主动/被动连接模式。
+
+## Prompt
+
+使用 ftp:// 方案的 URI 配置 feed 存储，将导出文件写入 FTP 服务器。默认使用被动连接模式；如需主动连接模式，将 FEED_STORAGE_FTP_ACTIVE 设置为 True。FTP 存储无需额外外部库。
+
+## Objective
+
+正确配置 Scrapy feed 导出到 FTP 服务器
+## Applicable Signals
+
+- 目标存储为 FTP 服务器
+- 需要指定 ftp:// 方案的 feed URI
+- 需要选择主动或被动连接模式
+
+## Contraindications
+
+- 目标存储不是 FTP
+- 仅需本地文件或标准输出
+
+## Intervention Moves
+
+- 使用 ftp:// 方案的 URI 指定 FTP 存储位置
+- 默认保持被动连接模式
+- 如需主动连接模式，将 FEED_STORAGE_FTP_ACTIVE 设置为 True
+
+## Workflow Steps
+
+- 确认目标存储为 FTP 服务器
+- 构造 ftp:// 方案的 feed URI（含用户、密码、主机与路径）
+- 默认使用被动连接模式；如需主动模式，设置 FEED_STORAGE_FTP_ACTIVE 为 True
+- 确认无需额外外部库
+
+## Constraints
+
+- URI 必须使用 ftp 方案
+- FTP 存储无需额外外部库
+
+## Cautions
+
+- 主动连接模式可能受网络环境影响，默认使用被动模式更稳妥
+
+## Output Contract
+
+- 可用的 ftp:// feed URI 配置及连接模式设置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要将导出文件写入 FTP 服务器
+- Therapist/Output: ftp://user:pass@ftp.example.com/path/to/export.csv
+- Notes: 默认被动连接模式
+
+### Example 2
+
+- Client/Input: 需要使用主动连接模式
+- Therapist/Output: 设置 FEED_STORAGE_FTP_ACTIVE = True
+- Notes: 在 ftp:// URI 基础上调整连接模式
+
+## Triggers
+
+- 需要将导出文件写入 FTP 服务器
+- 需要调整 FTP 连接模式
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要将导出文件写入 FTP 服务器
+
+Output:
+
+  ftp://user:pass@ftp.example.com/path/to/export.csv
+
+Notes:
+
+  默认被动连接模式
+
+### Example 2
+
+Input:
+
+  需要使用主动连接模式
+
+Output:
+
+  设置 FEED_STORAGE_FTP_ACTIVE = True
+
+Notes:
+
+  在 ftp:// URI 基础上调整连接模式
+--- /harbor/skills/3c445cfa-3f7b-50b1-b612-d9b3a9b462c0/SKILL.md ---
+---
+id: "3c445cfa-3f7b-50b1-b612-d9b3a9b462c0"
+name: "Scrapy S3 Feed 存储后端配置"
+description: "为 Scrapy feed 导出配置 S3 或 S3 兼容对象存储后端，包括自定义 ACL、endpoint 与 region，并明确 overwrite 默认行为。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "s3"
+  - "storage_backend"
+  - "configuration"
+triggers:
+  - "需要将导出结果写入 S3 或 S3 兼容存储"
+  - "需要自定义 ACL、endpoint 或 region"
+---
+
+# Scrapy S3 Feed 存储后端配置
+
+为 Scrapy feed 导出配置 S3 或 S3 兼容对象存储后端，包括自定义 ACL、endpoint 与 region，并明确 overwrite 默认行为。
+
+## Prompt
+
+当导出目标为 S3 或 S3 兼容对象存储时，按以下步骤配置：1) 在 FEEDS 中指定 s3:// 存储 URI；2) 如需自定义访问控制，设置 FEED_STORAGE_S3_ACL；3) 如需自定义服务端点，设置 AWS_ENDPOINT_URL；4) 如需指定区域，设置 AWS_REGION_NAME；5) 注意该存储后端在 FEEDS 中 overwrite 键的默认值为 True，若需保留历史文件应显式覆盖该默认值。
+
+## Objective
+
+正确配置 S3 存储后端参数以导出 feed
+## Applicable Signals
+
+- 导出目标为 S3 或 S3 兼容对象存储
+- 需要自定义 ACL、endpoint 或 region
+
+## Contraindications
+
+- 导出目标为本地文件系统、FTP 或标准输出
+- 仅需选择序列化格式而无需对象存储
+
+## Intervention Moves
+
+- 在 FEEDS 中指定 s3:// 存储 URI
+- 设置 FEED_STORAGE_S3_ACL 自定义 ACL
+- 设置 AWS_ENDPOINT_URL 自定义端点
+- 设置 AWS_REGION_NAME 指定区域
+- 确认 overwrite 默认值为 True 并按需覆盖
+
+## Workflow Steps
+
+- 确认导出目标为 S3 或 S3 兼容存储
+- 在 FEEDS 中配置 s3:// 存储 URI
+- 按需设置 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME
+- 核对 overwrite 默认值 True 是否符合预期，必要时显式覆盖
+
+## Constraints
+
+- 仅适用于 S3 存储后端
+- overwrite 默认值为 True，需注意覆盖已有文件的风险
+
+## Cautions
+
+- 默认 overwrite=True 可能导致已有导出文件被覆盖
+
+## Output Contract
+
+- 一份包含 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME 及 overwrite 默认值的 S3 存储配置
+
+## Triggers
+
+- 需要将导出结果写入 S3 或 S3 兼容存储
+- 需要自定义 ACL、endpoint 或 region
+--- /harbor/skills/d376a347-de32-572a-8a60-797627eb09ca/SKILL.md ---
+---
+id: "d376a347-de32-572a-8a60-797627eb09ca"
+name: "标准输出Feed导出"
+description: "将Scrapy抓取到的item通过stdout: URI方案直接写入进程标准输出，无需外部库。适用于需要即时查看抓取结果或通过管道传给下游进程的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed导出"
+  - "标准输出"
+  - "stdout"
+triggers:
+  - "需要即时查看抓取结果"
+  - "需要将结果通过管道传给下游进程"
+---
+
+# 标准输出Feed导出
+
+将Scrapy抓取到的item通过stdout: URI方案直接写入进程标准输出，无需外部库。适用于需要即时查看抓取结果或通过管道传给下游进程的场景。
+
+## Prompt
+
+当需要将Scrapy feed输出到进程标准输出时，使用stdout: URI方案配置feed导出。确认无需外部库依赖，并注意该存储后端可能涉及延迟文件交付语义。
+
+## Objective
+
+通过stdout: URI将feed输出到标准输出
+## Applicable Signals
+
+- 需要即时查看抓取结果
+- 需要将结果通过管道传给下游进程
+
+## Contraindications
+
+- 需要持久化到文件或远程存储
+- 需要延迟文件交付语义
+
+## Intervention Moves
+
+- 在feed配置中使用stdout: URI方案
+- 确认无需外部库依赖
+
+## Workflow Steps
+
+- 确认输出目标为进程标准输出而非文件或远程存储
+- 使用stdout: URI方案配置feed
+- 确认无需安装外部库
+- 运行抓取并验证item以序列化格式打印到标准输出
+
+## Constraints
+
+- 仅覆盖stdout存储后端这一单一输出通道
+- 不适用于需要持久化到文件或远程存储的场景
+
+## Cautions
+
+- 部分存储后端使用延迟文件交付语义，需注意stdout的行为
+
+## Output Contract
+
+- 抓取item以序列化格式打印到进程标准输出
+
+## Triggers
+
+- 需要即时查看抓取结果
+- 需要将结果通过管道传给下游进程
+[?2004hp1$ python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> p = Path('/workspace')
+[?2004l[?2004h> print('root exists', p.exists())
+[?2004l[?2004h> print('agent_output exists', (p/'agent_output.py').exists())
+[?2004l[?2004h> print('tests script exists', Path('/workspace/tests/test.sh').exists())
+[?2004l[?2004h> PY
+[?2004lroot exists True
+agent_output exists False
+tests script exists False
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> """Resolve Scrapy feed export default overwrite behavior for built-in storage backends.
+[?2004l[?2004h> 
+[?2004l[?2004h> Supported built-in defaults:
+[?2004l[?2004h> - Local filesystem (file:///... or absolute paths): overwrite=False
+[?2004l[?2004h> - FTP (ftp://...): overwrite=True
+[?2004l[?2004h> - S3 (s3://...): overwrite=True
+[?2004l[?2004h> - GCS (gs://...): overwrite=True
+[?2004l[?2004h> - Standard output (stdout:): overwrite=False
+[?2004l[?2004h> Unsupported schemes raise ValueError.
+[?2004l[?2004h> """
+[?2004l[?2004h> 
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from urllib.parse import urlparse
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def default_feed_overwrite(uri: str) -> bool:
+[?2004l[?2004h>     """Return Scrapy's built-in default overwrite behavior for a feed URI."""
+[?2004l[?2004h>     if not isinstance(uri, str):
+[?2004l[?2004h>         raise TypeError("uri must be a string")
+[?2004l[?2004h> 
+[?2004l[?2004h>     if uri.startswith("stdout:"):
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     parsed = urlparse(uri)
+[?2004l[?2004h> 
+[?2004l[?2004h>     if parsed.scheme == "":
+[?2004l[?2004h>         # Treat absolute local paths like /tmp/export.json as filesystem feeds.
+[?2004l[?2004h>         if uri.startswith("/"):
+[?2004l[?2004h>             return False
+[?2004l[?2004h>         raise ValueError(f"Unsupported feed URI scheme in {uri!r}")
+[?2004l[?2004h> 
+[?2004l[?2004h>     if parsed.scheme == "file":
+[?2004l[?2004h>         return False
+[?2004l[?2004h>     if parsed.scheme == "ftp":
+[?2004l[?2004h>         return True
+[?2004l[?2004h>     if parsed.scheme == "s3":
+[?2004l[?2004h>         return True
+[?2004l[?2004h>     if parsed.scheme == "gs":
+[?2004l[?2004h>         return True
+[?2004l[?2004h> 
+[?2004l[?2004h>     raise ValueError(f"Unsupported feed URI scheme in {uri!r}")
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 - <<'PY'
+[?2004l[?2004h> from agent_output import default_feed_overwrite
+[?2004l[?2004h> cases = {
+[?2004l[?2004h>     'file:///tmp/export.json': False,
+[?2004l[?2004h>     '/tmp/export.json': False,
+[?2004l[?2004h>     'ftp://server/export.json': True,
+[?2004l[?2004h>     's3://bucket/export.json': True,
+[?2004l[?2004h>     'gs://bucket/export.json': True,
+[?2004l[?2004h>     'stdout:': False,
+[?2004l[?2004h> }
+[?2004l[?2004h> for uri, expected in cases.items():
+[?2004l[?2004h>     got = default_feed_overwrite(uri)
+[?2004l[?2004h>     print(uri, got, expected, 'OK' if got == expected else 'BAD')
+[?2004l[?2004h> for bad in ['http://example.com/x', 'stderr:', 'ftps://server/x']:
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         default_feed_overwrite(bad)
+[?2004l[?2004h>     except ValueError:
+[?2004l[?2004h>         print(bad, 'ValueError OK')
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         print(bad, 'FAILED')
+[?2004l[?2004h> PY
+[?2004lfile:///tmp/export.json False False OK
+/tmp/export.json False False OK
+ftp://server/export.json True True OK
+s3://bucket/export.json True True OK
+gs://bucket/export.json True True OK
+stdout: False False OK
+http://example.com/x ValueError OK
+stderr: ValueError OK
+ftps://server/x ValueError OK
+[?2004hp1$ 

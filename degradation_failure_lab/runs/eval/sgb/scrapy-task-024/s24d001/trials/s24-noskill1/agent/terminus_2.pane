@@ -1,0 +1,63 @@
+[?2004hroot@cbe9b00dd953:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cd /workspace && ls -la && echo '--- docs ---' && find docs -maxdepth 2 -type f | sort && echo '--- tests ---' && find tests -maxdepth 2 -type f | sort
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 23 13:50 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+--- docs ---
+--- tests ---
+find: 'tests': No such file or directory
+[?2004hp1$ cd /workspace && echo '--- input ---' && find input -maxdepth 3 -type f | sort && echo '--- skill ---' && find skill -maxdepth 3 -type f | sort && echo '---  docs hidden ---' && ls -la docs
+[?2004l--- input ---
+--- skill ---
+--- docs hidden ---
+total 8
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 ..
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> """Resolve Scrapy feed export default overwrite behavior for built-in storages.
+[?2004l[?2004h> 
+[?2004l[?2004h> Supported backends:
+[?2004l[?2004h> - Local filesystem (absolute paths and file:// URIs): default overwrite is False.
+[?2004l[?2004h> - FTP (ftp://): default overwrite is False.
+[?2004l[?2004h> - S3 (s3://): default overwrite is True.
+[?2004l[?2004h> - Google Cloud Storage (gs://): default overwrite is True.
+[?2004l[?2004h> - stdout: default overwrite is False.
+[?2004l[?2004h> 
+[?2004l[?2004h> Unsupported schemes raise ValueError.
+[?2004l[?2004h> """
+[?2004l[?2004h> 
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from urllib.parse import urlparse
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def default_feed_overwrite(uri: str) -> bool:
+[?2004l[?2004h>     """Return Scrapy's default overwrite behavior for a feed URI."""
+[?2004l[?2004h>     if not isinstance(uri, str) or not uri:
+[?2004l[?2004h>         raise ValueError("uri must be a non-empty string")
+[?2004l[?2004h> 
+[?2004l[?2004h>     # Absolute local paths such as /tmp/export.json are treated as local files.
+[?2004l[?2004h>     if uri.startswith("/"):
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     parsed = urlparse(uri)
+[?2004l[?2004h>     scheme = parsed.scheme.lower()
+[?2004l[?2004h> 
+[?2004l[?2004h>     if scheme == "file":
+[?2004l[?2004h>         return False
+[?2004l[?2004h>     if scheme == "ftp":
+[?2004l[?2004h>         return False
+[?2004l[?2004h>     if scheme == "s3":
+[?2004l[?2004h>         return True
+[?2004l[?2004h>     if scheme == "gs":
+[?2004l[?2004h>         return True
+[?2004l[?2004h>     if scheme == "stdout":
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     raise ValueError(f"Unsupported feed URI scheme: {scheme or 'unknown'}")
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

@@ -108,7 +108,7 @@ python -B scripts/lab.py resume --run s24m005 --run-id s24r005
 ~~~
 
 - `--run` 是已经中断的运行 ID；`--run-id` 是本次恢复使用的全新 ID。
-- 将检查点复制到 `runs/case024_scrapy/clean/s24r005/`，保留原来的 `s24m005`，不覆盖历史请求、响应和草稿。
+- 将检查点复制到 `runs/gen/sgb/case024_scrapy/clean/s24r005/`，保留原来的 `s24m005`，不覆盖历史请求、响应和草稿。
 - 对 s24m005，跳过 Outline 和前 7 个已完成窗口，保留 7 个草稿及 support，从第 8 个窗口的 Plan 继续；剩余提取完成后仍会执行编译和注册。
 - 沿用中断运行冻结的模型、提示词、领域配置和输入身份；继承已消耗的 HTTP/Token 额度。新 HTTP 日志从 001 编号，父运行和累计预算记录在 `resume.json`、`execution.json`。
 - 校验源码、输入、历史产物哈希和检查点身份；不匹配就停止，**不会自动退回全量重跑**。
@@ -131,14 +131,16 @@ python -B scripts/lab.py run --case case024_scrapy --condition clean --repeat 1 
 
 所有示例新 ID 都必须尚未存在；若已存在，改用另一个短 ID，不要删除或覆盖已有目录。本节只提供命令，更新 README 不会执行这些命令。
 
-### 3.2 Scrapy Task-024：NoSkill / CleanSkill 各三次校准
+### 3.2 SGB / Scrapy Task-024：NoSkill / CleanSkill 各三次校准
+
+活动任务已归入 `downstream_eval/tasks/sgb/code_doc/scrapy-task-024/`，运行器位于 `downstream_eval/sgb/`，启动脚本位于 `scripts/sgb/`。原 `s24d001` 已完成并保留；它不能作为新实验 ID 重用。新批次需先用 `python -B scripts/sgb/scrapy024.py prepare --experiment s24d002` 完成无模型预检，再执行下面的付费启动命令；示例 ID 必须尚未使用。
 
 **工程接入已通过；以下命令才会启动真实 Agent 并调用付费模型。** 本次使用 `s24r005` 的全部 **15 个注册 Skill 包**，不是日志中某个 `skills=2` 暂存分组。未人工挑选或修补 Skill。
 
 ~~~powershell
 cd D:\AS\AutoSkill-main\degradation_failure_lab
 docker start harbor-p0-control-20261018
-& .\scripts\Invoke-Scrapy024Calibration.ps1 -Experiment s24d001
+& .\scripts\sgb\Invoke-Scrapy024Calibration.ps1 -Experiment s24d002
 ~~~
 
 唯一批次顺序为 `NoSkill1 → CleanSkill1 → NoSkill2 → CleanSkill2 → NoSkill3 → CleanSkill3`。两种条件使用同一原始 Task-024 指令、Agent、模型、工具权限、禁网环境、独立 Oracle 和预算；NoSkill 安装 0 包，CleanSkill 安装冻结的 15 个完整包。
@@ -146,17 +148,17 @@ docker start harbor-p0-control-20261018
 - 模型：`openai/gpt-5.4-mini-2026-03-17`，智增增端点，temperature=0，reasoning_effort=none。
 - 每任务最多 6 个模型 HTTP 请求，总计最多 36 个；单请求输出最多 2048 tokens，输入估计预留每请求最多 20,000、每任务累计最多 100,000 tokens；禁止自动重试和重定向。
 - 账户实际单价未知；以上为调用及 Token 控制，**不是人民币金额硬上限**。凭据复用已有 Windows DPAPI 入口，不在命令或文件中填写明文密钥。
-- 结果位于 `runs/downstream/scrapy-task-024/s24d001/`：`outcomes/` 保存逐次任务与规则判分、正文曝光、Token、耗时和失败类别；`trials/` 保存原生轨迹和工具日志；`budget.sqlite3` 记录持久化调用额度。
+- 历史结果已归档到 `runs/eval/sgb/scrapy-task-024/s24d001/`；新批次结果位于 `runs/eval/sgb/scrapy-task-024/<experiment>/`：`outcomes/` 保存逐次任务与规则判分、正文曝光、Token、耗时和失败类别；`trials/` 保存原生轨迹和工具日志；`budget.sqlite3` 记录持久化调用额度。
 - 批次是一次性的。中断或重复执行时会拒绝重发；保留原记录，不要删除 `batch.started`、预算数据库或换 ID 绕过限制。环境、传输或预算失败时停止；普通任务答错仍作为校准结果记录。
 - 本轮预检中的正例19/19、FTP反例18/19，以及受控正文读取，都是**无模型工程证据**，不是 Agent 对照结果。真实正文曝光需要内核读取事件与实际成功模型请求中的正文共同确认，不能从安装成功推断。
 
-只核验已经准备好的冻结文件、不调用模型：
+核验 SGB 已登记文件与历史结果、不调用模型：
 
 ~~~powershell
-python -B scripts/scrapy024.py prepare --experiment s24d001
+python -B scripts/lab.py sgb audit
 ~~~
 
-就绪报告：`results/analysis/scrapy_task024_downstream_readiness.md`。本批次只是 Clean 校准，不构成正式文档退化实验。
+就绪报告：`results/sgb/analyses/scrapy_task024_downstream_readiness.md`。本批次只是 Clean 校准，不构成正式文档退化实验。
 
 ## 4. 完整示例：从 `case001_qsv_select` 的 Clean 文档生成并分析技能
 

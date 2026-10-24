@@ -1,6 +1,6 @@
 # Harbor / Terminus-2：P0 接入与 P1 真实 Agent 准备
 
-SGB 主线现通过 `scripts/lab.py sgb` 管理全量登记、审核、准备和历史结果汇总，详见 [SGB 说明](../docs/sgb/README.md)。本页其余内容保留初期 Git 接入记录；不能据其中的“唯一任务”或早期 NOT_RUN 描述推断当前 SGB 状态。
+SGB 主线现通过 `scripts/lab.py sgb` 管理全量登记、审核、准备和历史结果汇总，详见 [SGB 说明](../docs/sgb/README.md)。Scrapy024 的完整任务位于 `tasks/sgb/code_doc/scrapy-task-024/`，运行器位于 `sgb/`，专用启动脚本位于 `../scripts/sgb/`；旧独立入口已移除。本页其余内容保留初期 Git 接入记录；不能据其中的“唯一任务”或早期 NOT_RUN 描述推断当前 SGB 状态。
 
 凭据自动加载与首次设置见 [Windows DPAPI 凭据说明](docs/p1_credentials.md)；自动加载不批准付费请求。
 

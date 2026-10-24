@@ -1,0 +1,144 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "导出字段控制",
+  "run_id": "20261023T210315_425f8648",
+  "skills": [
+    {
+      "skill_id": "8cc3ce38-d0f7-54a5-9546-2056a0d42430",
+      "name": "CSV 导出列字段控制",
+      "description": "使用 FEED_EXPORT_FIELDS 指定 CSV 导出的列集合、顺序与列名；由于 CSV 使用固定表头，该设置对 CSV 尤为重要。适用于需要精确控制 CSV 输出结构时。",
+      "skill_body": "当需要精确控制 CSV 导出的列集合、顺序或列名时，使用 FEED_EXPORT_FIELDS 设置来声明导出字段。注意 CSV 使用固定表头，因此该设置对 CSV 尤为关键；其他 feed 导出器也可使用该选项。配置后确认输出 CSV 的表头与数据列符合预期。\n\n## Objective\n\n精确控制 CSV 导出的列集合、顺序与命名\n## Applicable Signals\n\n- CSV 导出需要固定列顺序或自定义列名\n- 需要限定 CSV 输出包含哪些列\n\n## Contraindications\n\n- 导出格式不需要固定表头控制时无需使用\n\n## Intervention Moves\n\n- 在设置中通过 FEED_EXPORT_FIELDS 声明导出字段列表\n- 按期望顺序排列字段以控制列顺序\n- 确认 CSV 表头与数据列与配置一致\n\n## Workflow Steps\n\n- 确认导出格式为 csv（FEEDS 中 format 键为 csv）\n- 在 FEED_EXPORT_FIELDS 中按期望顺序列出字段\n- 运行导出并核对 CSV 表头、列顺序与列名\n\n## Constraints\n\n- CSV 使用固定表头，字段控制对 CSV 尤为重要\n- 其他 feed 导出器也可使用该选项\n\n## Cautions\n\n- 字段顺序与命名需与下游消费方约定一致\n\n## Output Contract\n\n- CSV 文件按指定列、顺序与列名输出",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "精确控制 CSV 导出的列集合、顺序与命名",
+      "domain": "scrapy",
+      "task_family": "导出字段控制",
+      "method_family": "FEED_EXPORT_FIELDS 配置",
+      "stage": "导出配置",
+      "applicable_signals": [
+        "CSV 导出需要固定列顺序或自定义列名",
+        "需要限定 CSV 输出包含哪些列"
+      ],
+      "contraindications": [
+        "导出格式不需要固定表头控制时无需使用"
+      ],
+      "intervention_moves": [
+        "在设置中通过 FEED_EXPORT_FIELDS 声明导出字段列表",
+        "按期望顺序排列字段以控制列顺序",
+        "确认 CSV 表头与数据列与配置一致"
+      ],
+      "triggers": [
+        "CSV 导出需要固定列顺序",
+        "CSV 导出需要自定义列名",
+        "需要限定 CSV 导出的列集合"
+      ],
+      "workflow_steps": [
+        "确认导出格式为 csv（FEEDS 中 format 键为 csv）",
+        "在 FEED_EXPORT_FIELDS 中按期望顺序列出字段",
+        "运行导出并核对 CSV 表头、列顺序与列名"
+      ],
+      "constraints": [
+        "CSV 使用固定表头，字段控制对 CSV 尤为重要",
+        "其他 feed 导出器也可使用该选项"
+      ],
+      "cautions": [
+        "字段顺序与命名需与下游消费方约定一致"
+      ],
+      "output_contract": [
+        "CSV 文件按指定列、顺序与列名输出"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "feed-exports",
+        "csv",
+        "FEED_EXPORT_FIELDS",
+        "导出配置"
+      ],
+      "support_ids": [
+        "be556a49-e292-5624-8f41-9295470db478"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "615b7112-76c8-50cd-b80f-7c8a2d8a6738"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|精确控制 csv 导出的列集合、顺序与命名|scrapy|导出字段控制|feed_export_fields 配置|导出配置|csv 导出列字段控制",
+        "change_action": "create",
+        "llm_reason": "Distinct micro-skill for controlling CSV export columns via FEED_EXPORT_FIELDS; no overlap with peer candidates (custom exporters, URI templating) and no conflict evidence.",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "8da55799-f801-48b8-831d-6713b756c97b",
+      "entity_type": "skill",
+      "entity_id": "8cc3ce38-d0f7-54a5-9546-2056a0d42430",
+      "action": "create",
+      "changed_at": "2026-10-23T13:03:14+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "Distinct micro-skill for controlling CSV export columns via FEED_EXPORT_FIELDS; no overlap with peer candidates (custom exporters, URI templating) and no conflict evidence.",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "8cc3ce38-d0f7-54a5-9546-2056a0d42430",
+        "doc_ids": [
+          "746b8660-57be-5a86-bc5c-fdd89bdae86d"
+        ],
+        "support_added": [
+          "be556a49-e292-5624-8f41-9295470db478"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

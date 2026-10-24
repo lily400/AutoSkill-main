@@ -1,0 +1,1397 @@
+[?2004hroot@c1e379a1726b:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cat /harbor/skills/090a1758-18b6-52ae-b493-2519ea84762f/SKILL.md
+[?2004l---
+id: "090a1758-18b6-52ae-b493-2519ea84762f"
+name: "Feed URI 动态参数注入"
+description: "通过自定义 uri_params 回调函数向 feed URI 注入运行时变量（如 spider 名称），在 FEED_URI_PARAMS 中注册该函数后于 URI 模板中使用占位符，使导出文件路径按运行上下文动态生成。适用于需要按爬虫或运行上下文区分导出文件路径的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "uri_parameterization"
+  - "export_configuration"
+triggers:
+  - "需要按 spider 名称或其他运行时变量区分导出文件"
+  - "导出路径需在运行时动态生成"
+  - "feed URI 需要包含运行时上下文占位符"
+examples:
+  - input: "需要按 spider 名称区分导出文件"
+    output: "定义 uri_params 返回 {**params, \"spider_name\": spider.name}，设置 FEED_URI_PARAMS = \"myproject.utils.uri_params\"，使用 -o \"%(spider_name)s.jsonl\""
+    notes: "三步：定义函数、注册设置、URI 使用占位符"
+---
+
+# Feed URI 动态参数注入
+
+通过自定义 uri_params 回调函数向 feed URI 注入运行时变量（如 spider 名称），在 FEED_URI_PARAMS 中注册该函数后于 URI 模板中使用占位符，使导出文件路径按运行上下文动态生成。适用于需要按爬虫或运行上下文区分导出文件路径的场景。
+
+## Prompt
+
+当需要让 feed 导出路径包含运行时上下文变量时，按以下顺序执行：1) 在项目中定义 uri_params(params, spider) 函数，返回合并了自定义变量的字典；2) 在 settings 中将 FEED_URI_PARAMS 指向该函数的导入路径；3) 在 feed URI 模板中使用 %(变量名)s 占位符。完成后确认导出文件按变量正确命名。
+
+## Objective
+
+让 feed 导出路径动态包含运行时上下文变量
+## Applicable Signals
+
+- 导出路径需在运行时动态生成
+- 需要按 spider 名称或其他运行时变量区分导出文件
+
+## Contraindications
+
+- 导出路径为固定静态值
+- 无法在项目中定义并注册回调函数
+
+## Intervention Moves
+
+- 定义 uri_params(params, spider) 函数并返回合并自定义变量的字典
+- 在 settings 中设置 FEED_URI_PARAMS 指向该函数路径
+- 在 feed URI 模板中使用 %(变量名)s 占位符
+
+## Workflow Steps
+
+- 在项目模块中定义 uri_params(params, spider) 函数，返回 {**params, "spider_name": spider.name} 形式的字典
+- 在 settings 中设置 FEED_URI_PARAMS 为该函数的导入路径字符串
+- 在 feed URI 中使用 %(spider_name)s 等占位符，例如通过 -o "%(spider_name)s.jsonl" 指定输出
+
+## Constraints
+
+- uri_params 必须返回包含原始 params 的字典
+- FEED_URI_PARAMS 必须指向可导入的函数路径
+- URI 模板中的占位符名称必须与函数返回的键一致
+
+## Cautions
+
+- 占位符名称与函数返回键不一致会导致 URI 解析失败
+- 函数路径配置错误将导致回调无法加载
+
+## Output Contract
+
+- 已注册的 uri_params 函数与含占位符的 feed URI 模板，导出文件按变量正确命名
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要按 spider 名称区分导出文件
+- Therapist/Output: 定义 uri_params 返回 {**params, "spider_name": spider.name}，设置 FEED_URI_PARAMS = "myproject.utils.uri_params"，使用 -o "%(spider_name)s.jsonl"
+- Notes: 三步：定义函数、注册设置、URI 使用占位符
+
+## Triggers
+
+- 需要按 spider 名称或其他运行时变量区分导出文件
+- 导出路径需在运行时动态生成
+- feed URI 需要包含运行时上下文占位符
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要按 spider 名称区分导出文件
+
+Output:
+
+  定义 uri_params 返回 {**params, "spider_name": spider.name}，设置 FEED_URI_PARAMS = "myproject.utils.uri_params"，使用 -o "%(spider_name)s.jsonl"
+
+Notes:
+
+  三步：定义函数、注册设置、URI 使用占位符
+[?2004hp1$ cat /harbor/skills/100c7e33-dfd6-594b-929c-0a53ce77829e/SKILL.md
+[?2004l---
+id: "100c7e33-dfd6-594b-929c-0a53ce77829e"
+name: "Feed 存储 URI 参数替换"
+description: "在创建 feed 时按规则替换存储 URI 中的占位参数（%(time)s、%(name)s 及 spider 同名属性），用于生成动态输出路径。当需要按时间戳或 spider 名称动态生成输出文件路径，或在 URI 中引用 spider 自定义属性作为路径片段时使用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "uri_parameter_substitution"
+  - "feed_creation"
+triggers:
+  - "需要按时间戳或 spider 名称动态生成输出文件路径"
+  - "需要在 URI 中引用 spider 自定义属性作为路径片段"
+examples:
+  - input: "存储 URI 含 %(time)s 与 %(name)s 占位参数"
+    output: "生成包含创建时间戳与 spider 名称的最终存储 URI"
+    notes: "时间戳在 feed 创建时确定"
+  - input: "存储 URI 含 %(site_id)s 占位参数，spider 具有 site_id 属性"
+    output: "生成以 spider.site_id 属性值替换该片段的最终存储 URI"
+    notes: "其他命名参数按 spider 同名属性替换"
+---
+
+# Feed 存储 URI 参数替换
+
+在创建 feed 时按规则替换存储 URI 中的占位参数（%(time)s、%(name)s 及 spider 同名属性），用于生成动态输出路径。当需要按时间戳或 spider 名称动态生成输出文件路径，或在 URI 中引用 spider 自定义属性作为路径片段时使用。
+
+## Prompt
+
+解析 feed 存储 URI 中的 %(...)s 占位参数，并在 feed 创建时刻完成替换：%(time)s 替换为创建时的时间戳，%(name)s 替换为 spider 名称，其他命名参数替换为 spider 上同名属性的当前值。替换后输出最终存储 URI 字符串。
+
+## Objective
+
+正确解析并替换 feed 存储 URI 中的命名参数，生成最终输出路径
+## Applicable Signals
+
+- 存储 URI 中包含 %(time)s 或 %(name)s 占位参数
+- 存储 URI 中包含引用 spider 自定义属性的命名参数（如 %(site_id)s）
+- 需要在 feed 创建时确定最终输出路径
+
+## Contraindications
+
+- URI 中不含任何 %(...)s 占位参数
+- 需要替换的参数在 spider 上不存在同名属性
+
+## Intervention Moves
+
+- 识别 URI 中的 %(...)s 占位参数
+- 将 %(time)s 替换为 feed 创建时的时间戳
+- 将 %(name)s 替换为 spider 名称
+- 将其他命名参数替换为 spider 上同名属性的当前值
+- 输出替换完成的最终存储 URI
+
+## Workflow Steps
+
+- 扫描存储 URI，提取所有 %(...)s 命名占位参数
+- 对 %(time)s 使用 feed 创建时刻的时间戳替换
+- 对 %(name)s 使用 spider 名称替换
+- 对其他命名参数使用 spider 上同名属性的当前值替换
+- 返回替换完成的最终存储 URI 字符串
+
+## Constraints
+
+- 替换发生在 feed 创建时刻，而非配置解析时刻
+- 仅替换 URI 中实际存在的命名占位参数
+
+## Cautions
+
+- 若引用的 spider 属性不存在，无法完成同名替换，应避免使用该占位参数
+
+## Output Contract
+
+- 返回替换完成的最终存储 URI 字符串，可直接用于创建 feed。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 存储 URI 含 %(time)s 与 %(name)s 占位参数
+- Therapist/Output: 生成包含创建时间戳与 spider 名称的最终存储 URI
+- Notes: 时间戳在 feed 创建时确定
+
+### Example 2
+
+- Client/Input: 存储 URI 含 %(site_id)s 占位参数，spider 具有 site_id 属性
+- Therapist/Output: 生成以 spider.site_id 属性值替换该片段的最终存储 URI
+- Notes: 其他命名参数按 spider 同名属性替换
+
+## Triggers
+
+- 需要按时间戳或 spider 名称动态生成输出文件路径
+- 需要在 URI 中引用 spider 自定义属性作为路径片段
+
+## Examples
+
+### Example 1
+
+Input:
+
+  存储 URI 含 %(time)s 与 %(name)s 占位参数
+
+Output:
+
+  生成包含创建时间戳与 spider 名称的最终存储 URI
+
+Notes:
+
+  时间戳在 feed 创建时确定
+
+### Example 2
+
+Input:
+
+  存储 URI 含 %(site_id)s 占位参数，spider 具有 site_id 属性
+
+Output:
+
+  生成以 spider.site_id 属性值替换该片段的最终存储 URI
+
+Notes:
+
+  其他命名参数按 spider 同名属性替换
+[?2004hp1$ cat /harbor/skills/1ed8b5f3-d142-54b2-86a1-a18ac23b8fd9/SKILL.md
+[?2004l---
+id: "1ed8b5f3-d142-54b2-86a1-a18ac23b8fd9"
+name: "Feed 导出配置解析与回退"
+description: "解析 Scrapy feed 定义中的导出配置键（format、encoding、fields、batch_item_count、overwrite、store_empty、uri_params、postprocessing 等），并在键缺失时确定其对应的 FEED_* 全局设置回退值。用于配置 FEEDS 或排查导出参数未生效时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed"
+  - "configuration"
+  - "fallback"
+  - "export"
+triggers:
+  - "需要确定某个 feed 键的取值来源"
+  - "配置 FEEDS 或排查导出参数未生效"
+  - "需要核对 feed 定义与全局 FEED_* 设置的优先级"
+examples:
+  - input: "feed 定义仅给出 format=csv，未给出 encoding 与 overwrite，存储为本地文件系统。"
+    output: "format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING；overwrite=False（本地文件系统默认）。"
+    notes: "format 无回退，必须显式提供。"
+---
+
+# Feed 导出配置解析与回退
+
+解析 Scrapy feed 定义中的导出配置键（format、encoding、fields、batch_item_count、overwrite、store_empty、uri_params、postprocessing 等），并在键缺失时确定其对应的 FEED_* 全局设置回退值。用于配置 FEEDS 或排查导出参数未生效时。
+
+## Prompt
+
+给定一个 feed 定义（键值映射），逐键解析其最终生效值：若 feed 定义中显式提供该键则采用显式值；否则回退到对应的 FEED_* 设置；对无回退的键（如 format）标记为必填缺失。输出一份解析后的配置映射，标明每个键的来源（显式/回退/缺失）。
+
+## Objective
+
+正确解析 feed 定义键及其全局设置回退值
+## Applicable Signals
+
+- feed 定义中某键未显式给出
+- 导出参数疑似未生效
+- 需要确认 overwrite 等键的默认行为
+
+## Contraindications
+
+- 需要实现自定义 exporter 或 storage 后端
+- 需要执行实际序列化或存储写入流程
+
+## Intervention Moves
+
+- 逐键比对 feed 定义与 FEED_* 回退设置
+- 对无回退键（format）标记为必填
+- 对 overwrite 按存储后端确定默认值
+- 对 postprocessing 保留列表顺序
+
+## Workflow Steps
+
+- 读取 feed 定义中的显式键值。
+- 对每个键查找对应 FEED_* 回退设置：batch_item_count→FEED_EXPORT_BATCH_ITEM_COUNT，encoding→FEED_EXPORT_ENCODING，fields→FEED_EXPORT_FIELDS，indent→FEED_EXPORT_INDENT，store_empty→FEED_STORE_EMPTY，uri_params→FEED_URI_PARAMS。
+- 确认 format 为必填，无回退值，缺失即报错。
+- 对 item_classes 未定义或为空时视为导出全部 item；item_filter 默认使用 ItemFilter。
+- 对 overwrite 按存储后端确定默认值：本地文件系统 False，FTP True，S3 True，GCS True，标准输出 False。
+- 保留 postprocessing 插件列表顺序。
+- 汇总输出解析后的配置映射，标明每个键的来源。
+
+## Constraints
+
+- format 为必填键，无回退值。
+- overwrite 默认值依赖存储后端，不可统一假设。
+- postprocessing 插件按列表顺序使用。
+
+## Cautions
+
+- 部分 FTP 服务器可能不支持追加（APPE 命令）。
+- S3、GCS 与标准输出不支持追加，overwrite 默认 True 或 False 需按后端区分。
+
+## Output Contract
+
+- 一份解析后的 feed 配置映射，标明每个键的显式值或回退设置及其来源。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: feed 定义仅给出 format=csv，未给出 encoding 与 overwrite，存储为本地文件系统。
+- Therapist/Output: format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING；overwrite=False（本地文件系统默认）。
+- Notes: format 无回退，必须显式提供。
+
+## Triggers
+
+- 需要确定某个 feed 键的取值来源
+- 配置 FEEDS 或排查导出参数未生效
+- 需要核对 feed 定义与全局 FEED_* 设置的优先级
+
+## Examples
+
+### Example 1
+
+Input:
+
+  feed 定义仅给出 format=csv，未给出 encoding 与 overwrite，存储为本地文件系统。
+
+Output:
+
+  format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING；overwrite=False（本地文件系统默认）。
+
+Notes:
+
+  format 无回退，必须显式提供。
+[?2004hp1$ cat /harbor/skills/22a119a0-0339-5040-bae2-b8b592879f9b/SKILL.md
+[?2004l---
+id: "22a119a0-0339-5040-bae2-b8b592879f9b"
+name: "Feed 导出压缩配置"
+description: "为 Scrapy feed 导出选择并配置压缩方式（gzip/lzma/bz2）及其 feed_options 参数，控制输出文件的压缩行为。当需要压缩导出数据文件或指定具体压缩参数时使用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "compression"
+  - "feed_options"
+triggers:
+  - "需要压缩导出的数据文件"
+  - "需要指定 gzip/lzma/bz2 压缩参数"
+---
+
+# Feed 导出压缩配置
+
+为 Scrapy feed 导出选择并配置压缩方式（gzip/lzma/bz2）及其 feed_options 参数，控制输出文件的压缩行为。当需要压缩导出数据文件或指定具体压缩参数时使用。
+
+## Prompt
+
+根据目标压缩格式，从对应压缩器的 feed_options 参数集中选择并配置参数：
+- gzip：可用 gzip_compresslevel、gzip_mtime、gzip_filename，参数语义参见 gzip.GzipFile。
+- lzma：可用 lzma_format、lzma_check、lzma_preset、lzma_filters；注意 lzma_filters 在 pypy 7.3.1 及更早版本不可用。
+- bz2：可用 bz2_compresslevel，参数语义参见 bz2.BZ2File。
+仅使用所选压缩格式支持的参数，输出选定格式及对应 feed_options 配置。
+
+## Objective
+
+正确配置 feed 导出的压缩格式与参数
+## Applicable Signals
+
+- 导出文件体积需要压缩
+- 需要为 gzip/lzma/bz2 指定压缩级别或其他参数
+
+## Contraindications
+
+- 不需要压缩输出
+- 使用不支持的压缩格式
+
+## Intervention Moves
+
+- 确定目标压缩格式（gzip/lzma/bz2）
+- 从该格式支持的 feed_options 参数中选择所需参数
+- 给出格式与参数配置
+
+## Workflow Steps
+
+- 确认是否需要压缩及目标压缩格式
+- 查阅该格式支持的 feed_options 参数列表
+- 选择并填写参数值
+- 输出选定格式与 feed_options 配置
+
+## Constraints
+
+- 仅使用所选压缩格式明确支持的 feed_options 参数
+- lzma_filters 不可用于 pypy 7.3.1 及更早版本
+
+## Cautions
+
+- 参数语义以对应标准库文档（gzip.GzipFile、lzma.LZMAFile、bz2.BZ2File）为准
+
+## Output Contract
+
+- 选定压缩格式并给出对应 feed_options 参数配置
+
+## Triggers
+
+- 需要压缩导出的数据文件
+- 需要指定 gzip/lzma/bz2 压缩参数
+[?2004hp1$ cat /harbor/skills/27330983-d562-5773-89a1-69b722b401e1/SKILL.md
+[?2004l---
+id: "27330983-d562-5773-89a1-69b722b401e1"
+name: "本地文件系统 Feed 导出配置"
+description: "配置 Scrapy feed 导出到本地文件系统：使用 file URI 方案或绝对路径，也可传入 pathlib.Path 对象。适用于需要将抓取结果落盘到本机文件的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "local_filesystem"
+  - "storage_configuration"
+triggers:
+  - "需要把抓取结果保存到本机文件"
+  - "用户询问 file:// URI 或绝对路径写法"
+  - "用户询问本地文件 feed 是否需要额外依赖"
+examples:
+  - input: "如何把抓取结果导出到本机 /tmp/export.csv？"
+    output: "使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。"
+---
+
+# 本地文件系统 Feed 导出配置
+
+配置 Scrapy feed 导出到本地文件系统：使用 file URI 方案或绝对路径，也可传入 pathlib.Path 对象。适用于需要将抓取结果落盘到本机文件的场景。
+
+## Prompt
+
+当需要把抓取结果保存到本机文件时，按以下要点给出本地文件系统 feed 配置：
+1. 使用 file URI 方案，例如 file:///tmp/export.csv。
+2. 本地文件系统存储可省略 scheme，直接给出绝对路径（仅 Unix 系统），例如 /tmp/export.csv。
+3. 也可使用 pathlib.Path 对象作为目标。
+4. 本地文件系统无需额外外部库。
+仅覆盖本地文件系统这一存储后端；远程存储或自定义存储插件不在本技能范围内。
+
+## Objective
+
+正确指定本地文件系统作为 feed 存储目标
+## Applicable Signals
+
+- 需要把抓取结果保存到本机文件
+- 用户询问 file:// URI 或绝对路径写法
+
+## Contraindications
+
+- 目标是远程存储如 FTP/S3/GCS
+- 需要自定义存储后端插件
+
+## Intervention Moves
+
+- 指定 file URI 方案（如 file:///tmp/export.csv）
+- 在 Unix 系统上可省略 scheme 直接使用绝对路径
+- 可传入 pathlib.Path 对象作为目标
+
+## Workflow Steps
+
+- 确认导出目标是本机文件系统
+- 选择 file URI 或绝对路径（Unix）或 pathlib.Path 对象
+- 确认无需额外外部库即可使用
+
+## Constraints
+
+- 省略 scheme 的绝对路径写法仅适用于 Unix 系统
+- 仅覆盖本地文件系统存储后端
+
+## Cautions
+
+- 非 Unix 系统不要依赖省略 scheme 的绝对路径写法
+
+## Output Contract
+
+- 可用的本地文件 feed URI 或绝对路径配置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 如何把抓取结果导出到本机 /tmp/export.csv？
+- Therapist/Output: 使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。
+
+## Triggers
+
+- 需要把抓取结果保存到本机文件
+- 用户询问 file:// URI 或绝对路径写法
+- 用户询问本地文件 feed 是否需要额外依赖
+
+## Examples
+
+### Example 1
+
+Input:
+
+  如何把抓取结果导出到本机 /tmp/export.csv？
+
+Output:
+
+  使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。
+[?2004hp1$ cat /harbor/skills/341bd0da-1d52-5a40-87dd-44477cdec422/SKILL.md
+[?2004l---
+id: "341bd0da-1d52-5a40-87dd-44477cdec422"
+name: "Feed 覆盖与追加策略选择"
+description: "依据存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并处理后端不支持追加或覆盖的情况，避免数据被意外覆盖或追加失败。用于配置 feed 输出目标时选择覆盖/追加行为。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-export"
+  - "overwrite"
+  - "storage-backend"
+  - "configuration"
+triggers:
+  - "配置 feed 的 overwrite 参数"
+  - "目标存储不支持追加（如 S3、GCS、标准输出）"
+  - "需要决定 feed 输出是覆盖还是追加已有文件"
+examples:
+  - input: "feed 目标为 S3，未指定 overwrite"
+    output: "overwrite=True（S3 默认覆盖，且不支持追加）"
+    notes: "S3 无法追加，只能覆盖"
+  - input: "feed 目标为标准输出，未指定 overwrite"
+    output: "overwrite=False（标准输出默认追加，不支持覆盖）"
+    notes: "标准输出不支持覆盖"
+---
+
+# Feed 覆盖与追加策略选择
+
+依据存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并处理后端不支持追加或覆盖的情况，避免数据被意外覆盖或追加失败。用于配置 feed 输出目标时选择覆盖/追加行为。
+
+## Prompt
+
+当需要为某个 feed 输出目标决定 overwrite 行为时：
+1. 确认目标存储后端（本地文件系统、FTP、S3、GCS、标准输出）。
+2. 若 feed 定义中显式提供了 overwrite，则采用该值；否则按后端默认值：本地文件系统 False（追加）、FTP True（覆盖）、S3 True（覆盖）、GCS True（覆盖）、标准输出 False（追加）。
+3. 检查后端限制：S3 与 GCS 不支持追加，标准输出不支持覆盖；FTP 部分服务器可能不支持 APPE 追加命令。
+4. 若所需行为与后端能力冲突，调整 overwrite 取值或更换存储后端，并向调用方说明限制。
+5. 输出最终 overwrite 取值及对应后端限制说明。
+
+## Objective
+
+为给定存储后端选择正确的 overwrite 行为
+## Applicable Signals
+
+- feed 定义中未指定 overwrite 需取默认值
+- 目标后端为 S3、GCS 或标准输出等不支持追加/覆盖的存储
+- 担心已有输出文件被覆盖或追加失败
+
+## Contraindications
+
+- 仅需选择序列化格式
+- 与 overwrite 决策无关的其他 feed 配置项
+
+## Intervention Moves
+
+- 识别目标存储后端
+- 按后端取 overwrite 默认值或采用显式配置
+- 核对后端对追加/覆盖的支持能力
+- 冲突时调整取值或更换后端并说明限制
+
+## Workflow Steps
+
+- 确认目标存储后端类型
+- 读取 feed 定义中的 overwrite（若有）
+- 否则应用后端默认值：本地文件系统 False、FTP True、S3 True、GCS True、标准输出 False
+- 检查后端限制：S3/GCS 不支持追加，标准输出不支持覆盖，部分 FTP 服务器不支持 APPE
+- 冲突时调整 overwrite 或更换后端
+- 输出 overwrite 取值与后端限制说明
+
+## Constraints
+
+- overwrite 默认值依赖存储后端，不可统一假设
+- S3 与 GCS 不支持追加，只能覆盖
+- 标准输出不支持覆盖，只能追加
+- FTP 追加依赖服务器是否支持 APPE 命令
+
+## Cautions
+
+- 部分 FTP 服务器可能不支持 APPE 追加命令，追加可能失败
+- 对不支持追加的后端设置 overwrite=False 会导致写入失败
+
+## Output Contract
+
+- 确定的 overwrite 取值及对应后端限制说明
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: feed 目标为 S3，未指定 overwrite
+- Therapist/Output: overwrite=True（S3 默认覆盖，且不支持追加）
+- Notes: S3 无法追加，只能覆盖
+
+### Example 2
+
+- Client/Input: feed 目标为标准输出，未指定 overwrite
+- Therapist/Output: overwrite=False（标准输出默认追加，不支持覆盖）
+- Notes: 标准输出不支持覆盖
+
+## Triggers
+
+- 配置 feed 的 overwrite 参数
+- 目标存储不支持追加（如 S3、GCS、标准输出）
+- 需要决定 feed 输出是覆盖还是追加已有文件
+
+## Examples
+
+### Example 1
+
+Input:
+
+  feed 目标为 S3，未指定 overwrite
+
+Output:
+
+  overwrite=True（S3 默认覆盖，且不支持追加）
+
+Notes:
+
+  S3 无法追加，只能覆盖
+
+### Example 2
+
+Input:
+
+  feed 目标为标准输出，未指定 overwrite
+
+Output:
+
+  overwrite=False（标准输出默认追加，不支持覆盖）
+
+Notes:
+
+  标准输出不支持覆盖
+[?2004hp1$ cat /harbor/skills/34248732-50cd-510d-b3ed-a71e8ef808d1/SKILL.md
+[?2004l---
+id: "34248732-50cd-510d-b3ed-a71e8ef808d1"
+name: "配置 FTP Feed 存储"
+description: "当需要将 Scrapy 抓取结果导出到 FTP 服务器时，使用 ftp:// URI 配置 feed 存储，并可按需切换主动/被动连接模式。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-export"
+  - "ftp"
+  - "storage"
+triggers:
+  - "需要将导出文件写入 FTP 服务器"
+  - "需要调整 FTP 连接模式"
+examples:
+  - input: "需要将导出文件写入 FTP 服务器"
+    output: "ftp://user:pass@ftp.example.com/path/to/export.csv"
+    notes: "默认被动连接模式"
+  - input: "需要使用主动连接模式"
+    output: "设置 FEED_STORAGE_FTP_ACTIVE = True"
+    notes: "在 ftp:// URI 基础上调整连接模式"
+---
+
+# 配置 FTP Feed 存储
+
+当需要将 Scrapy 抓取结果导出到 FTP 服务器时，使用 ftp:// URI 配置 feed 存储，并可按需切换主动/被动连接模式。
+
+## Prompt
+
+使用 ftp:// 方案的 URI 配置 feed 存储，将导出文件写入 FTP 服务器。默认使用被动连接模式；如需主动连接模式，将 FEED_STORAGE_FTP_ACTIVE 设置为 True。FTP 存储无需额外外部库。
+
+## Objective
+
+正确配置 Scrapy feed 导出到 FTP 服务器
+## Applicable Signals
+
+- 目标存储为 FTP 服务器
+- 需要指定 ftp:// 方案的 feed URI
+- 需要选择主动或被动连接模式
+
+## Contraindications
+
+- 目标存储不是 FTP
+- 仅需本地文件或标准输出
+
+## Intervention Moves
+
+- 使用 ftp:// 方案的 URI 指定 FTP 存储位置
+- 默认保持被动连接模式
+- 如需主动连接模式，将 FEED_STORAGE_FTP_ACTIVE 设置为 True
+
+## Workflow Steps
+
+- 确认目标存储为 FTP 服务器
+- 构造 ftp:// 方案的 feed URI（含用户、密码、主机与路径）
+- 默认使用被动连接模式；如需主动模式，设置 FEED_STORAGE_FTP_ACTIVE 为 True
+- 确认无需额外外部库
+
+## Constraints
+
+- URI 必须使用 ftp 方案
+- FTP 存储无需额外外部库
+
+## Cautions
+
+- 主动连接模式可能受网络环境影响，默认使用被动模式更稳妥
+
+## Output Contract
+
+- 可用的 ftp:// feed URI 配置及连接模式设置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要将导出文件写入 FTP 服务器
+- Therapist/Output: ftp://user:pass@ftp.example.com/path/to/export.csv
+- Notes: 默认被动连接模式
+
+### Example 2
+
+- Client/Input: 需要使用主动连接模式
+- Therapist/Output: 设置 FEED_STORAGE_FTP_ACTIVE = True
+- Notes: 在 ftp:// URI 基础上调整连接模式
+
+## Triggers
+
+- 需要将导出文件写入 FTP 服务器
+- 需要调整 FTP 连接模式
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要将导出文件写入 FTP 服务器
+
+Output:
+
+  ftp://user:pass@ftp.example.com/path/to/export.csv
+
+Notes:
+
+  默认被动连接模式
+
+### Example 2
+
+Input:
+
+  需要使用主动连接模式
+
+Output:
+
+  设置 FEED_STORAGE_FTP_ACTIVE = True
+
+Notes:
+
+  在 ftp:// URI 基础上调整连接模式
+[?2004hp1$ cat /harbor/skills/38bbf62a-9897-54df-bebe-1f4fee96a11c/SKILL.md
+[?2004l---
+id: "38bbf62a-9897-54df-bebe-1f4fee96a11c"
+name: "延迟文件交付时序处理"
+description: "说明部分 feed 存储后端采用延迟文件交付的时序特性，帮助调用方判断下游流程是否可以在 feed 写入后立即依赖文件存在，并据此调整等待或触发逻辑。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed导出"
+  - "存储后端"
+  - "延迟交付"
+  - "时序"
+triggers:
+  - "下游流程依赖feed文件已存在"
+  - "使用支持延迟交付的存储后端"
+  - "需要在feed写入后立即读取导出文件"
+---
+
+# 延迟文件交付时序处理
+
+说明部分 feed 存储后端采用延迟文件交付的时序特性，帮助调用方判断下游流程是否可以在 feed 写入后立即依赖文件存在，并据此调整等待或触发逻辑。
+
+## Prompt
+
+当使用支持延迟文件交付的存储后端导出 feed，且下游流程依赖 feed 文件已存在时，使用本参考知识：确认所选存储后端是否属于延迟交付类型，明确文件落盘与写入完成之间存在时序间隔，据此调整下游的等待、轮询或触发逻辑，避免在文件尚未落盘时读取。
+
+## Objective
+
+理解并应对延迟文件交付的时序约束
+## Applicable Signals
+
+- 下游流程依赖feed文件已存在
+- 所选存储后端使用延迟文件交付
+
+## Contraindications
+
+- 使用stdout等即时输出通道时无需考虑延迟交付
+
+## Intervention Moves
+
+- 识别存储后端是否采用延迟文件交付
+- 明确文件落盘与写入完成之间的时序间隔
+- 调整下游等待或触发逻辑以适配延迟
+
+## Workflow Steps
+
+- 确认当前feed使用的存储后端类型
+- 判断该后端是否属于延迟文件交付
+- 若属于，则在下游流程中加入等待或轮询，避免立即读取未落盘文件
+- 若为即时输出通道（如stdout），按正常流程处理
+
+## Constraints
+
+- 仅在存储后端支持延迟交付时适用
+- 不得假设feed写入完成后文件立即可用
+
+## Cautions
+
+- 延迟交付可能导致下游读取到不完整或不存在的文件
+
+## Output Contract
+
+- 明确延迟交付边界并调整下游等待或触发逻辑
+
+## Triggers
+
+- 下游流程依赖feed文件已存在
+- 使用支持延迟交付的存储后端
+- 需要在feed写入后立即读取导出文件
+[?2004hp1$ cat /harbor/skills/3c445cfa-3f7b-50b1-b612-d9b3a9b462c0/SKILL.md
+[?2004l---
+id: "3c445cfa-3f7b-50b1-b612-d9b3a9b462c0"
+name: "Scrapy S3 Feed 存储后端配置"
+description: "为 Scrapy feed 导出配置 S3 或 S3 兼容对象存储后端，包括自定义 ACL、endpoint 与 region，并明确 overwrite 默认行为。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "s3"
+  - "storage_backend"
+  - "configuration"
+triggers:
+  - "需要将导出结果写入 S3 或 S3 兼容存储"
+  - "需要自定义 ACL、endpoint 或 region"
+---
+
+# Scrapy S3 Feed 存储后端配置
+
+为 Scrapy feed 导出配置 S3 或 S3 兼容对象存储后端，包括自定义 ACL、endpoint 与 region，并明确 overwrite 默认行为。
+
+## Prompt
+
+当导出目标为 S3 或 S3 兼容对象存储时，按以下步骤配置：1) 在 FEEDS 中指定 s3:// 存储 URI；2) 如需自定义访问控制，设置 FEED_STORAGE_S3_ACL；3) 如需自定义服务端点，设置 AWS_ENDPOINT_URL；4) 如需指定区域，设置 AWS_REGION_NAME；5) 注意该存储后端在 FEEDS 中 overwrite 键的默认值为 True，若需保留历史文件应显式覆盖该默认值。
+
+## Objective
+
+正确配置 S3 存储后端参数以导出 feed
+## Applicable Signals
+
+- 导出目标为 S3 或 S3 兼容对象存储
+- 需要自定义 ACL、endpoint 或 region
+
+## Contraindications
+
+- 导出目标为本地文件系统、FTP 或标准输出
+- 仅需选择序列化格式而无需对象存储
+
+## Intervention Moves
+
+- 在 FEEDS 中指定 s3:// 存储 URI
+- 设置 FEED_STORAGE_S3_ACL 自定义 ACL
+- 设置 AWS_ENDPOINT_URL 自定义端点
+- 设置 AWS_REGION_NAME 指定区域
+- 确认 overwrite 默认值为 True 并按需覆盖
+
+## Workflow Steps
+
+- 确认导出目标为 S3 或 S3 兼容存储
+- 在 FEEDS 中配置 s3:// 存储 URI
+- 按需设置 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME
+- 核对 overwrite 默认值 True 是否符合预期，必要时显式覆盖
+
+## Constraints
+
+- 仅适用于 S3 存储后端
+- overwrite 默认值为 True，需注意覆盖已有文件的风险
+
+## Cautions
+
+- 默认 overwrite=True 可能导致已有导出文件被覆盖
+
+## Output Contract
+
+- 一份包含 FEED_STORAGE_S3_ACL、AWS_ENDPOINT_URL、AWS_REGION_NAME 及 overwrite 默认值的 S3 存储配置
+
+## Triggers
+
+- 需要将导出结果写入 S3 或 S3 兼容存储
+- 需要自定义 ACL、endpoint 或 region
+[?2004hp1$ cat /harbor/skills/7c6e4142-008c-527e-97cd-842ef4911d30/SKILL.md
+[?2004l---
+id: "7c6e4142-008c-527e-97cd-842ef4911d30"
+name: "Feed 存储 URI 参数化配置"
+description: "使用 %(name)s、%(time)s 等占位符及 spider 参数构造 Feed 存储 URI，实现按 spider 或时间分目录导出到 FTP/S3 等存储。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-export"
+  - "uri-templating"
+  - "storage"
+triggers:
+  - "需要按 spider 或时间分目录存放导出文件"
+  - "需要将 Feed 写入 FTP 或 S3 等远程存储"
+examples:
+  - input: "FTP 存储，按 spider 分目录"
+    output: "ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json"
+  - input: "S3 存储，按 spider 分目录"
+    output: "s3://mybucket/scraping/feeds/%(name)s/%(time)s.json"
+---
+
+# Feed 存储 URI 参数化配置
+
+使用 %(name)s、%(time)s 等占位符及 spider 参数构造 Feed 存储 URI，实现按 spider 或时间分目录导出到 FTP/S3 等存储。
+
+## Prompt
+
+根据目标存储类型（FTP、S3 等）与目录隔离需求，构造带占位符的 Feed 存储 URI 模板。
+1. 确定存储协议与基础路径（如 ftp://user:password@host/path 或 s3://bucket/path）。
+2. 在路径中插入占位符以实现隔离：按 spider 用 %(name)s，按时间用 %(time)s。
+3. 指定导出文件名与格式后缀（如 .json）。
+4. 若需使用 spider 参数，记住 spider 参数会成为 spider 属性，因此可作为存储 URI 参数引用。
+5. 输出最终 URI 模板字符串，供 FEEDS 配置使用。
+
+## Objective
+
+生成带占位符的 Feed 存储 URI，实现按 spider/时间分目录导出
+## Applicable Signals
+
+- 需要按 spider 或时间分目录存放导出文件
+- 需要将 Feed 写入 FTP 或 S3 等远程存储
+
+## Contraindications
+
+- 仅需本地单文件导出且无需目录隔离
+
+## Intervention Moves
+
+- 选择存储协议与基础路径
+- 插入 %(name)s 实现按 spider 隔离
+- 插入 %(time)s 实现按时间隔离
+- 追加文件名与格式后缀
+- 如需动态值，引用 spider 参数（作为 spider 属性）
+
+## Workflow Steps
+
+- 确定存储协议与基础路径
+- 插入 %(name)s 和/或 %(time)s 占位符
+- 指定导出文件名与格式后缀
+- 如需动态值，引用 spider 参数
+- 输出最终 URI 模板
+
+## Constraints
+
+- 占位符需与 spider 属性名一致
+- spider 参数会成为 spider 属性，可作为 URI 参数引用
+
+## Cautions
+
+- 远程存储 URI 中可能包含凭据，注意避免泄露
+
+## Output Contract
+
+- 可用的参数化存储 URI 模板（如 ftp://.../%(name)s/%(time)s.json）
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: FTP 存储，按 spider 分目录
+- Therapist/Output: ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json
+
+### Example 2
+
+- Client/Input: S3 存储，按 spider 分目录
+- Therapist/Output: s3://mybucket/scraping/feeds/%(name)s/%(time)s.json
+
+## Triggers
+
+- 需要按 spider 或时间分目录存放导出文件
+- 需要将 Feed 写入 FTP 或 S3 等远程存储
+
+## Examples
+
+### Example 1
+
+Input:
+
+  FTP 存储，按 spider 分目录
+
+Output:
+
+  ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json
+
+### Example 2
+
+Input:
+
+  S3 存储，按 spider 分目录
+
+Output:
+
+  s3://mybucket/scraping/feeds/%(name)s/%(time)s.json
+[?2004hp1$ cat /harbor/skills/8cc3ce38-d0f7-54a5-9546-2056a0d42430/SKILL.md
+[?2004l---
+id: "8cc3ce38-d0f7-54a5-9546-2056a0d42430"
+name: "CSV 导出列字段控制"
+description: "使用 FEED_EXPORT_FIELDS 指定 CSV 导出的列集合、顺序与列名；由于 CSV 使用固定表头，该设置对 CSV 尤为重要。适用于需要精确控制 CSV 输出结构时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-exports"
+  - "csv"
+  - "FEED_EXPORT_FIELDS"
+  - "导出配置"
+triggers:
+  - "CSV 导出需要固定列顺序"
+  - "CSV 导出需要自定义列名"
+  - "需要限定 CSV 导出的列集合"
+---
+
+# CSV 导出列字段控制
+
+使用 FEED_EXPORT_FIELDS 指定 CSV 导出的列集合、顺序与列名；由于 CSV 使用固定表头，该设置对 CSV 尤为重要。适用于需要精确控制 CSV 输出结构时。
+
+## Prompt
+
+当需要精确控制 CSV 导出的列集合、顺序或列名时，使用 FEED_EXPORT_FIELDS 设置来声明导出字段。注意 CSV 使用固定表头，因此该设置对 CSV 尤为关键；其他 feed 导出器也可使用该选项。配置后确认输出 CSV 的表头与数据列符合预期。
+
+## Objective
+
+精确控制 CSV 导出的列集合、顺序与命名
+## Applicable Signals
+
+- CSV 导出需要固定列顺序或自定义列名
+- 需要限定 CSV 输出包含哪些列
+
+## Contraindications
+
+- 导出格式不需要固定表头控制时无需使用
+
+## Intervention Moves
+
+- 在设置中通过 FEED_EXPORT_FIELDS 声明导出字段列表
+- 按期望顺序排列字段以控制列顺序
+- 确认 CSV 表头与数据列与配置一致
+
+## Workflow Steps
+
+- 确认导出格式为 csv（FEEDS 中 format 键为 csv）
+- 在 FEED_EXPORT_FIELDS 中按期望顺序列出字段
+- 运行导出并核对 CSV 表头、列顺序与列名
+
+## Constraints
+
+- CSV 使用固定表头，字段控制对 CSV 尤为重要
+- 其他 feed 导出器也可使用该选项
+
+## Cautions
+
+- 字段顺序与命名需与下游消费方约定一致
+
+## Output Contract
+
+- CSV 文件按指定列、顺序与列名输出
+
+## Triggers
+
+- CSV 导出需要固定列顺序
+- CSV 导出需要自定义列名
+- 需要限定 CSV 导出的列集合
+[?2004hp1$ cat /harbor/skills/8cd10359-1f17-575a-aaf7-6dbcd9da0c79/SKILL.md
+[?2004l---
+id: "8cd10359-1f17-575a-aaf7-6dbcd9da0c79"
+name: "Feed 导出设置项参考"
+description: "提供 Scrapy feed 导出相关设置项的查阅参考，列出各设置项名称及其用途，用于确认某个导出设置项的名称或作用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed"
+  - "settings"
+  - "reference"
+triggers:
+  - "需要确认某个导出设置项的名称或作用"
+  - "查阅 feed 导出配置项清单"
+examples:
+  - input: "FEEDS 设置项是做什么的？"
+    output: "FEEDS 是配置 feed 导出的必填设置项，默认值为 {}。"
+---
+
+# Feed 导出设置项参考
+
+提供 Scrapy feed 导出相关设置项的查阅参考，列出各设置项名称及其用途，用于确认某个导出设置项的名称或作用。
+
+## Prompt
+
+当调用方需要确认某个 feed 导出设置项的名称或作用时，依据本参考列出相关设置项并说明其用途。仅提供设置项层面的参考信息，不执行端到端配置流程。
+
+## Objective
+
+提供 feed 导出相关设置项的查阅参考
+## Applicable Signals
+
+- 调用方询问某个导出设置项的名称或含义
+- 需要一份 feed 导出设置项清单
+
+## Contraindications
+
+- 需要端到端配置流程而非单项说明
+
+## Intervention Moves
+
+- 定位到具体设置项
+- 说明该设置项的用途
+
+## Workflow Steps
+
+- 确认调用方要查询的设置项或查询意图
+- 在设置项清单中定位对应条目
+- 返回设置项名称及其用途说明
+
+## Constraints
+
+- 仅提供设置项层面的参考信息
+- 不执行配置动作或端到端配置流程
+
+## Cautions
+
+- FEEDS 为必填设置项，其余为可选配置项
+
+## Output Contract
+
+- 可定位到具体设置项及其用途的参考信息
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: FEEDS 设置项是做什么的？
+- Therapist/Output: FEEDS 是配置 feed 导出的必填设置项，默认值为 {}。
+
+## Triggers
+
+- 需要确认某个导出设置项的名称或作用
+- 查阅 feed 导出配置项清单
+
+## Examples
+
+### Example 1
+
+Input:
+
+  FEEDS 设置项是做什么的？
+
+Output:
+
+  FEEDS 是配置 feed 导出的必填设置项，默认值为 {}。
+[?2004hp1$ cat /harbor/skills/945ee694-0375-5f27-a671-6805bddfe600/SKILL.md
+[?2004l---
+id: "945ee694-0375-5f27-a671-6805bddfe600"
+name: "自定义 Feed 导出器扩展"
+description: "通过 FEED_EXPORTERS 设置注册自定义导出器，以扩展 Scrapy Feed 导出支持的序列化格式；当内置导出格式无法满足输出需求时使用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-exports"
+  - "FEED_EXPORTERS"
+  - "导出格式扩展"
+triggers:
+  - "内置导出格式无法满足输出需求"
+  - "需要扩展 Feed 支持的序列化格式"
+---
+
+# 自定义 Feed 导出器扩展
+
+通过 FEED_EXPORTERS 设置注册自定义导出器，以扩展 Scrapy Feed 导出支持的序列化格式；当内置导出格式无法满足输出需求时使用。
+
+## Prompt
+
+当内置导出格式无法满足输出需求时，使用 FEED_EXPORTERS 设置注册自定义导出器，使其可作为 FEEDS 中 format 键的取值使用。先确认内置格式确实不满足需求，再定义并注册自定义导出器，最后验证其可被 FEEDS 的 format 键引用。
+
+## Objective
+
+通过 FEED_EXPORTERS 扩展自定义导出格式
+## Applicable Signals
+
+- 内置导出格式无法满足输出需求
+- 需要新增一种 Feed 序列化格式
+
+## Contraindications
+
+- 内置格式已满足需求
+
+## Intervention Moves
+
+- 确认内置格式（json、jsonlines、csv、xml、pickle、marshal）均不满足需求
+- 通过 FEED_EXPORTERS 设置注册自定义导出器
+- 在 FEEDS 的 format 键中使用自定义格式名
+
+## Workflow Steps
+
+- 确认内置导出格式无法满足输出需求
+- 通过 FEED_EXPORTERS 设置注册自定义导出器
+- 在 FEEDS 的 format 键中引用自定义格式名
+- 验证导出结果符合预期
+
+## Constraints
+
+- 仅在需要扩展格式时使用 FEED_EXPORTERS
+- 自定义格式名需与 FEEDS 的 format 键取值一致
+
+## Cautions
+
+- 若使用 JSON 处理大型 feed，需注意相关警告
+
+## Output Contract
+
+- 自定义导出器注册成功并可用于 FEEDS 的 format 键
+
+## Triggers
+
+- 内置导出格式无法满足输出需求
+- 需要扩展 Feed 支持的序列化格式
+[?2004hp1$ cat /harbor/skills/d376a347-de32-572a-8a60-797627eb09ca/SKILL.md
+[?2004l---
+id: "d376a347-de32-572a-8a60-797627eb09ca"
+name: "标准输出Feed导出"
+description: "将Scrapy抓取到的item通过stdout: URI方案直接写入进程标准输出，无需外部库。适用于需要即时查看抓取结果或通过管道传给下游进程的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed导出"
+  - "标准输出"
+  - "stdout"
+triggers:
+  - "需要即时查看抓取结果"
+  - "需要将结果通过管道传给下游进程"
+---
+
+# 标准输出Feed导出
+
+将Scrapy抓取到的item通过stdout: URI方案直接写入进程标准输出，无需外部库。适用于需要即时查看抓取结果或通过管道传给下游进程的场景。
+
+## Prompt
+
+当需要将Scrapy feed输出到进程标准输出时，使用stdout: URI方案配置feed导出。确认无需外部库依赖，并注意该存储后端可能涉及延迟文件交付语义。
+
+## Objective
+
+通过stdout: URI将feed输出到标准输出
+## Applicable Signals
+
+- 需要即时查看抓取结果
+- 需要将结果通过管道传给下游进程
+
+## Contraindications
+
+- 需要持久化到文件或远程存储
+- 需要延迟文件交付语义
+
+## Intervention Moves
+
+- 在feed配置中使用stdout: URI方案
+- 确认无需外部库依赖
+
+## Workflow Steps
+
+- 确认输出目标为进程标准输出而非文件或远程存储
+- 使用stdout: URI方案配置feed
+- 确认无需安装外部库
+- 运行抓取并验证item以序列化格式打印到标准输出
+
+## Constraints
+
+- 仅覆盖stdout存储后端这一单一输出通道
+- 不适用于需要持久化到文件或远程存储的场景
+
+## Cautions
+
+- 部分存储后端使用延迟文件交付语义，需注意stdout的行为
+
+## Output Contract
+
+- 抓取item以序列化格式打印到进程标准输出
+
+## Triggers
+
+- 需要即时查看抓取结果
+- 需要将结果通过管道传给下游进程
+[?2004hp1$ cat /harbor/skills/e71e8e20-3578-5a41-a437-402eaeb0d5f6/SKILL.md
+[?2004l---
+id: "e71e8e20-3578-5a41-a437-402eaeb0d5f6"
+name: "批量输出文件命名占位符配置"
+description: "在生成多个输出文件时，通过在 feed URI 中使用 batch_time 或 batch_id 占位符来区分不同批次文件名，并可用 printf 风格格式化控制编号位数。适用于需要按批次拆分导出文件的抓取配置场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "uri_placeholder"
+  - "batch"
+triggers:
+  - "需要生成多个输出文件"
+  - "需要按批次区分导出文件名"
+  - "配置 feed URI 以支持批次拆分"
+examples:
+  - input: "需要按批次生成多个输出文件，希望批次号固定为 5 位"
+    output: "feed URI 中使用 %(batch_id)05d，例如批次 3 生成 00003、批次 123 生成 00123"
+    notes: "printf 风格格式化用于控制编号位数"
+  - input: "需要按创建时间区分多个输出文件"
+    output: "feed URI 中使用 %(batch_time)s，替换为创建 feed 时的时间戳（如 2020-03-28T14-45-08.237134）"
+---
+
+# 批量输出文件命名占位符配置
+
+在生成多个输出文件时，通过在 feed URI 中使用 batch_time 或 batch_id 占位符来区分不同批次文件名，并可用 printf 风格格式化控制编号位数。适用于需要按批次拆分导出文件的抓取配置场景。
+
+## Prompt
+
+当需要为多文件批量导出配置 feed URI 时，确认 URI 中至少包含一个批次占位符：%(batch_time)s（创建 feed 时的时间戳）或 %(batch_id)d（从 1 开始的批次序号）。如需固定编号位数，使用 printf 风格格式化，例如 %(batch_id)05d 将 3 变为 00003。仅配置文件名占位符，不涉及序列化格式或存储后端选择。
+
+## Objective
+
+为多文件批量导出配置唯一且可读的文件名占位符
+## Applicable Signals
+
+- 导出目标为多个文件而非单一文件
+- 需要按批次或时间区分输出文件名
+
+## Contraindications
+
+- 仅导出单个输出文件
+- 不需要批次拆分
+
+## Intervention Moves
+
+- 在 feed URI 中插入 %(batch_time)s 占位符以按创建时间命名
+- 在 feed URI 中插入 %(batch_id)d 占位符以按批次序号命名
+- 使用 printf 风格格式化（如 %(batch_id)05d）控制编号位数
+
+## Workflow Steps
+
+- 确认导出场景需要生成多个输出文件
+- 在 feed URI 中选择并插入至少一个占位符：%(batch_time)s 或 %(batch_id)d
+- 如需固定编号位数，改用 printf 风格格式化，例如 %(batch_id)05d
+- 校验最终 URI 至少包含一个批次占位符
+
+## Constraints
+
+- 生成多个输出文件时，feed URI 必须至少包含一个批次占位符
+- 占位符仅限 %(batch_time)s 或 %(batch_id)d 两类
+
+## Cautions
+
+- %(batch_id)d 为从 1 开始的序号，格式化时注意位数与排序可读性
+
+## Output Contract
+
+- 包含至少一个 batch_time 或 batch_id 占位符的 feed URI 配置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要按批次生成多个输出文件，希望批次号固定为 5 位
+- Therapist/Output: feed URI 中使用 %(batch_id)05d，例如批次 3 生成 00003、批次 123 生成 00123
+- Notes: printf 风格格式化用于控制编号位数
+
+### Example 2
+
+- Client/Input: 需要按创建时间区分多个输出文件
+- Therapist/Output: feed URI 中使用 %(batch_time)s，替换为创建 feed 时的时间戳（如 2020-03-28T14-45-08.237134）
+
+## Triggers
+
+- 需要生成多个输出文件
+- 需要按批次区分导出文件名
+- 配置 feed URI 以支持批次拆分
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要按批次生成多个输出文件，希望批次号固定为 5 位
+
+Output:
+
+  feed URI 中使用 %(batch_id)05d，例如批次 3 生成 00003、批次 123 生成 00123
+
+Notes:
+
+  printf 风格格式化用于控制编号位数
+
+### Example 2
+
+Input:
+
+  需要按创建时间区分多个输出文件
+
+Output:
+
+  feed URI 中使用 %(batch_time)s，替换为创建 feed 时的时间戳（如 2020-03-28T14-45-08.237134）
+[?2004hp1$ 

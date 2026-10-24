@@ -1,0 +1,277 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "feed导出",
+  "run_id": "20261023T210316_a1923aba",
+  "skills": [
+    {
+      "skill_id": "d376a347-de32-572a-8a60-797627eb09ca",
+      "name": "标准输出Feed导出",
+      "description": "将Scrapy抓取到的item通过stdout: URI方案直接写入进程标准输出，无需外部库。适用于需要即时查看抓取结果或通过管道传给下游进程的场景。",
+      "skill_body": "当需要将Scrapy feed输出到进程标准输出时，使用stdout: URI方案配置feed导出。确认无需外部库依赖，并注意该存储后端可能涉及延迟文件交付语义。\n\n## Objective\n\n通过stdout: URI将feed输出到标准输出\n## Applicable Signals\n\n- 需要即时查看抓取结果\n- 需要将结果通过管道传给下游进程\n\n## Contraindications\n\n- 需要持久化到文件或远程存储\n- 需要延迟文件交付语义\n\n## Intervention Moves\n\n- 在feed配置中使用stdout: URI方案\n- 确认无需外部库依赖\n\n## Workflow Steps\n\n- 确认输出目标为进程标准输出而非文件或远程存储\n- 使用stdout: URI方案配置feed\n- 确认无需安装外部库\n- 运行抓取并验证item以序列化格式打印到标准输出\n\n## Constraints\n\n- 仅覆盖stdout存储后端这一单一输出通道\n- 不适用于需要持久化到文件或远程存储的场景\n\n## Cautions\n\n- 部分存储后端使用延迟文件交付语义，需注意stdout的行为\n\n## Output Contract\n\n- 抓取item以序列化格式打印到进程标准输出",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "通过stdout: URI将feed输出到标准输出",
+      "domain": "scrapy",
+      "task_family": "feed导出",
+      "method_family": "标准输出存储",
+      "stage": "输出配置",
+      "applicable_signals": [
+        "需要即时查看抓取结果",
+        "需要将结果通过管道传给下游进程"
+      ],
+      "contraindications": [
+        "需要持久化到文件或远程存储",
+        "需要延迟文件交付语义"
+      ],
+      "intervention_moves": [
+        "在feed配置中使用stdout: URI方案",
+        "确认无需外部库依赖"
+      ],
+      "triggers": [
+        "需要即时查看抓取结果",
+        "需要将结果通过管道传给下游进程"
+      ],
+      "workflow_steps": [
+        "确认输出目标为进程标准输出而非文件或远程存储",
+        "使用stdout: URI方案配置feed",
+        "确认无需安装外部库",
+        "运行抓取并验证item以序列化格式打印到标准输出"
+      ],
+      "constraints": [
+        "仅覆盖stdout存储后端这一单一输出通道",
+        "不适用于需要持久化到文件或远程存储的场景"
+      ],
+      "cautions": [
+        "部分存储后端使用延迟文件交付语义，需注意stdout的行为"
+      ],
+      "output_contract": [
+        "抓取item以序列化格式打印到进程标准输出"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "feed导出",
+        "标准输出",
+        "stdout"
+      ],
+      "support_ids": [
+        "4c6bdf05-6ea9-5ea3-ac11-5b39e6d24c3d"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "e305c56a-f6f7-5047-b443-dbae3705bee0"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|通过stdout: uri将feed输出到标准输出|scrapy|feed导出|标准输出存储|输出配置|标准输出feed导出",
+        "change_action": "create",
+        "llm_reason": "Distinct micro skill for stdout: feed URI output; no overlap with peer candidates and supported by Feed exports documentation with no conflicts.",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "38bbf62a-9897-54df-bebe-1f4fee96a11c",
+      "name": "延迟文件交付时序处理",
+      "description": "说明部分 feed 存储后端采用延迟文件交付的时序特性，帮助调用方判断下游流程是否可以在 feed 写入后立即依赖文件存在，并据此调整等待或触发逻辑。",
+      "skill_body": "当使用支持延迟文件交付的存储后端导出 feed，且下游流程依赖 feed 文件已存在时，使用本参考知识：确认所选存储后端是否属于延迟交付类型，明确文件落盘与写入完成之间存在时序间隔，据此调整下游的等待、轮询或触发逻辑，避免在文件尚未落盘时读取。\n\n## Objective\n\n理解并应对延迟文件交付的时序约束\n## Applicable Signals\n\n- 下游流程依赖feed文件已存在\n- 所选存储后端使用延迟文件交付\n\n## Contraindications\n\n- 使用stdout等即时输出通道时无需考虑延迟交付\n\n## Intervention Moves\n\n- 识别存储后端是否采用延迟文件交付\n- 明确文件落盘与写入完成之间的时序间隔\n- 调整下游等待或触发逻辑以适配延迟\n\n## Workflow Steps\n\n- 确认当前feed使用的存储后端类型\n- 判断该后端是否属于延迟文件交付\n- 若属于，则在下游流程中加入等待或轮询，避免立即读取未落盘文件\n- 若为即时输出通道（如stdout），按正常流程处理\n\n## Constraints\n\n- 仅在存储后端支持延迟交付时适用\n- 不得假设feed写入完成后文件立即可用\n\n## Cautions\n\n- 延迟交付可能导致下游读取到不完整或不存在的文件\n\n## Output Contract\n\n- 明确延迟交付边界并调整下游等待或触发逻辑",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "理解并应对延迟文件交付的时序约束",
+      "domain": "scrapy",
+      "task_family": "feed导出",
+      "method_family": "存储后端时序",
+      "stage": "输出配置",
+      "applicable_signals": [
+        "下游流程依赖feed文件已存在",
+        "所选存储后端使用延迟文件交付"
+      ],
+      "contraindications": [
+        "使用stdout等即时输出通道时无需考虑延迟交付"
+      ],
+      "intervention_moves": [
+        "识别存储后端是否采用延迟文件交付",
+        "明确文件落盘与写入完成之间的时序间隔",
+        "调整下游等待或触发逻辑以适配延迟"
+      ],
+      "triggers": [
+        "下游流程依赖feed文件已存在",
+        "使用支持延迟交付的存储后端",
+        "需要在feed写入后立即读取导出文件"
+      ],
+      "workflow_steps": [
+        "确认当前feed使用的存储后端类型",
+        "判断该后端是否属于延迟文件交付",
+        "若属于，则在下游流程中加入等待或轮询，避免立即读取未落盘文件",
+        "若为即时输出通道（如stdout），按正常流程处理"
+      ],
+      "constraints": [
+        "仅在存储后端支持延迟交付时适用",
+        "不得假设feed写入完成后文件立即可用"
+      ],
+      "cautions": [
+        "延迟交付可能导致下游读取到不完整或不存在的文件"
+      ],
+      "output_contract": [
+        "明确延迟交付边界并调整下游等待或触发逻辑"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "feed导出",
+        "存储后端",
+        "延迟交付",
+        "时序"
+      ],
+      "support_ids": [
+        "c1665a8e-cb44-512c-8b6c-0540e033a90c"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "9d3d4906-eb6a-51a0-888b-733abe42c907"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.55,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|理解并应对延迟文件交付的时序约束|scrapy|feed导出|存储后端时序|输出配置|延迟文件交付时序处理",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "3fed0b14-472f-46db-99d5-a8c54095a35a",
+      "entity_type": "skill",
+      "entity_id": "d376a347-de32-572a-8a60-797627eb09ca",
+      "action": "create",
+      "changed_at": "2026-10-23T13:03:14+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "Distinct micro skill for stdout: feed URI output; no overlap with peer candidates and supported by Feed exports documentation with no conflicts.",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d376a347-de32-572a-8a60-797627eb09ca",
+        "doc_ids": [
+          "746b8660-57be-5a86-bc5c-fdd89bdae86d"
+        ],
+        "support_added": [
+          "4c6bdf05-6ea9-5ea3-ac11-5b39e6d24c3d"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "275cf91a-508f-4438-8935-4408df5f8499",
+      "entity_type": "skill",
+      "entity_id": "38bbf62a-9897-54df-bebe-1f4fee96a11c",
+      "action": "create",
+      "changed_at": "2026-10-23T13:03:14+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "38bbf62a-9897-54df-bebe-1f4fee96a11c",
+        "doc_ids": [
+          "746b8660-57be-5a86-bc5c-fdd89bdae86d"
+        ],
+        "support_added": [
+          "c1665a8e-cb44-512c-8b6c-0540e033a90c"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

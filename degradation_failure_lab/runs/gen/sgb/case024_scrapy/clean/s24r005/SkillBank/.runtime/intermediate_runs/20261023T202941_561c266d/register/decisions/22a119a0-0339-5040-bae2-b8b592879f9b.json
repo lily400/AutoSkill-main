@@ -1,0 +1,102 @@
+{
+  "skill_id": "22a119a0-0339-5040-bae2-b8b592879f9b",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "22a119a0-0339-5040-bae2-b8b592879f9b",
+    "name": "Feed 导出压缩配置",
+    "description": "为 Scrapy feed 导出选择并配置压缩方式（gzip/lzma/bz2）及其 feed_options 参数，控制输出文件的压缩行为。当需要压缩导出数据文件或指定具体压缩参数时使用。",
+    "skill_body": "根据目标压缩格式，从对应压缩器的 feed_options 参数集中选择并配置参数：\n- gzip：可用 gzip_compresslevel、gzip_mtime、gzip_filename，参数语义参见 gzip.GzipFile。\n- lzma：可用 lzma_format、lzma_check、lzma_preset、lzma_filters；注意 lzma_filters 在 pypy 7.3.1 及更早版本不可用。\n- bz2：可用 bz2_compresslevel，参数语义参见 bz2.BZ2File。\n仅使用所选压缩格式支持的参数，输出选定格式及对应 feed_options 配置。\n\n## Objective\n\n正确配置 feed 导出的压缩格式与参数\n## Applicable Signals\n\n- 导出文件体积需要压缩\n- 需要为 gzip/lzma/bz2 指定压缩级别或其他参数\n\n## Contraindications\n\n- 不需要压缩输出\n- 使用不支持的压缩格式\n\n## Intervention Moves\n\n- 确定目标压缩格式（gzip/lzma/bz2）\n- 从该格式支持的 feed_options 参数中选择所需参数\n- 给出格式与参数配置\n\n## Workflow Steps\n\n- 确认是否需要压缩及目标压缩格式\n- 查阅该格式支持的 feed_options 参数列表\n- 选择并填写参数值\n- 输出选定格式与 feed_options 配置\n\n## Constraints\n\n- 仅使用所选压缩格式明确支持的 feed_options 参数\n- lzma_filters 不可用于 pypy 7.3.1 及更早版本\n\n## Cautions\n\n- 参数语义以对应标准库文档（gzip.GzipFile、lzma.LZMAFile、bz2.BZ2File）为准\n\n## Output Contract\n\n- 选定压缩格式并给出对应 feed_options 参数配置",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "正确配置 feed 导出的压缩格式与参数",
+    "domain": "scrapy",
+    "task_family": "feed_export",
+    "method_family": "compression_config",
+    "stage": "export_configuration",
+    "applicable_signals": [
+      "导出文件体积需要压缩",
+      "需要为 gzip/lzma/bz2 指定压缩级别或其他参数"
+    ],
+    "contraindications": [
+      "不需要压缩输出",
+      "使用不支持的压缩格式"
+    ],
+    "intervention_moves": [
+      "确定目标压缩格式（gzip/lzma/bz2）",
+      "从该格式支持的 feed_options 参数中选择所需参数",
+      "给出格式与参数配置"
+    ],
+    "triggers": [
+      "需要压缩导出的数据文件",
+      "需要指定 gzip/lzma/bz2 压缩参数"
+    ],
+    "workflow_steps": [
+      "确认是否需要压缩及目标压缩格式",
+      "查阅该格式支持的 feed_options 参数列表",
+      "选择并填写参数值",
+      "输出选定格式与 feed_options 配置"
+    ],
+    "constraints": [
+      "仅使用所选压缩格式明确支持的 feed_options 参数",
+      "lzma_filters 不可用于 pypy 7.3.1 及更早版本"
+    ],
+    "cautions": [
+      "参数语义以对应标准库文档（gzip.GzipFile、lzma.LZMAFile、bz2.BZ2File）为准"
+    ],
+    "output_contract": [
+      "选定压缩格式并给出对应 feed_options 参数配置"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "feed_export",
+      "compression",
+      "feed_options"
+    ],
+    "support_ids": [
+      "689128f7-7ebb-535a-977f-ed9e58baf613"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "af3ded11-e797-513a-b0d2-0d90413e6547"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|正确配置 feed 导出的压缩格式与参数|scrapy|feed_export|compression_config|export_configuration|feed 导出压缩配置"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

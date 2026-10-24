@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 from .artifacts import resolve_run, run_refs
+from .relocations import archived_path
 from .io import check_windows_run_path, inside, inventory, read, resolve_upstream, sha256, upstream_inventory, utc, write
 
 
@@ -70,10 +71,11 @@ def prepare_resume(root, run_id, new_run_id):
     drafts = [d for w in windows[k:n] for d in read(checkpoint/'extract/windows'/doc_id/(w['window_id']+'.json'))['skill_drafts']]
     if len(expands) != len(drafts) or not all(c.get('success') for c in expands):
         raise ValueError('Uncheckpointed Expand calls; automatic recovery refused')
-    source = Path(previous.get('source_path', str(parent/'inputs')))
+    logical_inputs = Path(invocation.get('store_path', str(parent/'SkillBank'))).parent/'inputs'
+    source = Path(previous.get('source_path', str(logical_inputs)))
     input_manifest = read(parent/'input_manifest.json')
     for item in input_manifest['inputs']:
-        if sha256(Path(item['execution_path'])) != item['sha256']:
+        if sha256(archived_path(item['execution_path'])) != item['sha256']:
             raise ValueError('Frozen source input changed')
     execution = read(parent/'execution.json')
     resume = {

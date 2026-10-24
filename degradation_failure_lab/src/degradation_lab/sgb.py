@@ -190,11 +190,17 @@ def import_snapshot(root, snapshot, audit_id, matrix=None, mapping=None):
         if research not in ('STATIC_BASIC_ENGINEERING','STATIC_BASIC_ORACLE_REVISION'):
             row['blockers'].append('research_rule_link_unresolved')
         if syntax_errors: row['blockers'].append('oracle_syntax_error')
-        write(root/row['downstream_task_path']/'adapter.json', {
+        adapter = {
             'schema_version':1, 'task_key':key, 'registry':REGISTRY,
             'official_task':task_file.relative_to(root).as_posix(),
             'submission_kind':task['submission']['kind'], 'status':'METADATA_ONLY',
-            'note':'No Agent-facing tests, answers, docs or executable task are materialized by import.'})
+            'note':'No Agent-facing tests, answers, docs or executable task are materialized by import.'}
+        if task_id=='scrapy-task-024' and (root/row['downstream_task_path']/'task.toml').is_file():
+            adapter.update(status='HISTORICAL_CALIBRATION_ADAPTER',
+                runner='downstream_eval.sgb.scrapy024',agent='downstream_eval.sgb.scrapy_agent:ScrapyTerminus2',
+                launcher='scripts/sgb/Invoke-Scrapy024Calibration.ps1',
+                note='Existing Task-024 calibration assets; new experiments still require preparation and a frozen budget.')
+        write(root/row['downstream_task_path']/'adapter.json', adapter)
         rows.append(row)
     if len(rows) != 187 or len({r['task_key'] for r in rows}) != 187:
         raise ValueError('Pinned snapshot must contain exactly 187 distinct tasks')
@@ -236,8 +242,8 @@ def import_snapshot(root, snapshot, audit_id, matrix=None, mapping=None):
 
 
 def _bind_scrapy(root, row):
-    legacy = root/'runs/downstream/scrapy-task-024/s24d001/batch_results.json'
-    case = root/'cases/case024_scrapy'
+    legacy = root/'runs/eval/sgb/scrapy-task-024/s24d001/batch_results.json'
+    case = root/'cases/sgb/case024_scrapy'
     if not legacy.is_file() or not case.is_dir(): return
     batch = read(legacy)
     if len(batch['results']) != 6: raise ValueError('Unexpected historical calibration')
@@ -251,8 +257,8 @@ def _bind_scrapy(root, row):
         'kind':'historical_calibration', 'task_successes':sum(r['task_success'] for r in batch['results'])}]
     row['calibration_status'] = 'HISTORICAL_SIX_TRIALS_COMPLETED'
     row['existing_generation_case_id'] = 'case024_scrapy'
-    row['existing_task_adapter'] = 'downstream_eval/tasks/scrapy_task024_v1'
-    # New namespaced case references imported source bytes; historical case/run files stay intact.
+    row['existing_task_adapter'] = row['downstream_task_path']
+    # New case references imported source bytes; historical run contents stay intact under SGB.
     cid='case024_sgb'; base=root/'cases/sgb'/cid
     if base.exists(): raise FileExistsError(base)
     original=read(case/'case.json'); original.update(case_id=cid,dataset_id='skillgenbench',
@@ -289,11 +295,21 @@ def load_registry(root):
 
 def audit_registry(root):
     root=Path(root).resolve();config,rows=load_registry(root)
+    if config.get('relocations') and sha256(inside(root,config['relocations']))!=config['relocations_sha256']:
+        raise ValueError('SGB archive relocation manifest changed')
     snapshot=inside(root,config['snapshot']);manifest=snapshot/'snapshot_manifest.json'
     if sha256(manifest)!=config['snapshot_manifest_sha256']:raise ValueError('Snapshot manifest changed')
     frozen=read(manifest);actual=inventory(snapshot)
     if actual!={**frozen['files'],'snapshot_manifest.json':sha256(manifest)}:raise ValueError('Snapshot file drift')
     for row in rows:
+        if row.get('existing_task_adapter'):
+            if row['existing_task_adapter']!=row['downstream_task_path']:
+                raise ValueError('Task adapter is outside its SGB task directory')
+            task=inside(root,row['downstream_task_path'])
+            if read(task/'adapter.json')['task_key']!=row['task_key']:
+                raise ValueError('Task adapter identity drift')
+            for name in ['instruction.md','task.toml','scorer/source_manifest.json']:
+                if not (task/name).is_file():raise ValueError('Missing SGB calibration asset: '+name)
         for item in row['sources']:
             if sha256(inside(root,item['manifest']))!=item['manifest_sha256']:
                 raise ValueError('Source manifest drift')

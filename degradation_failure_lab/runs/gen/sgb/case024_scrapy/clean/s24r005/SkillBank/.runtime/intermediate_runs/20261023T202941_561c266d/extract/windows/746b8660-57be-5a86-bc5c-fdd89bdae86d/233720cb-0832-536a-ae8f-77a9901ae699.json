@@ -1,0 +1,248 @@
+{
+  "doc_id": "746b8660-57be-5a86-bc5c-fdd89bdae86d",
+  "title": "input001\\feed-exports.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m005\\inputs\\input001\\feed-exports.md",
+  "window_id": "233720cb-0832-536a-ae8f-77a9901ae699",
+  "section_heading": "Feed exports",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "4d254b70-a51b-53b8-906d-abc37f8e8926",
+      "doc_id": "746b8660-57be-5a86-bc5c-fdd89bdae86d",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\case024_scrapy\\clean\\s24m005\\inputs\\input001\\feed-exports.md",
+      "section": "Feed exports",
+      "span": {
+        "start": 21442,
+        "end": 22112
+      },
+      "excerpt": "When generating multiple output files, you must use at least one of the following\nplaceholders in the feed URI to indicate how the different output file names are\ngenerated:\n\n- `%(batch_time)s` - gets replaced by a timestamp when the feed is being created\n(e.g. `2020-03-28T14-45-08.237134`)\n- `%(batch_id)d` - gets replaced by the 1-based sequence number of the batch.\n\nUse [printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting) to\nalter the number format. For example, to make the batch ID a 5-digit\nnumber by introducing leading zeroes as needed, use `%(batch_id)05d`\n(e.g. `3` becomes `00003`, `123` becomes `00123`).",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input001\\feed-exports.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "批量输出文件命名占位符配置",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "为多文件批量导出配置唯一且可读的文件名占位符",
+        "task_family": "feed_export",
+        "method_family": "uri_placeholder_config",
+        "stage": "configuration",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "233720cb-0832-536a-ae8f-77a9901ae699",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 10,
+        "paragraph_end": 12,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      },
+      "created_at": "2026-10-23T12:59:07+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "c28c711d-b5df-5034-a24c-ce9c67e14e31",
+      "doc_id": "746b8660-57be-5a86-bc5c-fdd89bdae86d",
+      "name": "批量输出文件命名占位符配置",
+      "description": "在生成多个输出文件时，通过在 feed URI 中使用 batch_time 或 batch_id 占位符来区分不同批次文件名，并可用 printf 风格格式化控制编号位数。适用于需要按批次拆分导出文件的抓取配置场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为多文件批量导出配置唯一且可读的文件名占位符",
+      "domain": "scrapy",
+      "task_family": "feed_export",
+      "method_family": "uri_placeholder_config",
+      "stage": "configuration",
+      "applicable_signals": [
+        "导出目标为多个文件而非单一文件",
+        "需要按批次或时间区分输出文件名"
+      ],
+      "contraindications": [
+        "仅导出单个输出文件",
+        "不需要批次拆分"
+      ],
+      "intervention_moves": [
+        "在 feed URI 中插入 %(batch_time)s 占位符以按创建时间命名",
+        "在 feed URI 中插入 %(batch_id)d 占位符以按批次序号命名",
+        "使用 printf 风格格式化（如 %(batch_id)05d）控制编号位数"
+      ],
+      "workflow_steps": [
+        "确认导出场景需要生成多个输出文件",
+        "在 feed URI 中选择并插入至少一个占位符：%(batch_time)s 或 %(batch_id)d",
+        "如需固定编号位数，改用 printf 风格格式化，例如 %(batch_id)05d",
+        "校验最终 URI 至少包含一个批次占位符"
+      ],
+      "triggers": [
+        "需要生成多个输出文件",
+        "需要按批次区分导出文件名",
+        "配置 feed URI 以支持批次拆分"
+      ],
+      "constraints": [
+        "生成多个输出文件时，feed URI 必须至少包含一个批次占位符",
+        "占位符仅限 %(batch_time)s 或 %(batch_id)d 两类"
+      ],
+      "cautions": [
+        "%(batch_id)d 为从 1 开始的序号，格式化时注意位数与排序可读性"
+      ],
+      "output_contract": [
+        "包含至少一个 batch_time 或 batch_id 占位符的 feed URI 配置"
+      ],
+      "examples": [
+        {
+          "input": "需要按批次生成多个输出文件，希望批次号固定为 5 位",
+          "output": "feed URI 中使用 %(batch_id)05d，例如批次 3 生成 00003、批次 123 生成 00123",
+          "notes": "printf 风格格式化用于控制编号位数"
+        },
+        {
+          "input": "需要按创建时间区分多个输出文件",
+          "output": "feed URI 中使用 %(batch_time)s，替换为创建 feed 时的时间戳（如 2020-03-28T14-45-08.237134）",
+          "notes": null
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "4d254b70-a51b-53b8-906d-abc37f8e8926"
+      ],
+      "metadata": {
+        "prompt": "当需要为多文件批量导出配置 feed URI 时，确认 URI 中至少包含一个批次占位符：%(batch_time)s（创建 feed 时的时间戳）或 %(batch_id)d（从 1 开始的批次序号）。如需固定编号位数，使用 printf 风格格式化，例如 %(batch_id)05d 将 3 变为 00003。仅配置文件名占位符，不涉及序列化格式或存储后端选择。",
+        "tags": [
+          "scrapy",
+          "feed_export",
+          "uri_placeholder",
+          "batch"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Feed exports"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "233720cb-0832-536a-ae8f-77a9901ae699",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 10,
+        "paragraph_end": 12,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

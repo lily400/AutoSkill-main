@@ -1,0 +1,108 @@
+{
+  "skill_id": "27330983-d562-5773-89a1-69b722b401e1",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "27330983-d562-5773-89a1-69b722b401e1",
+    "name": "本地文件系统 Feed 导出配置",
+    "description": "配置 Scrapy feed 导出到本地文件系统：使用 file URI 方案或绝对路径，也可传入 pathlib.Path 对象。适用于需要将抓取结果落盘到本机文件的场景。",
+    "skill_body": "当需要把抓取结果保存到本机文件时，按以下要点给出本地文件系统 feed 配置：\n1. 使用 file URI 方案，例如 file:///tmp/export.csv。\n2. 本地文件系统存储可省略 scheme，直接给出绝对路径（仅 Unix 系统），例如 /tmp/export.csv。\n3. 也可使用 pathlib.Path 对象作为目标。\n4. 本地文件系统无需额外外部库。\n仅覆盖本地文件系统这一存储后端；远程存储或自定义存储插件不在本技能范围内。\n\n## Objective\n\n正确指定本地文件系统作为 feed 存储目标\n## Applicable Signals\n\n- 需要把抓取结果保存到本机文件\n- 用户询问 file:// URI 或绝对路径写法\n\n## Contraindications\n\n- 目标是远程存储如 FTP/S3/GCS\n- 需要自定义存储后端插件\n\n## Intervention Moves\n\n- 指定 file URI 方案（如 file:///tmp/export.csv）\n- 在 Unix 系统上可省略 scheme 直接使用绝对路径\n- 可传入 pathlib.Path 对象作为目标\n\n## Workflow Steps\n\n- 确认导出目标是本机文件系统\n- 选择 file URI 或绝对路径（Unix）或 pathlib.Path 对象\n- 确认无需额外外部库即可使用\n\n## Constraints\n\n- 省略 scheme 的绝对路径写法仅适用于 Unix 系统\n- 仅覆盖本地文件系统存储后端\n\n## Cautions\n\n- 非 Unix 系统不要依赖省略 scheme 的绝对路径写法\n\n## Output Contract\n\n- 可用的本地文件 feed URI 或绝对路径配置\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 如何把抓取结果导出到本机 /tmp/export.csv？\n- Therapist/Output: 使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "正确指定本地文件系统作为 feed 存储目标",
+    "domain": "scrapy",
+    "task_family": "feed_export",
+    "method_family": "storage_configuration",
+    "stage": "export_setup",
+    "applicable_signals": [
+      "需要把抓取结果保存到本机文件",
+      "用户询问 file:// URI 或绝对路径写法"
+    ],
+    "contraindications": [
+      "目标是远程存储如 FTP/S3/GCS",
+      "需要自定义存储后端插件"
+    ],
+    "intervention_moves": [
+      "指定 file URI 方案（如 file:///tmp/export.csv）",
+      "在 Unix 系统上可省略 scheme 直接使用绝对路径",
+      "可传入 pathlib.Path 对象作为目标"
+    ],
+    "triggers": [
+      "需要把抓取结果保存到本机文件",
+      "用户询问 file:// URI 或绝对路径写法",
+      "用户询问本地文件 feed 是否需要额外依赖"
+    ],
+    "workflow_steps": [
+      "确认导出目标是本机文件系统",
+      "选择 file URI 或绝对路径（Unix）或 pathlib.Path 对象",
+      "确认无需额外外部库即可使用"
+    ],
+    "constraints": [
+      "省略 scheme 的绝对路径写法仅适用于 Unix 系统",
+      "仅覆盖本地文件系统存储后端"
+    ],
+    "cautions": [
+      "非 Unix 系统不要依赖省略 scheme 的绝对路径写法"
+    ],
+    "output_contract": [
+      "可用的本地文件 feed URI 或绝对路径配置"
+    ],
+    "examples": [
+      {
+        "input": "如何把抓取结果导出到本机 /tmp/export.csv？",
+        "output": "使用 file URI：file:///tmp/export.csv；在 Unix 系统上也可直接写绝对路径 /tmp/export.csv，或传入 pathlib.Path 对象。本地文件系统无需额外外部库。",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "feed_export",
+      "local_filesystem",
+      "storage_configuration"
+    ],
+    "support_ids": [
+      "33ddb24e-13cd-5d13-b474-c4e86340464b"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "43e48c8e-a955-5bf3-b83c-aea5fc28ecbb"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|正确指定本地文件系统作为 feed 存储目标|scrapy|feed_export|storage_configuration|export_setup|本地文件系统 feed 导出配置"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

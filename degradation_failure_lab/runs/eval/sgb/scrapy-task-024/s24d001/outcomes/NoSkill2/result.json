@@ -1,0 +1,80 @@
+{
+  "label": "NoSkill2",
+  "condition": "NoSkill",
+  "task_success": false,
+  "infra_ok": true,
+  "oracle": {
+    "protocol": "unchanged original 19 assertions + candidate response bridge; original source assertions read exact submitted bytes",
+    "oracle_original_sha256": "dbde11a8dce8a699101792be3b48e85a672e91a0cdc6cc4de32862cffeeb3918",
+    "candidate_sha256": "de8464e4280c67cf935b689e68714be8a967fdd359d894366c48a06f488326ed",
+    "environment": "Linux Python3.13.9, no-network, nonroot, isolated candidate and trusted scorer containers",
+    "task_result": {
+      "tests": 19,
+      "passed": 14,
+      "failed": 5,
+      "errors": 0,
+      "exit_code": 1
+    },
+    "rule_result": {
+      "rule_id": "scrapy024.ftp-default-overwrite",
+      "assertion": "test_supported_backends[ftp://server/export.json-True]",
+      "passed": true
+    },
+    "failures": [
+      {
+        "name": "test_supported_backends[file:///tmp/export.json-False]",
+        "detail": "AssertionError: Incorrect default overwrite for file:///tmp/export.json: expected False, got True\nassert True is False"
+      },
+      {
+        "name": "test_supported_backends[file:///tmp/export.csv-False]",
+        "detail": "AssertionError: Incorrect default overwrite for file:///tmp/export.csv: expected False, got True\nassert True is False"
+      },
+      {
+        "name": "test_supported_backends[/tmp/export.json-False]",
+        "detail": "AssertionError: Incorrect default overwrite for /tmp/export.json: expected False, got True\nassert True is False"
+      },
+      {
+        "name": "test_supported_backends[s3://bucket/export.json-True]",
+        "detail": "AssertionError: Incorrect default overwrite for s3://bucket/export.json: expected True, got False\nassert False is True"
+      },
+      {
+        "name": "test_supported_backends[gs://bucket/export.json-True]",
+        "detail": "AssertionError: Incorrect default overwrite for gs://bucket/export.json: expected True, got False\nassert False is True"
+      }
+    ],
+    "loading_errors": [],
+    "environment_errors": [],
+    "revised_oracle": "NOT_CREATED",
+    "model_calls": 0,
+    "failure_category": "task_assertion_error"
+  },
+  "exposure": {
+    "summary": {
+      "mode": "paid",
+      "stopped_before_model": false,
+      "paid_requests": 5,
+      "logical_model_dispatches": 5,
+      "actual_http_attempts": 5,
+      "estimated_input_reserved": 15510,
+      "model_read_ids": [],
+      "controlled_probe_read_ids": [],
+      "full_body_visible_ids_ignoring_terminal_whitespace": [],
+      "rule_following": "requires action and Oracle review; not inferred from model self-report"
+    },
+    "model_body_exposed_ids": [],
+    "evidence": "kernel access + entire frozen body in messages of a successful HTTP model request",
+    "rule_following": "Not inferred; assess output and independent Oracle separately"
+  },
+  "elapsed_seconds": 100.20670403599979,
+  "model_api_results": true,
+  "failure_category": "task_assertion_error",
+  "native_exception": null,
+  "tool_calls": 5,
+  "http_attempts": 5,
+  "token_usage": {
+    "input_tokens": 14317,
+    "cached_tokens": 8320,
+    "output_tokens": 1971
+  },
+  "unknown_usage_attempts": 0
+}

@@ -1,4 +1,4 @@
-"""Resolve new SGB paths alongside immutable, flat historical cases and runs."""
+"""Resolve dataset-scoped SGB cases and generation paths alongside other datasets."""
 from pathlib import Path
 import re
 

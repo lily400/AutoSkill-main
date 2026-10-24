@@ -6,6 +6,7 @@ from urllib.parse import urlsplit
 from pathlib import Path
 
 from .io import read, sha256, utc, write as write_json, upstream_inventory as code_inventory
+from .relocations import archived_path,historical_input
 
 
 def execute(run):
@@ -20,7 +21,7 @@ def execute(run):
         from .resume import checked_finder, guard_request
         if inventory(store) != resume['seed_skillbank']:
             raise RuntimeError('Copied checkpoint changed before execution')
-        parent = Path(resume['parent_path'])
+        parent = archived_path(resume['parent_path'])
         if sha256(parent/'artifact_manifest.json') != resume['parent_manifest_sha256'] or any(
                 sha256(parent/p) != h for p,h in read(parent/'artifact_manifest.json').items()):
             raise RuntimeError('Parent run changed before recovery')
@@ -28,7 +29,7 @@ def execute(run):
         raise RuntimeError('SkillBank must be empty before execution')
     input_manifest = read(run/'input_manifest.json')
     if resume and (code_inventory(upstream) != before or any(
-            sha256(Path(i['execution_path'])) != i['sha256'] for i in input_manifest['inputs'])):
+            sha256(archived_path(i['execution_path'])) != i['sha256'] for i in input_manifest['inputs'])):
         raise RuntimeError('Frozen source or upstream changed before recovery')
     source = Path(resume['source_path']) if resume else run/'inputs'
     prior_attempts = resume['prior_http_attempts'] if resume else 0
@@ -41,10 +42,11 @@ def execute(run):
     sys.path.insert(0, str(upstream))
     from autoskill import AutoSkill, AutoSkillConfig
     from AutoSkill4Doc import extract_from_doc
-    from AutoSkill4Doc.document.file_loader import load_file_units
+    from AutoSkill4Doc.document import file_loader
     from autoskill.llm.openai import OpenAIChatLLM
     from .provider_adapter import ConfiguredOpenAIChatLLM, limited_transport_retry, retryable_transport_error
-    units, actual_path = load_file_units(str(source), max_files=len(input_manifest['inputs']))
+    with historical_input(source):
+        units, actual_path = file_loader.load_file_units(str(source), max_files=len(input_manifest['inputs']))
     if len(units)!=len(input_manifest['inputs']) or not all(u.get('text','').strip() for u in units):
         raise RuntimeError('Official file loader did not parse every nonempty input')
     write_json(run / 'parsed_text_units.json', {'source_file':actual_path,'units':units})
@@ -156,10 +158,11 @@ def execute(run):
     try:
         log('Official public API starting: ' + ('resume copied checkpoint; completed windows must not be resent' if resume else
             'snapshotted inputs, empty independent SkillBank'))
-        result = extract_from_doc(sdk=sdk, file_path=str(source),
-            registry_root=str(store / '.runtime/document_registry'),
-            metadata={'case_id': invocation['case_id'], 'condition_id':invocation['condition_id'], 'lab_run_id':resume['pipeline_run_id'] if resume else run.name, 'input_manifest':input_manifest},
-            continue_on_error=False, dry_run=False, logger=log, **cfg['pipeline'])
+        with historical_input(source):
+            result = extract_from_doc(sdk=sdk, file_path=str(source),
+                registry_root=str(store / '.runtime/document_registry'),
+                metadata={'case_id': invocation['case_id'], 'condition_id':invocation['condition_id'], 'lab_run_id':resume['pipeline_run_id'] if resume else run.name, 'input_manifest':input_manifest},
+                continue_on_error=False, dry_run=False, logger=log, **cfg['pipeline'])
         write_json(run / 'official_result.json', result)
         exit_code = 0 if result.get('total_skill_specs',0)>0 and not result.get('errors') and result.get('status')=='completed' else 2
     except BaseException as e:

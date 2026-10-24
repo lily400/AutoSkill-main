@@ -1,0 +1,105 @@
+{
+  "skill_id": "a7a900c9-fa01-5c0a-8568-297363832a55",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选仅覆盖 feed 导出中的序列化格式选择，与同批 peer 候选（配置 Feed 导出格式与存储、配置 Scrapy Feed 导出）高度重叠且更窄，属于冗余能力，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a7a900c9-fa01-5c0a-8568-297363832a55",
+    "name": "配置 Feed 导出序列化格式",
+    "description": "为 Scrapy 抓取数据选择并配置 feed 导出序列化格式（JSON、JSON lines、CSV、XML），并在内置格式不满足需求时通过 FEED_EXPORTERS 扩展自定义导出器。适用于需要将抓取结果落盘或输出为结构化文件的场景。",
+    "skill_body": "根据目标输出需求选择 feed 导出序列化格式：内置支持 JSON、JSON lines、CSV、XML。若内置格式无法满足需求，则通过 FEED_EXPORTERS 设置注册并启用自定义导出器。最终确认所选格式已正确配置到 feed 导出设置中。\n\n## Objective\n\n选择并配置合适的 feed 导出序列化格式以输出抓取数据\n## Applicable Signals\n\n- 需要将抓取结果落盘为结构化文件\n- 需要在多种序列化格式间做选择\n- 内置导出格式无法满足输出要求\n\n## Contraindications\n\n- 仅需在内存中处理数据、不落盘时无需配置 feed 导出格式\n\n## Intervention Moves\n\n- 从内置格式（JSON、JSON lines、CSV、XML）中选择匹配目标消费方式的格式\n- 若内置格式不足，通过 FEED_EXPORTERS 设置扩展自定义导出器\n- 将选定格式落实到 feed 导出设置中并确认生效\n\n## Workflow Steps\n\n- 明确抓取数据的输出目标与消费方式\n- 在 JSON、JSON lines、CSV、XML 中选择合适的序列化格式\n- 若内置格式不满足需求，通过 FEED_EXPORTERS 注册自定义导出器\n- 将选定格式配置到 feed 导出设置并确认配置完成\n\n## Constraints\n\n- 序列化通过 Item exporters 完成\n- 内置格式仅限 JSON、JSON lines、CSV、XML\n- 扩展格式必须通过 FEED_EXPORTERS 设置实现\n\n## Cautions\n\n- 自定义导出器需确保与 feed 导出机制兼容\n\n## Output Contract\n\n- 确定并配置好目标序列化格式的 feed 导出设置，必要时包含 FEED_EXPORTERS 自定义导出器配置。",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "选择并配置合适的 feed 导出序列化格式以输出抓取数据",
+    "domain": "scrapy",
+    "task_family": "数据导出配置",
+    "method_family": "feed 导出配置",
+    "stage": "导出配置",
+    "applicable_signals": [
+      "需要将抓取结果落盘为结构化文件",
+      "需要在多种序列化格式间做选择",
+      "内置导出格式无法满足输出要求"
+    ],
+    "contraindications": [
+      "仅需在内存中处理数据、不落盘时无需配置 feed 导出格式"
+    ],
+    "intervention_moves": [
+      "从内置格式（JSON、JSON lines、CSV、XML）中选择匹配目标消费方式的格式",
+      "若内置格式不足，通过 FEED_EXPORTERS 设置扩展自定义导出器",
+      "将选定格式落实到 feed 导出设置中并确认生效"
+    ],
+    "triggers": [
+      "需要将抓取结果保存为结构化文件",
+      "需要在 JSON、JSON lines、CSV、XML 之间选择导出格式",
+      "内置格式不满足需求需扩展导出器"
+    ],
+    "workflow_steps": [
+      "明确抓取数据的输出目标与消费方式",
+      "在 JSON、JSON lines、CSV、XML 中选择合适的序列化格式",
+      "若内置格式不满足需求，通过 FEED_EXPORTERS 注册自定义导出器",
+      "将选定格式配置到 feed 导出设置并确认配置完成"
+    ],
+    "constraints": [
+      "序列化通过 Item exporters 完成",
+      "内置格式仅限 JSON、JSON lines、CSV、XML",
+      "扩展格式必须通过 FEED_EXPORTERS 设置实现"
+    ],
+    "cautions": [
+      "自定义导出器需确保与 feed 导出机制兼容"
+    ],
+    "output_contract": [
+      "确定并配置好目标序列化格式的 feed 导出设置，必要时包含 FEED_EXPORTERS 自定义导出器配置。"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "feed-exports",
+      "序列化格式",
+      "FEED_EXPORTERS",
+      "数据导出"
+    ],
+    "support_ids": [
+      "5c283b79-f33d-554e-a0bf-103bf87b1392"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "1da7ac96-9d58-5ee1-bfed-cc6209ba94e9"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||session_skill|session|workflow_skill|选择并配置合适的 feed 导出序列化格式以输出抓取数据|scrapy|数据导出配置|feed 导出配置|导出配置|配置 feed 导出序列化格式"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}
