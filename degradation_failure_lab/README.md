@@ -1,5 +1,7 @@
 # degradation_failure_lab — 文档退化与技能生成实验手册
 
+当前 SGB 主线入口见 [SGB 登记、审核与迁移说明](docs/sgb/README.md)。全量 187 题已建立来源与任务登记；`python -B scripts/lab.py sgb audit` 核验冻结数据，`sgb prepare` 仅做无模型准备。原案例、运行、技能和预算记录保留原位；全量登记不表示全量任务已通过研究与运行准入。
+
 > **README 草稿 v1（2026-10-11）**。建议作为仓库中 `degradation_failure_lab/README.md` 的新版本。本版依据当前 `master` 的命令和代码整理；本文件尚未覆盖 GitHub 原文件。
 
 ## 1. 项目目标与当前边界

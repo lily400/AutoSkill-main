@@ -1,5 +1,7 @@
 # Harbor / Terminus-2：P0 接入与 P1 真实 Agent 准备
 
+SGB 主线现通过 `scripts/lab.py sgb` 管理全量登记、审核、准备和历史结果汇总，详见 [SGB 说明](../docs/sgb/README.md)。本页其余内容保留初期 Git 接入记录；不能据其中的“唯一任务”或早期 NOT_RUN 描述推断当前 SGB 状态。
+
 凭据自动加载与首次设置见 [Windows DPAPI 凭据说明](docs/p1_credentials.md)；自动加载不批准付费请求。
 
 当前供应商配置为智增增，凭据变量为 `ZHIZENGZENG_API_KEY`。2026-10-19 容器内唯一一次最小请求返回 HTTP 401；没有启动三组实验，也没有修改授权门禁。第三方实际费率尚未核实，OpenAI 价格仅作参考。见 [连通性检查、价格核查与剩余阻断](docs/p1_connectivity_2026-10-19.md)。历史 `p1-ready-008` 配置不可直接当作智增增配置复用。

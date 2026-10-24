@@ -7,12 +7,17 @@ from .io import inside, read, sha256, upstream_inventory, write
 def run_refs(root):
     root = Path(root)
     refs = []
-    for p in sorted((root/'runs').glob('case*/*/*/invocation.json')):
+    paths = [p for pattern in ('case*/*/*/invocation.json', 'gen/sgb/*/*/*/invocation.json')
+             for p in (root/'runs').glob(pattern)]
+    for p in sorted(paths):
+        p = inside(root, p.relative_to(root))
         invocation = read(p)
         refs.append({k:invocation[k] for k in ('case_id', 'condition_id', 'run_id')})
         refs[-1]['path'] = p.parent.relative_to(root).as_posix()
     keys = [(r['case_id'], r['condition_id'], r['run_id']) for r in refs]
     if len(keys) != len(set(keys)): raise ValueError('Duplicate run identity')
+    if len({r['run_id'] for r in refs}) != len(refs):
+        raise ValueError('Globally unique run IDs required across layouts')
     return refs
 
 

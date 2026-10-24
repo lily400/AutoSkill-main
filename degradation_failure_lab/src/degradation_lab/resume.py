@@ -18,7 +18,8 @@ def prepare_resume(root, run_id, new_run_id):
     identity, parent = resolve_run(root, run_id)
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', new_run_id):
         raise ValueError('Unsafe run_id')
-    target = inside(root, f"runs/{identity['case_id']}/{identity['condition_id']}/{new_run_id}")
+    relative = identity.get('path', f"runs/{identity['case_id']}/{identity['condition_id']}/{run_id}")
+    target = inside(root, Path(relative).parent/new_run_id)
     check_windows_run_path(target)
     if target.exists() or any(r['run_id'] == new_run_id for r in run_refs(root)):
         raise FileExistsError('Globally unique run_id already exists: ' + new_run_id)

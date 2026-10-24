@@ -4,6 +4,7 @@ import shutil
 import uuid
 from pathlib import Path
 from .catalog import CaseManager
+from .layout import case_path, generation_path
 from .io import check_windows_run_path, inside, inventory, read, resolve_upstream, sha256, upstream_inventory, utc, write
 
 
@@ -69,18 +70,21 @@ class ExperimentRunner:
         if type(repeat) is not int or repeat < 1: raise ValueError('repeat must be a positive integer')
         _, _, manifest, config = self.resolve(case_id, condition_id)
         upstream = resolve_upstream(self.root)
-        check_windows_run_path(inside(self.root, f'runs/{case_id}/{condition_id}/r' + '0'*12))
+        width = 10 if case_path(self.root,case_id).parent == self.root/'cases/sgb' else 12
+        target = generation_path(self.root, case_id, condition_id, 'r' + '0'*width)
+        check_windows_run_path(target)
         return {'case_id':case_id, 'condition_id':condition_id, 'repeat':repeat,
                 'input_count':len(manifest['inputs']), 'model':config['llm']['model'],
                 'upstream_path':str(upstream),
-                'output_pattern':f'runs/{case_id}/{condition_id}/<r_uuid12>/'}
+                'output_pattern':target.parent.relative_to(self.root).as_posix()+'/<run_id>/'}
 
     def prepare(self, case_id, condition_id, run_id=None, fixture=False):
         bundle, condition, manifest, config = self.resolve(case_id, condition_id)
-        run_id = run_id or 'r' + uuid.uuid4().hex[:12]
+        width = 10 if case_path(self.root,case_id).parent == self.root/'cases/sgb' else 12
+        run_id = run_id or 'r' + uuid.uuid4().hex[:width]
         if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', run_id): raise ValueError('Unsafe run_id')
         upstream = resolve_upstream(self.root)
-        target = inside(self.root, f'runs/{case_id}/{condition_id}/{run_id}')
+        target = generation_path(self.root, case_id, condition_id, run_id)
         check_windows_run_path(target)
         from .artifacts import run_refs
         if any(r['run_id']==run_id for r in run_refs(self.root)):

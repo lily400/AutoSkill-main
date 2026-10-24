@@ -35,8 +35,39 @@ def main():
     p.add_argument('--run-id')
     p = sub.add_parser('downstream-prepare', help='P1 zero-model preparation; never starts paid inference')
     p.add_argument('--run-id')
+    p = sub.add_parser('sgb', help='Pinned SGB import, static audit and zero-model preparation')
+    commands = p.add_subparsers(dest='sgb_command', required=True)
+    q = commands.add_parser('import')
+    q.add_argument('--snapshot', required=True)
+    q.add_argument('--audit-id', required=True)
+    q.add_argument('--admission-csv')
+    q.add_argument('--rule-map-csv')
+    commands.add_parser('audit')
+    for name in ('list','plan','prepare','aggregate'):
+        q = commands.add_parser(name)
+        q.add_argument('--task', nargs='+')
+        if name == 'prepare':q.add_argument('--preparation-id',required=True)
+        if name == 'aggregate':q.add_argument('--analysis-id',required=True)
     args = parser.parse_args()
     root = Path(args.root).resolve()
+    if args.command == 'sgb':
+        from .sgb import import_snapshot, audit_registry, selected_tasks
+        if args.sgb_command == 'import':
+            result = import_snapshot(root,args.snapshot,args.audit_id,args.admission_csv,args.rule_map_csv)
+        elif args.sgb_command == 'audit':result = audit_registry(root)
+        elif args.sgb_command == 'list':
+            _,rows = selected_tasks(root,args.task)
+            result = [{k:r[k] for k in ('task_key','source_type','original_task_id','source_status',
+                                       'research_fit','oracle_status','runtime_status','execution_status')} for r in rows]
+        else:
+            import sys
+            sys.path.insert(0,str(root))
+            from downstream_eval.sgb import plan, prepare, aggregate as sgb_aggregate
+            if args.sgb_command == 'plan':result = plan(root,args.task)
+            elif args.sgb_command == 'prepare':result = prepare(root,args.task,args.preparation_id)
+            else:result = sgb_aggregate(root,args.task,args.analysis_id)
+        print(json.dumps(result,ensure_ascii=False,indent=2))
+        return 0
     if args.command == 'downstream-prepare':
         import sys
         sys.path.insert(0, str(root))

@@ -31,7 +31,7 @@ SCHEMAS = {
         'source_commit': STR, 'source_path': STR, 'license': STR,
         'downloaded_at': STR, 'sha256': HASH, 'document_type': STR,
         'corresponding_cli_command': NULL_STR, 'classification': {'enum': [
-            'OFFICIAL_PAPER_DATA', 'RECONSTRUCTED_OFFICIAL_SOURCE', 'CUSTOM_TEST_DATA']},
+            'OFFICIAL_PAPER_DATA', 'RECONSTRUCTED_OFFICIAL_SOURCE', 'CUSTOM_TEST_DATA', 'PUBLISHED_DATASET_SNAPSHOT']},
         'paper_snapshot_verified': {'type': 'boolean'}, 'local_path': STR,
         'bytes': {'type': 'integer', 'minimum': 1},
         'variant': {'enum': ['clean']}, 'transform': {'const': None},

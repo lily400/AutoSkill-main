@@ -1,0 +1,83 @@
+test_actual_case001_and_original_rules_unchanged (test_framework.Framework.test_actual_case001_and_original_rules_unchanged) ... FAIL
+test_case_multiple_sources_condition_resolution (test_framework.Framework.test_case_multiple_sources_condition_resolution) ... ok
+test_condition_and_parent_hash_corruption_rejected (test_framework.Framework.test_condition_and_parent_hash_corruption_rejected) ... ok
+test_explicit_upstream_override_and_invalid_path (test_framework.Framework.test_explicit_upstream_override_and_invalid_path) ... ok
+test_fixture_case002_shares_source_without_core_changes (test_framework.Framework.test_fixture_case002_shares_source_without_core_changes) ... ok
+test_generic_trace_export_not_qsv_or_model_specific (test_framework.Framework.test_generic_trace_export_not_qsv_or_model_specific) ... ok
+test_missing_credential_does_not_create_run (test_framework.Framework.test_missing_credential_does_not_create_run) ... ok
+test_mock_keys_and_custom_connectors_rejected (test_framework.Framework.test_mock_keys_and_custom_connectors_rejected) ... ok
+test_new_adapter_changes_only_model_parameter (test_framework.Framework.test_new_adapter_changes_only_model_parameter) ... ok
+test_new_run_evaluation_contract (test_framework.Framework.test_new_run_evaluation_contract) ... ok
+test_no_active_legacy_files (test_framework.Framework.test_no_active_legacy_files) ... ok
+test_official_loader_multisource_and_signature_without_llm (test_framework.Framework.test_official_loader_multisource_and_signature_without_llm) ... ok
+test_portable_official_path_relative_to_lab_not_cwd (test_framework.Framework.test_portable_official_path_relative_to_lab_not_cwd) ... ok
+test_setup_failure_persisted_and_secret_redacted (test_framework.Framework.test_setup_failure_persisted_and_secret_redacted) ... ERROR
+test_strict_schema_missing_unknown_type_and_id (test_framework.Framework.test_strict_schema_missing_unknown_type_and_id) ... ok
+test_three_conditions_three_runs_isolated_and_collision_rejected (test_framework.Framework.test_three_conditions_three_runs_isolated_and_collision_rejected) ... ERROR
+test_unchanged_bytes_cannot_be_labeled_degraded (test_framework.Framework.test_unchanged_bytes_cannot_be_labeled_degraded) ... ok
+test_windows_path_guard_before_paid_call (test_framework.Framework.test_windows_path_guard_before_paid_call) ... ok
+
+======================================================================
+ERROR: test_setup_failure_persisted_and_secret_redacted (test_framework.Framework.test_setup_failure_persisted_and_secret_redacted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\tests\test_framework.py", line 284, in test_setup_failure_persisted_and_secret_redacted
+    p,code=ExperimentRunner(root).run('case002_fixture','clean','fixture_setup_failure')
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\src\degradation_lab\runner.py", line 137, in run
+    target = self.prepare(case_id, condition_id, run_id)
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\src\degradation_lab\runner.py", line 84, in prepare
+    check_windows_run_path(target)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\src\degradation_lab\io.py", line 78, in check_windows_run_path
+    raise ValueError(
+    ...<3 lines>...
+    )
+ValueError: BLOCKED: Windows intermediate path may be too long (250 characters). Use a shorter checkout location (for example D:\AS), or a shorter --run-id. No model request has been made.
+
+======================================================================
+ERROR: test_three_conditions_three_runs_isolated_and_collision_rejected (test_framework.Framework.test_three_conditions_three_runs_isolated_and_collision_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\tests\test_framework.py", line 162, in test_three_conditions_three_runs_isolated_and_collision_rejected
+    p=runner.prepare('case002_fixture',c,f'fixture_{c}_{n}',fixture=True)
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\src\degradation_lab\runner.py", line 84, in prepare
+    check_windows_run_path(target)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\src\degradation_lab\io.py", line 78, in check_windows_run_path
+    raise ValueError(
+    ...<3 lines>...
+    )
+ValueError: BLOCKED: Windows intermediate path may be too long (250 characters). Use a shorter checkout location (for example D:\AS), or a shorter --run-id. No model request has been made.
+
+======================================================================
+FAIL: test_actual_case001_and_original_rules_unchanged (test_framework.Framework.test_actual_case001_and_original_rules_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\tests\test_framework.py", line 94, in test_actual_case001_and_original_rules_unchanged
+    manager=CaseManager(LAB); self.assertEqual(manager.list_cases(),['case001_qsv_select'])
+                              ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['case001_qsv_select', 'case002_qsv_sort', 'case003_docker_cp'[92 chars]gch'] != ['case001_qsv_select']
+
+First list contains 7 additional elements.
+First extra element 1:
+'case002_qsv_sort'
+
+- ['case001_qsv_select',
+?                      ^
+
++ ['case001_qsv_select']
+?                      ^
+
+-  'case002_qsv_sort',
+-  'case003_docker_cp',
+-  'case004_git_restore',
+-  'case005_ripgrep_guide',
+-  'case024_scrapy',
+-  'case144_gch',
+-  'case164_gch']
+
+----------------------------------------------------------------------
+Ran 18 tests in 1.172s
+
+FAILED (failures=1, errors=2)

@@ -1,6 +1,7 @@
 from pathlib import Path
 from .io import inside, read, sha256
 from .schema import check, unique
+from .layout import case_path, case_paths
 
 
 class SourceManager:
@@ -47,10 +48,10 @@ class CaseManager:
         self.sources = SourceManager(root)
 
     def list_cases(self):
-        return [p.parent.name for p in sorted((self.root / 'cases').glob('*/case.json'))]
+        return sorted(case_paths(self.root))
 
     def load(self, case_id):
-        base = inside(self.root, 'cases/' + case_id)
+        base = case_path(self.root, case_id)
         case = check('case', read(base / 'case.json'))
         rules = check('rules', read(base / 'rules.json'))
         conditions = check('conditions', read(base / 'conditions.json'))
