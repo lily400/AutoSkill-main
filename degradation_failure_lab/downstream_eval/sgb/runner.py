@@ -11,6 +11,7 @@ import time
 
 from degradation_lab.io import inventory, read, sha256, write
 from downstream_eval.integration.request_budget import Ledger
+from downstream_eval.integration.network_isolation import environment_config
 from downstream_eval.scoring.results import trial_record
 
 
@@ -100,7 +101,7 @@ def trial_config(output, label, mode, config):
                               'record_terminal_session':False, 'tmux_pane_width':160, 'tmux_pane_height':40,
                               'llm_call_kwargs':{'max_completion_tokens':budget['max_completion_tokens_per_request'],
                                                  'num_retries':0, 'timeout':budget['request_timeout_sec']}}},
-           'environment':{'type':'docker', 'delete':False, 'kwargs':{'enable_environment_dir_upload':False}},
+           'environment':environment_config(),
            'verifier':{'disable':True}}
     if mode == 'paid':
         raw['agent']['model_api_key_name'] = model['api_key_environment_variable']

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="10" time="0.088" timestamp="2026-10-25T06:23:55.993387+00:00" hostname="b9141744c21c"><testcase classname="eval.TestScrapyOffsiteBypass" name="test_file_exists" time="0.001" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_can_import" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_imports_scrapy" time="0.002" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_has_spider_class" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allowed_domains" time="0.000"><failure message="AssertionError: Spider must define allowed_domains=['example.com']&#10;assert False">self = &lt;eval.TestScrapyOffsiteBypass object at 0x7ac1cd92b9b0&gt;
+
+    def test_allowed_domains(self):
+        module = load_agent_module()
+    
+        spiders = find_spiders(module)
+    
+        matched = False
+    
+        for spider in spiders:
+            allowed = getattr(spider, "allowed_domains", None)
+    
+            if allowed == ["example.com"]:
+                matched = True
+    
+&gt;       assert matched, "Spider must define allowed_domains=['example.com']"
+E       AssertionError: Spider must define allowed_domains=['example.com']
+E       assert False
+
+oracle/eval.py:105: AssertionError</failure></testcase><testcase classname="eval.TestScrapyOffsiteBypass" name="test_spider_produces_requests" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_request_to_other_domain" time="0.001" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allow_offsite_meta" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allow_offsite_is_boolean" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_no_middleware_modification" time="0.002" /></testsuite></testsuites>

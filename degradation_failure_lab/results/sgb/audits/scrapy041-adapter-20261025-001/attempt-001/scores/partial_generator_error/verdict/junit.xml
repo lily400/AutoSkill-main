@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="10" time="0.109" timestamp="2026-10-25T06:24:54.757531+00:00" hostname="665c59e534f5"><testcase classname="eval.TestScrapyOffsiteBypass" name="test_file_exists" time="0.001" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_can_import" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_imports_scrapy" time="0.002" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_has_spider_class" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allowed_domains" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_spider_produces_requests" time="0.001"><failure message="AssertionError: Spider does not produce any Request objects&#10;assert False">self = &lt;eval.TestScrapyOffsiteBypass object at 0x79e86359f130&gt;
+
+    def test_spider_produces_requests(self):
+        module = load_agent_module()
+    
+        spiders = find_spiders(module)
+    
+        found = False
+    
+        for spider_cls in spiders:
+            spider = spider_cls()
+    
+            requests = collect_requests(spider)
+    
+            if requests:
+                found = True
+    
+&gt;       assert found, "Spider does not produce any Request objects"
+E       AssertionError: Spider does not produce any Request objects
+E       assert False
+
+oracle/eval.py:122: AssertionError</failure></testcase><testcase classname="eval.TestScrapyOffsiteBypass" name="test_request_to_other_domain" time="0.000"><failure message="AssertionError: Spider must produce request to http://other.com/resource&#10;assert False">self = &lt;eval.TestScrapyOffsiteBypass object at 0x79e86359f570&gt;
+
+    def test_request_to_other_domain(self):
+        module = load_agent_module()
+    
+        spiders = find_spiders(module)
+    
+        found = False
+    
+        for spider_cls in spiders:
+    
+            spider = spider_cls()
+    
+            requests = collect_requests(spider)
+    
+            for req in requests:
+    
+                if getattr(req, "url", "") == "http://other.com/resource":
+    
+                    found = True
+    
+&gt;       assert found, "Spider must produce request to http://other.com/resource"
+E       AssertionError: Spider must produce request to http://other.com/resource
+E       assert False
+
+oracle/eval.py:143: AssertionError</failure></testcase><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allow_offsite_meta" time="0.000"><failure message="AssertionError: Request must include meta={'allow_offsite': True}&#10;assert False">self = &lt;eval.TestScrapyOffsiteBypass object at 0x79e863411850&gt;
+
+    def test_allow_offsite_meta(self):
+    
+        module = load_agent_module()
+    
+        spiders = find_spiders(module)
+    
+        found = False
+    
+        for spider_cls in spiders:
+    
+            spider = spider_cls()
+    
+            requests = collect_requests(spider)
+    
+            for req in requests:
+    
+                if req.url == "http://other.com/resource":
+    
+                    meta = getattr(req, "meta", {})
+    
+                    if meta.get("allow_offsite") is True:
+                        found = True
+    
+&gt;       assert found, "Request must include meta={'allow_offsite': True}"
+E       AssertionError: Request must include meta={'allow_offsite': True}
+E       assert False
+
+oracle/eval.py:168: AssertionError</failure></testcase><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allow_offsite_is_boolean" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_no_middleware_modification" time="0.002" /></testsuite></testsuites>

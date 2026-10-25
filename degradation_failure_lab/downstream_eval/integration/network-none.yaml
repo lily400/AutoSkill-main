@@ -1,0 +1,7 @@
+# Keep the workload out of Harbor's permissive DNS/ICMP sidecar namespace.
+services:
+  main:
+    network_mode: none
+    dns: [127.0.0.1]
+    cap_drop: [NET_ADMIN, NET_RAW, SYS_ADMIN]
+    security_opt: [no-new-privileges:true]

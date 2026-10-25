@@ -12,6 +12,7 @@ from xml.etree import ElementTree
 from unittest.mock import patch
 
 from .skill_install import remote_hashes
+from .network_isolation import verify_environment_network, NetworkIsolationError
 from .model_connectivity import OneRequest
 from .request_budget import MeteredTransport, BudgetStop, ledger_for_profile
 
@@ -170,6 +171,13 @@ class P1ObservationMixin:
             stream.write(json.dumps(redact_credentials(payload, api_key), ensure_ascii=False) + '\n')
 
     async def setup(self, environment):
+        if self._p1:
+            try:
+                report = await verify_environment_network(environment)
+            except NetworkIsolationError as error:
+                self._event('network-isolation', **error.report)
+                raise
+            self._event('network-isolation', **report)
         await super().setup(environment)
         if not self._p1:
             return

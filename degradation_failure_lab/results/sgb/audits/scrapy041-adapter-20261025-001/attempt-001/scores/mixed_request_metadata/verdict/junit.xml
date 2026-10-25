@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="10" time="0.093" timestamp="2026-10-25T06:25:02.084461+00:00" hostname="b27e93f93a06"><testcase classname="eval.TestScrapyOffsiteBypass" name="test_file_exists" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_can_import" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_imports_scrapy" time="0.002" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_has_spider_class" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allowed_domains" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_spider_produces_requests" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_request_to_other_domain" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allow_offsite_meta" time="0.000" /><testcase classname="eval.TestScrapyOffsiteBypass" name="test_allow_offsite_is_boolean" time="0.000"><failure message="AssertionError: assert False is True&#10; +  where False = &lt;built-in method get of dict object at 0x722fec7103c0&gt;('allow_offsite')&#10; +    where &lt;built-in method get of dict object at 0x722fec7103c0&gt; = {'allow_offsite': False}.get&#10; +      where {'allow_offsite': False} = namespace(url='http://other.com/resource', meta={'allow_offsite': False}).meta">self = &lt;eval.TestScrapyOffsiteBypass object at 0x722fec791a50&gt;
+
+    def test_allow_offsite_is_boolean(self):
+    
+        module = load_agent_module()
+    
+        spiders = find_spiders(module)
+    
+        for spider_cls in spiders:
+    
+            spider = spider_cls()
+    
+            requests = collect_requests(spider)
+    
+            for req in requests:
+    
+                if req.url == "http://other.com/resource":
+    
+&gt;                   assert req.meta.get("allow_offsite") is True
+E                   AssertionError: assert False is True
+E                    +  where False = &lt;built-in method get of dict object at 0x722fec7103c0&gt;('allow_offsite')
+E                    +    where &lt;built-in method get of dict object at 0x722fec7103c0&gt; = {'allow_offsite': False}.get
+E                    +      where {'allow_offsite': False} = namespace(url='http://other.com/resource', meta={'allow_offsite': False}).meta
+
+oracle/eval.py:186: AssertionError</failure></testcase><testcase classname="eval.TestScrapyOffsiteBypass" name="test_no_middleware_modification" time="0.002" /></testsuite></testsuites>

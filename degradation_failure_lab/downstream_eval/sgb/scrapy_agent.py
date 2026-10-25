@@ -1,6 +1,4 @@
 """Task-024 policy checks around the existing Terminus-2 agent and observer."""
-import json
-import subprocess
 from pathlib import Path
 
 from ..integration.terminus_compat import CompatibleTerminus2
@@ -30,19 +28,9 @@ class ScrapyTerminus2(CompatibleTerminus2):
             timeout_sec=10)
         if check.return_code:
             raise RuntimeError('Scrapy source/Oracle/runtime isolation failed')
-        env = await environment._run_docker_compose_command(['ps', '-q', 'main'])
-        inspected = subprocess.run(['docker','inspect',env.stdout.strip(),'--format',
-                                   '{"network":{{json .HostConfig.NetworkMode}}}'], capture_output=True, check=True)
-        network = json.loads(inspected.stdout)['network']
-        sidecar = await environment._run_docker_compose_command(['ps','-q',environment._EGRESS_CONTROL_SERVICE_NAME])
-        rules = await environment._run_docker_compose_command(['exec','--no-TTY',environment._EGRESS_CONTROL_SERVICE_NAME,
-                                                              'network-policy','show'])
-        if (environment.network_policy.network_mode.value != 'no-network' or
-            network != 'container:'+sidecar.stdout.strip() or
-            '(empty: deny all controlled TCP egress)' not in rules.stdout):
-            raise RuntimeError('Scrapy network policy is not deny-all')
+        # Shared observer admits the real Docker namespace before native Agent setup.
         self._event('scrapy-isolation', status='PASS', no_scrapy=True, docs_empty=True,
-                    oracle_absent=True, source_absent=True, sidecar_policy=rules.stdout)
+                    oracle_absent=True, source_absent=True)
 
     async def run(self, instruction, environment, context):
         try:

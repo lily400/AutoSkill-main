@@ -110,6 +110,8 @@ class SGBRunner(unittest.TestCase):
         self.assertNotIn('model_api_key_name', probe['agent'])
         self.assertFalse(raw['environment']['kwargs']['enable_environment_dir_upload'])
         self.assertTrue(raw['verifier']['disable'])
+        from downstream_eval.integration.network_isolation import environment_config
+        self.assertEqual(raw['environment'], environment_config())
 
     def test_missing_or_mismatched_task_and_experiment_are_rejected(self):
         for key in ('task_id', 'experiment_id'):

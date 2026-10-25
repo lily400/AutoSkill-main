@@ -1,0 +1,86 @@
+{
+  "correct": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n",
+    "passed": 10,
+    "failed": []
+  },
+  "missing_meta": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\")\n",
+    "passed": 8,
+    "failed": [
+      "test_allow_offsite_meta",
+      "test_allow_offsite_is_boolean"
+    ]
+  },
+  "dont_filter_only": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", dont_filter=True)\n",
+    "passed": 8,
+    "failed": [
+      "test_allow_offsite_meta",
+      "test_allow_offsite_is_boolean"
+    ]
+  },
+  "wrong_domains": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\", \"other.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n",
+    "passed": 9,
+    "failed": [
+      "test_allowed_domains"
+    ]
+  },
+  "middleware_modified": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    custom_settings = {\"DOWNLOADER_MIDDLEWARES\": {\"scrapy.downloadermiddlewares.offsite.OffsiteMiddleware\": None}}\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n",
+    "passed": 9,
+    "failed": [
+      "test_no_middleware_modification"
+    ]
+  },
+  "string_true": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": \"True\"})\n",
+    "passed": 8,
+    "failed": [
+      "test_allow_offsite_meta",
+      "test_allow_offsite_is_boolean"
+    ]
+  },
+  "boundary_attempts": {
+    "source": "from pathlib import Path\nfor name in [\"/oracle/eval.py\", \"/bridge/oracle_bridge.py\", \"/observations/envelope.json\",\n             \"/results/junit.xml\", \"/tests/eval.py\", \"/var/run/docker.sock\"]:\n    assert not Path(name).exists(), name\ntry:\n    Path(\"/runtime/worker.py\").write_text(\"tampered\")\nexcept OSError:\n    pass\nelse:\n    raise AssertionError(\"worker was writable\")\ntry:\n    Path(\"/oracle/eval.py\").write_text(\"tampered\")\nexcept OSError:\n    pass\nelse:\n    raise AssertionError(\"Oracle was writable\")\nimport scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n",
+    "passed": 10,
+    "failed": []
+  },
+  "syntax_error": {
+    "source": "import scrapy\nclass Broken(\n",
+    "passed": 2
+  },
+  "import_exception": {
+    "source": "import scrapy\nraise RuntimeError('fixture exception')\n",
+    "passed": 3
+  },
+  "timeout": {
+    "source": "while True:\n    pass\n",
+    "category": "candidate_timeout"
+  },
+  "invalid_stdout": {
+    "source": "import os\nos.write(1,b'not-json\\n')\nimport scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n",
+    "category": "candidate_protocol_error"
+  },
+  "constructor_exception": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def __init__(self):\n        raise ValueError(\"fixture constructor\")\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n",
+    "passed": 6
+  },
+  "partial_generator_error": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n        raise ValueError(\"fixture partial generator\")\n",
+    "passed": 7,
+    "failed": [
+      "test_spider_produces_requests",
+      "test_request_to_other_domain",
+      "test_allow_offsite_meta"
+    ]
+  },
+  "mixed_request_metadata": {
+    "source": "import scrapy\nfrom pathlib import Path\nPath(\"/tmp/scrapy041-candidate-marker\").write_text(\"candidate container only\")\n\nclass DemoSpider(scrapy.Spider):\n    name = \"demo\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": True})\n        yield scrapy.Request(\"http://other.com/resource\", meta={\"allow_offsite\": False})\n",
+    "passed": 9,
+    "failed": [
+      "test_allow_offsite_is_boolean"
+    ]
+  }
+}
