@@ -1,0 +1,25 @@
+schema_version = "1.4"
+artifacts = [{source = "/workspace/agent_output.py", destination = "workspace/agent_output.py"}]
+
+[metadata]
+task_id = "sanctuary_endgame_scheduler_002"
+task_version = 1
+
+[agent]
+timeout_sec = 120
+
+[environment]
+docker_image = "sha256:c928e232c35008c42b22727ecd2fe39ed79fe9cb36ebddca669daef309d6b4e4"
+build_timeout_sec = 600
+cpus = 1
+memory_mb = 256
+workdir = "/workspace"
+network_mode = "no-network"
+
+[verifier]
+environment_mode = "separate"
+timeout_sec = 90
+
+[verifier.environment]
+network_mode = "no-network"
+workdir = "/oracle"

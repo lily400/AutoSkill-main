@@ -1,0 +1,299 @@
+[?2004hroot@cf305e8a4034:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ sed -n '1,220p' /harbor/skills/c5cbbf46-9076-57d7-9a2c-80ba8d600fee/SKILL.md
+[?2004l---
+id: "c5cbbf46-9076-57d7-9a2c-80ba8d600fee"
+name: "Feed 覆盖与追加策略选择"
+description: "根据目标存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并判断该后端是否支持追加写入。用于配置 feed 写入模式时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed"
+  - "overwrite"
+  - "storage"
+  - "configuration"
+triggers:
+  - "需要决定 feed 文件是否覆盖或追加"
+  - "目标存储后端可能不支持追加操作"
+  - "配置 feed 的 overwrite 参数"
+examples:
+  - input: "使用 S3 作为 feed 存储，希望追加写入"
+    output: "S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。"
+    notes: "S3 不支持追加"
+  - input: "使用本地文件系统，未指定 overwrite"
+    output: "本地文件系统默认 overwrite=False，即追加写入。"
+    notes: "本地文件系统默认追加"
+---
+
+# Feed 覆盖与追加策略选择
+
+根据目标存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并判断该后端是否支持追加写入。用于配置 feed 写入模式时。
+
+## Prompt
+
+针对给定的存储后端，确定 feed 定义中 overwrite 的取值，并说明该后端是否支持追加。
+
+步骤：
+1. 确认目标存储后端类型（本地文件系统、FTP、S3、GCS、标准输出）。
+2. 若用户未显式指定 overwrite，按后端默认值处理：本地文件系统为 False（追加），FTP 为 True（覆盖），S3 为 True（覆盖），GCS 为 True（覆盖），标准输出为 False（不支持覆盖）。
+3. 若用户要求追加（overwrite=False），检查后端是否支持追加：S3、GCS、标准输出不支持追加；FTP 部分服务器可能不支持 APPE 命令，需提示风险。
+4. 输出 overwrite 取值及追加可行性说明。
+
+## Objective
+
+为给定存储后端选择正确的 overwrite/append 行为
+## Applicable Signals
+
+- 用户询问 feed 文件是否会被覆盖或追加
+- 用户指定了 S3、GCS 或标准输出并希望追加写入
+- 用户使用 FTP 并需要追加写入
+
+## Contraindications
+
+- 仅需选择序列化格式
+- 需要配置 item 过滤或后处理插件
+
+## Intervention Moves
+
+- 识别存储后端类型
+- 按后端默认值确定 overwrite
+- 检查追加可行性并提示不支持的后端
+
+## Workflow Steps
+
+- 确认目标存储后端类型
+- 若未显式指定 overwrite，套用后端默认值
+- 若要求追加，检查后端是否支持追加
+- 输出 overwrite 取值及追加可行性说明
+
+## Constraints
+
+- overwrite 默认值依赖存储后端，不可统一假设
+- S3、GCS、标准输出不支持追加
+- FTP 追加依赖服务器是否支持 APPE 命令
+
+## Cautions
+
+- FTP 服务器可能不支持 APPE 命令，追加可能失败
+- 标准输出不支持覆盖，overwrite 固定为 False
+
+## Output Contract
+
+- 针对所选存储后端的 overwrite 取值及追加可行性说明
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 使用 S3 作为 feed 存储，希望追加写入
+- Therapist/Output: S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。
+- Notes: S3 不支持追加
+
+### Example 2
+
+- Client/Input: 使用本地文件系统，未指定 overwrite
+- Therapist/Output: 本地文件系统默认 overwrite=False，即追加写入。
+- Notes: 本地文件系统默认追加
+
+## Triggers
+
+- 需要决定 feed 文件是否覆盖或追加
+- 目标存储后端可能不支持追加操作
+- 配置 feed 的 overwrite 参数
+
+## Examples
+
+### Example 1
+
+Input:
+
+  使用 S3 作为 feed 存储，希望追加写入
+
+Output:
+
+  S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。
+
+Notes:
+
+  S3 不支持追加
+
+### Example 2
+
+Input:
+
+  使用本地文件系统，未指定 overwrite
+
+Output:
+
+  本地文件系统默认 overwrite=False，即追加写入。
+
+Notes:
+
+  本地文件系统默认追加
+[?2004hp1$ sed -n '1,220p' /harbor/skills/b7e8d5c2-dfcf-59cd-ba27-6299829dcbf3/SKILL.md
+[?2004l---
+id: "b7e8d5c2-dfcf-59cd-ba27-6299829dcbf3"
+name: "Feed 存储后端选择与依赖校验"
+description: "根据目标输出位置为 Scrapy feed 选择内置存储后端（本地文件系统、FTP、S3、GCS、标准输出），并在使用前校验所需外部库是否已安装，给出可用后端与依赖校验结论。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "storage_backend"
+  - "dependency_check"
+triggers:
+  - "需要把抓取结果导出到本地、FTP、S3、GCS 或标准输出"
+  - "不确定某存储后端是否可用"
+  - "需要确认存储后端的外部依赖是否满足"
+examples:
+  - input: "我想把抓取结果导出到 S3，但不确定是否可用。"
+    output: "S3 后端需要安装 boto3 库；若未安装则该后端不可用，请先安装 boto3 或改用本地文件系统等可用后端。"
+    notes: "依赖校验结论需明确可用性"
+  - input: "导出到标准输出需要额外依赖吗？"
+    output: "标准输出是内置支持的存储后端，无需额外外部库。"
+    notes: "内置后端无需外部依赖"
+---
+
+# Feed 存储后端选择与依赖校验
+
+根据目标输出位置为 Scrapy feed 选择内置存储后端（本地文件系统、FTP、S3、GCS、标准输出），并在使用前校验所需外部库是否已安装，给出可用后端与依赖校验结论。
+
+## Prompt
+
+当需要把抓取结果导出到某个存储位置时，先确定目标位置对应的存储后端，再校验该后端所需的外部库是否已安装；若依赖缺失则说明该后端不可用并给出替代方案。
+
+## Objective
+
+为给定输出目标确定可用的存储后端并确认依赖满足
+## Applicable Signals
+
+- 用户指定了输出位置（本地路径、FTP、S3、GCS 或标准输出）
+- 用户询问某存储后端是否可用或为何不可用
+
+## Contraindications
+
+- 仅需选择序列化格式而非存储位置
+- 未安装所需外部库且无法安装
+
+## Intervention Moves
+
+- 将目标输出位置映射到内置存储后端：本地文件系统、FTP、S3、GCS、标准输出
+- 识别该后端所需的外部库（如 S3 需要 boto3，GCS 需要 google-cloud-storage）
+- 校验所需外部库是否已安装，未安装则判定该后端不可用
+- 在依赖缺失时提示安装依赖或改用其它可用后端
+
+## Workflow Steps
+
+- 确认目标输出位置类型
+- 从内置后端列表中选择对应存储后端
+- 确定该后端所需的外部库
+- 校验外部库是否可用
+- 输出选定后端及依赖校验结论，必要时给出替代后端
+
+## Constraints
+
+- 仅使用内置支持的存储后端：本地文件系统、FTP、S3、GCS、标准输出
+- S3 后端仅在安装 boto3 后可用
+- GCS 后端仅在安装 google-cloud-storage 后可用
+- 外部库缺失时不得声称该后端可用
+
+## Cautions
+
+- 部分存储后端在缺少所需外部库时不可用，需在配置前确认
+
+## Output Contract
+
+- 给出选定的存储后端及依赖校验结论（可用/不可用及原因），必要时附替代后端建议。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 我想把抓取结果导出到 S3，但不确定是否可用。
+- Therapist/Output: S3 后端需要安装 boto3 库；若未安装则该后端不可用，请先安装 boto3 或改用本地文件系统等可用后端。
+- Notes: 依赖校验结论需明确可用性
+
+### Example 2
+
+- Client/Input: 导出到标准输出需要额外依赖吗？
+- Therapist/Output: 标准输出是内置支持的存储后端，无需额外外部库。
+- Notes: 内置后端无需外部依赖
+
+## Triggers
+
+- 需要把抓取结果导出到本地、FTP、S3、GCS 或标准输出
+- 不确定某存储后端是否可用
+- 需要确认存储后端的外部依赖是否满足
+
+## Examples
+
+### Example 1
+
+Input:
+
+  我想把抓取结果导出到 S3，但不确定是否可用。
+
+Output:
+
+  S3 后端需要安装 boto3 库；若未安装则该后端不可用，请先安装 boto3 或改用本地文件系统等可用后端。
+
+Notes:
+
+  依赖校验结论需明确可用性
+
+### Example 2
+
+Input:
+
+  导出到标准输出需要额外依赖吗？
+
+Output:
+
+  标准输出是内置支持的存储后端，无需额外外部库。
+
+Notes:
+
+  内置后端无需外部依赖
+[?2004hp1$ find /workspace/docs -maxdepth 2 -type f | sort
+[?2004l[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> """Resolve Scrapy feed export default overwrite behavior.
+[?2004l[?2004h> 
+[?2004l[?2004h> Supported built-in backends:
+[?2004l[?2004h> - local filesystem (absolute paths and file:// URIs): overwrite=False
+[?2004l[?2004h> - ftp:// URIs: overwrite=True
+[?2004l[?2004h> - s3:// URIs: overwrite=True
+[?2004l[?2004h> - gs:// URIs: overwrite=True
+[?2004l[?2004h> - stdout: URI: overwrite=False
+[?2004l[?2004h> 
+[?2004l[?2004h> Unsupported schemes raise ValueError.
+[?2004l[?2004h> """
+[?2004l[?2004h> 
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from urllib.parse import urlparse
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def default_feed_overwrite(uri: str) -> bool:
+[?2004l[?2004h>     """Return Scrapy's built-in default overwrite behavior for a feed URI."""
+[?2004l[?2004h>     if not isinstance(uri, str) or uri == "":
+[?2004l[?2004h>         raise ValueError("uri must be a non-empty string")
+[?2004l[?2004h> 
+[?2004l[?2004h>     if uri == "stdout:" or uri.startswith("stdout:"):
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     if uri.startswith("/"):
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     parsed = urlparse(uri)
+[?2004l[?2004h>     scheme = parsed.scheme.lower()
+[?2004l[?2004h> 
+[?2004l[?2004h>     if scheme == "file":
+[?2004l[?2004h>         return False
+[?2004l[?2004h>     if scheme in {"ftp", "s3", "gs"}:
+[?2004l[?2004h>         return True
+[?2004l[?2004h> 
+[?2004l[?2004h>     raise ValueError(f"unsupported feed URI scheme: {scheme or 'missing'}")
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ /workspace/tests/test.sh
+[?2004lbash: /workspace/tests/test.sh: No such file or directory
+[?2004hp1$ 

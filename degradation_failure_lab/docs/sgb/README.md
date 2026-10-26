@@ -66,3 +66,5 @@ Scrapy024 的活动目录整理见 [2026-10-24 迁移记录](layout_20261024.md)
 新任务逐文件接入示范：[Pydantic001 源文与任务接入](add_task_walkthrough.md)。正反例工程验收不等于真实 Skill/Agent 闭环。
 
 完整归档规则及迁移结果见 [Scrapy 全量归档](archive_20261024.md)。历史清单中的旧路径保留为证据，不通过符号链接或旧目录维持第二套活动文件。
+
+- [任务三 Sanctuary Clean 全流程手册](task003-clean-runbook.md)：准入审计、零模型验收和获批后的完整 PowerShell 操作；真实模型执行仍受独立预算门禁约束。

@@ -10,9 +10,9 @@ def pytest_collection_modifyitems(items):
     oracle = hashlib.sha256(Path('/oracle/eval.py').read_bytes()).hexdigest()
     assert envelope['candidate_sha256'] == candidate
     assert envelope['oracle_sha256'] == oracle
-    assert len(items) == len(envelope['observations']) == 9
     module = items[0].module
     original_inputs = module.load_bundle()['test_cases']
+    assert len(items) == len(envelope['observations']) == len(original_inputs)
     keys = [json.dumps(case['input'], sort_keys=True) for case in original_inputs]
     assert len(set(keys)) == len(keys)
     observations = dict(zip(keys, envelope['observations']))

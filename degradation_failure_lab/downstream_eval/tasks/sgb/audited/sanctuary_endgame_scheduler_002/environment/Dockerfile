@@ -1,0 +1,2 @@
+FROM sha256:c928e232c35008c42b22727ecd2fe39ed79fe9cb36ebddca669daef309d6b4e4
+WORKDIR /workspace

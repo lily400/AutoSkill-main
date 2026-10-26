@@ -1,0 +1,69 @@
+[?2004hroot@01b644d48e3e:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cd /workspace && find docs -maxdepth 2 -type f | sed 's#^#- #' 
+[?2004l[?2004hp1$ cd /workspace && grep -RIn "overwrite" docs || true
+[?2004l[?2004hp1$ cd /workspace && grep -RIn "stdout\|s3\|gs\|ftp\|file" docs | head -200
+[?2004l[?2004hp1$ cd /workspace && find docs -type f | sort | head -200
+[?2004l[?2004hp1$ cd /workspace && for f in $(find docs -type f | sort); do echo "=== $f ==="; sed -n '1,220p' "$f"; done
+[?2004l[?2004hp1$ cd /workspace && python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> p = Path('/workspace/agent_output.py')
+[?2004l[?2004h> print(p.exists())
+[?2004l[?2004h> PY
+[?2004lFalse
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> """Resolve Scrapy feed export default overwrite behavior.
+[?2004l[?2004h> 
+[?2004l[?2004h> Supported built-in backends:
+[?2004l[?2004h> - Local filesystem ("file:///tmp/export.json" or absolute path "/tmp/export.json"): default overwrite is False.
+[?2004l[?2004h> - FTP ("ftp://server/export.json"): default overwrite is True.
+[?2004l[?2004h> - Amazon S3 ("s3://bucket/export.json"): default overwrite is True.
+[?2004l[?2004h> - Google Cloud Storage ("gs://bucket/export.json"): default overwrite is True.
+[?2004l[?2004h> - Standard output ("stdout:"): treated as a built-in feed target with overwrite defaulting to False.
+[?2004l[?2004h> 
+[?2004l[?2004h> Unsupported URI schemes raise ValueError.
+[?2004l[?2004h> """
+[?2004l[?2004h> 
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from urllib.parse import urlparse
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def default_feed_overwrite(uri: str) -> bool:
+[?2004l[?2004h>     """Return Scrapy's default overwrite flag for a built-in feed URI."""
+[?2004l[?2004h> 
+[?2004l[?2004h>     if not isinstance(uri, str) or not uri:
+[?2004l[?2004h>         raise ValueError("uri must be a non-empty string")
+[?2004l[?2004h> 
+[?2004l[?2004h>     if uri.startswith("/"):
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     parsed = urlparse(uri)
+[?2004l[?2004h>     scheme = parsed.scheme.lower()
+[?2004l[?2004h> 
+[?2004l[?2004h>     if scheme == "file":
+[?2004l[?2004h>         # Accept file:///absolute/path or file:/absolute/path style URIs.
+[?2004l[?2004h>         if parsed.netloc not in ("", "localhost"):
+[?2004l[?2004h>             raise ValueError(f"unsupported file URI: {uri}")
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     if scheme in {"ftp", "s3", "gs"}:
+[?2004l[?2004h>         return True
+[?2004l[?2004h> 
+[?2004l[?2004h>     if scheme == "stdout":
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     raise ValueError(f"unsupported feed URI scheme: {scheme or uri}")
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ python3 - <<'PY'
+[?2004l[?2004h> from agent_output import default_feed_overwrite
+[?2004l[?2004h> for u in ['/tmp/export.json', 'file:///tmp/export.json', 'ftp://server/export.json', 's3://bucket/export.json', 'gs://bucket/export.json', 'stdout:']:
+[?2004l[?2004h>     print(u, default_feed_overwrite(u))
+[?2004l[?2004h> PY
+[?2004l/tmp/export.json False
+file:///tmp/export.json False
+ftp://server/export.json True
+s3://bucket/export.json True
+gs://bucket/export.json True
+stdout: False
+[?2004hp1$ 

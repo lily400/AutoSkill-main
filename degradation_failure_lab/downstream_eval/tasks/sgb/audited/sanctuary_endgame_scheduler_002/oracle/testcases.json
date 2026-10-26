@@ -1,0 +1,566 @@
+{
+  "task_id": "sanctuary_endgame_scheduler_002",
+  "test_id": "tc_002",
+  "setup_code": "import math\nimport numpy as np\nfrom collections import defaultdict, deque",
+  "function_name": "solve",
+  "solution_code": "def solve(input_data):\n    # Sanctuary: End of the game and final scoring (rulebook p.8)\n    # Constants from the document:\n    OBJ_TARGET = 4          # End condition (1): supported 4 objectives\n    MARKER_TRIGGER = 10     # \"take the 10-point End-of-game marker\" when triggering via (1) and/or (2)\n    MARKER_LAST_TURN = 5    # \"take a 5-point End-of-game marker\" if meeting (1)/(2) on last extra turn\n\n    players = input_data['players']\n    turn_log = input_data['turn_log']\n\n    idx_of = {p: i for i, p in enumerate(players)}\n\n    def conds(turn):\n        c = []\n        if turn.get('supported_objectives', 0) >= OBJ_TARGET:\n            c.append(1)\n        if bool(turn.get('zoo_full', False)):\n            c.append(2)\n        if bool(turn.get('pile_empty', False)):\n            c.append(3)\n        return c\n\n    # 1) Find first trigger\n    trigger_i = None\n    trigger_conds = None\n    trigger_player = None\n    for i, t in enumerate(turn_log):\n        c = conds(t)\n        if c:\n            trigger_i = i\n            trigger_conds = c\n            trigger_player = t['player']\n            break\n\n    if trigger_i is None:\n        # No end triggered in provided log\n        return {\n            'end_trigger': None,\n            'scheduled_turns_after_trigger': [],\n            'markers': {p: 0 for p in players},\n            'pile_recycled': False\n        }\n\n    markers = {p: 0 for p in players}\n\n    # 2) Determine scheduling type\n    trigger_has_12 = (1 in trigger_conds) or (2 in trigger_conds)\n    trigger_has_3 = (3 in trigger_conds)\n\n    scheduled = []\n    pile_recycled = False\n\n    if trigger_has_12:\n        # Triggering player takes 10-point marker\n        markers[trigger_player] = MARKER_TRIGGER\n\n        # Everyone else gets 1 more turn, excluding trigger player, clockwise starting next\n        start = (idx_of[trigger_player] + 1) % len(players)\n        for k in range(len(players) - 1):\n            scheduled.append(players[(start + k) % len(players)])\n\n        # Pile recycling clause: if pile empty after you have triggered end of game\n        # (i.e., on trigger turn when end triggered via 1/2 and pile is empty)\n        if trigger_has_3:\n            pile_recycled = True\n\n        # 3) Assign 5-point marker to players who meet 1/2 on their last extra turn\n        # We interpret \"your last turn\" as the single extra turn you get after someone else triggered.\n        # So check each player's extra turn (if present in log) and award 5 if they meet 1/2.\n        extra_turns_in_log = turn_log[trigger_i + 1: trigger_i + 1 + len(scheduled)]\n        for t in extra_turns_in_log:\n            p = t['player']\n            c = conds(t)\n            if (1 in c) or (2 in c):\n                # Only if they don't already have 10 (they shouldn't, since trigger player excluded)\n                if markers[p] == 0:\n                    markers[p] = MARKER_LAST_TURN\n\n    else:\n        # Trigger did not include 1/2. If condition 3 happens before anyone meets 1 or 2,\n        # game ends immediately after that turn.\n        # Since this is the first trigger and it lacks 1/2, it must be condition 3-only.\n        scheduled = []\n        pile_recycled = False\n\n    return {\n        'end_trigger': {\n            'turn_index': trigger_i,\n            'player': trigger_player,\n            'conditions_met': trigger_conds\n        },\n        'scheduled_turns_after_trigger': scheduled,\n        'markers': markers,\n        'pile_recycled': pile_recycled\n    }\n",
+  "test_cases": [
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 2,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 5
+          },
+          {
+            "player": "B",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 7
+          },
+          {
+            "player": "C",
+            "supported_objectives": 3,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 8
+          },
+          {
+            "player": "D",
+            "supported_objectives": 1,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 9
+          },
+          {
+            "player": "A",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 10
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 1,
+          "player": "B",
+          "conditions_met": [
+            1
+          ]
+        },
+        "scheduled_turns_after_trigger": [
+          "C",
+          "D",
+          "A"
+        ],
+        "markers": {
+          "A": 5,
+          "B": 10,
+          "C": 0,
+          "D": 0
+        },
+        "pile_recycled": false
+      }
+    },
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 1,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 2
+          },
+          {
+            "player": "B",
+            "supported_objectives": 2,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 3
+          },
+          {
+            "player": "C",
+            "supported_objectives": 3,
+            "zoo_full": false,
+            "pile_empty": true,
+            "discard_count": 12
+          },
+          {
+            "player": "D",
+            "supported_objectives": 4,
+            "zoo_full": true,
+            "pile_empty": false,
+            "discard_count": 0
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 2,
+          "player": "C",
+          "conditions_met": [
+            3
+          ]
+        },
+        "scheduled_turns_after_trigger": [],
+        "markers": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0
+        },
+        "pile_recycled": false
+      }
+    },
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 2,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 4
+          },
+          {
+            "player": "B",
+            "supported_objectives": 1,
+            "zoo_full": true,
+            "pile_empty": true,
+            "discard_count": 20
+          },
+          {
+            "player": "C",
+            "supported_objectives": 2,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 0
+          },
+          {
+            "player": "D",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 1
+          },
+          {
+            "player": "A",
+            "supported_objectives": 3,
+            "zoo_full": true,
+            "pile_empty": false,
+            "discard_count": 2
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 1,
+          "player": "B",
+          "conditions_met": [
+            2,
+            3
+          ]
+        },
+        "scheduled_turns_after_trigger": [
+          "C",
+          "D",
+          "A"
+        ],
+        "markers": {
+          "A": 5,
+          "B": 10,
+          "C": 0,
+          "D": 5
+        },
+        "pile_recycled": true
+      }
+    },
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 4,
+            "zoo_full": true,
+            "pile_empty": false,
+            "discard_count": 6
+          },
+          {
+            "player": "B",
+            "supported_objectives": 4,
+            "zoo_full": true,
+            "pile_empty": false,
+            "discard_count": 7
+          },
+          {
+            "player": "C",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 8
+          },
+          {
+            "player": "D",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 9
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 0,
+          "player": "A",
+          "conditions_met": [
+            1,
+            2
+          ]
+        },
+        "scheduled_turns_after_trigger": [
+          "B",
+          "C",
+          "D"
+        ],
+        "markers": {
+          "A": 10,
+          "B": 5,
+          "C": 0,
+          "D": 5
+        },
+        "pile_recycled": false
+      }
+    },
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 1,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 1
+          },
+          {
+            "player": "B",
+            "supported_objectives": 2,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 2
+          },
+          {
+            "player": "C",
+            "supported_objectives": 3,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 3
+          },
+          {
+            "player": "D",
+            "supported_objectives": 0,
+            "zoo_full": true,
+            "pile_empty": false,
+            "discard_count": 4
+          },
+          {
+            "player": "A",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 5
+          },
+          {
+            "player": "B",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 6
+          },
+          {
+            "player": "C",
+            "supported_objectives": 1,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 7
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 3,
+          "player": "D",
+          "conditions_met": [
+            2
+          ]
+        },
+        "scheduled_turns_after_trigger": [
+          "A",
+          "B",
+          "C"
+        ],
+        "markers": {
+          "A": 5,
+          "B": 5,
+          "C": 0,
+          "D": 10
+        },
+        "pile_recycled": false
+      }
+    },
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 0
+          },
+          {
+            "player": "B",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 1
+          },
+          {
+            "player": "C",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 2
+          },
+          {
+            "player": "D",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 3
+          },
+          {
+            "player": "A",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": true,
+            "discard_count": 30
+          },
+          {
+            "player": "B",
+            "supported_objectives": 4,
+            "zoo_full": true,
+            "pile_empty": false,
+            "discard_count": 0
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 3,
+          "player": "D",
+          "conditions_met": [
+            1
+          ]
+        },
+        "scheduled_turns_after_trigger": [
+          "A",
+          "B",
+          "C"
+        ],
+        "markers": {
+          "A": 0,
+          "B": 5,
+          "C": 0,
+          "D": 10
+        },
+        "pile_recycled": false
+      }
+    },
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 1,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 4
+          },
+          {
+            "player": "B",
+            "supported_objectives": 2,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 5
+          },
+          {
+            "player": "C",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 6
+          },
+          {
+            "player": "D",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 7
+          },
+          {
+            "player": "A",
+            "supported_objectives": 1,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 8
+          },
+          {
+            "player": "B",
+            "supported_objectives": 2,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 9
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 2,
+          "player": "C",
+          "conditions_met": [
+            1
+          ]
+        },
+        "scheduled_turns_after_trigger": [
+          "D",
+          "A",
+          "B"
+        ],
+        "markers": {
+          "A": 0,
+          "B": 0,
+          "C": 10,
+          "D": 0
+        },
+        "pile_recycled": false
+      }
+    },
+    {
+      "input": {
+        "players": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "turn_log": [
+          {
+            "player": "A",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 1
+          },
+          {
+            "player": "B",
+            "supported_objectives": 4,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 2
+          },
+          {
+            "player": "C",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 3
+          },
+          {
+            "player": "D",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 4
+          },
+          {
+            "player": "A",
+            "supported_objectives": 0,
+            "zoo_full": false,
+            "pile_empty": false,
+            "discard_count": 5
+          }
+        ]
+      },
+      "expected_output": {
+        "end_trigger": {
+          "turn_index": 1,
+          "player": "B",
+          "conditions_met": [
+            1
+          ]
+        },
+        "scheduled_turns_after_trigger": [
+          "C",
+          "D",
+          "A"
+        ],
+        "markers": {
+          "A": 0,
+          "B": 10,
+          "C": 0,
+          "D": 0
+        },
+        "pile_recycled": false
+      }
+    }
+  ],
+  "timeout_seconds": 120
+}
