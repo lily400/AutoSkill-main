@@ -1,0 +1,119 @@
+{
+  "skill_id": "206b95c3-ad84-55ae-acea-c8787d0858fb",
+  "name": "启用并排序 Spider 中间件",
+  "description": "通过 SPIDER_MIDDLEWARES 设置注册自定义 Spider 中间件并指定执行顺序，可用 None 禁用内置中间件。适用于需要插入或替换 Spider 处理链中某个中间件时。",
+  "skill_body": "在 Scrapy 项目的设置中配置 SPIDER_MIDDLEWARES 字典：键为中间件类路径，值为中间件顺序（整数）。如需禁用内置中间件，将其值设为 None。如需替换内置中间件，先禁用原中间件再以新类路径注册并指定顺序。配置完成后确认该中间件是否还需要通过其他专用设置启用。\n\n## Objective\n\n正确注册并排序 Spider 中间件以控制处理链行为\n## Applicable Signals\n\n- 需要启用自定义 Spider 中间件\n- 需要禁用或替换内置中间件\n\n## Contraindications\n\n- 中间件还需额外专用设置才能生效而未确认\n\n## Intervention Moves\n\n- 在 SPIDER_MIDDLEWARES 字典中添加中间件类路径与顺序值\n- 将内置中间件值设为 None 以禁用\n- 以新类路径注册替换中间件并指定顺序\n\n## Workflow Steps\n\n- 确定要启用、禁用或替换的中间件类路径\n- 在 SPIDER_MIDDLEWARES 字典中为每个中间件指定类路径与顺序值\n- 如需禁用内置中间件，将其值设为 None\n- 如需替换内置中间件，先禁用原中间件再注册新中间件并指定顺序\n- 确认该中间件是否还需通过其他专用设置启用\n\n## Constraints\n\n- SPIDER_MIDDLEWARES 为字典，键为中间件类路径，值为中间件顺序\n- 禁用内置中间件须将值设为 None\n\n## Cautions\n\n- 部分中间件可能需要通过特定设置额外启用，需查阅对应中间件文档确认\n\n## Output Contract\n\n- SPIDER_MIDDLEWARES 配置字典，含类路径与顺序值\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 启用自定义 Spider 中间件\n- Therapist/Output: SPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}\n\n### Example 2\n\n- Client/Input: 禁用内置 RefererMiddleware 并替换为自定义中间件\n- Therapist/Output: SPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "正确注册并排序 Spider 中间件以控制处理链行为",
+  "domain": "scrapy",
+  "task_family": "middleware_configuration",
+  "method_family": "settings_registration",
+  "stage": "setup",
+  "applicable_signals": [
+    "需要启用自定义 Spider 中间件",
+    "需要禁用或替换内置中间件"
+  ],
+  "contraindications": [
+    "中间件还需额外专用设置才能生效而未确认"
+  ],
+  "intervention_moves": [
+    "在 SPIDER_MIDDLEWARES 字典中添加中间件类路径与顺序值",
+    "将内置中间件值设为 None 以禁用",
+    "以新类路径注册替换中间件并指定顺序"
+  ],
+  "triggers": [
+    "需要启用自定义 Spider 中间件",
+    "需要禁用或替换内置中间件"
+  ],
+  "workflow_steps": [
+    "确定要启用、禁用或替换的中间件类路径",
+    "在 SPIDER_MIDDLEWARES 字典中为每个中间件指定类路径与顺序值",
+    "如需禁用内置中间件，将其值设为 None",
+    "如需替换内置中间件，先禁用原中间件再注册新中间件并指定顺序",
+    "确认该中间件是否还需通过其他专用设置启用"
+  ],
+  "constraints": [
+    "SPIDER_MIDDLEWARES 为字典，键为中间件类路径，值为中间件顺序",
+    "禁用内置中间件须将值设为 None"
+  ],
+  "cautions": [
+    "部分中间件可能需要通过特定设置额外启用，需查阅对应中间件文档确认"
+  ],
+  "output_contract": [
+    "SPIDER_MIDDLEWARES 配置字典，含类路径与顺序值"
+  ],
+  "examples": [
+    {
+      "input": "启用自定义 Spider 中间件",
+      "output": "SPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}",
+      "notes": null
+    },
+    {
+      "input": "禁用内置 RefererMiddleware 并替换为自定义中间件",
+      "output": "SPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}",
+      "notes": null
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "spider-middleware",
+    "settings",
+    "middleware-configuration"
+  ],
+  "support_ids": [
+    "49e02c97-0154-5297-830e-d147be7bd221"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "e1ff2c30-1a4a-5d92-ad80-d25191433596"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.85,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||session_skill|session|workflow_skill|正确注册并排序 spider 中间件以控制处理链行为|scrapy|middleware_configuration|settings_registration|setup|启用并排序 spider 中间件",
+    "change_action": "create",
+    "llm_reason": "候选技能是 Spider 中间件的注册与排序配置，与现有下载器中间件/请求指纹器技能在能力身份上不同，且与 peer 候选（钩子实现类）属于不同工作流，应新建。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

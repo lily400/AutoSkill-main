@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"d4fd663d-e1d2-5ea4-8be4-d7c525bc68d3\", \"name\": \"Scrapy 请求错误回调处理\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在请求失败时通过 errback 捕获并分类处理异常，避免爬虫中断\", \"applicable_signals\": [\"请求可能因连接超时、DNS 错误或 HTTP 错误失败\", \"需要记录并分类请求处理异常\"], \"contraindications\": [\"仅需正常响应处理且无失败风险\"], \"workflow_steps\": [\"识别存在下载失败风险的 Request\", \"为该 Request 注册 errback 回调\", \"在 errback 中接收 Failure 作为第一个参数\", \"判断异常类型（如 HttpError、DNSLookupError、TimeoutError、TCPTimedOutError）\", \"记录错误并按需分类处理或转交\"], \"constraints\": [\"errback 的第一个参数为 Twisted Failure\", \"异常分类需依据具体异常类型判断\"], \"triggers\": [\"需要捕获连接超时或 DNS 错误\", \"需要记录并分类请求处理异常\", \"请求处理可能抛出异常且需避免爬虫中断\"], \"output_contract\": [\"已注册 errback 的 Request，异常被捕获并记录或转交\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"510558b9-fb00-5b76-9c72-4bcd1afa13fa\", \"name\": \"自定义请求指纹器实现\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为请求生成稳定且唯一的指纹以支持去重\", \"applicable_signals\": [\"默认指纹无法区分或误合并资源\", \"需要忽略随机 cookie 或参数顺序差异\"], \"workflow_steps\": [\"确认默认指纹无法满足去重需求（如误合并或无法区分资源）\", \"编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes\", \"如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()\", \"通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径\"], \"output_contract\": [\"返回唯一标识请求的 bytes 指纹\"], \"score\": 0.5022731434436576}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

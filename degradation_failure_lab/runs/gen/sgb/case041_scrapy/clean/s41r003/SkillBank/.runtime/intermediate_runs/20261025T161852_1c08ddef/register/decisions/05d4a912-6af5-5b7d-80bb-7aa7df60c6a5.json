@@ -1,0 +1,106 @@
+{
+  "skill_id": "05d4a912-6af5-5b7d-80bb-7aa7df60c6a5",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 10a65f13（Scrapy Request.meta 特殊键配置参考）高度重叠，均覆盖 meta 特殊键清单与设置方式，且后者更完整（含 proxy、dont_redirect 等键及框架写入键的警示），本候选冗余且约束不完整。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "05d4a912-6af5-5b7d-80bb-7aa7df60c6a5",
+    "name": "Scrapy Request.meta 特殊键下载控制参考",
+    "description": "查阅并应用 Scrapy Request.meta 特殊键（bindaddress、download_timeout、download_latency、download_fail_on_dataloss、max_retry_times）以精细控制下载行为，并可通过停止下载响应来中断下载。适用于需要设置下载超时、重试次数、绑定地址或处理数据丢失的场景。",
+    "skill_body": "当调用方需要精细控制 Scrapy 下载过程时，依据本参考资产查阅并应用 Request.meta 特殊键：\n1. 确认默认下载行为无法满足需求（如需要自定义超时、重试上限、绑定地址或数据丢失处理）。\n2. 从特殊键清单中选择合适的键：bindaddress（绑定地址）、download_timeout（下载超时）、download_latency（下载延迟，只读）、download_fail_on_dataloss（数据丢失时是否失败）、max_retry_times（最大重试次数）。\n3. 在构造 Request 时通过 meta 参数设置所选键，注意 download_latency 为只读信息，不应手动设置。\n4. 如需中断下载，可通过停止下载响应实现。\n5. 输出正确设置 meta 特殊键的请求配置，并说明每个键的作用。\n\n## Objective\n\n查阅并应用 Request.meta 特殊键控制下载行为\n## Applicable Signals\n\n- 需要设置下载超时或重试次数\n- 需要绑定地址或处理数据丢失\n- 默认下载行为无法满足需求\n\n## Contraindications\n\n- 默认下载行为已满足\n- 无需控制下载过程\n\n## Intervention Moves\n\n- 识别需要控制的下载行为维度\n- 从特殊键清单中选择对应键\n- 在 Request 的 meta 中设置所选键\n- 必要时通过停止下载响应中断下载\n\n## Workflow Steps\n\n- 确认默认下载行为不足\n- 选择适用的 meta 特殊键（bindaddress、download_timeout、download_latency、download_fail_on_dataloss、max_retry_times）\n- 在 Request 构造时通过 meta 设置所选键\n- 如需中断下载则停止下载响应\n- 输出请求配置并说明各键作用\n\n## Constraints\n\n- download_latency 为只读信息，不应手动设置\n- 仅在默认行为不足时使用特殊键\n\n## Cautions\n\n- 过度设置特殊键可能引入非预期下载行为\n\n## Output Contract\n\n- 正确设置 meta 特殊键的请求配置，并说明每个键的作用",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "查阅并应用 Request.meta 特殊键控制下载行为",
+    "domain": "scrapy",
+    "task_family": "下载控制",
+    "method_family": "meta 特殊键",
+    "stage": "下载配置",
+    "applicable_signals": [
+      "需要设置下载超时或重试次数",
+      "需要绑定地址或处理数据丢失",
+      "默认下载行为无法满足需求"
+    ],
+    "contraindications": [
+      "默认下载行为已满足",
+      "无需控制下载过程"
+    ],
+    "intervention_moves": [
+      "识别需要控制的下载行为维度",
+      "从特殊键清单中选择对应键",
+      "在 Request 的 meta 中设置所选键",
+      "必要时通过停止下载响应中断下载"
+    ],
+    "triggers": [
+      "需要设置下载超时或重试次数",
+      "需要绑定地址或处理数据丢失",
+      "需要精细控制下载过程"
+    ],
+    "workflow_steps": [
+      "确认默认下载行为不足",
+      "选择适用的 meta 特殊键（bindaddress、download_timeout、download_latency、download_fail_on_dataloss、max_retry_times）",
+      "在 Request 构造时通过 meta 设置所选键",
+      "如需中断下载则停止下载响应",
+      "输出请求配置并说明各键作用"
+    ],
+    "constraints": [
+      "download_latency 为只读信息，不应手动设置",
+      "仅在默认行为不足时使用特殊键"
+    ],
+    "cautions": [
+      "过度设置特殊键可能引入非预期下载行为"
+    ],
+    "output_contract": [
+      "正确设置 meta 特殊键的请求配置，并说明每个键的作用"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "request-meta",
+      "下载控制",
+      "参考"
+    ],
+    "support_ids": [
+      "8fc75b52-a2fa-5e88-9a58-3c9a54014941"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "050e84db-3469-5965-97b4-486cd2a8012b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|查阅并应用 request.meta 特殊键控制下载行为|scrapy|下载控制|meta 特殊键|下载配置|scrapy request.meta 特殊键下载控制参考"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

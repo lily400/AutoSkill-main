@@ -1,0 +1,116 @@
+{
+  "skill_id": "f648fd7b-3f98-5fd8-858a-eeb9e6ed30a8",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 e195e67a（Feed URI 参数化命名）高度重叠，均覆盖 %(name)s/%(time)s 及 spider 属性占位符构造 Feed URI，且后者更完整（含转义与属性存在性约束），本候选无独立新增能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "f648fd7b-3f98-5fd8-858a-eeb9e6ed30a8",
+    "name": "Feed 存储 URI 参数化配置",
+    "description": "使用 %(name)s、%(time)s 等占位符及 spider 参数构造 Feed 存储 URI，实现按爬虫或时间分目录存储到 FTP/S3 等后端。",
+    "skill_body": "根据目标存储后端与归档维度，构造带动态占位符的 Feed 存储 URI 模板。\n\n执行要点：\n1. 确认存储后端（如 FTP、S3）与基础路径。\n2. 选择归档维度：按爬虫使用 %(name)s，按时间使用 %(time)s，可组合使用。\n3. 将占位符嵌入路径，形成完整 URI 模板，例如 ftp://user:password@host/scraping/feeds/%(name)s/%(time)s.json 或 s3://bucket/scraping/feeds/%(name)s/%(time)s.json。\n4. 若需注入自定义维度，可将 spider 参数作为 spider 属性，并在 URI 中以其名称作为占位符引用。\n5. 输出最终 URI 模板，并说明各占位符含义。\n\n## Objective\n\n生成带动态占位符的 Feed 存储 URI，实现按爬虫/时间分目录归档\n## Applicable Signals\n\n- 需要按爬虫或时间分目录存储导出文件\n- 需要将 spider 参数注入存储路径\n\n## Contraindications\n\n- 目标存储后端不支持 URI 模板占位符\n- 仅需单文件固定路径输出\n\n## Intervention Moves\n\n- 确定存储后端与基础路径\n- 选择归档维度占位符（%(name)s、%(time)s）\n- 将占位符嵌入路径形成 URI 模板\n- 将 spider 参数作为属性并以占位符引用\n\n## Workflow Steps\n\n- 确认存储后端（FTP/S3 等）与基础路径\n- 选择归档维度：按爬虫用 %(name)s，按时间用 %(time)s\n- 组合占位符构造完整 URI 模板\n- 如需自定义维度，将 spider 参数作为属性并在 URI 中引用其名称\n- 输出 URI 模板并说明占位符含义\n\n## Constraints\n\n- 占位符名称须与 spider 属性名一致\n- URI 模板须符合目标存储后端的 URI 格式\n\n## Cautions\n\n- 凭据直接写入 URI 时注意避免泄露\n- 确认后端支持所用占位符后再部署\n\n## Output Contract\n\n- 可用的参数化存储 URI 模板，并附各占位符含义说明\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 按爬虫分目录存储到 FTP\n- Therapist/Output: ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json\n- Notes: 使用 %(name)s 与 %(time)s 实现按爬虫与时间分目录\n\n### Example 2\n\n- Client/Input: 按爬虫分目录存储到 S3\n- Therapist/Output: s3://mybucket/scraping/feeds/%(name)s/%(time)s.json\n- Notes: S3 后端同样支持 URI 模板占位符",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "生成带动态占位符的 Feed 存储 URI，实现按爬虫/时间分目录归档",
+    "domain": "scrapy",
+    "task_family": "feed_export",
+    "method_family": "uri_templating",
+    "stage": "storage_config",
+    "applicable_signals": [
+      "需要按爬虫或时间分目录存储导出文件",
+      "需要将 spider 参数注入存储路径"
+    ],
+    "contraindications": [
+      "目标存储后端不支持 URI 模板占位符",
+      "仅需单文件固定路径输出"
+    ],
+    "intervention_moves": [
+      "确定存储后端与基础路径",
+      "选择归档维度占位符（%(name)s、%(time)s）",
+      "将占位符嵌入路径形成 URI 模板",
+      "将 spider 参数作为属性并以占位符引用"
+    ],
+    "triggers": [
+      "需要按爬虫或时间分目录存储导出文件",
+      "需要将 spider 参数注入存储路径"
+    ],
+    "workflow_steps": [
+      "确认存储后端（FTP/S3 等）与基础路径",
+      "选择归档维度：按爬虫用 %(name)s，按时间用 %(time)s",
+      "组合占位符构造完整 URI 模板",
+      "如需自定义维度，将 spider 参数作为属性并在 URI 中引用其名称",
+      "输出 URI 模板并说明占位符含义"
+    ],
+    "constraints": [
+      "占位符名称须与 spider 属性名一致",
+      "URI 模板须符合目标存储后端的 URI 格式"
+    ],
+    "cautions": [
+      "凭据直接写入 URI 时注意避免泄露",
+      "确认后端支持所用占位符后再部署"
+    ],
+    "output_contract": [
+      "可用的参数化存储 URI 模板，并附各占位符含义说明"
+    ],
+    "examples": [
+      {
+        "input": "按爬虫分目录存储到 FTP",
+        "output": "ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json",
+        "notes": "使用 %(name)s 与 %(time)s 实现按爬虫与时间分目录"
+      },
+      {
+        "input": "按爬虫分目录存储到 S3",
+        "output": "s3://mybucket/scraping/feeds/%(name)s/%(time)s.json",
+        "notes": "S3 后端同样支持 URI 模板占位符"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "feed_export",
+      "uri_templating",
+      "storage_config"
+    ],
+    "support_ids": [
+      "dbf595a1-246c-5757-b61d-31d84cd8f1cc"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "aa175b2e-9129-544c-886b-b5de1355700f"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|生成带动态占位符的 feed 存储 uri，实现按爬虫/时间分目录归档|scrapy|feed_export|uri_templating|storage_config|feed 存储 uri 参数化配置"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

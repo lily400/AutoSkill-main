@@ -1,0 +1,63 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-25T08:46:00+00:00",
+  "family_name": "未分类技能",
+  "skill_id": "8229ccc7-e91d-5a88-8085-5887e69febd6",
+  "skill_name": "下载器中间件 process_exception 异常处理分派",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "6744790f-99b3-50f4-8236-80c1fbd34b3a",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "document_title": "input002\\downloader-middleware.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+      "section": "Downloader Middleware",
+      "span": {
+        "start": 4648,
+        "end": 6896
+      },
+      "relation_type": "support",
+      "confidence": 0.85,
+      "quote": "`process_response()` should either: return a [`Response`](request-response.html#scrapy.http.Response)\nobject, return a [`Request`](request-response.html#scrapy.Request) object or\nraise a [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) (it could be the same given\nresponse, or a brand-new one), that response will continue to be processed\nwith the `process_response()` of the next middleware in the chain.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the middleware chain is\nhalted and the returned request is rescheduled to be downloaded in the future.\nThis is the same behavior as if a request is returned from `process_request()`.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the errback\nfunction of the request (`Request.errback`) is called. If no code handles the raised\nexception, it is ignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that originated the response\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_exception(*request*, *exception*)**\n\nScrapy calls `process_exception()` when a [download handler](download-handlers.html#topics-download-handlers) or a `process_request()` (from a\ndownloader middleware) raises an exception (including an\n[`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception).\n\n`process_exception()` should return: either `None`,\na [`Response`](request-response.html#scrapy.http.Response) object, or a [`Request`](request-response.html#scrapy.Request) object.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_exception()` methods of installed middleware,\nuntil no middleware is left and the default exception handling kicks in.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, the `process_response()`\nmethod chain of installed middleware is started, and Scrapy won’t bother calling\nany other `process_exception()` methods of middleware.",
+      "metadata": {
+        "document_title": "input002\\downloader-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "下载器中间件 process_exception 异常处理分派",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "按返回值类型正确分派 process_exception 的异常处理",
+        "task_family": "downloader_middleware",
+        "method_family": "hook_return_dispatch",
+        "stage": "exception_handling",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 22,
+        "paragraph_end": 32,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      }
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "skill_id": "16d43fc7-a942-5143-bc5e-8799de2381a8",
+  "name": "Feed URI 动态参数注入",
+  "description": "通过定义 uri_params 函数并配置 FEED_URI_PARAMS，将爬虫运行时属性（如 spider.name）动态注入到 feed 导出 URI 中，实现按爬虫或运行上下文区分的动态导出文件名。适用于多个爬虫共用同一导出命令但需区分输出文件，或需要在导出文件名中包含运行时属性的场景。",
+  "skill_body": "当需要让 feed 导出 URI 引用运行时爬虫属性时执行本微技能：\n1. 在项目中定义一个可导入的 uri_params(params, spider) 函数，返回合并了运行时属性的字典，例如 {**params, \"spider_name\": spider.name}。\n2. 在 settings 中将 FEED_URI_PARAMS 指向该函数的导入路径字符串（如 \"myproject.utils.uri_params\"）。\n3. 在导出 URI 中使用 %(spider_name)s 占位符，例如 scrapy crawl <spider_name> -o \"%(spider_name)s.jsonl\"。\n4. 验证导出时占位符被正确替换为实际爬虫属性值。\n\n## Objective\n\n让 feed 导出 URI 能引用运行时爬虫属性，实现动态文件名\n## Applicable Signals\n\n- 导出文件名需要随爬虫或运行上下文变化\n- 多个爬虫共用同一导出命令但需区分输出文件\n\n## Contraindications\n\n- 导出路径为固定静态值，无需运行时变量\n- 无法在项目中定义可导入的 Python 函数\n\n## Intervention Moves\n\n- 定义 uri_params(params, spider) 函数并合并运行时属性\n- 在 settings 中设置 FEED_URI_PARAMS 指向该函数导入路径\n- 在导出 URI 中使用 %(spider_name)s 占位符\n\n## Workflow Steps\n\n- 在项目中定义可导入的 uri_params(params, spider) 函数，返回 {**params, \"spider_name\": spider.name} 等合并字典\n- 在 settings 中设置 FEED_URI_PARAMS = \"<module.path>.uri_params\"\n- 在导出 URI 中使用 %(spider_name)s 占位符，如 scrapy crawl <spider_name> -o \"%(spider_name)s.jsonl\"\n- 运行导出并确认占位符被替换为实际爬虫属性值\n\n## Constraints\n\n- uri_params 函数必须可被导入，FEED_URI_PARAMS 使用导入路径字符串\n- URI 占位符名称须与函数返回字典中的键一致\n\n## Cautions\n\n- 若函数不可导入或路径错误，占位符将无法解析\n\n## Output Contract\n\n- 配置好的 uri_params 函数与 FEED_URI_PARAMS 设置，导出 URI 中 %(spider_name)s 被正确替换为运行时爬虫属性值\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要在导出文件名中包含爬虫名称\n- Therapist/Output: 定义 uri_params 返回 {**params, \"spider_name\": spider.name}，设置 FEED_URI_PARAMS = \"myproject.utils.uri_params\"，使用 -o \"%(spider_name)s.jsonl\"\n- Notes: 占位符名称须与函数返回字典键一致",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "d5862d9c-e48d-5b19-9342-c94d0fbc3157",
+  "parent_candidate_ids": [
+    "d5862d9c-e48d-5b19-9342-c94d0fbc3157"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.72,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "让 feed 导出 URI 能引用运行时爬虫属性，实现动态文件名",
+  "domain": "scrapy",
+  "task_family": "feed_export",
+  "method_family": "uri_parameterization",
+  "stage": "export_configuration",
+  "applicable_signals": [
+    "导出文件名需要随爬虫或运行上下文变化",
+    "多个爬虫共用同一导出命令但需区分输出文件"
+  ],
+  "contraindications": [
+    "导出路径为固定静态值，无需运行时变量",
+    "无法在项目中定义可导入的 Python 函数"
+  ],
+  "intervention_moves": [
+    "定义 uri_params(params, spider) 函数并合并运行时属性",
+    "在 settings 中设置 FEED_URI_PARAMS 指向该函数导入路径",
+    "在导出 URI 中使用 %(spider_name)s 占位符"
+  ],
+  "triggers": [
+    "需要在导出文件名中包含爬虫名称或其他运行时属性",
+    "多个爬虫共用同一导出命令但需区分输出文件"
+  ],
+  "workflow_steps": [
+    "在项目中定义可导入的 uri_params(params, spider) 函数，返回 {**params, \"spider_name\": spider.name} 等合并字典",
+    "在 settings 中设置 FEED_URI_PARAMS = \"<module.path>.uri_params\"",
+    "在导出 URI 中使用 %(spider_name)s 占位符，如 scrapy crawl <spider_name> -o \"%(spider_name)s.jsonl\"",
+    "运行导出并确认占位符被替换为实际爬虫属性值"
+  ],
+  "constraints": [
+    "uri_params 函数必须可被导入，FEED_URI_PARAMS 使用导入路径字符串",
+    "URI 占位符名称须与函数返回字典中的键一致"
+  ],
+  "cautions": [
+    "若函数不可导入或路径错误，占位符将无法解析"
+  ],
+  "output_contract": [
+    "配置好的 uri_params 函数与 FEED_URI_PARAMS 设置，导出 URI 中 %(spider_name)s 被正确替换为运行时爬虫属性值"
+  ],
+  "examples": [
+    {
+      "input": "需要在导出文件名中包含爬虫名称",
+      "output": "定义 uri_params 返回 {**params, \"spider_name\": spider.name}，设置 FEED_URI_PARAMS = \"myproject.utils.uri_params\"，使用 -o \"%(spider_name)s.jsonl\"",
+      "notes": "占位符名称须与函数返回字典键一致"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "feed_export",
+    "uri_parameterization",
+    "export_configuration"
+  ],
+  "support_ids": [
+    "e00b492a-21fb-5848-b6dd-66d69c5cf830"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "3544270b-386b-5dc8-880e-a183a046444f"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.85,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|让 feed 导出 uri 能引用运行时爬虫属性，实现动态文件名|scrapy|feed_export|uri_parameterization|export_configuration|feed uri 动态参数注入",
+    "change_action": "create",
+    "llm_reason": "该候选技能描述了通过 FEED_URI_PARAMS 注入运行时属性（如 spider.name）到 feed URI 的独立能力，与同批候选（参数生成器、stdout 后端、压缩配置）在目标与操作上均不重叠，且无冲突证据，值得保留。",
+    "parent_skill_id": "d5862d9c-e48d-5b19-9342-c94d0fbc3157",
+    "parent_candidate_ids": [
+      "d5862d9c-e48d-5b19-9342-c94d0fbc3157"
+    ],
+    "hierarchy_confidence": 0.72,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

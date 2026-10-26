@@ -1,0 +1,1423 @@
+[?2004hroot@190578993f3c:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cat /harbor/skills/16d43fc7-a942-5143-bc5e-8799de2381a8/SKILL.md
+[?2004l---
+id: "16d43fc7-a942-5143-bc5e-8799de2381a8"
+name: "Feed URI 动态参数注入"
+description: "通过定义 uri_params 函数并配置 FEED_URI_PARAMS，将爬虫运行时属性（如 spider.name）动态注入到 feed 导出 URI 中，实现按爬虫或运行上下文区分的动态导出文件名。适用于多个爬虫共用同一导出命令但需区分输出文件，或需要在导出文件名中包含运行时属性的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "uri_parameterization"
+  - "export_configuration"
+triggers:
+  - "需要在导出文件名中包含爬虫名称或其他运行时属性"
+  - "多个爬虫共用同一导出命令但需区分输出文件"
+examples:
+  - input: "需要在导出文件名中包含爬虫名称"
+    output: "定义 uri_params 返回 {**params, \"spider_name\": spider.name}，设置 FEED_URI_PARAMS = \"myproject.utils.uri_params\"，使用 -o \"%(spider_name)s.jsonl\""
+    notes: "占位符名称须与函数返回字典键一致"
+---
+
+# Feed URI 动态参数注入
+
+通过定义 uri_params 函数并配置 FEED_URI_PARAMS，将爬虫运行时属性（如 spider.name）动态注入到 feed 导出 URI 中，实现按爬虫或运行上下文区分的动态导出文件名。适用于多个爬虫共用同一导出命令但需区分输出文件，或需要在导出文件名中包含运行时属性的场景。
+
+## Prompt
+
+当需要让 feed 导出 URI 引用运行时爬虫属性时执行本微技能：
+1. 在项目中定义一个可导入的 uri_params(params, spider) 函数，返回合并了运行时属性的字典，例如 {**params, "spider_name": spider.name}。
+2. 在 settings 中将 FEED_URI_PARAMS 指向该函数的导入路径字符串（如 "myproject.utils.uri_params"）。
+3. 在导出 URI 中使用 %(spider_name)s 占位符，例如 scrapy crawl <spider_name> -o "%(spider_name)s.jsonl"。
+4. 验证导出时占位符被正确替换为实际爬虫属性值。
+
+## Objective
+
+让 feed 导出 URI 能引用运行时爬虫属性，实现动态文件名
+## Applicable Signals
+
+- 导出文件名需要随爬虫或运行上下文变化
+- 多个爬虫共用同一导出命令但需区分输出文件
+
+## Contraindications
+
+- 导出路径为固定静态值，无需运行时变量
+- 无法在项目中定义可导入的 Python 函数
+
+## Intervention Moves
+
+- 定义 uri_params(params, spider) 函数并合并运行时属性
+- 在 settings 中设置 FEED_URI_PARAMS 指向该函数导入路径
+- 在导出 URI 中使用 %(spider_name)s 占位符
+
+## Workflow Steps
+
+- 在项目中定义可导入的 uri_params(params, spider) 函数，返回 {**params, "spider_name": spider.name} 等合并字典
+- 在 settings 中设置 FEED_URI_PARAMS = "<module.path>.uri_params"
+- 在导出 URI 中使用 %(spider_name)s 占位符，如 scrapy crawl <spider_name> -o "%(spider_name)s.jsonl"
+- 运行导出并确认占位符被替换为实际爬虫属性值
+
+## Constraints
+
+- uri_params 函数必须可被导入，FEED_URI_PARAMS 使用导入路径字符串
+- URI 占位符名称须与函数返回字典中的键一致
+
+## Cautions
+
+- 若函数不可导入或路径错误，占位符将无法解析
+
+## Output Contract
+
+- 配置好的 uri_params 函数与 FEED_URI_PARAMS 设置，导出 URI 中 %(spider_name)s 被正确替换为运行时爬虫属性值
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要在导出文件名中包含爬虫名称
+- Therapist/Output: 定义 uri_params 返回 {**params, "spider_name": spider.name}，设置 FEED_URI_PARAMS = "myproject.utils.uri_params"，使用 -o "%(spider_name)s.jsonl"
+- Notes: 占位符名称须与函数返回字典键一致
+
+## Triggers
+
+- 需要在导出文件名中包含爬虫名称或其他运行时属性
+- 多个爬虫共用同一导出命令但需区分输出文件
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要在导出文件名中包含爬虫名称
+
+Output:
+
+  定义 uri_params 返回 {**params, "spider_name": spider.name}，设置 FEED_URI_PARAMS = "myproject.utils.uri_params"，使用 -o "%(spider_name)s.jsonl"
+
+Notes:
+
+  占位符名称须与函数返回字典键一致
+[?2004hp1$ cat /harbor/skills/2d611108-970f-5e54-8821-4b26efe3a8bc/SKILL.md
+[?2004l---
+id: "2d611108-970f-5e54-8821-4b26efe3a8bc"
+name: "Feed URI 参数生成器"
+description: "实现一个可调用函数，接收默认参数字典与 spider，返回新的参数字典，用于生成 feed 存储 URI 的动态参数（如 batch_id、batch_time、time）。适用于需要按批次或时间动态构造 feed 文件路径、配置 FEED_URI_PARAMS 的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "uri_param_generation"
+  - "export_configuration"
+triggers:
+  - "需要按批次或时间动态构造 feed 文件路径"
+  - "配置 FEED_URI_PARAMS 时"
+---
+
+# Feed URI 参数生成器
+
+实现一个可调用函数，接收默认参数字典与 spider，返回新的参数字典，用于生成 feed 存储 URI 的动态参数（如 batch_id、batch_time、time）。适用于需要按批次或时间动态构造 feed 文件路径、配置 FEED_URI_PARAMS 的场景。
+
+## Prompt
+
+实现一个 URI 参数生成函数：接收 params（默认键值对字典）与 spider（feed 条目的来源 spider），返回一个新的字典，包含 batch_id、batch_time、time 等动态参数。不要就地修改传入的 params（已弃用）。batch_id 为文件批次 ID，当 FEED_EXPORT_BATCH_ITEM_COUNT 为 0 时恒为 1；batch_time 为 UTC 日期时间，ISO 格式且将 ':' 替换为 '-'；time 为 batch_time 且微秒置为 0。
+
+## Objective
+
+为 feed 导出 URI 生成动态参数
+## Applicable Signals
+
+- 需要按批次或时间动态构造 feed 文件路径
+- 配置 FEED_URI_PARAMS 时
+
+## Contraindications
+
+- 仅需静态固定输出路径时
+- 不涉及 feed 导出配置时
+
+## Intervention Moves
+
+- 接收 params 默认键值对字典与 spider
+- 构造包含 batch_id、batch_time、time 的新字典
+- 返回新字典而非就地修改 params
+
+## Workflow Steps
+
+- 接收 params（默认键值对字典）与 spider（feed 条目来源 spider）
+- 生成 batch_id：文件批次 ID，当 FEED_EXPORT_BATCH_ITEM_COUNT 为 0 时恒为 1
+- 生成 batch_time：UTC 日期时间，ISO 格式且将 ':' 替换为 '-'
+- 生成 time：batch_time 且微秒置为 0
+- 返回包含上述键的新字典，不就地修改传入的 params
+
+## Constraints
+
+- 函数应返回新字典
+- 就地修改传入的 params 已弃用，应避免
+
+## Cautions
+
+- batch_id 在 FEED_EXPORT_BATCH_ITEM_COUNT 为 0 时恒为 1
+- batch_time 使用 UTC 时间且 ISO 格式中 ':' 替换为 '-'
+- time 为 batch_time 且微秒置为 0
+
+## Output Contract
+
+- 返回包含 batch_id、batch_time、time 等键的新参数字典
+
+## Triggers
+
+- 需要按批次或时间动态构造 feed 文件路径
+- 配置 FEED_URI_PARAMS 时
+[?2004hp1$ cat /harbor/skills/340bcc1b-dbbe-5d94-896e-2ca6ed38b2fa/SKILL.md
+[?2004l---
+id: "340bcc1b-dbbe-5d94-896e-2ca6ed38b2fa"
+name: "Scrapy GCS Feed 导出配置"
+description: "配置 Scrapy feed 导出到 Google Cloud Storage：使用 gs:// URI 方案，并依赖 google-cloud-storage 库完成认证与写入。当需要把抓取结果写入 GCS 存储桶时使用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "gcs"
+  - "storage_backend"
+  - "gs_uri"
+triggers:
+  - "需要将 feed 导出到 Google Cloud Storage"
+  - "目标导出 URI 以 gs:// 开头"
+  - "需要为 Scrapy feed 配置 GCS 存储后端"
+examples:
+  - input: "需要将 feed 导出到名为 mybucket 的 GCS 存储桶的 path/to 目录下，文件名为 export.csv"
+    output: "gs://mybucket/path/to/export.csv"
+    notes: "需安装 google-cloud-storage 库并按 Google Cloud 文档配置认证"
+---
+
+# Scrapy GCS Feed 导出配置
+
+配置 Scrapy feed 导出到 Google Cloud Storage：使用 gs:// URI 方案，并依赖 google-cloud-storage 库完成认证与写入。当需要把抓取结果写入 GCS 存储桶时使用。
+
+## Prompt
+
+当需要将 Scrapy feed 导出到 Google Cloud Storage 时，按以下步骤执行：
+1. 确认目标存储后端为 GCS，导出 URI 使用 gs:// 方案。
+2. 按 gs://<bucket>/<path>/<filename> 形式构造导出 URI（例如 gs://mybucket/path/to/export.csv）。
+3. 确认已安装并可用 google-cloud-storage 库；若缺失，先安装该依赖。
+4. 按 Google Cloud 认证文档配置认证凭据，确保进程具备写入目标存储桶的权限。
+5. 将 URI 配置到 feed 导出设置中，并验证导出结果写入目标存储桶。
+仅处理 GCS 存储后端配置，不涉及序列化格式选择或其他存储后端。
+
+## Objective
+
+让抓取结果正确写入 GCS 存储桶
+## Applicable Signals
+
+- 目标存储为 Google Cloud Storage
+- 导出 URI 使用 gs:// 方案
+- 需要 google-cloud-storage 库支持
+
+## Contraindications
+
+- 目标存储为本地文件系统、FTP 或 S3
+- 未安装 google-cloud-storage 库
+- 无法配置 Google Cloud 认证凭据
+
+## Intervention Moves
+
+- 确认使用 gs:// URI 方案
+- 构造 gs://<bucket>/<path>/<filename> 形式的导出 URI
+- 确认安装 google-cloud-storage 库
+- 按 Google Cloud 认证文档配置认证凭据
+
+## Workflow Steps
+
+- 确认目标存储后端为 GCS
+- 使用 gs:// 方案构造导出 URI
+- 确认 google-cloud-storage 库已安装
+- 配置 Google Cloud 认证
+- 将 URI 配置到 feed 导出设置并验证写入
+
+## Constraints
+
+- 导出 URI 必须使用 gs:// 方案
+- 必须依赖 google-cloud-storage 库
+- 认证需遵循 Google Cloud 认证文档
+
+## Cautions
+
+- 认证凭据缺失或权限不足会导致写入失败
+- 未安装 google-cloud-storage 库时无法使用 GCS 存储后端
+
+## Output Contract
+
+- 可用的 gs:// 导出 URI 配置及依赖说明（含 google-cloud-storage 库与认证要求）
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要将 feed 导出到名为 mybucket 的 GCS 存储桶的 path/to 目录下，文件名为 export.csv
+- Therapist/Output: gs://mybucket/path/to/export.csv
+- Notes: 需安装 google-cloud-storage 库并按 Google Cloud 文档配置认证
+
+## Triggers
+
+- 需要将 feed 导出到 Google Cloud Storage
+- 目标导出 URI 以 gs:// 开头
+- 需要为 Scrapy feed 配置 GCS 存储后端
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要将 feed 导出到名为 mybucket 的 GCS 存储桶的 path/to 目录下，文件名为 export.csv
+
+Output:
+
+  gs://mybucket/path/to/export.csv
+
+Notes:
+
+  需安装 google-cloud-storage 库并按 Google Cloud 文档配置认证
+[?2004hp1$ cat /harbor/skills/4a141183-0f4c-5000-9f5c-660f26e01360/SKILL.md
+[?2004l---
+id: "4a141183-0f4c-5000-9f5c-660f26e01360"
+name: "Feed 压缩导出配置"
+description: "为 Scrapy feed 导出选择并配置压缩方式（gzip、lzma、bz2），通过 feed_options 传入对应压缩参数，以减小导出文件体积或满足传输要求。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "compression"
+  - "feed_options"
+triggers:
+  - "需要压缩导出文件"
+  - "需指定 gzip/lzma/bz2 压缩参数"
+---
+
+# Feed 压缩导出配置
+
+为 Scrapy feed 导出选择并配置压缩方式（gzip、lzma、bz2），通过 feed_options 传入对应压缩参数，以减小导出文件体积或满足传输要求。
+
+## Prompt
+
+根据目标压缩格式，在 feed 的 feed_options 中设置对应的压缩参数：gzip 使用 gzip_compresslevel、gzip_mtime、gzip_filename；lzma 使用 lzma_format、lzma_check、lzma_preset、lzma_filters；bz2 使用 bz2_compresslevel。仅传入所选格式支持的参数，避免混用不同格式的参数。
+
+## Objective
+
+按所选压缩格式正确设置 feed_options 压缩参数
+## Applicable Signals
+
+- 需要压缩导出文件
+- 需指定 gzip/lzma/bz2 压缩参数
+
+## Contraindications
+
+- 无需压缩输出
+- 目标存储不支持压缩流
+
+## Intervention Moves
+
+- 确定目标压缩格式（gzip、lzma 或 bz2）
+- 在 feed_options 中填入该格式支持的压缩参数
+
+## Workflow Steps
+
+- 确认是否需要压缩导出以及目标压缩格式
+- 选择对应格式的参数集：gzip（gzip_compresslevel、gzip_mtime、gzip_filename）、lzma（lzma_format、lzma_check、lzma_preset、lzma_filters）、bz2（bz2_compresslevel）
+- 将所选参数写入 feed 的 feed_options
+- 检查未混入其他格式的参数
+
+## Constraints
+
+- 仅使用所选压缩格式支持的 feed_options 参数
+- lzma_filters 在 pypy 7.3.1 及更早版本不可用
+
+## Cautions
+
+- 不同压缩格式的参数不可混用
+- lzma_filters 存在 pypy 版本限制
+
+## Output Contract
+
+- 带正确压缩参数的 feed_options 配置
+
+## Triggers
+
+- 需要压缩导出文件
+- 需指定 gzip/lzma/bz2 压缩参数
+[?2004hp1$ cat /harbor/skills/563ce5c2-6cd7-5937-8918-787b1fc2b465/SKILL.md
+[?2004l---
+id: "563ce5c2-6cd7-5937-8918-787b1fc2b465"
+name: "FTP Feed 存储配置"
+description: "配置 Scrapy feed 导出到 FTP 服务器，包括 ftp 方案 URI 构造与主动/被动连接模式选择。适用于需要将抓取结果直接写入 FTP 的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "ftp"
+  - "storage_configuration"
+triggers:
+  - "需要将 feed 导出到 FTP 服务器"
+  - "需要切换 FTP 主动/被动连接模式"
+examples:
+  - input: "需要将 feed 导出到 FTP 服务器"
+    output: "ftp://user:pass@ftp.example.com/path/to/export.csv"
+    notes: "默认被动连接模式"
+  - input: "需要使用主动连接模式"
+    output: "FEED_STORAGE_FTP_ACTIVE = True"
+    notes: "在设置中启用主动模式"
+---
+
+# FTP Feed 存储配置
+
+配置 Scrapy feed 导出到 FTP 服务器，包括 ftp 方案 URI 构造与主动/被动连接模式选择。适用于需要将抓取结果直接写入 FTP 的场景。
+
+## Prompt
+
+当需要将 Scrapy feed 导出到 FTP 服务器时，使用本技能：构造 ftp 方案的 feed URI（形如 ftp://user:pass@host/path/to/export.csv），确认无需额外外部库；默认使用被动连接模式，如需主动模式则将 FEED_STORAGE_FTP_ACTIVE 设为 True。
+
+## Objective
+
+正确配置 FTP 作为 feed 存储后端并选择连接模式
+## Applicable Signals
+
+- 目标存储后端为 FTP 服务器
+- 需要指定 FTP 连接模式
+
+## Contraindications
+
+- 目标存储为本地文件系统、S3 或 GCS
+- 仅需标准输出
+
+## Intervention Moves
+
+- 使用 ftp 方案构造 feed URI
+- 默认采用被动连接模式
+- 如需主动模式则设置 FEED_STORAGE_FTP_ACTIVE 为 True
+
+## Workflow Steps
+
+- 确认目标为 FTP 存储后端
+- 构造 ftp:// 方案的 feed URI，包含用户、密码、主机与导出路径
+- 确认无需额外外部库
+- 默认使用被动连接模式；如需主动模式，将 FEED_STORAGE_FTP_ACTIVE 设为 True
+
+## Constraints
+
+- URI 必须使用 ftp 方案
+- 主动模式需显式设置 FEED_STORAGE_FTP_ACTIVE
+
+## Cautions
+
+- URI 中包含凭据，注意避免泄露
+
+## Output Contract
+
+- 可用的 FTP feed URI 与 FEED_STORAGE_FTP_ACTIVE 设置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要将 feed 导出到 FTP 服务器
+- Therapist/Output: ftp://user:pass@ftp.example.com/path/to/export.csv
+- Notes: 默认被动连接模式
+
+### Example 2
+
+- Client/Input: 需要使用主动连接模式
+- Therapist/Output: FEED_STORAGE_FTP_ACTIVE = True
+- Notes: 在设置中启用主动模式
+
+## Triggers
+
+- 需要将 feed 导出到 FTP 服务器
+- 需要切换 FTP 主动/被动连接模式
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要将 feed 导出到 FTP 服务器
+
+Output:
+
+  ftp://user:pass@ftp.example.com/path/to/export.csv
+
+Notes:
+
+  默认被动连接模式
+
+### Example 2
+
+Input:
+
+  需要使用主动连接模式
+
+Output:
+
+  FEED_STORAGE_FTP_ACTIVE = True
+
+Notes:
+
+  在设置中启用主动模式
+[?2004hp1$ cat /harbor/skills/5ce59155-7453-5a08-a86c-28d26cba5683/SKILL.md
+[?2004l---
+id: "5ce59155-7453-5a08-a86c-28d26cba5683"
+name: "设置 FEEDS 导出目标"
+description: "在 Scrapy 的 FEEDS 设置中声明导出目标，指定 URI 与序列化格式（及可选参数），作为 feed 导出的强制入口配置。适用于需要新增或修改导出目标时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed-exports"
+  - "settings"
+  - "FEEDS"
+  - "数据导出"
+triggers:
+  - "需要新增一个导出目标"
+  - "需要修改现有导出 URI 或格式"
+  - "需要为 feed 导出声明强制入口配置"
+---
+
+# 设置 FEEDS 导出目标
+
+在 Scrapy 的 FEEDS 设置中声明导出目标，指定 URI 与序列化格式（及可选参数），作为 feed 导出的强制入口配置。适用于需要新增或修改导出目标时。
+
+## Prompt
+
+在 Scrapy 项目设置中配置 FEEDS 字典：以导出 URI 为键，值为包含 format 等可选参数的映射。FEEDS 为强制设置，默认空字典 {}。仅当需要新增或修改导出目标时执行；若只是调整编码、缩进等次要参数，应改用对应独立设置而非改动 FEEDS 结构。
+
+## Objective
+
+正确填写 FEEDS 字典以指定导出 URI 与格式。
+## Applicable Signals
+
+- 需要新增一个导出目标
+- 需要修改现有导出 URI 或格式
+
+## Contraindications
+
+- 仅调整编码或缩进等次要参数时不应改动 FEEDS 结构
+- 未确定导出 URI 或格式时不应写入 FEEDS
+
+## Intervention Moves
+
+- 在设置中定义 FEEDS 字典
+- 以 URI 为键、格式映射为值声明导出目标
+- 确认 FEEDS 非空且包含有效 URI 与格式
+
+## Workflow Steps
+
+- 确认需要新增或修改的导出目标 URI 与格式
+- 在设置中编写 FEEDS 字典，URI 作为键，值为含 format 的映射
+- 校验 FEEDS 中包含有效的 URI 与格式映射
+
+## Constraints
+
+- FEEDS 为强制设置，默认值为空字典 {}
+- 导出目标必须以 URI 与格式映射的形式声明
+
+## Cautions
+
+- 编码、缩进、字段等次要参数应通过各自独立设置调整，避免与 FEEDS 入口配置混淆
+
+## Output Contract
+
+- FEEDS 中包含有效的 URI 与格式映射。
+
+## Triggers
+
+- 需要新增一个导出目标
+- 需要修改现有导出 URI 或格式
+- 需要为 feed 导出声明强制入口配置
+[?2004hp1$ cat /harbor/skills/6e8fed6d-ba68-5c69-9aea-416c70136130/SKILL.md
+[?2004l---
+id: "6e8fed6d-ba68-5c69-9aea-416c70136130"
+name: "Feed 导出配置回退解析"
+description: "根据每个 feed 定义逐键解析导出配置，缺失键回退到对应全局设置（如 FEED_EXPORT_ENCODING、FEED_EXPORT_FIELDS、FEED_STORE_EMPTY、FEED_URI_PARAMS），确定最终生效的 feed 参数及回退来源。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed"
+  - "configuration"
+  - "fallback"
+triggers:
+  - "需要确认某个 feed 键的最终取值"
+  - "某个 feed 键未显式提供，需要知道回退设置"
+examples:
+  - input: "feed 定义仅提供 format=csv，未提供 encoding"
+    output: "format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING 的值"
+    notes: "format 无回退，必须显式提供"
+---
+
+# Feed 导出配置回退解析
+
+根据每个 feed 定义逐键解析导出配置，缺失键回退到对应全局设置（如 FEED_EXPORT_ENCODING、FEED_EXPORT_FIELDS、FEED_STORE_EMPTY、FEED_URI_PARAMS），确定最终生效的 feed 参数及回退来源。
+
+## Prompt
+
+给定一个 feed 定义（键值对）与可用的全局设置，逐键解析最终生效值：若 feed 定义中显式提供该键则采用其值；否则按回退映射取对应全局设置的值（batch_item_count→FEED_EXPORT_BATCH_ITEM_COUNT，encoding→FEED_EXPORT_ENCODING，fields→FEED_EXPORT_FIELDS，store_empty→FEED_STORE_EMPTY，uri_params→FEED_URI_PARAMS，indent→FEED_EXPORT_INDENT）。注意 format 为必填项，无回退值。输出每个键的最终取值及回退来源。
+
+## Objective
+
+确定每个 feed 定义最终生效的导出参数及其回退来源
+## Applicable Signals
+
+- 存在 feed 定义但部分键缺失
+- 需要核对 feed 参数与全局设置的优先级
+
+## Contraindications
+
+- 需要实现自定义 exporter 或 storage 类
+- 需要处理 item 过滤或后处理插件逻辑
+
+## Intervention Moves
+
+- 逐键检查 feed 定义是否显式提供
+- 对缺失键应用对应回退设置
+- 标记 format 为必填无回退
+- 记录每个键的回退来源
+
+## Workflow Steps
+
+- 读取 feed 定义中的键值对
+- 对每个键判断是否显式提供
+- 若缺失则按回退映射取全局设置值（batch_item_count→FEED_EXPORT_BATCH_ITEM_COUNT，encoding→FEED_EXPORT_ENCODING，fields→FEED_EXPORT_FIELDS，store_empty→FEED_STORE_EMPTY，uri_params→FEED_URI_PARAMS，indent→FEED_EXPORT_INDENT）
+- 确认 format 已提供，否则报错
+- 汇总每个键的最终取值与回退来源
+
+## Constraints
+
+- format 为必填项，无回退值
+- item_classes 未定义或为空时导出所有 item
+- item_filter 默认使用 ItemFilter
+- postprocessing 插件按列表顺序执行
+
+## Cautions
+
+- overwrite 默认值依赖存储后端：本地文件系统为 False，FTP 为 True，S3 为 True，GCS 为 True，标准输出为 False
+- 部分 FTP 服务器可能不支持 APPE 追加命令
+- S3、GCS 与标准输出不支持追加
+
+## Output Contract
+
+- 一份解析后的 feed 参数表，标明每个键的取值及回退来源
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: feed 定义仅提供 format=csv，未提供 encoding
+- Therapist/Output: format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING 的值
+- Notes: format 无回退，必须显式提供
+
+## Triggers
+
+- 需要确认某个 feed 键的最终取值
+- 某个 feed 键未显式提供，需要知道回退设置
+
+## Examples
+
+### Example 1
+
+Input:
+
+  feed 定义仅提供 format=csv，未提供 encoding
+
+Output:
+
+  format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING 的值
+
+Notes:
+
+  format 无回退，必须显式提供
+[?2004hp1$ cat /harbor/skills/73a590a4-6d1d-596f-b842-7ead4a57d901/SKILL.md
+[?2004l---
+id: "73a590a4-6d1d-596f-b842-7ead4a57d901"
+name: "批量 Feed 输出文件命名占位符配置"
+description: "在 Scrapy feed 导出会生成多个输出文件时，通过在 feed URI 中使用 batch_time 或 batch_id 占位符区分不同输出文件名，并可用 printf 风格格式化控制编号位数。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "uri_placeholder"
+  - "batch_output"
+triggers:
+  - "需要一次导出生成多个文件"
+  - "输出文件名需要按批次区分或排序"
+examples:
+  - input: "需要按批次序号生成多文件，且编号为 5 位"
+    output: "feed URI 中使用 %(batch_id)05d，使 3 变为 00003、123 变为 00123"
+    notes: "printf 风格格式化控制编号位数"
+  - input: "需要按创建时间区分多个输出文件"
+    output: "feed URI 中使用 %(batch_time)s，替换为创建时的时间戳"
+    notes: "时间戳示例形如 2020-03-28T14-45-08.237134"
+---
+
+# 批量 Feed 输出文件命名占位符配置
+
+在 Scrapy feed 导出会生成多个输出文件时，通过在 feed URI 中使用 batch_time 或 batch_id 占位符区分不同输出文件名，并可用 printf 风格格式化控制编号位数。
+
+## Prompt
+
+当一次 feed 导出会生成多个输出文件时，检查 feed URI 是否至少包含一个批次占位符：%(batch_time)s 或 %(batch_id)d。若需要固定位数或可排序编号，使用 printf 风格格式化调整，例如 %(batch_id)05d。确认占位符位于 URI 中会生成不同文件名的位置，然后交付最终 URI 配置。
+
+## Objective
+
+为多文件 feed 输出配置唯一且可排序的文件名
+## Applicable Signals
+
+- feed 导出配置将产生多个输出文件
+- 需要按批次时间或批次序号区分文件名
+
+## Contraindications
+
+- 仅导出单个输出文件
+- 不需要区分批次文件名
+
+## Intervention Moves
+
+- 在 feed URI 中加入 %(batch_time)s 以按创建时间戳区分文件
+- 在 feed URI 中加入 %(batch_id)d 以按 1-based 批次序号区分文件
+- 使用 printf 风格格式化（如 %(batch_id)05d）控制编号位数
+
+## Workflow Steps
+
+- 确认本次导出会生成多个输出文件。
+- 在 feed URI 中至少加入一个批次占位符：%(batch_time)s 或 %(batch_id)d。
+- 如需固定位数或可排序编号，改用 printf 风格格式化，例如 %(batch_id)05d。
+- 校验 URI 能生成唯一且可排序的文件名后交付配置。
+
+## Constraints
+
+- 多文件导出时 feed URI 必须至少包含一个批次占位符
+- 占位符需使用 printf 风格字符串格式化语法
+
+## Cautions
+
+- batch_id 为 1-based 序号，格式化时注意位数与排序需求
+
+## Output Contract
+
+- 包含 batch_time 或 batch_id 占位符的 feed URI 配置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要按批次序号生成多文件，且编号为 5 位
+- Therapist/Output: feed URI 中使用 %(batch_id)05d，使 3 变为 00003、123 变为 00123
+- Notes: printf 风格格式化控制编号位数
+
+### Example 2
+
+- Client/Input: 需要按创建时间区分多个输出文件
+- Therapist/Output: feed URI 中使用 %(batch_time)s，替换为创建时的时间戳
+- Notes: 时间戳示例形如 2020-03-28T14-45-08.237134
+
+## Triggers
+
+- 需要一次导出生成多个文件
+- 输出文件名需要按批次区分或排序
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要按批次序号生成多文件，且编号为 5 位
+
+Output:
+
+  feed URI 中使用 %(batch_id)05d，使 3 变为 00003、123 变为 00123
+
+Notes:
+
+  printf 风格格式化控制编号位数
+
+### Example 2
+
+Input:
+
+  需要按创建时间区分多个输出文件
+
+Output:
+
+  feed URI 中使用 %(batch_time)s，替换为创建时的时间戳
+
+Notes:
+
+  时间戳示例形如 2020-03-28T14-45-08.237134
+[?2004hp1$ cat /harbor/skills/92500980-6a8f-5c70-a690-e4a77e8044c1/SKILL.md
+[?2004l---
+id: "92500980-6a8f-5c70-a690-e4a77e8044c1"
+name: "延迟文件投递存储后端识别"
+description: "在配置 Scrapy feed 导出时，识别哪些存储后端采用延迟文件投递语义，并据此选择合适的存储后端或排查导出结果未即时出现的问题。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "storage_backend"
+  - "delayed_delivery"
+triggers:
+  - "需要判断某存储后端是否延迟写入文件"
+  - "导出结果未按预期即时出现需排查存储后端行为"
+  - "在多个存储后端间选择时需考虑写入时机"
+---
+
+# 延迟文件投递存储后端识别
+
+在配置 Scrapy feed 导出时，识别哪些存储后端采用延迟文件投递语义，并据此选择合适的存储后端或排查导出结果未即时出现的问题。
+
+## Prompt
+
+当需要判断某存储后端是否延迟写入文件，或导出结果未按预期即时出现时，使用本参考技能：先确认目标存储后端，再依据延迟文件投递语义判断其写入时机，最后给出是否属于延迟投递类型的结论及选择建议。仅作知识性判断，不执行具体配置动作。
+
+## Objective
+
+识别并区分使用延迟文件投递的存储后端
+## Applicable Signals
+
+- 需要判断某存储后端是否延迟写入文件
+- 导出结果未按预期即时出现需排查存储后端行为
+
+## Contraindications
+
+- 仅使用 stdout 等非文件存储后端
+
+## Intervention Moves
+
+- 确认目标存储后端类型
+- 依据延迟文件投递语义判断其写入时机
+- 给出是否属于延迟投递类型的结论
+
+## Workflow Steps
+
+- 确认当前 feed 导出所使用的存储后端
+- 判断该后端是否采用延迟文件投递语义
+- 据此给出存储后端选择建议或排查方向
+
+## Constraints
+
+- 仅作知识性判断，不执行具体配置动作
+- 结论需明确所选存储后端是否属于延迟文件投递类型
+
+## Cautions
+
+- 延迟投递可能导致导出结果不即时出现，排查时需先排除该语义因素
+
+## Output Contract
+
+- 明确所选存储后端是否属于延迟文件投递类型，并给出相应的选择或排查结论。
+
+## Triggers
+
+- 需要判断某存储后端是否延迟写入文件
+- 导出结果未按预期即时出现需排查存储后端行为
+- 在多个存储后端间选择时需考虑写入时机
+[?2004hp1$ cat /harbor/skills/9b39f25d-2b76-5a1f-b683-d6e33df3493e/SKILL.md
+[?2004l---
+id: "9b39f25d-2b76-5a1f-b683-d6e33df3493e"
+name: "Scrapy 本地文件系统 Feed 导出配置"
+description: "配置 Scrapy feed 导出到本地文件系统，使用 file URI scheme、Unix 绝对路径或 pathlib.Path 对象指定存储目标。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "storage_configuration"
+  - "local_filesystem"
+triggers:
+  - "需要把抓取结果导出到本机文件"
+  - "用户询问 file URI 或绝对路径写法"
+  - "需要为 feed 指定本地文件系统存储目标"
+examples:
+  - input: "需要把抓取结果导出到本机 /tmp/export.csv"
+    output: "file:///tmp/export.csv"
+    notes: "使用 file URI scheme"
+  - input: "在 Unix 系统上导出到 /tmp/export.csv"
+    output: "/tmp/export.csv"
+    notes: "省略 scheme 的绝对路径写法"
+---
+
+# Scrapy 本地文件系统 Feed 导出配置
+
+配置 Scrapy feed 导出到本地文件系统，使用 file URI scheme、Unix 绝对路径或 pathlib.Path 对象指定存储目标。
+
+## Prompt
+
+当需要把 Scrapy 抓取结果导出到本机文件时，按以下方式指定本地文件系统作为 feed 存储目标：使用 file URI scheme（如 file:///tmp/export.csv），或在 Unix 系统上省略 scheme 直接给出绝对路径（如 /tmp/export.csv），也可传入 pathlib.Path 对象。确认无需额外外部库。
+
+## Objective
+
+正确指定本地文件系统作为 feed 存储目标
+## Applicable Signals
+
+- 需要把抓取结果导出到本机文件
+- 用户询问 file URI 或绝对路径写法
+- 需要为 feed 指定本地文件系统存储目标
+
+## Contraindications
+
+- 目标是远程存储如 S3/FTP/GCS
+- 需要自定义存储后端插件
+
+## Intervention Moves
+
+- 使用 file URI scheme 指定本地路径
+- 在 Unix 系统上省略 scheme 直接给出绝对路径
+- 传入 pathlib.Path 对象作为存储目标
+
+## Workflow Steps
+
+- 确认导出目标为本机文件系统
+- 选择 file URI scheme、绝对路径或 pathlib.Path 之一指定目标
+- 确认无需额外外部库即可使用
+
+## Constraints
+
+- 省略 scheme 的绝对路径写法仅在 Unix 系统上可用
+- 本地文件系统存储无需额外外部库
+
+## Cautions
+
+- 省略 scheme 的绝对路径写法不适用于非 Unix 系统
+
+## Output Contract
+
+- 可用的本地文件 feed URI 或绝对路径配置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要把抓取结果导出到本机 /tmp/export.csv
+- Therapist/Output: file:///tmp/export.csv
+- Notes: 使用 file URI scheme
+
+### Example 2
+
+- Client/Input: 在 Unix 系统上导出到 /tmp/export.csv
+- Therapist/Output: /tmp/export.csv
+- Notes: 省略 scheme 的绝对路径写法
+
+## Triggers
+
+- 需要把抓取结果导出到本机文件
+- 用户询问 file URI 或绝对路径写法
+- 需要为 feed 指定本地文件系统存储目标
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要把抓取结果导出到本机 /tmp/export.csv
+
+Output:
+
+  file:///tmp/export.csv
+
+Notes:
+
+  使用 file URI scheme
+
+### Example 2
+
+Input:
+
+  在 Unix 系统上导出到 /tmp/export.csv
+
+Output:
+
+  /tmp/export.csv
+
+Notes:
+
+  省略 scheme 的绝对路径写法
+[?2004hp1$ cat /harbor/skills/b7e8d5c2-dfcf-59cd-ba27-6299829dcbf3/SKILL.md
+[?2004l---
+id: "b7e8d5c2-dfcf-59cd-ba27-6299829dcbf3"
+name: "Feed 存储后端选择与依赖校验"
+description: "根据目标输出位置为 Scrapy feed 选择内置存储后端（本地文件系统、FTP、S3、GCS、标准输出），并在使用前校验所需外部库是否已安装，给出可用后端与依赖校验结论。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "storage_backend"
+  - "dependency_check"
+triggers:
+  - "需要把抓取结果导出到本地、FTP、S3、GCS 或标准输出"
+  - "不确定某存储后端是否可用"
+  - "需要确认存储后端的外部依赖是否满足"
+examples:
+  - input: "我想把抓取结果导出到 S3，但不确定是否可用。"
+    output: "S3 后端需要安装 boto3 库；若未安装则该后端不可用，请先安装 boto3 或改用本地文件系统等可用后端。"
+    notes: "依赖校验结论需明确可用性"
+  - input: "导出到标准输出需要额外依赖吗？"
+    output: "标准输出是内置支持的存储后端，无需额外外部库。"
+    notes: "内置后端无需外部依赖"
+---
+
+# Feed 存储后端选择与依赖校验
+
+根据目标输出位置为 Scrapy feed 选择内置存储后端（本地文件系统、FTP、S3、GCS、标准输出），并在使用前校验所需外部库是否已安装，给出可用后端与依赖校验结论。
+
+## Prompt
+
+当需要把抓取结果导出到某个存储位置时，先确定目标位置对应的存储后端，再校验该后端所需的外部库是否已安装；若依赖缺失则说明该后端不可用并给出替代方案。
+
+## Objective
+
+为给定输出目标确定可用的存储后端并确认依赖满足
+## Applicable Signals
+
+- 用户指定了输出位置（本地路径、FTP、S3、GCS 或标准输出）
+- 用户询问某存储后端是否可用或为何不可用
+
+## Contraindications
+
+- 仅需选择序列化格式而非存储位置
+- 未安装所需外部库且无法安装
+
+## Intervention Moves
+
+- 将目标输出位置映射到内置存储后端：本地文件系统、FTP、S3、GCS、标准输出
+- 识别该后端所需的外部库（如 S3 需要 boto3，GCS 需要 google-cloud-storage）
+- 校验所需外部库是否已安装，未安装则判定该后端不可用
+- 在依赖缺失时提示安装依赖或改用其它可用后端
+
+## Workflow Steps
+
+- 确认目标输出位置类型
+- 从内置后端列表中选择对应存储后端
+- 确定该后端所需的外部库
+- 校验外部库是否可用
+- 输出选定后端及依赖校验结论，必要时给出替代后端
+
+## Constraints
+
+- 仅使用内置支持的存储后端：本地文件系统、FTP、S3、GCS、标准输出
+- S3 后端仅在安装 boto3 后可用
+- GCS 后端仅在安装 google-cloud-storage 后可用
+- 外部库缺失时不得声称该后端可用
+
+## Cautions
+
+- 部分存储后端在缺少所需外部库时不可用，需在配置前确认
+
+## Output Contract
+
+- 给出选定的存储后端及依赖校验结论（可用/不可用及原因），必要时附替代后端建议。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 我想把抓取结果导出到 S3，但不确定是否可用。
+- Therapist/Output: S3 后端需要安装 boto3 库；若未安装则该后端不可用，请先安装 boto3 或改用本地文件系统等可用后端。
+- Notes: 依赖校验结论需明确可用性
+
+### Example 2
+
+- Client/Input: 导出到标准输出需要额外依赖吗？
+- Therapist/Output: 标准输出是内置支持的存储后端，无需额外外部库。
+- Notes: 内置后端无需外部依赖
+
+## Triggers
+
+- 需要把抓取结果导出到本地、FTP、S3、GCS 或标准输出
+- 不确定某存储后端是否可用
+- 需要确认存储后端的外部依赖是否满足
+
+## Examples
+
+### Example 1
+
+Input:
+
+  我想把抓取结果导出到 S3，但不确定是否可用。
+
+Output:
+
+  S3 后端需要安装 boto3 库；若未安装则该后端不可用，请先安装 boto3 或改用本地文件系统等可用后端。
+
+Notes:
+
+  依赖校验结论需明确可用性
+
+### Example 2
+
+Input:
+
+  导出到标准输出需要额外依赖吗？
+
+Output:
+
+  标准输出是内置支持的存储后端，无需额外外部库。
+
+Notes:
+
+  内置后端无需外部依赖
+[?2004hp1$ cat /harbor/skills/bf71575c-b5d5-58ca-8289-0e9c2383eb7e/SKILL.md
+[?2004l---
+id: "bf71575c-b5d5-58ca-8289-0e9c2383eb7e"
+name: "Scrapy 标准输出 Feed 导出"
+description: "将抓取到的 item 通过 stdout 存储后端直接写入 Scrapy 进程的标准输出，无需任何外部库。适用于需要即时查看导出结果或通过管道交给下游进程、且不需要持久化文件的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "stdout"
+  - "storage_backend"
+triggers:
+  - "需要即时查看导出结果而不落盘"
+  - "导出结果需通过管道交给下游进程"
+---
+
+# Scrapy 标准输出 Feed 导出
+
+将抓取到的 item 通过 stdout 存储后端直接写入 Scrapy 进程的标准输出，无需任何外部库。适用于需要即时查看导出结果或通过管道交给下游进程、且不需要持久化文件的场景。
+
+## Prompt
+
+当需要把 feed 导出到进程标准输出时，配置一个使用 stdout: URI 的 feed 导出。确认该存储后端不需要任何外部库；若需要持久化文件或远程存储，或需要延迟文件投递语义，则改用其他存储后端。
+
+## Objective
+
+使用 stdout 存储后端将 feed 输出到进程标准输出
+## Applicable Signals
+
+- 需要即时查看导出结果而不落盘
+- 导出结果需通过管道交给下游进程
+
+## Contraindications
+
+- 需要持久化文件或远程存储
+- 需要延迟文件投递语义
+
+## Intervention Moves
+
+- 选择 stdout 存储后端
+- 配置使用 stdout: URI 的 feed 导出
+- 确认无需安装外部库
+
+## Workflow Steps
+
+- 确认导出目标是进程标准输出而非文件或远程存储
+- 配置 feed 使用 stdout: URI（URI scheme 为 stdout）
+- 确认无需额外外部库即可运行
+- 运行后从标准输出读取序列化后的 item
+
+## Constraints
+
+- 仅覆盖 stdout 这一单一存储后端配置动作
+- 不适用于需要持久化或延迟文件投递的场景
+
+## Cautions
+
+- 标准输出会与进程其他输出混在一起，下游消费时需注意区分
+
+## Output Contract
+
+- 配置了 stdout: URI 的 feed 导出，item 序列化后写入标准输出
+
+## Triggers
+
+- 需要即时查看导出结果而不落盘
+- 导出结果需通过管道交给下游进程
+[?2004hp1$ cat /harbor/skills/c5cbbf46-9076-57d7-9a2c-80ba8d600fee/SKILL.md
+[?2004l---
+id: "c5cbbf46-9076-57d7-9a2c-80ba8d600fee"
+name: "Feed 覆盖与追加策略选择"
+description: "根据目标存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并判断该后端是否支持追加写入。用于配置 feed 写入模式时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed"
+  - "overwrite"
+  - "storage"
+  - "configuration"
+triggers:
+  - "需要决定 feed 文件是否覆盖或追加"
+  - "目标存储后端可能不支持追加操作"
+  - "配置 feed 的 overwrite 参数"
+examples:
+  - input: "使用 S3 作为 feed 存储，希望追加写入"
+    output: "S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。"
+    notes: "S3 不支持追加"
+  - input: "使用本地文件系统，未指定 overwrite"
+    output: "本地文件系统默认 overwrite=False，即追加写入。"
+    notes: "本地文件系统默认追加"
+---
+
+# Feed 覆盖与追加策略选择
+
+根据目标存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并判断该后端是否支持追加写入。用于配置 feed 写入模式时。
+
+## Prompt
+
+针对给定的存储后端，确定 feed 定义中 overwrite 的取值，并说明该后端是否支持追加。
+
+步骤：
+1. 确认目标存储后端类型（本地文件系统、FTP、S3、GCS、标准输出）。
+2. 若用户未显式指定 overwrite，按后端默认值处理：本地文件系统为 False（追加），FTP 为 True（覆盖），S3 为 True（覆盖），GCS 为 True（覆盖），标准输出为 False（不支持覆盖）。
+3. 若用户要求追加（overwrite=False），检查后端是否支持追加：S3、GCS、标准输出不支持追加；FTP 部分服务器可能不支持 APPE 命令，需提示风险。
+4. 输出 overwrite 取值及追加可行性说明。
+
+## Objective
+
+为给定存储后端选择正确的 overwrite/append 行为
+## Applicable Signals
+
+- 用户询问 feed 文件是否会被覆盖或追加
+- 用户指定了 S3、GCS 或标准输出并希望追加写入
+- 用户使用 FTP 并需要追加写入
+
+## Contraindications
+
+- 仅需选择序列化格式
+- 需要配置 item 过滤或后处理插件
+
+## Intervention Moves
+
+- 识别存储后端类型
+- 按后端默认值确定 overwrite
+- 检查追加可行性并提示不支持的后端
+
+## Workflow Steps
+
+- 确认目标存储后端类型
+- 若未显式指定 overwrite，套用后端默认值
+- 若要求追加，检查后端是否支持追加
+- 输出 overwrite 取值及追加可行性说明
+
+## Constraints
+
+- overwrite 默认值依赖存储后端，不可统一假设
+- S3、GCS、标准输出不支持追加
+- FTP 追加依赖服务器是否支持 APPE 命令
+
+## Cautions
+
+- FTP 服务器可能不支持 APPE 命令，追加可能失败
+- 标准输出不支持覆盖，overwrite 固定为 False
+
+## Output Contract
+
+- 针对所选存储后端的 overwrite 取值及追加可行性说明
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 使用 S3 作为 feed 存储，希望追加写入
+- Therapist/Output: S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。
+- Notes: S3 不支持追加
+
+### Example 2
+
+- Client/Input: 使用本地文件系统，未指定 overwrite
+- Therapist/Output: 本地文件系统默认 overwrite=False，即追加写入。
+- Notes: 本地文件系统默认追加
+
+## Triggers
+
+- 需要决定 feed 文件是否覆盖或追加
+- 目标存储后端可能不支持追加操作
+- 配置 feed 的 overwrite 参数
+
+## Examples
+
+### Example 1
+
+Input:
+
+  使用 S3 作为 feed 存储，希望追加写入
+
+Output:
+
+  S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。
+
+Notes:
+
+  S3 不支持追加
+
+### Example 2
+
+Input:
+
+  使用本地文件系统，未指定 overwrite
+
+Output:
+
+  本地文件系统默认 overwrite=False，即追加写入。
+
+Notes:
+
+  本地文件系统默认追加
+[?2004hp1$ cat /harbor/skills/cb6f42d7-c058-5995-9d32-0a9bdff6c7a7/SKILL.md
+[?2004l---
+id: "cb6f42d7-c058-5995-9d32-0a9bdff6c7a7"
+name: "Feed 导出设置参考清单"
+description: "提供 Scrapy feed 导出相关设置项的参考清单，用于查阅有哪些导出配置项，或在排查导出行为时对照设置项；仅作参考，不执行具体配置操作。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed导出"
+  - "配置参考"
+  - "设置项"
+triggers:
+  - "需要了解有哪些 feed 导出相关设置项"
+  - "排查导出行为时对照设置清单"
+  - "查阅 feed 导出可用配置项"
+examples:
+  - input: "feed 导出有哪些相关设置项？"
+    output: "FEEDS（必填）、FEED_EXPORT_ENCODING、FEED_STORE_EMPTY、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT。"
+---
+
+# Feed 导出设置参考清单
+
+提供 Scrapy feed 导出相关设置项的参考清单，用于查阅有哪些导出配置项，或在排查导出行为时对照设置项；仅作参考，不执行具体配置操作。
+
+## Prompt
+
+当调用方需要了解 feed 导出涉及哪些设置项，或需要对照设置清单排查导出行为时，输出一份设置项参考清单。清单应包含：FEEDS（必填）、FEED_EXPORT_ENCODING、FEED_STORE_EMPTY、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT。仅提供清单与用途说明，不代为执行配置修改。
+
+## Objective
+
+提供 feed 导出相关设置项的完整参考清单。
+## Applicable Signals
+
+- 调用方询问 feed 导出有哪些可配置项
+- 调用方需要对照设置清单定位导出行为
+
+## Contraindications
+
+- 需要直接执行导出配置操作时不应使用本参考清单
+- 需要具体设置取值语义或示例时，本清单不提供执行动作
+
+## Intervention Moves
+
+- 列出 feed 导出相关设置项名称
+- 标注 FEEDS 为必填项
+- 说明清单用途为查阅与对照
+
+## Workflow Steps
+
+- 确认调用方需求为查阅设置项清单
+- 输出 feed 导出设置项清单，标注 FEEDS 为必填
+- 说明清单仅用于查阅与对照，不执行配置
+
+## Constraints
+
+- 仅提供设置项清单，不代为修改配置
+- 清单内容以来源列出的设置项为准，不扩展未列出的项
+
+## Cautions
+
+- FEEDS 为必填设置，其余为可选配置项
+- 本资产为参考型知识，不包含执行步骤
+
+## Output Contract
+
+- 一份可对照的 feed 导出设置项清单，包含 FEEDS（必填）及编码、空结果存储、导出字段、缩进、存储后端、FTP/S3 相关、导出器、批量条数等设置项。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: feed 导出有哪些相关设置项？
+- Therapist/Output: FEEDS（必填）、FEED_EXPORT_ENCODING、FEED_STORE_EMPTY、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT。
+
+## Triggers
+
+- 需要了解有哪些 feed 导出相关设置项
+- 排查导出行为时对照设置清单
+- 查阅 feed 导出可用配置项
+
+## Examples
+
+### Example 1
+
+Input:
+
+  feed 导出有哪些相关设置项？
+
+Output:
+
+  FEEDS（必填）、FEED_EXPORT_ENCODING、FEED_STORE_EMPTY、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT。
+[?2004hp1$ cat /harbor/skills/d5862d9c-e48d-5b19-9342-c94d0fbc3157/SKILL.md
+[?2004l---
+id: "d5862d9c-e48d-5b19-9342-c94d0fbc3157"
+name: "Feed 存储后端 URI 配置"
+description: "通过 FEEDS 设置使用一个或多个 URI 定义 feed 存储位置，并按 URI scheme 选择本地文件系统、FTP、S3、GCS 或标准输出等存储后端。适用于需要将导出结果写入特定存储位置的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "feed_export"
+  - "storage_backend"
+  - "FEEDS"
+  - "URI"
+triggers:
+  - "需要将 feed 写入远程或本地存储"
+  - "需要多目标存储输出"
+  - "需要按 URI scheme 选择存储后端"
+---
+
+# Feed 存储后端 URI 配置
+
+通过 FEEDS 设置使用一个或多个 URI 定义 feed 存储位置，并按 URI scheme 选择本地文件系统、FTP、S3、GCS 或标准输出等存储后端。适用于需要将导出结果写入特定存储位置的场景。
+
+## Prompt
+
+当需要为 feed 导出指定存储位置时，使用 FEEDS 设置配置一个或多个 URI。根据 URI scheme 选择对应存储后端（本地文件系统、FTP、S3、GCS、标准输出）。若需扩展或自定义存储后端，可通过 FEED_STORAGES 相关设置调整。确认每个 URI 的 scheme 与目标后端匹配后再启用导出。
+
+## Objective
+
+为 feed 导出配置正确的存储后端与 URI
+## Applicable Signals
+
+- 需要将 feed 写入远程或本地存储
+- 需要多目标存储输出
+- 需要按 URI scheme 选择存储后端
+
+## Contraindications
+
+- 仅需选择序列化格式而存储位置已确定
+
+## Intervention Moves
+
+- 在 FEEDS 设置中定义一个或多个存储 URI
+- 根据 URI scheme 匹配本地文件系统、FTP、S3、GCS 或标准输出后端
+- 如需扩展后端，通过 FEED_STORAGES 相关设置配置
+
+## Workflow Steps
+
+- 确定 feed 的目标存储位置（本地、FTP、S3、GCS 或标准输出）
+- 在 FEEDS 设置中写入对应的一个或多个 URI
+- 确认每个 URI 的 scheme 与目标存储后端匹配
+- 如需自定义或扩展后端，调整 FEED_STORAGES 相关设置
+
+## Constraints
+
+- 存储位置必须通过 FEEDS 设置中的 URI 定义
+- 存储后端由 URI scheme 决定
+
+## Cautions
+
+- 多目标输出时需确保每个 URI 的 scheme 均正确对应后端
+
+## Output Contract
+
+- 已按 URI scheme 配置好存储后端的 FEEDS 设置
+
+## Triggers
+
+- 需要将 feed 写入远程或本地存储
+- 需要多目标存储输出
+- 需要按 URI scheme 选择存储后端
+[?2004hp1$ 

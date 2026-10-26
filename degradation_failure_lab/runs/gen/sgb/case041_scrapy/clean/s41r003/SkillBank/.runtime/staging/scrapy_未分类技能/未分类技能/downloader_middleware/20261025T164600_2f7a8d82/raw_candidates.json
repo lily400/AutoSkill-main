@@ -1,0 +1,524 @@
+{
+  "schema": "autoskill.document.staging.raw_candidates.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "downloader_middleware",
+  "run_id": "20261025T164600_2f7a8d82",
+  "documents": [
+    {
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "source_type": "document",
+      "title": "input002\\downloader-middleware.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# Downloader Middleware — Scrapy 2.14.1 documentation\n\n- Downloader Middleware\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/downloader-middleware.rst)\n\n---\n\n# Downloader Middleware\n\nThe downloader middleware is a framework of hooks into Scrapy’s\nrequest/response processing. It’s a light, low-level system for globally\naltering Scrapy’s requests and responses.\n\n## Activating a downloader middleware\n\nTo activate a downloader middleware component, add it to the\n[`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class paths and their values are the middleware orders.\n\nHere’s an example:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}\n```\n\nThe [`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting is merged with the\n[`DOWNLOADER_MIDDLEWARES_BASE`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES_BASE) setting defined in Scrapy (and not meant\nto be overridden) and then sorted by order to get the final sorted list of\nenabled middlewares: the first middleware is the one closer to the engine and\nthe last is the one closer to the downloader. In other words,\nthe `process_request()`\nmethod of each middleware will be invoked in increasing\nmiddleware order (100, 200, 300, …) and the `process_response()` method\nof each middleware will be invoked in decreasing order.\n\nTo decide which order to assign to your middleware see the\n[`DOWNLOADER_MIDDLEWARES_BASE`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES_BASE) setting and pick a value according to\nwhere you want to insert the middleware. The order does matter because each\nmiddleware performs a different action and your middleware could depend on some\nprevious (or subsequent) middleware being applied.\n\nIf you want to disable a built-in middleware (the ones defined in\n[`DOWNLOADER_MIDDLEWARES_BASE`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES_BASE) and enabled by default) you must define it\nin your project’s [`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting and assign `None`\nas its value. For example, if you want to disable the user-agent middleware:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\n## Writing your own downloader middleware\n\nEach downloader middleware is a [component](components.html#topics-components) that\ndefines one or more of these methods:\n\n***class*scrapy.downloadermiddlewares.DownloaderMiddleware**\n\nAny of the downloader middleware methods may be defined as a\ncoroutine function (`async def`).\n\n**process_request(*request*)**\n\nThis method is called for each request that goes through the download\nmiddleware.\n\n`process_request()` should either: return `None`, return a\n[`Response`](request-response.html#scrapy.http.Response) object, return a [`Request`](request-response.html#scrapy.Request)\nobject, or raise [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest).\n\nIf it returns `None`, Scrapy will continue processing this request, executing all\nother middlewares until, finally, the appropriate downloader handler is called\nthe request performed (and its response downloaded).\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, Scrapy won’t bother\ncalling *any* other `process_request()` or `process_exception()` methods,\nor the appropriate download function; it’ll return that response. The `process_response()`\nmethods of installed middleware is always called on every response.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, Scrapy will stop calling\n`process_request()` methods and reschedule the returned request. Once the newly returned\nrequest is performed, the appropriate middleware chain will be called on\nthe downloaded response.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the\n`process_exception()` methods of installed downloader middleware will be called.\nIf none of them handle the exception, the errback function of the request\n(`Request.errback`) is called. If no code handles the raised exception, it is\nignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n**request** ([`Request`](request-response.html#scrapy.Request) object) – the request being processed\n\n**process_response(*request*, *response*)**\n\n`process_response()` should either: return a [`Response`](request-response.html#scrapy.http.Response)\nobject, return a [`Request`](request-response.html#scrapy.Request) object or\nraise a [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) (it could be the same given\nresponse, or a brand-new one), that response will continue to be processed\nwith the `process_response()` of the next middleware in the chain.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the middleware chain is\nhalted and the returned request is rescheduled to be downloaded in the future.\nThis is the same behavior as if a request is returned from `process_request()`.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the errback\nfunction of the request (`Request.errback`) is called. If no code handles the raised\nexception, it is ignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that originated the response\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_exception(*request*, *exception*)**\n\nScrapy calls `process_exception()` when a [download handler](download-handlers.html#topics-download-handlers) or a `process_request()` (from a\ndownloader middleware) raises an exception (including an\n[`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception).\n\n`process_exception()` should return: either `None`,\na [`Response`](request-response.html#scrapy.http.Response) object, or a [`Request`](request-response.html#scrapy.Request) object.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_exception()` methods of installed middleware,\nuntil no middleware is left and the default exception handling kicks in.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, the `process_response()`\nmethod chain of installed middleware is started, and Scrapy won’t bother calling\nany other `process_exception()` methods of middleware.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the returned request is\nrescheduled to be downloaded in the future. This stops the execution of\n`process_exception()` methods of the middleware the same as returning a\nresponse would.\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that generated the exception\n- **exception** (an `Exception` object) – the raised exception\n\n## Built-in downloader middleware reference\n\nThis page describes all downloader middleware components that come with\nScrapy. For information on how to use them and how to write your own downloader\nmiddleware, see the downloader middleware usage guide.\n\nFor a list of the components enabled by default (and their orders) see the\n[`DOWNLOADER_MIDDLEWARES_BASE`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES_BASE) setting.\n\n### CookiesMiddleware\n\n***class*scrapy.downloadermiddlewares.cookies.CookiesMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/cookies.html#CookiesMiddleware)**\n\nThis middleware enables working with sites that require cookies, such as\nthose that use sessions. It keeps track of cookies sent by web servers, and\nsends them back on subsequent requests (from that spider), just like web\nbrowsers do.\n\nWhen non-UTF8 encoded byte sequences are passed to a\n[`Request`](request-response.html#scrapy.Request), the `CookiesMiddleware` will log\na warning. Refer to [Advanced customization](logging.html#topics-logging-advanced-customization)\nto customize the logging behaviour.\n\nCookies set via the `Cookie` header are not considered by the\nCookiesMiddleware. If you need to set cookies for a request, use the\n[`Request.cookies`](request-response.html#scrapy.Request) parameter. This is a known\ncurrent limitation that is being worked on.\n\nThe following settings can be used to configure the cookie middleware:\n\n- `COOKIES_ENABLED`\n- `COOKIES_DEBUG`\n\n#### Multiple cookie sessions per spider\n\nThere is support for keeping multiple cookie sessions per spider by using the\n`cookiejar` Request meta key. By default it uses a single cookie jar\n(session), but you can pass an identifier to use different ones.\n\nFor example:\n\n```\nfor i, url in enumerate(urls):\n    yield scrapy.Request(url, meta={\"cookiejar\": i}, callback=self.parse_page)\n```\n\nKeep in mind that the `cookiejar` meta key is not “sticky”. You need to keep\npassing it along on subsequent requests. For example:\n\n```\ndef parse_page(self, response):\n    # do some processing\n    return scrapy.Request(\n        \"http://www.example.com/otherpage\",\n        meta={\"cookiejar\": response.meta[\"cookiejar\"]},\n        callback=self.parse_other_page,\n    )\n```\n\n#### COOKIES_ENABLED\n\nDefault: `True`\n\nWhether to enable the cookies middleware. If disabled, no cookies will be sent\nto web servers.\n\nNotice that despite the value of `COOKIES_ENABLED` setting if\n`Request.`[`meta['dont_merge_cookies']`](request-response.html#std-reqmeta-dont_merge_cookies)\nevaluates to `True` the request cookies will **not** be sent to the\nweb server and received cookies in [`Response`](request-response.html#scrapy.http.Response) will\n**not** be merged with the existing cookies.\n\nFor more detailed information see the `cookies` parameter in\n[`Request`](request-response.html#scrapy.Request).\n\n#### COOKIES_DEBUG\n\nDefault: `False`\n\nIf enabled, Scrapy will log all cookies sent in requests (i.e. `Cookie`\nheader) and all cookies received in responses (i.e. `Set-Cookie` header).\n\nHere’s an example of a log with `COOKIES_DEBUG` enabled:\n\n```\n2011-04-06 14:35:10-0300 [scrapy.core.engine] INFO: Spider opened\n2011-04-06 14:35:10-0300 [scrapy.downloadermiddlewares.cookies] DEBUG: Sending cookies to: <GET http://www.diningcity.com/netherlands/index.html>\n        Cookie: clientlanguage_nl=en_EN\n2011-04-06 14:35:14-0300 [scrapy.downloadermiddlewares.cookies] DEBUG: Received cookies from: <200 http://www.diningcity.com/netherlands/index.html>\n        Set-Cookie: JSESSIONID=B~FA4DC0C496C8762AE4F1A620EAB34F38; Path=/\n        Set-Cookie: ip_isocode=US\n        Set-Cookie: clientlanguage_nl=en_EN; Expires=Thu, 07-Apr-2011 21:21:34 GMT; Path=/\n2011-04-06 14:49:50-0300 [scrapy.core.engine] DEBUG: Crawled (200) <GET http://www.diningcity.com/netherlands/index.html> (referer: None)\n[...]\n```\n\n### DefaultHeadersMiddleware\n\n***class*scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/defaultheaders.html#DefaultHeadersMiddleware)**\n\nThis middleware sets all default requests headers specified in the\n[`DEFAULT_REQUEST_HEADERS`](settings.html#std-setting-DEFAULT_REQUEST_HEADERS) setting.\n\n### DownloadTimeoutMiddleware\n\n***class*scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/downloadtimeout.html#DownloadTimeoutMiddleware)**\n\nThis middleware sets the download timeout for requests specified in the\n[`DOWNLOAD_TIMEOUT`](settings.html#std-setting-DOWNLOAD_TIMEOUT) setting.\n\nYou can also set download timeout per-request using the\n[`download_timeout`](request-response.html#std-reqmeta-download_timeout) [`Request.meta`](request-response.html#scrapy.Request.meta) key; this is supported\neven when DownloadTimeoutMiddleware is disabled.\n\n### HttpAuthMiddleware\n\n***class*scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/httpauth.html#HttpAuthMiddleware)**\n\nThis middleware authenticates all requests generated from certain spiders\nusing [Basic access authentication](https://en.wikipedia.org/wiki/Basic_access_authentication) (aka. HTTP auth).\n\nTo enable HTTP authentication for a spider, set the `http_user` and\n`http_pass` spider attributes to the authentication data and the\n`http_auth_domain` spider attribute to the domain which requires this\nauthentication (its subdomains will be also handled in the same way).\nYou can set `http_auth_domain` to `None` to enable the\nauthentication for all requests but you risk leaking your authentication\ncredentials to unrelated domains.\n\nIn previous Scrapy versions HttpAuthMiddleware sent the authentication\ndata with all requests, which is a security problem if the spider\nmakes requests to several different domains. Currently if the\n`http_auth_domain` attribute is not set, the middleware will use the\ndomain of the first request, which will work for some spiders but not\nfor others. In the future the middleware will produce an error instead.\n\nExample:\n\n```\nfrom scrapy.spiders import CrawlSpider\n\nclass SomeIntranetSiteSpider(CrawlSpider):\n    http_user = \"someuser\"\n    http_pass = \"somepass\"\n    http_auth_domain = \"intranet.example.com\"\n    name = \"intranet.example.com\"\n\n    # .. rest of the spider code omitted ...\n```\n\n### HttpCacheMiddleware\n\n***class*scrapy.downloadermiddlewares.httpcache.HttpCacheMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/httpcache.html#HttpCacheMiddleware)**\n\nThis middleware provides low-level cache to all HTTP requests and responses.\nIt has to be combined with a cache storage backend as well as a cache policy.\n\nScrapy ships with the following HTTP cache storage backends:\n\n> - Filesystem storage backend (default)\n> - DBM storage backend\n\nYou can change the HTTP cache storage backend with the `HTTPCACHE_STORAGE`\nsetting. Or you can also implement your own storage backend.\n\nScrapy ships with two HTTP cache policies:\n\n> - RFC2616 policy\n> - Dummy policy (default)\n\nYou can change the HTTP cache policy with the `HTTPCACHE_POLICY`\nsetting. Or you can also implement your own policy.\n\nYou can also avoid caching a response on every policy using `dont_cache` meta key equals `True`.\n\n#### Dummy policy (default)\n\n***class*scrapy.extensions.httpcache.DummyPolicy[[source]](../_modules/scrapy/extensions/httpcache.html#DummyPolicy)**\n\nThis policy has no awareness of any HTTP Cache-Control directives.\nEvery request and its corresponding response are cached. When the same\nrequest is seen again, the response is returned without transferring\nanything from the Internet.\n\nThe Dummy policy is useful for testing spiders faster (without having\nto wait for downloads every time) and for trying your spider offline,\nwhen an Internet connection is not available. The goal is to be able to\n“replay” a spider run *exactly as it ran before*.\n\n#### RFC2616 policy\n\n***class*scrapy.extensions.httpcache.RFC2616Policy[[source]](../_modules/scrapy/extensions/httpcache.html#RFC2616Policy)**\n\nThis policy provides a RFC2616 compliant HTTP cache, i.e. with HTTP\nCache-Control awareness, aimed at production and used in continuous\nruns to avoid downloading unmodified data (to save bandwidth and speed up\ncrawls).\n\nWhat is implemented:\n\n- Do not attempt to store responses/requests with `no-store` cache-control directive set\n- Do not serve responses from cache if `no-cache` cache-control directive is set even for fresh responses\n- Compute freshness lifetime from `max-age` cache-control directive\n- Compute freshness lifetime from `Expires` response header\n- Compute freshness lifetime from `Last-Modified` response header (heuristic used by Firefox)\n- Compute current age from `Age` response header\n- Compute current age from `Date` header\n- Revalidate stale responses based on `Last-Modified` response header\n- Revalidate stale responses based on `ETag` response header\n- Set `Date` header for any received response missing it\n- Support `max-stale` cache-control directive in requests\n\nThis allows spiders to be configured with the full RFC2616 cache policy,\nbut avoid revalidation on a request-by-request basis, while remaining\nconformant with the HTTP spec.\n\nExample:\n\nAdd `Cache-Control: max-stale=600` to Request headers to accept responses that\nhave exceeded their expiration time by no more than 600 seconds.\n\nSee also: RFC2616, 14.9.3\n\nWhat is missing:\n\n- `Pragma: no-cache` support [https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1)\n- `Vary` header support [https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.6](https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.6)\n- Invalidation after updates or deletes [https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.10](https://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.10)\n- … probably others ..\n\n#### Filesystem storage backend (default)\n\n***class*scrapy.extensions.httpcache.FilesystemCacheStorage[[source]](../_modules/scrapy/extensions/httpcache.html#FilesystemCacheStorage)**\n\nFile system storage backend is available for the HTTP cache middleware.\n\nEach request/response pair is stored in a different directory containing\nthe following files:\n\n- `request_body` - the plain request body\n- `request_headers` - the request headers (in raw HTTP format)\n- `response_body` - the plain response body\n- `response_headers` - the request headers (in raw HTTP format)\n- `meta` - some metadata of this cache resource in Python `repr()`\nformat (grep-friendly format)\n- `pickled_meta` - the same metadata in `meta` but pickled for more\nefficient deserialization\n\nThe directory name is made from the request fingerprint (see\n`scrapy.utils.request.fingerprint`), and one level of subdirectories is\nused to avoid creating too many files into the same directory (which is\ninefficient in many file systems). An example directory could be:\n\n```\n/path/to/cache/dir/example.com/72/72811f648e718090f041317756c03adb0ada46c7\n```\n\n#### DBM storage backend\n\n***class*scrapy.extensions.httpcache.DbmCacheStorage[[source]](../_modules/scrapy/extensions/httpcache.html#DbmCacheStorage)**\n\nA [DBM](https://en.wikipedia.org/wiki/Dbm) storage backend is also available for the HTTP cache middleware.\n\nBy default, it uses the [`dbm`](https://docs.python.org/3/library/dbm.html#module-dbm), but you can change it with the\n`HTTPCACHE_DBM_MODULE` setting.\n\n#### Writing your own storage backend\n\nYou can implement a cache storage backend by creating a Python class that\ndefines the methods described below.\n\n***class*scrapy.extensions.httpcache.CacheStorage**\n\n**open_spider(*spider*)**\n\nThis method gets called after a spider has been opened for crawling. It handles\nthe [`open_spider`](signals.html#std-signal-spider_opened) signal.\n\n**Parameters:**\n\n**spider** ([`Spider`](spiders.html#scrapy.Spider) object) – the spider which has been opened\n\n**close_spider(*spider*)**\n\nThis method gets called after a spider has been closed. It handles\nthe [`close_spider`](signals.html#std-signal-spider_closed) signal.\n\n**Parameters:**\n\n**spider** ([`Spider`](spiders.html#scrapy.Spider) object) – the spider which has been closed\n\n**retrieve_response(*spider*, *request*)**\n\nReturn response if present in cache, or `None` otherwise.\n\n**Parameters:**\n\n- **spider** ([`Spider`](spiders.html#scrapy.Spider) object) – the spider which generated the request\n- **request** ([`Request`](request-response.html#scrapy.Request) object) – the request to find cached response for\n\n**store_response(*spider*, *request*, *response*)**\n\nStore the given response in the cache.\n\n**Parameters:**\n\n- **spider** ([`Spider`](spiders.html#scrapy.Spider) object) – the spider for which the response is intended\n- **request** ([`Request`](request-response.html#scrapy.Request) object) – the corresponding request the spider generated\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response to store in the cache\n\nIn order to use your storage backend, set:\n\n- `HTTPCACHE_STORAGE` to the Python import path of your custom storage class.\n\n#### HTTPCache middleware settings\n\nThe `HttpCacheMiddleware` can be configured through the following\nsettings:\n\n##### HTTPCACHE_ENABLED\n\nDefault: `False`\n\nWhether the HTTP cache will be enabled.\n\n##### HTTPCACHE_EXPIRATION_SECS\n\nDefault: `0`\n\nExpiration time for cached requests, in seconds.\n\nCached requests older than this time will be re-downloaded. If zero, cached\nrequests will never expire.\n\n##### HTTPCACHE_DIR\n\nDefault: `'httpcache'`\n\nThe directory to use for storing the (low-level) HTTP cache. If empty, the HTTP\ncache will be disabled. If a relative path is given, is taken relative to the\nproject data dir. For more info see: [Default structure of Scrapy projects](commands.html#topics-project-structure).\n\n##### HTTPCACHE_IGNORE_HTTP_CODES\n\nDefault: `[]`\n\nDon’t cache response with these HTTP codes.\n\n##### HTTPCACHE_IGNORE_MISSING\n\nDefault: `False`\n\nIf enabled, requests not found in the cache will be ignored instead of downloaded.\n\n##### HTTPCACHE_IGNORE_SCHEMES\n\nDefault: `['file']`\n\nDon’t cache responses with these URI schemes.\n\n##### HTTPCACHE_STORAGE\n\nDefault: `'scrapy.extensions.httpcache.FilesystemCacheStorage'`\n\nThe class which implements the cache storage backend.\n\n##### HTTPCACHE_DBM_MODULE\n\nDefault: `'dbm'`\n\nThe database module to use in the DBM storage backend. This setting is specific to the DBM backend.\n\n##### HTTPCACHE_POLICY\n\nDefault: `'scrapy.extensions.httpcache.DummyPolicy'`\n\nThe class which implements the cache policy.\n\n##### HTTPCACHE_GZIP\n\nDefault: `False`\n\nIf enabled, will compress all cached data with gzip.\nThis setting is specific to the Filesystem backend.\n\n##### HTTPCACHE_ALWAYS_STORE\n\nDefault: `False`\n\nIf enabled, will cache pages unconditionally.\n\nA spider may wish to have all responses available in the cache, for\nfuture use with `Cache-Control: max-stale`, for instance. The\nDummyPolicy caches all responses but never revalidates them, and\nsometimes a more nuanced policy is desirable.\n\nThis setting still respects `Cache-Control: no-store` directives in responses.\nIf you don’t want that, filter `no-store` out of the Cache-Control headers in\nresponses you feed to the cache middleware.\n\n##### HTTPCACHE_IGNORE_RESPONSE_CACHE_CONTROLS\n\nDefault: `[]`\n\nList of Cache-Control directives in responses to be ignored.\n\nSites often set “no-store”, “no-cache”, “must-revalidate”, etc., but get\nupset at the traffic a spider can generate if it actually respects those\ndirectives. This allows to selectively ignore Cache-Control directives\nthat are known to be unimportant for the sites being crawled.\n\nWe assume that the spider will not issue Cache-Control directives\nin requests unless it actually needs them, so directives in requests are\nnot filtered.\n\n### HttpCompressionMiddleware\n\n***class*scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/httpcompression.html#HttpCompressionMiddleware)**\n\nThis middleware allows compressed (gzip, deflate) traffic to be\nsent/received from web sites.\n\nThis middleware also supports decoding [brotli-compressed](https://www.ietf.org/rfc/rfc7932.txt) as well as\n[zstd-compressed](https://www.ietf.org/rfc/rfc8478.txt) responses, provided that [brotli](https://pypi.org/project/Brotli/) or [zstandard](https://pypi.org/project/zstandard/) is\ninstalled, respectively.\n\n#### HttpCompressionMiddleware Settings\n\n##### COMPRESSION_ENABLED\n\nDefault: `True`\n\nWhether the Compression middleware will be enabled.\n\n### HttpProxyMiddleware\n\n***class*scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/httpproxy.html#HttpProxyMiddleware)**\n\nThis middleware sets the HTTP proxy to use for requests, by setting the\n`proxy` meta value for [`Request`](request-response.html#scrapy.Request) objects.\n\nLike the Python standard library module [`urllib.request`](https://docs.python.org/3/library/urllib.request.html#module-urllib.request), it obeys\nthe following environment variables:\n\n- `http_proxy`\n- `https_proxy`\n- `no_proxy`\n\nYou can also set the meta key `proxy` per-request, to a value like\n`http://some_proxy_server:port` or `http://username:password@some_proxy_server:port`.\nKeep in mind this value will take precedence over `http_proxy`/`https_proxy`\nenvironment variables, and it will also ignore `no_proxy` environment variable.\n\n#### HttpProxyMiddleware settings\n\n##### HTTPPROXY_ENABLED\n\nDefault: `True`\n\nWhether or not to enable the `HttpProxyMiddleware`.\n\n##### HTTPPROXY_AUTH_ENCODING\n\nDefault: `\"latin-1\"`\n\nThe default encoding for proxy authentication on `HttpProxyMiddleware`.\n\n### OffsiteMiddleware\n\n***class*scrapy.downloadermiddlewares.offsite.OffsiteMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/offsite.html#OffsiteMiddleware)**\n\nAdded in version 2.11.2.\n\nFilters out Requests for URLs outside the domains covered by the spider.\n\nThis middleware filters out every request whose host names aren’t in the\nspider’s [`allowed_domains`](spiders.html#scrapy.Spider.allowed_domains) attribute.\nAll subdomains of any domain in the list are also allowed.\nE.g. the rule `www.example.org` will also allow `bob.www.example.org`\nbut not `www2.example.com` nor `example.com`.\n\nWhen your spider returns a request for a domain not belonging to those\ncovered by the spider, this middleware will log a debug message similar to\nthis one:\n\n```\nDEBUG: Filtered offsite request to 'offsite.example': <GET http://offsite.example/some/page.html>\n```\n\nTo avoid filling the log with too much noise, it will only print one of\nthese messages for each new domain filtered. So, for example, if another\nrequest for `offsite.example` is filtered, no log message will be\nprinted. But if a request for `other.example` is filtered, a message\nwill be printed (but only for the first request filtered).\n\nIf the spider doesn’t define an\n[`allowed_domains`](spiders.html#scrapy.Spider.allowed_domains) attribute, or the\nattribute is empty, the offsite middleware will allow all requests.\n\nIf the request has the [`dont_filter`](request-response.html#scrapy.Request.dont_filter) attribute set to\n`True` or `Request.meta` has `allow_offsite` set to `True`, then\nthe OffsiteMiddleware will allow the request even if its domain is not listed\nin allowed domains.\n\n### RedirectMiddleware\n\n***class*scrapy.downloadermiddlewares.redirect.RedirectMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/redirect.html#RedirectMiddleware)**\n\nThis middleware handles redirection of requests based on response status.\n\nThe urls which the request goes through (while being redirected) can be found\nin the `redirect_urls` [`Request.meta`](request-response.html#scrapy.Request.meta) key.\n\nThe reason behind each redirect in `redirect_urls` can be found in the\n`redirect_reasons` [`Request.meta`](request-response.html#scrapy.Request.meta) key. For\nexample: `[301, 302, 307, 'meta refresh']`.\n\nThe format of a reason depends on the middleware that handled the corresponding\nredirect. For example, `RedirectMiddleware` indicates the triggering\nresponse status code as an integer, while `MetaRefreshMiddleware`\nalways uses the `'meta refresh'` string as reason.\n\nThe `RedirectMiddleware` can be configured through the following\nsettings (see the settings documentation for more info):\n\n- `REDIRECT_ENABLED`\n- `REDIRECT_MAX_TIMES`\n\nIf [`Request.meta`](request-response.html#scrapy.Request.meta) has `dont_redirect`\nkey set to True, the request will be ignored by this middleware.\n\nIf you want to handle some redirect status codes in your spider, you can\nspecify these in the `handle_httpstatus_list` spider attribute.\n\nFor example, if you want the redirect middleware to ignore 301 and 302\nresponses (and pass them through to your spider) you can do this:\n\n```\nclass MySpider(CrawlSpider):\n    handle_httpstatus_list = [301, 302]\n```\n\nThe `handle_httpstatus_list` key of [`Request.meta`](request-response.html#scrapy.Request.meta) can also be used to specify which response codes to\nallow on a per-request basis. You can also set the meta key\n`handle_httpstatus_all` to `True` if you want to allow any response code\nfor a request.\n\n#### RedirectMiddleware settings\n\n##### REDIRECT_ENABLED\n\nDefault: `True`\n\nWhether the Redirect middleware will be enabled.\n\n##### REDIRECT_MAX_TIMES\n\nDefault: `20`\n\nThe maximum number of redirections that will be followed for a single request.\nIf maximum redirections are exceeded, the request is aborted and ignored.\n\n### MetaRefreshMiddleware\n\n***class*scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/redirect.html#MetaRefreshMiddleware)**\n\nThis middleware handles redirection of requests based on meta-refresh html tag.\n\nThe `MetaRefreshMiddleware` can be configured through the following\nsettings (see the settings documentation for more info):\n\n- `METAREFRESH_ENABLED`\n- `METAREFRESH_IGNORE_TAGS`\n- `METAREFRESH_MAXDELAY`\n\nThis middleware obey `REDIRECT_MAX_TIMES` setting, `dont_redirect`,\n`redirect_urls` and `redirect_reasons` request meta keys as described\nfor `RedirectMiddleware`\n\n#### MetaRefreshMiddleware settings\n\n##### METAREFRESH_ENABLED\n\nDefault: `True`\n\nWhether the Meta Refresh middleware will be enabled.\n\n##### METAREFRESH_IGNORE_TAGS\n\nDefault: `[]`\n\nMeta tags within these tags are ignored.\n\nChanged in version 2.11.2: The default value of `METAREFRESH_IGNORE_TAGS` changed from\n`[]` to `[\"noscript\"]`.\n\n##### METAREFRESH_MAXDELAY\n\nDefault: `100`\n\nThe maximum meta-refresh delay (in seconds) to follow the redirection.\nSome sites use meta-refresh for redirecting to a session expired page, so we\nrestrict automatic redirection to the maximum delay.\n\n### RetryMiddleware\n\n***class*scrapy.downloadermiddlewares.retry.RetryMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/retry.html#RetryMiddleware)**\n\nA middleware to retry failed requests that are potentially caused by\ntemporary problems such as a connection timeout or HTTP 500 error.\n\nFailed pages are collected on the scraping process and rescheduled at the\nend, once the spider has finished crawling all regular (non failed) pages.\n\nThe `RetryMiddleware` can be configured through the following\nsettings (see the settings documentation for more info):\n\n- `RETRY_ENABLED`\n- `RETRY_TIMES`\n- `RETRY_HTTP_CODES`\n- `RETRY_EXCEPTIONS`\n\nIf [`Request.meta`](request-response.html#scrapy.Request.meta) has `dont_retry` key\nset to True, the request will be ignored by this middleware.\n\nTo retry requests from a spider callback, you can use the\n`get_retry_request()` function:\n\n**scrapy.downloadermiddlewares.retry.get_retry_request(*request: Request*, ***, *spider: Spider*, *reason: str | Exception | type[Exception] = 'unspecified'*, *max_retry_times: int | None = None*, *priority_adjust: int | None = None*, *logger: Logger = <Logger scrapy.downloadermiddlewares.retry (WARNING)>*, *stats_base_key: str = 'retry'*) → [Request](request-response.html#scrapy.Request) | [None](https://docs.python.org/3/library/constants.html#None)[[source]](../_modules/scrapy/downloadermiddlewares/retry.html#get_retry_request)**\n\nReturns a new [`Request`](request-response.html#scrapy.Request) object to retry the specified\nrequest, or `None` if retries of the specified request have been\nexhausted.\n\nFor example, in a [`Spider`](spiders.html#scrapy.Spider) callback, you could use it as\nfollows:\n\n```\ndef parse(self, response):\n    if not response.text:\n        new_request_or_none = get_retry_request(\n            response.request,\n            spider=self,\n            reason='empty',\n        )\n        return new_request_or_none\n```\n\n*spider* is the [`Spider`](spiders.html#scrapy.Spider) instance which is asking for the\nretry request. It is used to access the [settings](settings.html#topics-settings)\nand [stats](stats.html#topics-stats), and to provide extra logging context (see\n[`logging.debug()`](https://docs.python.org/3/library/logging.html#logging.debug)).\n\n*reason* is a string or an [`Exception`](https://docs.python.org/3/library/exceptions.html#Exception) object that indicates the\nreason why the request needs to be retried. It is used to name retry stats.\n\n*max_retry_times* is a number that determines the maximum number of times\nthat *request* can be retried. If not specified or `None`, the number is\nread from the [`max_retry_times`](request-response.html#std-reqmeta-max_retry_times) meta key of the request. If the\n[`max_retry_times`](request-response.html#std-reqmeta-max_retry_times) meta key is not defined or `None`, the number\nis read from the `RETRY_TIMES` setting.\n\n*priority_adjust* is a number that determines how the priority of the new\nrequest changes in relation to *request*. If not specified, the number is\nread from the `RETRY_PRIORITY_ADJUST` setting.\n\n*logger* is the logging.Logger object to be used when logging messages\n\n*stats_base_key* is a string to be used as the base key for the\nretry-related job stats\n\n#### RetryMiddleware Settings\n\n##### RETRY_ENABLED\n\nDefault: `True`\n\nWhether the Retry middleware will be enabled.\n\n##### RETRY_TIMES\n\nDefault: `2`\n\nMaximum number of times to retry, in addition to the first download.\n\nMaximum number of retries can also be specified per-request using\n[`max_retry_times`](request-response.html#std-reqmeta-max_retry_times) attribute of [`Request.meta`](request-response.html#scrapy.Request.meta).\nWhen initialized, the [`max_retry_times`](request-response.html#std-reqmeta-max_retry_times) meta key takes higher\nprecedence over the `RETRY_TIMES` setting.\n\n##### RETRY_HTTP_CODES\n\nDefault: `[500, 502, 503, 504, 522, 524, 408, 429]`\n\nWhich HTTP response codes to retry. Other errors (DNS lookup issues,\nconnections lost, etc) are always retried.\n\nIn some cases you may want to add 400 to `RETRY_HTTP_CODES` because\nit is a common code used to indicate server overload. It is not included by\ndefault because HTTP specs say so.\n\n##### RETRY_EXCEPTIONS\n\nDefault:\n\n```\n[\n    'twisted.internet.defer.TimeoutError',\n    'twisted.internet.error.TimeoutError',\n    'twisted.internet.error.DNSLookupError',\n    'twisted.internet.error.ConnectionRefusedError',\n    'twisted.internet.error.ConnectionDone',\n    'twisted.internet.error.ConnectError',\n    'twisted.internet.error.ConnectionLost',\n    'twisted.internet.error.TCPTimedOutError',\n    'twisted.web.client.ResponseFailed',\n    IOError,\n    'scrapy.core.downloader.handlers.http11.TunnelError',\n]\n```\n\nList of exceptions to retry.\n\nEach list entry may be an exception type or its import path as a string.\n\nAn exception will not be caught when the exception type is not in\n`RETRY_EXCEPTIONS` or when the maximum number of retries for a request\nhas been exceeded (see `RETRY_TIMES`). To learn about uncaught\nexception propagation, see\n`process_exception()`.\n\n##### RETRY_PRIORITY_ADJUST\n\nDefault: `-1`\n\nAdjust retry request priority relative to original request:\n\n- a positive priority adjust means higher priority.\n- **a negative priority adjust (default) means lower priority.**\n\n### RobotsTxtMiddleware\n\n***class*scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/robotstxt.html#RobotsTxtMiddleware)**\n\nThis middleware filters out requests forbidden by the robots.txt exclusion\nstandard.\n\nTo make sure Scrapy respects robots.txt make sure the middleware is enabled\nand the [`ROBOTSTXT_OBEY`](settings.html#std-setting-ROBOTSTXT_OBEY) setting is enabled.\n\nThe [`ROBOTSTXT_USER_AGENT`](settings.html#std-setting-ROBOTSTXT_USER_AGENT) setting can be used to specify the\nuser agent string to use for matching in the [robots.txt](https://www.robotstxt.org/) file. If it\nis `None`, the User-Agent header you are sending with the request or the\n[`USER_AGENT`](settings.html#std-setting-USER_AGENT) setting (in that order) will be used for determining\nthe user agent to use in the [robots.txt](https://www.robotstxt.org/) file.\n\nThis middleware has to be combined with a [robots.txt](https://www.robotstxt.org/) parser.\n\nScrapy ships with support for the following [robots.txt](https://www.robotstxt.org/) parsers:\n\n- Protego (default)\n- RobotFileParser\n- Robotexclusionrulesparser\n\nYou can change the [robots.txt](https://www.robotstxt.org/) parser with the [`ROBOTSTXT_PARSER`](settings.html#std-setting-ROBOTSTXT_PARSER)\nsetting. Or you can also implement support for a new parser.\n\nIf [`Request.meta`](request-response.html#scrapy.Request.meta) has\n`dont_obey_robotstxt` key set to True\nthe request will be ignored by this middleware even if\n[`ROBOTSTXT_OBEY`](settings.html#std-setting-ROBOTSTXT_OBEY) is enabled.\n\nParsers vary in several aspects:\n\n- Language of implementation\n- Supported specification\n- Support for wildcard matching\n- Usage of [length based rule](https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt#order-of-precedence-for-rules):\nin particular for `Allow` and `Disallow` directives, where the most\nspecific rule based on the length of the path trumps the less specific\n(shorter) rule\n\nPerformance comparison of different parsers is available at [the following link](https://github.com/scrapy/scrapy/issues/3969).\n\n#### Protego parser\n\nBased on [Protego](https://github.com/scrapy/protego):\n\n- implemented in Python\n- is compliant with [Google’s Robots.txt Specification](https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt)\n- supports wildcard matching\n- uses the length based rule\n\nScrapy uses this parser by default.\n\n#### RobotFileParser\n\nBased on [`RobotFileParser`](https://docs.python.org/3/library/urllib.robotparser.html#urllib.robotparser.RobotFileParser):\n\n- is Python’s built-in [robots.txt](https://www.robotstxt.org/) parser\n- is compliant with [Martijn Koster’s 1996 draft specification](https://www.robotstxt.org/norobots-rfc.txt)\n- lacks support for wildcard matching\n- doesn’t use the length based rule\n\nIt is faster than Protego and backward-compatible with versions of Scrapy before 1.8.0.\n\nIn order to use this parser, set:\n\n- [`ROBOTSTXT_PARSER`](settings.html#std-setting-ROBOTSTXT_PARSER) to `scrapy.robotstxt.PythonRobotParser`\n\n#### Robotexclusionrulesparser\n\nBased on [Robotexclusionrulesparser](https://pypi.org/project/robotexclusionrulesparser/):\n\n- implemented in Python\n- is compliant with [Martijn Koster’s 1996 draft specification](https://www.robotstxt.org/norobots-rfc.txt)\n- supports wildcard matching\n- doesn’t use the length based rule\n\nIn order to use this parser:\n\n- Install `Robotexclusionrulesparser` by running\n`pip install robotexclusionrulesparser`\n- Set [`ROBOTSTXT_PARSER`](settings.html#std-setting-ROBOTSTXT_PARSER) setting to\n`scrapy.robotstxt.RerpRobotParser`\n\n#### Implementing support for a new parser\n\nYou can implement support for a new [robots.txt](https://www.robotstxt.org/) parser by subclassing\nthe abstract base class `RobotParser` and\nimplementing the methods described below.\n\n***class*scrapy.robotstxt.RobotParser[[source]](../_modules/scrapy/robotstxt.html#RobotParser)**\n\n***abstract*allowed(*url: [str](https://docs.python.org/3/library/stdtypes.html#str) | [bytes](https://docs.python.org/3/library/stdtypes.html#bytes)*, *user_agent: [str](https://docs.python.org/3/library/stdtypes.html#str) | [bytes](https://docs.python.org/3/library/stdtypes.html#bytes)*) → [bool](https://docs.python.org/3/library/functions.html#bool)[[source]](../_modules/scrapy/robotstxt.html#RobotParser.allowed)**\n\nReturn `True` if `user_agent` is allowed to crawl `url`, otherwise return `False`.\n\n**Parameters:**\n\n- **url** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)*or*[*bytes*](https://docs.python.org/3/library/stdtypes.html#bytes)) – Absolute URL\n- **user_agent** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)*or*[*bytes*](https://docs.python.org/3/library/stdtypes.html#bytes)) – User agent\n\n***abstract classmethod*from_crawler(*crawler: [Crawler](api.html#scrapy.crawler.Crawler)*, *robotstxt_body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes)*) → Self[[source]](../_modules/scrapy/robotstxt.html#RobotParser.from_crawler)**\n\nParse the content of a [robots.txt](https://www.robotstxt.org/) file as bytes. This must be a class method.\nIt must return a new instance of the parser backend.\n\n**Parameters:**\n\n- **crawler** ([`Crawler`](api.html#scrapy.crawler.Crawler) instance) – crawler which made the request\n- **robotstxt_body** ([*bytes*](https://docs.python.org/3/library/stdtypes.html#bytes)) – content of a [robots.txt](https://www.robotstxt.org/) file.\n\n### DownloaderStats\n\n***class*scrapy.downloadermiddlewares.stats.DownloaderStats[[source]](../_modules/scrapy/downloadermiddlewares/stats.html#DownloaderStats)**\n\nMiddleware that stores stats of all requests, responses and exceptions that\npass through it.\n\nTo use this middleware you must enable the [`DOWNLOADER_STATS`](settings.html#std-setting-DOWNLOADER_STATS)\nsetting.\n\n### UserAgentMiddleware\n\n***class*scrapy.downloadermiddlewares.useragent.UserAgentMiddleware[[source]](../_modules/scrapy/downloadermiddlewares/useragent.html#UserAgentMiddleware)**\n\nMiddleware that sets the `User-Agent` header.\n\nThe header value is taken from the [`USER_AGENT`](settings.html#std-setting-USER_AGENT) setting.",
+      "sections": [
+        {
+          "heading": "input002\\downloader-middleware.md",
+          "text": "# Downloader Middleware — Scrapy 2.14.1 documentation\n\n- Downloader Middleware\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/downloader-middleware.rst)\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 188
+          },
+          "metadata": {
+            "heading_path": [
+              "input002\\downloader-middleware.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# Downloader Middleware — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "Downloader Middleware"
+            ]
+          }
+        },
+        {
+          "heading": "Downloader Middleware",
+          "text": "The downloader middleware is a framework of hooks into Scrapy’s\nrequest/response processing. It’s a light, low-level system for globally\naltering Scrapy’s requests and responses.",
+          "level": 1,
+          "span": {
+            "start": 212,
+            "end": 393
+          },
+          "metadata": {
+            "heading_path": [
+              "Downloader Middleware"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s",
+            "sibling_headings": [
+              "input002\\downloader-middleware.md"
+            ]
+          }
+        },
+        {
+          "heading": "Activating a downloader middleware",
+          "text": "To activate a downloader middleware component, add it to the\n[`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class paths and their values are the middleware orders.\n\nHere’s an example:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}\n```\n\nThe [`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting is merged with the\n[`DOWNLOADER_MIDDLEWARES_BASE`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES_BASE) setting defined in Scrapy (and not meant\nto be overridden) and then sorted by order to get the final sorted list of\nenabled middlewares: the first middleware is the one closer to the engine and\nthe last is the one closer to the downloader. In other words,\nthe `process_request()`\nmethod of each middleware will be invoked in increasing\nmiddleware order (100, 200, 300, …) and the `process_response()` method\nof each middleware will be invoked in decreasing order.\n\nTo decide which order to assign to your middleware see the\n[`DOWNLOADER_MIDDLEWARES_BASE`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES_BASE) setting and pick a value according to\nwhere you want to insert the middleware. The order does matter because each\nmiddleware performs a different action and your middleware could depend on some\nprevious (or subsequent) middleware being applied.\n\nIf you want to disable a built-in middleware (the ones defined in\n[`DOWNLOADER_MIDDLEWARES_BASE`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES_BASE) and enabled by default) you must define it\nin your project’s [`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting and assign `None`\nas its value. For example, if you want to disable the user-agent middleware:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.",
+          "level": 2,
+          "span": {
+            "start": 431,
+            "end": 2566
+          },
+          "metadata": {
+            "heading_path": [
+              "Downloader Middleware",
+              "Activating a downloader middleware"
+            ],
+            "parent_heading": "Downloader Middleware",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "To activate a downloader middleware component, add it to the",
+            "sibling_headings": [
+              "Writing your own downloader middleware",
+              "Built-in downloader middleware reference"
+            ]
+          }
+        },
+        {
+          "heading": "Writing your own downloader middleware",
+          "text": "Each downloader middleware is a [component](components.html#topics-components) that\ndefines one or more of these methods:\n\n***class*scrapy.downloadermiddlewares.DownloaderMiddleware**\n\nAny of the downloader middleware methods may be defined as a\ncoroutine function (`async def`).\n\n**process_request(*request*)**\n\nThis method is called for each request that goes through the download\nmiddleware.\n\n`process_request()` should either: return `None`, return a\n[`Response`](request-response.html#scrapy.http.Response) object, return a [`Request`](request-response.html#scrapy.Request)\nobject, or raise [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest).\n\nIf it returns `None`, Scrapy will continue processing this request, executing all\nother middlewares until, finally, the appropriate downloader handler is called\nthe request performed (and its response downloaded).\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, Scrapy won’t bother\ncalling *any* other `process_request()` or `process_exception()` methods,\nor the appropriate download function; it’ll return that response. The `process_response()`\nmethods of installed middleware is always called on every response.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, Scrapy will stop calling\n`process_request()` methods and reschedule the returned request. Once the newly returned\nrequest is performed, the appropriate middleware chain will be called on\nthe downloaded response.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the\n`process_exception()` methods of installed downloader middleware will be called.\nIf none of them handle the exception, the errback function of the request\n(`Request.errback`) is called. If no code handles the raised exception, it is\nignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n**request** ([`Request`](request-response.html#scrapy.Request) object) – the request being processed\n\n**process_response(*request*, *response*)**\n\n`process_response()` should either: return a [`Response`](request-response.html#scrapy.http.Response)\nobject, return a [`Request`](request-response.html#scrapy.Request) object or\nraise a [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) (it could be the same given\nresponse, or a brand-new one), that response will continue to be processed\nwith the `process_response()` of the next middleware in the chain.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the middleware chain is\nhalted and the returned request is rescheduled to be downloaded in the future.\nThis is the same behavior as if a request is returned from `process_request()`.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the errback\nfunction of the request (`Request.errback`) is called. If no code handles the raised\nexception, it is ignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that originated the response\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_exception(*request*, *exception*)**\n\nScrapy calls `process_exception()` when a [download handler](download-handlers.html#topics-download-handlers) or a `process_request()` (from a\ndownloader middleware) raises an exception (including an\n[`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception).\n\n`process_exception()` should return: either `None`,\na [`Response`](request-response.html#scrapy.http.Response) object, or a [`Request`](request-response.html#scrapy.Request) object.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_exception()` methods of installed middleware,\nuntil no middleware is left and the default exception handling kicks in.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, the `process_response()`\nmethod chain of installed middleware is started, and Scrapy won’t bother calling\nany other `process_exception()` methods of middleware.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the returned request is\nrescheduled to be downloaded in the future. This stops the execution of\n`process_exception()` methods of the middleware the same as returning a\nresponse would.\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that generated the exception\n- **exception** (an `Exception` object) – the raised exception",
+          "level": 2,
+          "span": {
+            "start": 2608,
+            "end": 7368
+          },
+          "metadata": {
+            "heading_path": [
+              "Downloader Middleware",
+              "Writing your own downloader middleware"
+            ],
+            "parent_heading": "Downloader Middleware",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Each downloader middleware is a [component](components.html#topics-components) that",
+            "sibling_headings": [
+              "Activating a downloader middleware",
+              "Built-in downloader middleware reference"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case041_scrapy",
+        "condition_id": "clean",
+        "lab_run_id": "r13fe557951",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case041_scrapy",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-bc70867938051bc4",
+              "source_sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "path": "inputs/input001/offsite.md",
+              "sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/dad43df16d07e2c3/offsite.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-db8ff4e788d28693",
+              "source_sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "path": "inputs/input002/downloader-middleware.md",
+              "sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/491f737b9d4743ec/downloader-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md"
+            },
+            {
+              "input_id": "input003",
+              "source_id": "sgb-819d117ddb8328d1",
+              "source_sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "path": "inputs/input003/request-response.md",
+              "sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/9f6d99ec9d95647c/request-response.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md"
+            },
+            {
+              "input_id": "input004",
+              "source_id": "sgb-ac10205061a5d910",
+              "source_sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "path": "inputs/input004/spider-middleware.md",
+              "sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/3772c49ba00a9fe4/spider-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "ff125a5c28b13b1e3277abcd2f6dd4189abf18063537df59af9ac480bcece012",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "8f6ce7646c8afeab5936e3e5ead47ea3d5e34d59",
+      "content_hash": "8f6ce7646c8afeab5936e3e5ead47ea3d5e34d59",
+      "imported_at": "2026-10-25T08:18:57+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "25002d4e-a406-57f4-9f34-bab5fc52d602",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "skill_id": "447019bb-4d06-58fd-92a7-55b05d0d4e9b",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+      "section": "Downloader Middleware",
+      "span": {
+        "start": 4648,
+        "end": 6896
+      },
+      "excerpt": "`process_response()` should either: return a [`Response`](request-response.html#scrapy.http.Response)\nobject, return a [`Request`](request-response.html#scrapy.Request) object or\nraise a [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) (it could be the same given\nresponse, or a brand-new one), that response will continue to be processed\nwith the `process_response()` of the next middleware in the chain.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the middleware chain is\nhalted and the returned request is rescheduled to be downloaded in the future.\nThis is the same behavior as if a request is returned from `process_request()`.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the errback\nfunction of the request (`Request.errback`) is called. If no code handles the raised\nexception, it is ignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that originated the response\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_exception(*request*, *exception*)**\n\nScrapy calls `process_exception()` when a [download handler](download-handlers.html#topics-download-handlers) or a `process_request()` (from a\ndownloader middleware) raises an exception (including an\n[`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception).\n\n`process_exception()` should return: either `None`,\na [`Response`](request-response.html#scrapy.http.Response) object, or a [`Request`](request-response.html#scrapy.Request) object.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_exception()` methods of installed middleware,\nuntil no middleware is left and the default exception handling kicks in.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, the `process_response()`\nmethod chain of installed middleware is started, and Scrapy won’t bother calling\nany other `process_exception()` methods of middleware.",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\downloader-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "下载器中间件 process_response 返回值路由",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "按返回值类型正确路由 process_response 的后续处理",
+        "task_family": "downloader_middleware",
+        "method_family": "hook_return_dispatch",
+        "stage": "response_processing",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 22,
+        "paragraph_end": 32,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      },
+      "created_at": "2026-10-25T08:20:16+00:00"
+    },
+    {
+      "support_id": "6744790f-99b3-50f4-8236-80c1fbd34b3a",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "skill_id": "8229ccc7-e91d-5a88-8085-5887e69febd6",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+      "section": "Downloader Middleware",
+      "span": {
+        "start": 4648,
+        "end": 6896
+      },
+      "excerpt": "`process_response()` should either: return a [`Response`](request-response.html#scrapy.http.Response)\nobject, return a [`Request`](request-response.html#scrapy.Request) object or\nraise a [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) (it could be the same given\nresponse, or a brand-new one), that response will continue to be processed\nwith the `process_response()` of the next middleware in the chain.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the middleware chain is\nhalted and the returned request is rescheduled to be downloaded in the future.\nThis is the same behavior as if a request is returned from `process_request()`.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the errback\nfunction of the request (`Request.errback`) is called. If no code handles the raised\nexception, it is ignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that originated the response\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_exception(*request*, *exception*)**\n\nScrapy calls `process_exception()` when a [download handler](download-handlers.html#topics-download-handlers) or a `process_request()` (from a\ndownloader middleware) raises an exception (including an\n[`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception).\n\n`process_exception()` should return: either `None`,\na [`Response`](request-response.html#scrapy.http.Response) object, or a [`Request`](request-response.html#scrapy.Request) object.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_exception()` methods of installed middleware,\nuntil no middleware is left and the default exception handling kicks in.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, the `process_response()`\nmethod chain of installed middleware is started, and Scrapy won’t bother calling\nany other `process_exception()` methods of middleware.",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\downloader-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "下载器中间件 process_exception 异常处理分派",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "按返回值类型正确分派 process_exception 的异常处理",
+        "task_family": "downloader_middleware",
+        "method_family": "hook_return_dispatch",
+        "stage": "exception_handling",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 22,
+        "paragraph_end": 32,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      },
+      "created_at": "2026-10-25T08:20:16+00:00"
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "447019bb-4d06-58fd-92a7-55b05d0d4e9b",
+      "name": "下载器中间件 process_response 返回值路由",
+      "description": "在下载器中间件的 process_response 钩子中，根据返回值类型决定后续链路走向：返回 Response 继续交给下一个中间件处理，返回 Request 中止链路并重新调度下载，抛出 IgnoreRequest 触发请求的 errback。用于编写或调试响应处理中间件时。",
+      "skill_body": "实现或调试 process_response(request, response) 时，先明确本次要达成的路由目标，再选择返回值类型：\n1) 若需继续处理响应，返回 Response（可为原响应或全新响应），链路将交给下一个中间件的 process_response。\n2) 若需中止当前链路并重新下载，返回 Request，行为等同于 process_request 返回 Request，该请求被重新调度。\n3) 若需放弃该请求，抛出 IgnoreRequest，将调用 Request.errback；若无代码处理该异常，则被忽略且不记录日志（与其他异常不同）。\n确保返回值类型与预期链路行为一致，避免返回非法类型。\n\n## Objective\n\n按返回值类型正确路由 process_response 的后续处理\n## Applicable Signals\n\n- 正在实现 process_response 钩子\n- 需要根据响应结果决定继续、重调度或触发 errback\n\n## Contraindications\n\n- 处理请求阶段逻辑（应使用 process_request）\n- 处理异常阶段逻辑（应使用 process_exception）\n\n## Intervention Moves\n\n- 返回 Response 以继续交给下一个中间件\n- 返回 Request 以中止链路并重新调度下载\n- 抛出 IgnoreRequest 以触发请求的 errback\n\n## Workflow Steps\n\n- 确认本次 process_response 的路由目标（继续、重调度或放弃）\n- 按目标选择返回值：Response 继续、Request 重调度、IgnoreRequest 触发 errback\n- 核对返回值类型与预期链路行为一致\n\n## Constraints\n\n- process_response 只能返回 Response、返回 Request 或抛出 IgnoreRequest\n- 返回 Request 会中止中间件链并重新调度下载\n- 抛出 IgnoreRequest 时若无代码处理则被忽略且不记录日志\n\n## Cautions\n\n- 返回 Request 的行为等同于 process_request 返回 Request，需注意重调度影响\n- IgnoreRequest 未被处理时静默忽略，可能掩盖问题\n\n## Output Contract\n\n- process_response 返回 Response/Request 或抛出 IgnoreRequest，且链路行为符合预期\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 希望响应继续被后续中间件处理\n- Therapist/Output: 返回 Response（原响应或新响应）\n- Notes: 链路交给下一个中间件的 process_response\n\n### Example 2\n\n- Client/Input: 希望中止当前链路并重新下载\n- Therapist/Output: 返回 Request\n- Notes: 该请求被重新调度下载\n\n### Example 3\n\n- Client/Input: 希望放弃该请求\n- Therapist/Output: 抛出 IgnoreRequest\n- Notes: 调用 Request.errback；无处理则被忽略且不记录日志",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按返回值类型正确路由 process_response 的后续处理",
+      "domain": "scrapy",
+      "task_family": "downloader_middleware",
+      "method_family": "hook_return_dispatch",
+      "stage": "response_processing",
+      "applicable_signals": [
+        "正在实现 process_response 钩子",
+        "需要根据响应结果决定继续、重调度或触发 errback"
+      ],
+      "contraindications": [
+        "处理请求阶段逻辑（应使用 process_request）",
+        "处理异常阶段逻辑（应使用 process_exception）"
+      ],
+      "intervention_moves": [
+        "返回 Response 以继续交给下一个中间件",
+        "返回 Request 以中止链路并重新调度下载",
+        "抛出 IgnoreRequest 以触发请求的 errback"
+      ],
+      "triggers": [
+        "编写或修改 process_response 方法",
+        "需要根据响应结果决定继续、重调度或触发 errback",
+        "调试下载器中间件响应阶段的路由行为"
+      ],
+      "workflow_steps": [
+        "确认本次 process_response 的路由目标（继续、重调度或放弃）",
+        "按目标选择返回值：Response 继续、Request 重调度、IgnoreRequest 触发 errback",
+        "核对返回值类型与预期链路行为一致"
+      ],
+      "constraints": [
+        "process_response 只能返回 Response、返回 Request 或抛出 IgnoreRequest",
+        "返回 Request 会中止中间件链并重新调度下载",
+        "抛出 IgnoreRequest 时若无代码处理则被忽略且不记录日志"
+      ],
+      "cautions": [
+        "返回 Request 的行为等同于 process_request 返回 Request，需注意重调度影响",
+        "IgnoreRequest 未被处理时静默忽略，可能掩盖问题"
+      ],
+      "output_contract": [
+        "process_response 返回 Response/Request 或抛出 IgnoreRequest，且链路行为符合预期"
+      ],
+      "examples": [
+        {
+          "input": "希望响应继续被后续中间件处理",
+          "output": "返回 Response（原响应或新响应）",
+          "notes": "链路交给下一个中间件的 process_response"
+        },
+        {
+          "input": "希望中止当前链路并重新下载",
+          "output": "返回 Request",
+          "notes": "该请求被重新调度下载"
+        },
+        {
+          "input": "希望放弃该请求",
+          "output": "抛出 IgnoreRequest",
+          "notes": "调用 Request.errback；无处理则被忽略且不记录日志"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "downloader_middleware",
+        "process_response",
+        "返回值分派"
+      ],
+      "support_ids": [
+        "25002d4e-a406-57f4-9f34-bab5fc52d602"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "a99efd07-b321-5a6c-9492-4065311d2137"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|按返回值类型正确路由 process_response 的后续处理|scrapy|downloader_middleware|hook_return_dispatch|response_processing|下载器中间件 process_response 返回值路由"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "8229ccc7-e91d-5a88-8085-5887e69febd6",
+      "name": "下载器中间件 process_exception 异常处理分派",
+      "description": "在下载器中间件的 process_exception 钩子中，按返回值类型分派下载处理器或 process_request 抛出的异常：返回 None 继续传递异常，返回 Response 启动 process_response 链，返回 Request 重新调度。用于实现异常恢复、重试或降级中间件。",
+      "skill_body": "当编写或修改下载器中间件的 process_exception 方法时，依据返回值类型决定异常处理走向：\n1. 明确当前异常来源（下载处理器或 process_request 抛出的异常，含 IgnoreRequest）。\n2. 若希望继续传递异常，返回 None，Scrapy 会继续执行其他中间件的 process_exception，直至默认异常处理。\n3. 若希望从异常中恢复并继续处理响应，返回一个 Response 对象，Scrapy 将启动已安装中间件的 process_response 方法链，且不再调用其他中间件的 process_exception。\n4. 若希望重新调度请求，返回一个 Request 对象。\n5. 确保返回值类型与预期行为一致，避免返回不支持的类型。\n\n## Objective\n\n按返回值类型正确分派 process_exception 的异常处理\n## Applicable Signals\n\n- process_exception 方法需要处理下载处理器或 process_request 抛出的异常\n- 需要在异常发生时选择恢复、重试或继续抛出\n\n## Contraindications\n\n- 处理正常响应阶段逻辑（应使用 process_response）\n- 处理请求发起阶段逻辑（应使用 process_request）\n\n## Intervention Moves\n\n- 返回 None 以继续传递异常并执行其他中间件的 process_exception\n- 返回 Response 以启动 process_response 链并跳过其他 process_exception\n- 返回 Request 以重新调度请求\n\n## Workflow Steps\n\n- 确认异常来源为下载处理器或 process_request 抛出（含 IgnoreRequest）\n- 根据期望行为选择返回值：None 继续传递、Response 恢复并进入 process_response 链、Request 重新调度\n- 返回所选对象并验证异常处理链行为符合预期\n\n## Constraints\n\n- process_exception 只能返回 None、Response 对象或 Request 对象\n- 返回 Response 时不再调用其他中间件的 process_exception\n\n## Cautions\n\n- 返回 None 时异常会继续传递直至默认异常处理\n- 返回 Response 会跳过其余 process_exception 方法\n\n## Output Contract\n\n- process_exception 返回 None/Response/Request，异常处理链行为符合预期\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 下载处理器抛出异常，中间件希望继续传递该异常\n- Therapist/Output: process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception\n- Notes: 直至无中间件剩余时进入默认异常处理\n\n### Example 2\n\n- Client/Input: 下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应\n- Therapist/Output: process_exception 返回一个 Response 对象，启动 process_response 链\n- Notes: 不再调用其他中间件的 process_exception",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按返回值类型正确分派 process_exception 的异常处理",
+      "domain": "scrapy",
+      "task_family": "downloader_middleware",
+      "method_family": "hook_return_dispatch",
+      "stage": "exception_handling",
+      "applicable_signals": [
+        "process_exception 方法需要处理下载处理器或 process_request 抛出的异常",
+        "需要在异常发生时选择恢复、重试或继续抛出"
+      ],
+      "contraindications": [
+        "处理正常响应阶段逻辑（应使用 process_response）",
+        "处理请求发起阶段逻辑（应使用 process_request）"
+      ],
+      "intervention_moves": [
+        "返回 None 以继续传递异常并执行其他中间件的 process_exception",
+        "返回 Response 以启动 process_response 链并跳过其他 process_exception",
+        "返回 Request 以重新调度请求"
+      ],
+      "triggers": [
+        "编写或修改 process_exception 方法",
+        "需要捕获下载异常并决定恢复、重试或继续抛出"
+      ],
+      "workflow_steps": [
+        "确认异常来源为下载处理器或 process_request 抛出（含 IgnoreRequest）",
+        "根据期望行为选择返回值：None 继续传递、Response 恢复并进入 process_response 链、Request 重新调度",
+        "返回所选对象并验证异常处理链行为符合预期"
+      ],
+      "constraints": [
+        "process_exception 只能返回 None、Response 对象或 Request 对象",
+        "返回 Response 时不再调用其他中间件的 process_exception"
+      ],
+      "cautions": [
+        "返回 None 时异常会继续传递直至默认异常处理",
+        "返回 Response 会跳过其余 process_exception 方法"
+      ],
+      "output_contract": [
+        "process_exception 返回 None/Response/Request，异常处理链行为符合预期"
+      ],
+      "examples": [
+        {
+          "input": "下载处理器抛出异常，中间件希望继续传递该异常",
+          "output": "process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception",
+          "notes": "直至无中间件剩余时进入默认异常处理"
+        },
+        {
+          "input": "下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应",
+          "output": "process_exception 返回一个 Response 对象，启动 process_response 链",
+          "notes": "不再调用其他中间件的 process_exception"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "downloader_middleware",
+        "process_exception",
+        "exception_handling",
+        "hook_return_dispatch"
+      ],
+      "support_ids": [
+        "6744790f-99b3-50f4-8236-80c1fbd34b3a"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "088fcce1-da7d-5aa2-89c0-b2b7f01184f6"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|按返回值类型正确分派 process_exception 的异常处理|scrapy|downloader_middleware|hook_return_dispatch|exception_handling|下载器中间件 process_exception 异常处理分派"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ]
+}

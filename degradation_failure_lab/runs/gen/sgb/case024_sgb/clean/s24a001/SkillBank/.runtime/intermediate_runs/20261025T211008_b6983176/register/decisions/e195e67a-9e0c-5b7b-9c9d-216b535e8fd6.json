@@ -1,0 +1,103 @@
+{
+  "skill_id": "e195e67a-9e0c-5b7b-9c9d-216b535e8fd6",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 f648fd7b（Feed 存储 URI 参数化配置）高度重叠，均描述在存储 URI 中使用 %(time)s/%(name)s 及 spider 属性占位符；该候选内容更完整且覆盖存储后端，本候选冗余，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "e195e67a-9e0c-5b7b-9c9d-216b535e8fd6",
+    "name": "Feed URI 参数化命名",
+    "description": "在创建 feed 时用存储 URI 中的命名占位符（如 %(time)s、%(name)s 及任意 spider 属性）动态生成输出路径或文件名，适用于需要按时间戳、爬虫名或自定义属性区分导出文件的场景。",
+    "skill_body": "当需要为 feed 导出生成动态路径或文件名时，检查存储 URI 中的占位符：%(time)s 在 feed 创建时替换为时间戳，%(name)s 替换为爬虫名，其他命名占位符替换为同名 spider 属性（如 %(site_id)s 替换为 spider.site_id）。确认所引用的 spider 属性存在且已初始化，然后生成占位符已被正确替换的最终存储 URI。\n\n## Objective\n\n通过 URI 占位符在 feed 创建时动态替换为时间戳、爬虫名或 spider 属性，生成唯一且可追溯的导出路径。\n## Applicable Signals\n\n- 需要按时间戳或爬虫名区分多次导出的文件\n- 希望用 spider 自定义属性（如 site_id）命名输出文件\n\n## Contraindications\n\n- 占位符引用的 spider 属性不存在或未初始化\n- URI 中需要保留字面量 % 而未做转义\n\n## Intervention Moves\n\n- 在存储 URI 中使用 %(time)s 占位符以在 feed 创建时插入时间戳\n- 在存储 URI 中使用 %(name)s 占位符以插入爬虫名\n- 使用任意命名占位符引用同名 spider 属性（如 %(site_id)s 对应 spider.site_id）\n\n## Workflow Steps\n\n- 确定导出文件命名所需的动态信息（时间戳、爬虫名或自定义属性）\n- 在存储 URI 中写入对应占位符：%(time)s、%(name)s 或 %(属性名)s\n- 确认所引用的 spider 属性存在且已初始化\n- 在 feed 创建时由占位符替换生成最终存储 URI\n\n## Constraints\n\n- 占位符仅在 feed 创建时被替换\n- 非 time/name 的占位符必须对应存在的 spider 属性\n\n## Cautions\n\n- 若引用的 spider 属性不存在或未初始化，占位符无法正确替换\n- URI 中需要字面量 % 时应先转义，避免被误当作占位符\n\n## Output Contract\n\n- 生成一个占位符已被正确替换的最终存储 URI。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "通过 URI 占位符在 feed 创建时动态替换为时间戳、爬虫名或 spider 属性，生成唯一且可追溯的导出路径。",
+    "domain": "scrapy",
+    "task_family": "feed_export",
+    "method_family": "uri_templating",
+    "stage": "feed_creation",
+    "applicable_signals": [
+      "需要按时间戳或爬虫名区分多次导出的文件",
+      "希望用 spider 自定义属性（如 site_id）命名输出文件"
+    ],
+    "contraindications": [
+      "占位符引用的 spider 属性不存在或未初始化",
+      "URI 中需要保留字面量 % 而未做转义"
+    ],
+    "intervention_moves": [
+      "在存储 URI 中使用 %(time)s 占位符以在 feed 创建时插入时间戳",
+      "在存储 URI 中使用 %(name)s 占位符以插入爬虫名",
+      "使用任意命名占位符引用同名 spider 属性（如 %(site_id)s 对应 spider.site_id）"
+    ],
+    "triggers": [
+      "需要按时间戳或爬虫名区分多次导出的文件",
+      "希望用 spider 自定义属性（如 site_id）命名输出文件"
+    ],
+    "workflow_steps": [
+      "确定导出文件命名所需的动态信息（时间戳、爬虫名或自定义属性）",
+      "在存储 URI 中写入对应占位符：%(time)s、%(name)s 或 %(属性名)s",
+      "确认所引用的 spider 属性存在且已初始化",
+      "在 feed 创建时由占位符替换生成最终存储 URI"
+    ],
+    "constraints": [
+      "占位符仅在 feed 创建时被替换",
+      "非 time/name 的占位符必须对应存在的 spider 属性"
+    ],
+    "cautions": [
+      "若引用的 spider 属性不存在或未初始化，占位符无法正确替换",
+      "URI 中需要字面量 % 时应先转义，避免被误当作占位符"
+    ],
+    "output_contract": [
+      "生成一个占位符已被正确替换的最终存储 URI。"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "feed_export",
+      "uri_templating",
+      "storage"
+    ],
+    "support_ids": [
+      "c76babf9-ec54-58bc-88f6-6e3766fa5b42"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "72d7d7ec-66a2-5b5c-9fae-8e0020b5ba13"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|通过 uri 占位符在 feed 创建时动态替换为时间戳、爬虫名或 spider 属性，生成唯一且可追溯的导出路径。|scrapy|feed_export|uri_templating|feed_creation|feed uri 参数化命名"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

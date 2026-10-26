@@ -1,0 +1,359 @@
+{
+  "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+  "title": "input002\\downloader-middleware.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+  "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+  "section_heading": "Downloader Middleware",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "25002d4e-a406-57f4-9f34-bab5fc52d602",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+      "section": "Downloader Middleware",
+      "span": {
+        "start": 4648,
+        "end": 6896
+      },
+      "excerpt": "`process_response()` should either: return a [`Response`](request-response.html#scrapy.http.Response)\nobject, return a [`Request`](request-response.html#scrapy.Request) object or\nraise a [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) (it could be the same given\nresponse, or a brand-new one), that response will continue to be processed\nwith the `process_response()` of the next middleware in the chain.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the middleware chain is\nhalted and the returned request is rescheduled to be downloaded in the future.\nThis is the same behavior as if a request is returned from `process_request()`.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the errback\nfunction of the request (`Request.errback`) is called. If no code handles the raised\nexception, it is ignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that originated the response\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_exception(*request*, *exception*)**\n\nScrapy calls `process_exception()` when a [download handler](download-handlers.html#topics-download-handlers) or a `process_request()` (from a\ndownloader middleware) raises an exception (including an\n[`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception).\n\n`process_exception()` should return: either `None`,\na [`Response`](request-response.html#scrapy.http.Response) object, or a [`Request`](request-response.html#scrapy.Request) object.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_exception()` methods of installed middleware,\nuntil no middleware is left and the default exception handling kicks in.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, the `process_response()`\nmethod chain of installed middleware is started, and Scrapy won’t bother calling\nany other `process_exception()` methods of middleware.",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\downloader-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "下载器中间件 process_response 返回值路由",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "按返回值类型正确路由 process_response 的后续处理",
+        "task_family": "downloader_middleware",
+        "method_family": "hook_return_dispatch",
+        "stage": "response_processing",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 22,
+        "paragraph_end": 32,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      },
+      "created_at": "2026-10-25T08:20:16+00:00"
+    },
+    {
+      "support_id": "6744790f-99b3-50f4-8236-80c1fbd34b3a",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+      "section": "Downloader Middleware",
+      "span": {
+        "start": 4648,
+        "end": 6896
+      },
+      "excerpt": "`process_response()` should either: return a [`Response`](request-response.html#scrapy.http.Response)\nobject, return a [`Request`](request-response.html#scrapy.Request) object or\nraise a [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) (it could be the same given\nresponse, or a brand-new one), that response will continue to be processed\nwith the `process_response()` of the next middleware in the chain.\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, the middleware chain is\nhalted and the returned request is rescheduled to be downloaded in the future.\nThis is the same behavior as if a request is returned from `process_request()`.\n\nIf it raises an [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception, the errback\nfunction of the request (`Request.errback`) is called. If no code handles the raised\nexception, it is ignored and not logged (unlike other exceptions).\n\n**Parameters:**\n\n- **request** (is a [`Request`](request-response.html#scrapy.Request) object) – the request that originated the response\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_exception(*request*, *exception*)**\n\nScrapy calls `process_exception()` when a [download handler](download-handlers.html#topics-download-handlers) or a `process_request()` (from a\ndownloader middleware) raises an exception (including an\n[`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest) exception).\n\n`process_exception()` should return: either `None`,\na [`Response`](request-response.html#scrapy.http.Response) object, or a [`Request`](request-response.html#scrapy.Request) object.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_exception()` methods of installed middleware,\nuntil no middleware is left and the default exception handling kicks in.\n\nIf it returns a [`Response`](request-response.html#scrapy.http.Response) object, the `process_response()`\nmethod chain of installed middleware is started, and Scrapy won’t bother calling\nany other `process_exception()` methods of middleware.",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\downloader-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "下载器中间件 process_exception 异常处理分派",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "按返回值类型正确分派 process_exception 的异常处理",
+        "task_family": "downloader_middleware",
+        "method_family": "hook_return_dispatch",
+        "stage": "exception_handling",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 22,
+        "paragraph_end": 32,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      },
+      "created_at": "2026-10-25T08:20:16+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "a99efd07-b321-5a6c-9492-4065311d2137",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "name": "下载器中间件 process_response 返回值路由",
+      "description": "在下载器中间件的 process_response 钩子中，根据返回值类型决定后续链路走向：返回 Response 继续交给下一个中间件处理，返回 Request 中止链路并重新调度下载，抛出 IgnoreRequest 触发请求的 errback。用于编写或调试响应处理中间件时。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按返回值类型正确路由 process_response 的后续处理",
+      "domain": "scrapy",
+      "task_family": "downloader_middleware",
+      "method_family": "hook_return_dispatch",
+      "stage": "response_processing",
+      "applicable_signals": [
+        "正在实现 process_response 钩子",
+        "需要根据响应结果决定继续、重调度或触发 errback"
+      ],
+      "contraindications": [
+        "处理请求阶段逻辑（应使用 process_request）",
+        "处理异常阶段逻辑（应使用 process_exception）"
+      ],
+      "intervention_moves": [
+        "返回 Response 以继续交给下一个中间件",
+        "返回 Request 以中止链路并重新调度下载",
+        "抛出 IgnoreRequest 以触发请求的 errback"
+      ],
+      "workflow_steps": [
+        "确认本次 process_response 的路由目标（继续、重调度或放弃）",
+        "按目标选择返回值：Response 继续、Request 重调度、IgnoreRequest 触发 errback",
+        "核对返回值类型与预期链路行为一致"
+      ],
+      "triggers": [
+        "编写或修改 process_response 方法",
+        "需要根据响应结果决定继续、重调度或触发 errback",
+        "调试下载器中间件响应阶段的路由行为"
+      ],
+      "constraints": [
+        "process_response 只能返回 Response、返回 Request 或抛出 IgnoreRequest",
+        "返回 Request 会中止中间件链并重新调度下载",
+        "抛出 IgnoreRequest 时若无代码处理则被忽略且不记录日志"
+      ],
+      "cautions": [
+        "返回 Request 的行为等同于 process_request 返回 Request，需注意重调度影响",
+        "IgnoreRequest 未被处理时静默忽略，可能掩盖问题"
+      ],
+      "output_contract": [
+        "process_response 返回 Response/Request 或抛出 IgnoreRequest，且链路行为符合预期"
+      ],
+      "examples": [
+        {
+          "input": "希望响应继续被后续中间件处理",
+          "output": "返回 Response（原响应或新响应）",
+          "notes": "链路交给下一个中间件的 process_response"
+        },
+        {
+          "input": "希望中止当前链路并重新下载",
+          "output": "返回 Request",
+          "notes": "该请求被重新调度下载"
+        },
+        {
+          "input": "希望放弃该请求",
+          "output": "抛出 IgnoreRequest",
+          "notes": "调用 Request.errback；无处理则被忽略且不记录日志"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "25002d4e-a406-57f4-9f34-bab5fc52d602"
+      ],
+      "metadata": {
+        "prompt": "实现或调试 process_response(request, response) 时，先明确本次要达成的路由目标，再选择返回值类型：\n1) 若需继续处理响应，返回 Response（可为原响应或全新响应），链路将交给下一个中间件的 process_response。\n2) 若需中止当前链路并重新下载，返回 Request，行为等同于 process_request 返回 Request，该请求被重新调度。\n3) 若需放弃该请求，抛出 IgnoreRequest，将调用 Request.errback；若无代码处理该异常，则被忽略且不记录日志（与其他异常不同）。\n确保返回值类型与预期链路行为一致，避免返回非法类型。",
+        "tags": [
+          "scrapy",
+          "downloader_middleware",
+          "process_response",
+          "返回值分派"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Downloader Middleware"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 22,
+        "paragraph_end": 32,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      }
+    },
+    {
+      "draft_id": "088fcce1-da7d-5aa2-89c0-b2b7f01184f6",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "name": "下载器中间件 process_exception 异常处理分派",
+      "description": "在下载器中间件的 process_exception 钩子中，按返回值类型分派下载处理器或 process_request 抛出的异常：返回 None 继续传递异常，返回 Response 启动 process_response 链，返回 Request 重新调度。用于实现异常恢复、重试或降级中间件。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按返回值类型正确分派 process_exception 的异常处理",
+      "domain": "scrapy",
+      "task_family": "downloader_middleware",
+      "method_family": "hook_return_dispatch",
+      "stage": "exception_handling",
+      "applicable_signals": [
+        "process_exception 方法需要处理下载处理器或 process_request 抛出的异常",
+        "需要在异常发生时选择恢复、重试或继续抛出"
+      ],
+      "contraindications": [
+        "处理正常响应阶段逻辑（应使用 process_response）",
+        "处理请求发起阶段逻辑（应使用 process_request）"
+      ],
+      "intervention_moves": [
+        "返回 None 以继续传递异常并执行其他中间件的 process_exception",
+        "返回 Response 以启动 process_response 链并跳过其他 process_exception",
+        "返回 Request 以重新调度请求"
+      ],
+      "workflow_steps": [
+        "确认异常来源为下载处理器或 process_request 抛出（含 IgnoreRequest）",
+        "根据期望行为选择返回值：None 继续传递、Response 恢复并进入 process_response 链、Request 重新调度",
+        "返回所选对象并验证异常处理链行为符合预期"
+      ],
+      "triggers": [
+        "编写或修改 process_exception 方法",
+        "需要捕获下载异常并决定恢复、重试或继续抛出"
+      ],
+      "constraints": [
+        "process_exception 只能返回 None、Response 对象或 Request 对象",
+        "返回 Response 时不再调用其他中间件的 process_exception"
+      ],
+      "cautions": [
+        "返回 None 时异常会继续传递直至默认异常处理",
+        "返回 Response 会跳过其余 process_exception 方法"
+      ],
+      "output_contract": [
+        "process_exception 返回 None/Response/Request，异常处理链行为符合预期"
+      ],
+      "examples": [
+        {
+          "input": "下载处理器抛出异常，中间件希望继续传递该异常",
+          "output": "process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception",
+          "notes": "直至无中间件剩余时进入默认异常处理"
+        },
+        {
+          "input": "下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应",
+          "output": "process_exception 返回一个 Response 对象，启动 process_response 链",
+          "notes": "不再调用其他中间件的 process_exception"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "6744790f-99b3-50f4-8236-80c1fbd34b3a"
+      ],
+      "metadata": {
+        "prompt": "当编写或修改下载器中间件的 process_exception 方法时，依据返回值类型决定异常处理走向：\n1. 明确当前异常来源（下载处理器或 process_request 抛出的异常，含 IgnoreRequest）。\n2. 若希望继续传递异常，返回 None，Scrapy 会继续执行其他中间件的 process_exception，直至默认异常处理。\n3. 若希望从异常中恢复并继续处理响应，返回一个 Response 对象，Scrapy 将启动已安装中间件的 process_response 方法链，且不再调用其他中间件的 process_exception。\n4. 若希望重新调度请求，返回一个 Request 对象。\n5. 确保返回值类型与预期行为一致，避免返回不支持的类型。",
+        "tags": [
+          "scrapy",
+          "downloader_middleware",
+          "process_exception",
+          "exception_handling",
+          "hook_return_dispatch"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Downloader Middleware"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "4d6c6d27-b11a-5107-a148-a5e1039142be",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 22,
+        "paragraph_end": 32,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

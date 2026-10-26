@@ -1,0 +1,102 @@
+{
+  "skill_id": "510558b9-fb00-5b76-9c72-4bcd1afa13fa",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能聚焦于实现自定义指纹器组件（fingerprint(request) 返回 bytes、复用 scrapy.utils.request.fingerprint），与现有下载器中间件配置和 Offsite 过滤技能能力不同；peer 候选虽同域但属于不同候选批次，不构成对现有技能的 split/merge 关系，故新建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "510558b9-fb00-5b76-9c72-4bcd1afa13fa",
+    "name": "自定义请求指纹器实现",
+    "description": "通过 REQUEST_FINGERPRINTER_CLASS 配置或编写实现 fingerprint(request) 方法的组件，为请求生成唯一标识字节串，用于去重。适用于需要改变默认指纹逻辑（如忽略会话 cookie、规范化 URL 参数顺序）的场景。",
+    "skill_body": "当默认指纹无法满足去重需求时，配置 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类或其导入路径，或编写实现 fingerprint(request) 方法的组件，返回唯一标识请求的 bytes 指纹。可复用 scrapy.utils.request.fingerprint() 处理常见场景。\n\n## Objective\n\n为请求生成稳定且唯一的指纹以支持去重\n## Applicable Signals\n\n- 默认指纹无法区分或误合并资源\n- 需要忽略随机 cookie 或参数顺序差异\n\n## Contraindications\n\n- 仅需默认 URL+method+body 的 SHA1 指纹\n\n## Intervention Moves\n\n- 设置 REQUEST_FINGERPRINTER_CLASS 为自定义指纹器类或导入路径\n- 实现 fingerprint(request) 方法返回 bytes 指纹\n- 在实现中复用 scrapy.utils.request.fingerprint() 处理常见场景\n\n## Workflow Steps\n\n- 确认默认指纹无法满足去重需求（如误合并或无法区分资源）\n- 编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes\n- 如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()\n- 通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径\n\n## Constraints\n\n- fingerprint() 必须返回 bytes 对象\n- 自定义指纹器须遵循请求指纹限制\n\n## Cautions\n\n- 默认指纹器基于规范化 URL、method 和 body 生成 SHA1，忽略会话 cookie 等随机成分需自定义实现\n\n## Output Contract\n\n- 返回唯一标识请求的 bytes 指纹",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为请求生成稳定且唯一的指纹以支持去重",
+    "domain": "scrapy",
+    "task_family": "请求去重",
+    "method_family": "指纹计算",
+    "stage": "请求处理",
+    "applicable_signals": [
+      "默认指纹无法区分或误合并资源",
+      "需要忽略随机 cookie 或参数顺序差异"
+    ],
+    "contraindications": [
+      "仅需默认 URL+method+body 的 SHA1 指纹"
+    ],
+    "intervention_moves": [
+      "设置 REQUEST_FINGERPRINTER_CLASS 为自定义指纹器类或导入路径",
+      "实现 fingerprint(request) 方法返回 bytes 指纹",
+      "在实现中复用 scrapy.utils.request.fingerprint() 处理常见场景"
+    ],
+    "triggers": [
+      "默认指纹无法区分或误合并资源",
+      "需要忽略随机 cookie 或参数顺序差异",
+      "需要改变默认指纹逻辑"
+    ],
+    "workflow_steps": [
+      "确认默认指纹无法满足去重需求（如误合并或无法区分资源）",
+      "编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes",
+      "如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()",
+      "通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径"
+    ],
+    "constraints": [
+      "fingerprint() 必须返回 bytes 对象",
+      "自定义指纹器须遵循请求指纹限制"
+    ],
+    "cautions": [
+      "默认指纹器基于规范化 URL、method 和 body 生成 SHA1，忽略会话 cookie 等随机成分需自定义实现"
+    ],
+    "output_contract": [
+      "返回唯一标识请求的 bytes 指纹"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "请求去重",
+      "指纹计算",
+      "REQUEST_FINGERPRINTER_CLASS"
+    ],
+    "support_ids": [
+      "e2dc9bf4-16a6-5561-9cec-b856efd38c54"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "d9a06189-229a-5ec6-96d7-63806ea26d15"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||session_skill|session|workflow_skill|为请求生成稳定且唯一的指纹以支持去重|scrapy|请求去重|指纹计算|请求处理|自定义请求指纹器实现"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

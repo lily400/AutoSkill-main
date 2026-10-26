@@ -1,0 +1,252 @@
+{
+  "doc_id": "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311",
+  "title": "input001\\feed-exports.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case024_sgb\\clean\\s24a001\\inputs\\input001\\feed-exports.md",
+  "window_id": "8069c19b-b26f-54d3-80e4-b5313973a9ed",
+  "section_heading": "Feed exports",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "4ccac22f-83d1-5c3d-bf9c-3531c5546b62",
+      "doc_id": "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case024_sgb\\clean\\s24a001\\inputs\\input001\\feed-exports.md",
+      "section": "Feed exports",
+      "span": {
+        "start": 2739,
+        "end": 3253
+      },
+      "excerpt": "The storages backends supported out of the box are:\n\n- Local filesystem\n- FTP\n- S3 (requires [boto3](https://github.com/boto/boto3))\n- Google Cloud Storage (GCS) (requires [google-cloud-storage](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python))\n- Standard output\n\nSome storage backends may be unavailable if the required external libraries are\nnot available. For example, the S3 backend is only available if the [boto3](https://github.com/boto/boto3)\nlibrary is installed.",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\feed-exports.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Feed 存储后端选择与依赖校验",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "为给定输出目标确定可用的存储后端并确认依赖满足",
+        "task_family": "feed_export",
+        "method_family": "storage_backend_selection",
+        "stage": "配置",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "8069c19b-b26f-54d3-80e4-b5313973a9ed",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 15,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      },
+      "created_at": "2026-10-25T13:10:33+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "c5272be6-41f5-5f00-8689-acf357b22823",
+      "doc_id": "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311",
+      "name": "Feed 存储后端选择与依赖校验",
+      "description": "根据目标输出位置为 Scrapy feed 选择存储后端（本地文件系统、FTP、S3、GCS、标准输出），并在使用前校验所需外部库是否已安装，给出可用后端与依赖校验结论。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为给定输出目标确定可用的存储后端并确认依赖满足",
+      "domain": "scrapy",
+      "task_family": "feed_export",
+      "method_family": "storage_backend_selection",
+      "stage": "配置",
+      "applicable_signals": [
+        "用户指定了输出位置（本地路径、FTP、S3、GCS 或标准输出）",
+        "用户询问某存储后端是否可用或为何不可用"
+      ],
+      "contraindications": [
+        "仅需选择序列化格式而非存储位置",
+        "未安装所需外部库且无法安装"
+      ],
+      "intervention_moves": [
+        "将目标输出位置映射到内置存储后端：本地文件系统、FTP、S3、GCS、标准输出",
+        "识别该后端所需的外部库（如 S3 需要 boto3，GCS 需要 google-cloud-storage）",
+        "校验所需外部库是否已安装，未安装则判定该后端不可用",
+        "在依赖缺失时提示安装依赖或改用其它可用后端"
+      ],
+      "workflow_steps": [
+        "确认目标输出位置类型",
+        "从内置后端列表中选择对应存储后端",
+        "确定该后端所需的外部库",
+        "校验外部库是否可用",
+        "输出选定后端及依赖校验结论，必要时给出替代后端"
+      ],
+      "triggers": [
+        "需要把抓取结果导出到本地、FTP、S3、GCS 或标准输出",
+        "不确定某存储后端是否可用",
+        "需要确认存储后端的外部依赖是否满足"
+      ],
+      "constraints": [
+        "仅使用内置支持的存储后端：本地文件系统、FTP、S3、GCS、标准输出",
+        "S3 后端仅在安装 boto3 后可用",
+        "GCS 后端仅在安装 google-cloud-storage 后可用",
+        "外部库缺失时不得声称该后端可用"
+      ],
+      "cautions": [
+        "部分存储后端在缺少所需外部库时不可用，需在配置前确认"
+      ],
+      "output_contract": [
+        "给出选定的存储后端及依赖校验结论（可用/不可用及原因），必要时附替代后端建议。"
+      ],
+      "examples": [
+        {
+          "input": "我想把抓取结果导出到 S3，但不确定是否可用。",
+          "output": "S3 后端需要安装 boto3 库；若未安装则该后端不可用，请先安装 boto3 或改用本地文件系统等可用后端。",
+          "notes": "依赖校验结论需明确可用性"
+        },
+        {
+          "input": "导出到标准输出需要额外依赖吗？",
+          "output": "标准输出是内置支持的存储后端，无需额外外部库。",
+          "notes": "内置后端无需外部依赖"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "4ccac22f-83d1-5c3d-bf9c-3531c5546b62"
+      ],
+      "metadata": {
+        "prompt": "当需要把抓取结果导出到某个存储位置时，先确定目标位置对应的存储后端，再校验该后端所需的外部库是否已安装；若依赖缺失则说明该后端不可用并给出替代方案。",
+        "tags": [
+          "scrapy",
+          "feed_export",
+          "storage_backend",
+          "dependency_check"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Feed exports"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "8069c19b-b26f-54d3-80e4-b5313973a9ed",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 15,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

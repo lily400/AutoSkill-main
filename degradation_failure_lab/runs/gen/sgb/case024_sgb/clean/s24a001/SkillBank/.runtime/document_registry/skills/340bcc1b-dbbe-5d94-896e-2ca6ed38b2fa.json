@@ -1,0 +1,122 @@
+{
+  "skill_id": "340bcc1b-dbbe-5d94-896e-2ca6ed38b2fa",
+  "name": "Scrapy GCS Feed 导出配置",
+  "description": "配置 Scrapy feed 导出到 Google Cloud Storage：使用 gs:// URI 方案，并依赖 google-cloud-storage 库完成认证与写入。当需要把抓取结果写入 GCS 存储桶时使用。",
+  "skill_body": "当需要将 Scrapy feed 导出到 Google Cloud Storage 时，按以下步骤执行：\n1. 确认目标存储后端为 GCS，导出 URI 使用 gs:// 方案。\n2. 按 gs://<bucket>/<path>/<filename> 形式构造导出 URI（例如 gs://mybucket/path/to/export.csv）。\n3. 确认已安装并可用 google-cloud-storage 库；若缺失，先安装该依赖。\n4. 按 Google Cloud 认证文档配置认证凭据，确保进程具备写入目标存储桶的权限。\n5. 将 URI 配置到 feed 导出设置中，并验证导出结果写入目标存储桶。\n仅处理 GCS 存储后端配置，不涉及序列化格式选择或其他存储后端。\n\n## Objective\n\n让抓取结果正确写入 GCS 存储桶\n## Applicable Signals\n\n- 目标存储为 Google Cloud Storage\n- 导出 URI 使用 gs:// 方案\n- 需要 google-cloud-storage 库支持\n\n## Contraindications\n\n- 目标存储为本地文件系统、FTP 或 S3\n- 未安装 google-cloud-storage 库\n- 无法配置 Google Cloud 认证凭据\n\n## Intervention Moves\n\n- 确认使用 gs:// URI 方案\n- 构造 gs://<bucket>/<path>/<filename> 形式的导出 URI\n- 确认安装 google-cloud-storage 库\n- 按 Google Cloud 认证文档配置认证凭据\n\n## Workflow Steps\n\n- 确认目标存储后端为 GCS\n- 使用 gs:// 方案构造导出 URI\n- 确认 google-cloud-storage 库已安装\n- 配置 Google Cloud 认证\n- 将 URI 配置到 feed 导出设置并验证写入\n\n## Constraints\n\n- 导出 URI 必须使用 gs:// 方案\n- 必须依赖 google-cloud-storage 库\n- 认证需遵循 Google Cloud 认证文档\n\n## Cautions\n\n- 认证凭据缺失或权限不足会导致写入失败\n- 未安装 google-cloud-storage 库时无法使用 GCS 存储后端\n\n## Output Contract\n\n- 可用的 gs:// 导出 URI 配置及依赖说明（含 google-cloud-storage 库与认证要求）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要将 feed 导出到名为 mybucket 的 GCS 存储桶的 path/to 目录下，文件名为 export.csv\n- Therapist/Output: gs://mybucket/path/to/export.csv\n- Notes: 需安装 google-cloud-storage 库并按 Google Cloud 文档配置认证",
+  "asset_type": "knowledge_reference",
+  "granularity": "session",
+  "asset_node_id": "knowledge_reference_node",
+  "asset_path": "family_root/knowledge_reference_node",
+  "asset_level": 1,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 1.0,
+  "hierarchy_status": "root",
+  "visible_role": "leaf",
+  "objective": "让抓取结果正确写入 GCS 存储桶",
+  "domain": "scrapy",
+  "task_family": "feed_export",
+  "method_family": "storage_backend_config",
+  "stage": "export_configuration",
+  "applicable_signals": [
+    "目标存储为 Google Cloud Storage",
+    "导出 URI 使用 gs:// 方案",
+    "需要 google-cloud-storage 库支持"
+  ],
+  "contraindications": [
+    "目标存储为本地文件系统、FTP 或 S3",
+    "未安装 google-cloud-storage 库",
+    "无法配置 Google Cloud 认证凭据"
+  ],
+  "intervention_moves": [
+    "确认使用 gs:// URI 方案",
+    "构造 gs://<bucket>/<path>/<filename> 形式的导出 URI",
+    "确认安装 google-cloud-storage 库",
+    "按 Google Cloud 认证文档配置认证凭据"
+  ],
+  "triggers": [
+    "需要将 feed 导出到 Google Cloud Storage",
+    "目标导出 URI 以 gs:// 开头",
+    "需要为 Scrapy feed 配置 GCS 存储后端"
+  ],
+  "workflow_steps": [
+    "确认目标存储后端为 GCS",
+    "使用 gs:// 方案构造导出 URI",
+    "确认 google-cloud-storage 库已安装",
+    "配置 Google Cloud 认证",
+    "将 URI 配置到 feed 导出设置并验证写入"
+  ],
+  "constraints": [
+    "导出 URI 必须使用 gs:// 方案",
+    "必须依赖 google-cloud-storage 库",
+    "认证需遵循 Google Cloud 认证文档"
+  ],
+  "cautions": [
+    "认证凭据缺失或权限不足会导致写入失败",
+    "未安装 google-cloud-storage 库时无法使用 GCS 存储后端"
+  ],
+  "output_contract": [
+    "可用的 gs:// 导出 URI 配置及依赖说明（含 google-cloud-storage 库与认证要求）"
+  ],
+  "examples": [
+    {
+      "input": "需要将 feed 导出到名为 mybucket 的 GCS 存储桶的 path/to 目录下，文件名为 export.csv",
+      "output": "gs://mybucket/path/to/export.csv",
+      "notes": "需安装 google-cloud-storage 库并按 Google Cloud 文档配置认证"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "feed_export",
+    "gcs",
+    "storage_backend",
+    "gs_uri"
+  ],
+  "support_ids": [
+    "510e3ee6-5b21-5ea7-8ba9-c47592b4a445"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "d6affe95-710b-5076-9001-7c3ab1a03b9b"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|让抓取结果正确写入 gcs 存储桶|scrapy|feed_export|storage_backend_config|export_configuration|scrapy gcs feed 导出配置",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 1.0,
+    "hierarchy_status": "root",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

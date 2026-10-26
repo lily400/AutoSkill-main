@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"1c413e32-798b-5a1d-b58b-85c84c4055ec\", \"name\": \"通过 cb_kwargs 向回调传递附加数据\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在请求链的回调之间可靠传递附加参数\", \"applicable_signals\": [\"回调函数需要接收 response 之外的上下文数据\", \"需要在后续回调中复用前一回调获得的信息\"], \"contraindications\": [\"无需跨回调传递数据时\", \"参数可通过 response 本身获取时\"], \"workflow_steps\": [\"确认目标回调需要 response 之外的附加数据\", \"在构造 Request 时通过 cb_kwargs 传入字典\", \"如需追加参数，在 yield 前修改 request.cb_kwargs\", \"在回调函数签名中声明对应参数名接收数据\"], \"constraints\": [\"cb_kwargs 仅用于回调参数传递，不用于请求序列化或异常处理\", \"参数键名需与回调函数签名一致\"], \"triggers\": [\"需要在第二个回调中复用第一个回调的上下文数据\", \"回调函数需要额外参数而非仅 response\"], \"output_contract\": [\"回调函数成功接收到 cb_kwargs 中的参数\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"dc522835-58a3-552c-bd8b-30ad389282ea\", \"name\": \"Scrapy 请求构造与回调数据传递\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"构造可正确路由回调并携带附加数据的 Scrapy 请求\", \"applicable_signals\": [\"需要发起新的抓取请求\", \"需要向回调函数传递额外上下文数据\"], \"workflow_steps\": [\"确定请求目标 url\", \"按需绑定 callback 与 errback\", \"将需要传给回调的上下文数据放入 cb_kwargs\", \"如需 cookie，使用 Request 的 cookies 参数而非 Cookie 头\", \"按需设置 priority、dont_filter、encoding、flags 等参数\", \"确认回调与 cb_kwargs 已正确绑定\"], \"output_contract\": [\"一个配置完整、回调与 cb_kwargs 正确绑定的 Request 对象\"], \"score\": 0.6290559333169312}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

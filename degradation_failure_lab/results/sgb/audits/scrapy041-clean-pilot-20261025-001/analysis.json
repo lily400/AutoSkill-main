@@ -1,0 +1,242 @@
+{
+  "experiment_id": "s41d001",
+  "generator_run_id": "s41r003",
+  "decision": "READY FOR MORE CLEAN VALIDATION",
+  "engineering_status": "PASS",
+  "task_scores_identical": true,
+  "submissions_byte_identical": true,
+  "arms": [
+    {
+      "label": "NoSkill1",
+      "condition": "NoSkill",
+      "oracle_tests": {
+        "tests": 10,
+        "passed": 10,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "infra_ok": true,
+      "http_attempts": 2,
+      "tokens": {
+        "input_tokens": 2631,
+        "cached_tokens": 0,
+        "output_tokens": 429
+      },
+      "elapsed_seconds_including_scoring": 38.7455476239993,
+      "installed_skills": 0,
+      "skill_index_entries_in_initial_request": 0,
+      "body_read_ids": [],
+      "full_body_in_successful_model_request_ids": [],
+      "commands": [
+        "cat > /workspace/agent_output.py <<'PY'\nimport scrapy\n\n\nclass AgentSpider(scrapy.Spider):\n    name = \"agent_spider\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\n            url=\"http://other.com/resource\",\n            meta={\"allow_offsite\": True},\n        )\nPY\n",
+        "python3 -m py_compile /workspace/agent_output.py\n"
+      ],
+      "candidate_sha256": "74a8d078e1daaddfd82fa7d97c959ce0d6d655ee6236fe5fcb02d3e4e0a01a07",
+      "candidate_binding_verified": true,
+      "initial_prompt_contains_target_api": false,
+      "started_at_shanghai": "2026-10-25T17:39:32.509194+08:00",
+      "finished_at_shanghai": "2026-10-25T17:39:55.857098+08:00",
+      "classification": "Valid engineering and offered-skill pilot; not evidence of the effect of reading generated Skill bodies"
+    },
+    {
+      "label": "CleanSkill1",
+      "condition": "CleanSkill",
+      "oracle_tests": {
+        "tests": 10,
+        "passed": 10,
+        "failed": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "infra_ok": true,
+      "http_attempts": 2,
+      "tokens": {
+        "input_tokens": 13866,
+        "cached_tokens": 6400,
+        "output_tokens": 488
+      },
+      "elapsed_seconds_including_scoring": 53.008517645999746,
+      "installed_skills": 45,
+      "skill_index_entries_in_initial_request": 45,
+      "body_read_ids": [],
+      "full_body_in_successful_model_request_ids": [],
+      "commands": [
+        "cat > /workspace/agent_output.py <<'PY'\nimport scrapy\n\n\nclass AgentSpider(scrapy.Spider):\n    name = \"agent_spider\"\n    allowed_domains = [\"example.com\"]\n\n    def start_requests(self):\n        yield scrapy.Request(\n            url=\"http://other.com/resource\",\n            meta={\"allow_offsite\": True},\n        )\nPY\n",
+        "sed -n '1,200p' /workspace/agent_output.py\n",
+        "python3 -m py_compile /workspace/agent_output.py\n"
+      ],
+      "candidate_sha256": "74a8d078e1daaddfd82fa7d97c959ce0d6d655ee6236fe5fcb02d3e4e0a01a07",
+      "candidate_binding_verified": true,
+      "initial_prompt_contains_target_api": false,
+      "started_at_shanghai": "2026-10-25T17:40:10.246304+08:00",
+      "finished_at_shanghai": "2026-10-25T17:40:52.135753+08:00",
+      "classification": "Valid engineering and offered-skill pilot; not evidence of the effect of reading generated Skill bodies"
+    }
+  ],
+  "http_attempts_total": 4,
+  "http_attempts_limit": 12,
+  "total_input_tokens": 16497,
+  "total_output_tokens": 917,
+  "total_tokens": 17414,
+  "cached_input_tokens": 6400,
+  "billing_cost": null,
+  "billing_cost_status": "Provider tariff not verified; no invented dollar cost",
+  "ledger_calls": [
+    {
+      "n": 1,
+      "arm": "NoSkill1",
+      "state": "RESPONDED",
+      "http_status": 200,
+      "input_tokens": 1074,
+      "cached_tokens": 0,
+      "output_tokens": 318,
+      "error_type": null
+    },
+    {
+      "n": 2,
+      "arm": "NoSkill1",
+      "state": "RESPONDED",
+      "http_status": 200,
+      "input_tokens": 1557,
+      "cached_tokens": 0,
+      "output_tokens": 111,
+      "error_type": null
+    },
+    {
+      "n": 3,
+      "arm": "CleanSkill1",
+      "state": "RESPONDED",
+      "http_status": 200,
+      "input_tokens": 6619,
+      "cached_tokens": 0,
+      "output_tokens": 387,
+      "error_type": null
+    },
+    {
+      "n": 4,
+      "arm": "CleanSkill1",
+      "state": "RESPONDED",
+      "http_status": 200,
+      "input_tokens": 7247,
+      "cached_tokens": 6400,
+      "output_tokens": 101,
+      "error_type": null
+    }
+  ],
+  "network_checks": [
+    {
+      "label": "NoSkill1",
+      "role": "agent",
+      "status": "PASS",
+      "policy": "docker-none-v1",
+      "probe_count": 18
+    },
+    {
+      "label": "NoSkill1",
+      "role": "candidate",
+      "status": "PASS",
+      "policy": "docker-none-v1",
+      "probe_count": 18
+    },
+    {
+      "label": "NoSkill1",
+      "role": "scorer",
+      "status": "PASS",
+      "policy": "docker-none-v1",
+      "probe_count": 18
+    },
+    {
+      "label": "CleanSkill1",
+      "role": "agent",
+      "status": "PASS",
+      "policy": "docker-none-v1",
+      "probe_count": 18
+    },
+    {
+      "label": "CleanSkill1",
+      "role": "candidate",
+      "status": "PASS",
+      "policy": "docker-none-v1",
+      "probe_count": 18
+    },
+    {
+      "label": "CleanSkill1",
+      "role": "scorer",
+      "status": "PASS",
+      "policy": "docker-none-v1",
+      "probe_count": 18
+    }
+  ],
+  "generation_per_document": [
+    {
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "title": "input001\\offsite.md",
+      "windows": 2,
+      "candidates": 3,
+      "compiled_specs": 3,
+      "registered_specs": 3,
+      "errors": []
+    },
+    {
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "title": "input002\\downloader-middleware.md",
+      "windows": 4,
+      "candidates": 4,
+      "compiled_specs": 4,
+      "registered_specs": 4,
+      "errors": []
+    },
+    {
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "title": "input003\\request-response.md",
+      "windows": 25,
+      "candidates": 35,
+      "compiled_specs": 35,
+      "registered_specs": 31,
+      "errors": []
+    },
+    {
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "title": "input004\\spider-middleware.md",
+      "windows": 4,
+      "candidates": 8,
+      "compiled_specs": 8,
+      "registered_specs": 8,
+      "errors": []
+    }
+  ],
+  "known_skill_defects": [
+    {
+      "kind": "rule_omission",
+      "rule": "meta allow_offsite True",
+      "evidence": "No final SKILL.md contains allow_offsite; Offsite skill states offsite requests are ignored without the documented exception.",
+      "source_evidence": [
+        "input001/offsite.md:57-63",
+        "input002/downloader-middleware.md:651-654"
+      ],
+      "skill_id": "0f70cd3f-8916-5100-949a-b17f1bc29338"
+    },
+    {
+      "kind": "template_label",
+      "count": 34,
+      "evidence": "Psychotherapy-oriented heading survives in programming skills; bodies preserved unchanged."
+    },
+    {
+      "kind": "cross_document_merge_conflict",
+      "skill_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+      "evidence": "Final title/triggers/examples describe downloader middleware registration, but description/objective/body describe request fingerprint customization. Two merge logs span downloader-middleware and request-response sources. Preserve output as generated; no causal claim before Agent trace."
+    }
+  ],
+  "causal_scope": "One trial per condition. Measures offering the frozen Skill index/packages; neither Agent read a Skill body. Metadata exposure differs and may influence behavior. No statistical or causal performance conclusion.",
+  "inference": "The model appears able to solve this task without opening Skill bodies; internal motivation and effects of index metadata cannot be established from these traces.",
+  "not_verified": [
+    "Skill-body-guided task performance",
+    "Sensitivity to document degradation",
+    "Real crawling or network interception",
+    "Statistical significance",
+    "Exhaustive semantic correctness of all generated rules"
+  ],
+  "next_priority": "Define and validate the Skill-body delivery/use protocol for the next independent Clean experiment before degradation runs; preserve current natural-choice pilot unchanged.",
+  "reruns_launched": 0
+}

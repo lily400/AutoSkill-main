@@ -1,0 +1,442 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "异常处理",
+  "run_id": "20261025T165851_00128a91",
+  "skills": [
+    {
+      "skill_id": "248800e8-c919-5bb2-98b0-92a341972f97",
+      "name": "Scrapy 请求 errback 失败处理",
+      "description": "为 Scrapy 请求设置 errback 回调，在请求处理失败时接收 Failure 对象并执行降级、重试或记录；适用于需要容错处理的抓取请求。",
+      "skill_body": "当请求可能失败且需要容错时，在构造 Request 时通过 errback 参数指定回调函数。errback 接收 Failure 对象，可在其中读取请求附加数据（如 cb_kwargs 或 meta）以完成降级、重试或记录。仅处理失败路径，不替代成功回调。\n\n## Objective\n\n在请求失败时通过 errback 捕获并处理异常\n## Applicable Signals\n\n- 请求可能失败需要容错\n- 需要在失败时读取请求附加数据\n\n## Contraindications\n\n- 请求无需失败处理\n- 仅处理成功响应\n\n## Intervention Moves\n\n- 在 Request 构造时设置 errback 参数指向处理函数\n- errback 函数接收 Failure 对象并据此执行降级或记录\n- 在 errback 中访问请求附加数据（cb_kwargs 或 meta）\n\n## Workflow Steps\n\n- 判断该请求是否需要失败容错处理\n- 构造 Request 时通过 errback 参数指定失败处理函数\n- 在 errback 函数中接收 Failure 对象\n- 根据 Failure 与请求附加数据执行降级、重试或记录\n\n## Constraints\n\n- errback 默认值为 None，需显式设置才会触发失败处理\n- errback 仅处理失败路径，成功响应仍由 callback 处理\n\n## Cautions\n\n- 通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 识别，如需设置 cookie 应使用 Request.cookies 参数\n\n## Output Contract\n\n- errback 函数接收 Failure 并完成降级或记录\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 构造一个可能失败的请求并需要失败时记录\n- Therapist/Output: 在 Request 中设置 errback 指向处理函数，函数接收 Failure 并记录失败信息\n- Notes: errback 默认 None，需显式指定",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "dc522835-58a3-552c-bd8b-30ad389282ea",
+      "parent_candidate_ids": [
+        "dc522835-58a3-552c-bd8b-30ad389282ea"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.82,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在请求失败时通过 errback 捕获并处理异常",
+      "domain": "scrapy",
+      "task_family": "异常处理",
+      "method_family": "errback 回调",
+      "stage": "请求失败处理",
+      "applicable_signals": [
+        "请求可能失败需要容错",
+        "需要在失败时读取请求附加数据"
+      ],
+      "contraindications": [
+        "请求无需失败处理",
+        "仅处理成功响应"
+      ],
+      "intervention_moves": [
+        "在 Request 构造时设置 errback 参数指向处理函数",
+        "errback 函数接收 Failure 对象并据此执行降级或记录",
+        "在 errback 中访问请求附加数据（cb_kwargs 或 meta）"
+      ],
+      "triggers": [
+        "请求可能失败需要容错",
+        "需要在失败时读取请求附加数据",
+        "需要为请求指定失败处理回调"
+      ],
+      "workflow_steps": [
+        "判断该请求是否需要失败容错处理",
+        "构造 Request 时通过 errback 参数指定失败处理函数",
+        "在 errback 函数中接收 Failure 对象",
+        "根据 Failure 与请求附加数据执行降级、重试或记录"
+      ],
+      "constraints": [
+        "errback 默认值为 None，需显式设置才会触发失败处理",
+        "errback 仅处理失败路径，成功响应仍由 callback 处理"
+      ],
+      "cautions": [
+        "通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 识别，如需设置 cookie 应使用 Request.cookies 参数"
+      ],
+      "output_contract": [
+        "errback 函数接收 Failure 并完成降级或记录"
+      ],
+      "examples": [
+        {
+          "input": "构造一个可能失败的请求并需要失败时记录",
+          "output": "在 Request 中设置 errback 指向处理函数，函数接收 Failure 并记录失败信息",
+          "notes": "errback 默认 None，需显式指定"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "errback",
+        "异常处理",
+        "请求失败"
+      ],
+      "support_ids": [
+        "0d74a580-14d3-572b-826a-4f4d9cc39025"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "7e36b6e8-ebaf-5bfa-b406-f903398fd570"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在请求失败时通过 errback 捕获并处理异常|scrapy|异常处理|errback 回调|请求失败处理|scrapy 请求 errback 失败处理",
+        "change_action": "create",
+        "llm_reason": "候选技能是 Scrapy errback 失败处理的独立微技能，与现有 process_response 路由、hostname 判定等技能能力不同；peer_candidates 为同层同类候选，不构成对现有技能的 split/merge 关系，故新建。",
+        "parent_skill_id": "dc522835-58a3-552c-bd8b-30ad389282ea",
+        "parent_candidate_ids": [
+          "dc522835-58a3-552c-bd8b-30ad389282ea"
+        ],
+        "hierarchy_confidence": 0.82,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "a465f31a-2043-56a4-8ead-67fa083ba31a",
+      "name": "使用 errback 捕获请求处理异常",
+      "description": "为 Request 指定 errback 回调，在下载或处理失败时接收 Failure 对象并访问其中的附加数据，实现自定义异常处理。当请求可能失败且需要自定义错误处理，或需要在失败时访问请求附加数据时使用。",
+      "skill_body": "当需要为某个 Request 定制失败处理时，在构造 Request 时传入 errback 参数指向处理函数。errback 会在请求下载或处理失败时被调用，接收一个 Failure 对象作为参数。可通过 Failure 访问异常信息，并结合请求附加数据（如 cb_kwargs 或 meta）进行后续处理。确保 errback 函数签名正确并能处理 Failure 对象。\n\n## Objective\n\n在请求失败时通过 errback 捕获并处理异常\n## Applicable Signals\n\n- 请求可能失败需要自定义错误处理\n- 需要在失败时访问请求附加数据\n\n## Contraindications\n\n- 请求无失败风险或使用默认错误处理即可时\n\n## Intervention Moves\n\n- 在 Request 构造时指定 errback 参数\n- 在 errback 函数中接收并处理 Failure 对象\n- 通过附加数据在 errback 中获取请求上下文\n\n## Workflow Steps\n\n- 识别需要自定义失败处理的请求\n- 编写 errback 处理函数，接收 Failure 对象\n- 在构造 Request 时传入 errback 参数\n- 在 errback 中访问 Failure 及请求附加数据进行处理\n\n## Constraints\n\n- errback 函数需正确接收 Failure 对象作为参数\n- 附加数据需在请求构造时通过 cb_kwargs 或 meta 传入\n\n## Cautions\n\n- errback 仅处理失败路径，正常响应仍由 callback 处理\n- 未指定 errback 时失败将走默认错误处理\n\n## Output Contract\n\n- errback 被调用并处理 Failure 对象\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Request(\"https://example.com\", callback=self.parse_page2, errback=self.errback_handler)\n- Therapist/Output: 请求失败时 errback_handler 被调用并接收 Failure 对象\n- Notes: errback 专注失败路径处理",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在请求失败时通过 errback 捕获并处理异常",
+      "domain": "scrapy",
+      "task_family": "异常处理",
+      "method_family": "errback 回调",
+      "stage": "请求失败处理",
+      "applicable_signals": [
+        "请求可能失败需要自定义错误处理",
+        "需要在失败时访问请求附加数据"
+      ],
+      "contraindications": [
+        "请求无失败风险或使用默认错误处理即可时"
+      ],
+      "intervention_moves": [
+        "在 Request 构造时指定 errback 参数",
+        "在 errback 函数中接收并处理 Failure 对象",
+        "通过附加数据在 errback 中获取请求上下文"
+      ],
+      "triggers": [
+        "请求可能失败需要自定义错误处理",
+        "需要在失败时访问请求附加数据",
+        "需要区分正常回调与失败回调路径"
+      ],
+      "workflow_steps": [
+        "识别需要自定义失败处理的请求",
+        "编写 errback 处理函数，接收 Failure 对象",
+        "在构造 Request 时传入 errback 参数",
+        "在 errback 中访问 Failure 及请求附加数据进行处理"
+      ],
+      "constraints": [
+        "errback 函数需正确接收 Failure 对象作为参数",
+        "附加数据需在请求构造时通过 cb_kwargs 或 meta 传入"
+      ],
+      "cautions": [
+        "errback 仅处理失败路径，正常响应仍由 callback 处理",
+        "未指定 errback 时失败将走默认错误处理"
+      ],
+      "output_contract": [
+        "errback 被调用并处理 Failure 对象"
+      ],
+      "examples": [
+        {
+          "input": "Request(\"https://example.com\", callback=self.parse_page2, errback=self.errback_handler)",
+          "output": "请求失败时 errback_handler 被调用并接收 Failure 对象",
+          "notes": "errback 专注失败路径处理"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "errback",
+        "异常处理",
+        "Request",
+        "Failure"
+      ],
+      "support_ids": [
+        "8b155343-8d64-5d4b-8936-647a305bccd7"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "706c6c1b-fee1-5f06-bf2e-98f6bbd42713"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在请求失败时通过 errback 捕获并处理异常|scrapy|异常处理|errback 回调|请求失败处理|使用 errback 捕获请求处理异常",
+        "change_action": "create",
+        "llm_reason": "候选技能是独立的 errback 异常处理微技能，与现有下载器中间件返回值路由、hostname 判定等技能能力不同；peer 候选虽语义相近但均为独立候选，无既有同能力技能可合并或强化，故新建。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "476dd988-1326-59c4-be91-32595e7d8692",
+      "name": "Request errback 异常捕获处理",
+      "description": "为 Scrapy Request 配置 errback 回调以捕获请求处理过程中的异常，并在 errback 中访问 meta 附加数据进行失败分支处理。适用于需要逐请求容错与失败分支处理的爬取流程。",
+      "skill_body": "当某个 Request 可能失败且需要独立的失败分支处理时，为其绑定 errback 回调。在 errback 中接收 failure 对象，读取 request.meta 中的附加数据以区分上下文，并执行相应的错误处理逻辑（记录、重试或降级）。仅在需要逐请求失败处理时使用；若异常已由中间件统一处理或仅需成功回调，则不要额外配置 errback。\n\n## Objective\n\n通过 errback 捕获并处理请求异常\n## Applicable Signals\n\n- 请求可能失败需要失败分支处理\n- 需要在异常时读取 meta 附加数据\n\n## Contraindications\n\n- 仅需正常成功回调处理\n- 异常由中间件统一处理无需逐请求配置\n\n## Intervention Moves\n\n- 在构造 Request 时传入 errback 参数绑定异常处理函数\n- 在 errback 函数中接收 failure 对象并读取 request.meta 附加数据\n- 根据 meta 上下文执行记录、重试或降级等错误处理\n\n## Workflow Steps\n\n- 判断该请求是否需要独立的失败分支处理\n- 构造 Request 时通过 errback 参数绑定异常处理函数\n- 在 errback 中接收 failure 对象并访问 request.meta 中的附加数据\n- 依据附加数据执行相应的错误处理逻辑\n\n## Constraints\n\n- errback 仅处理该 Request 的失败分支，不替代正常 callback 流程\n- 附加数据需在发起请求时通过 meta 传入，errback 中方可读取\n\n## Cautions\n\n- 若异常已由中间件统一处理，逐请求配置 errback 可能造成重复处理\n- errback 中应避免吞掉异常而不做任何记录或降级\n\n## Output Contract\n\n- 绑定 errback 的 Request 及对应的异常处理逻辑，失败时可读取 meta 附加数据并执行错误处理\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某请求可能失败，且需要在失败时读取 meta 中的分类信息\n- Therapist/Output: 构造 Request 时传入 errback，errback 中读取 request.meta 的分类信息并记录或重试\n- Notes: 附加数据需在发起请求时通过 meta 传入",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+      "parent_candidate_ids": [
+        "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.6,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "通过 errback 捕获并处理请求异常",
+      "domain": "scrapy",
+      "task_family": "异常处理",
+      "method_family": "errback callback",
+      "stage": "请求处理",
+      "applicable_signals": [
+        "请求可能失败需要失败分支处理",
+        "需要在异常时读取 meta 附加数据"
+      ],
+      "contraindications": [
+        "仅需正常成功回调处理",
+        "异常由中间件统一处理无需逐请求配置"
+      ],
+      "intervention_moves": [
+        "在构造 Request 时传入 errback 参数绑定异常处理函数",
+        "在 errback 函数中接收 failure 对象并读取 request.meta 附加数据",
+        "根据 meta 上下文执行记录、重试或降级等错误处理"
+      ],
+      "triggers": [
+        "请求可能失败需要失败分支处理",
+        "需要在异常时读取 meta 附加数据",
+        "需要为单个 Request 定制错误处理逻辑"
+      ],
+      "workflow_steps": [
+        "判断该请求是否需要独立的失败分支处理",
+        "构造 Request 时通过 errback 参数绑定异常处理函数",
+        "在 errback 中接收 failure 对象并访问 request.meta 中的附加数据",
+        "依据附加数据执行相应的错误处理逻辑"
+      ],
+      "constraints": [
+        "errback 仅处理该 Request 的失败分支，不替代正常 callback 流程",
+        "附加数据需在发起请求时通过 meta 传入，errback 中方可读取"
+      ],
+      "cautions": [
+        "若异常已由中间件统一处理，逐请求配置 errback 可能造成重复处理",
+        "errback 中应避免吞掉异常而不做任何记录或降级"
+      ],
+      "output_contract": [
+        "绑定 errback 的 Request 及对应的异常处理逻辑，失败时可读取 meta 附加数据并执行错误处理"
+      ],
+      "examples": [
+        {
+          "input": "某请求可能失败，且需要在失败时读取 meta 中的分类信息",
+          "output": "构造 Request 时传入 errback，errback 中读取 request.meta 的分类信息并记录或重试",
+          "notes": "附加数据需在发起请求时通过 meta 传入"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "errback",
+        "异常处理",
+        "request",
+        "meta"
+      ],
+      "support_ids": [
+        "a25db1ec-ab39-5dd9-978d-c586fefc9e1a"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "6ec07d3c-622b-52af-b9d2-358425012cc4"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|通过 errback 捕获并处理请求异常|scrapy|异常处理|errback callback|请求处理|request errback 异常捕获处理",
+        "change_action": "create",
+        "llm_reason": "候选技能是 Scrapy Request 级别的 errback 异常捕获微技能，与现有下载器中间件钩子路由技能（process_response/process_exception）属于不同能力层与任务族，无同层现有技能可合并或强化，故新建。",
+        "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+        "parent_candidate_ids": [
+          "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+        ],
+        "hierarchy_confidence": 0.6,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "3fb3a847-4d60-40fb-8d04-62eb8d4e9a68",
+      "entity_type": "skill",
+      "entity_id": "248800e8-c919-5bb2-98b0-92a341972f97",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是 Scrapy errback 失败处理的独立微技能，与现有 process_response 路由、hostname 判定等技能能力不同；peer_candidates 为同层同类候选，不构成对现有技能的 split/merge 关系，故新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "248800e8-c919-5bb2-98b0-92a341972f97",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "0d74a580-14d3-572b-826a-4f4d9cc39025"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "51a7d0af-3e11-4d5d-9dd7-498c1fabd3b4",
+      "entity_type": "skill",
+      "entity_id": "a465f31a-2043-56a4-8ead-67fa083ba31a",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是独立的 errback 异常处理微技能，与现有下载器中间件返回值路由、hostname 判定等技能能力不同；peer 候选虽语义相近但均为独立候选，无既有同能力技能可合并或强化，故新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "a465f31a-2043-56a4-8ead-67fa083ba31a",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "8b155343-8d64-5d4b-8936-647a305bccd7"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "3d6fb805-b595-4f0d-80cb-c62f8b3e5697",
+      "entity_type": "skill",
+      "entity_id": "476dd988-1326-59c4-be91-32595e7d8692",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是 Scrapy Request 级别的 errback 异常捕获微技能，与现有下载器中间件钩子路由技能（process_response/process_exception）属于不同能力层与任务族，无同层现有技能可合并或强化，故新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "476dd988-1326-59c4-be91-32595e7d8692",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "a25db1ec-ab39-5dd9-978d-c586fefc9e1a"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

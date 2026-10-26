@@ -1,0 +1,108 @@
+{
+  "skill_id": "501dbb09-bc4f-50e2-8eeb-0f83cbff1968",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能描述通过 cb_kwargs 向回调传递额外上下文数据，与现有 hostname 判定/域名正则构建技能能力不同，也与 peer 的 callback/errback 路由、Request 复制、去重过滤不同，属于新的独立微技能。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "501dbb09-bc4f-50e2-8eeb-0f83cbff1968",
+    "name": "Scrapy 回调附加数据传递",
+    "description": "通过 Request 的 cb_kwargs 向回调函数传递额外上下文数据（如 main_url、foo），使回调能访问请求构造阶段产生的数据。适用于回调需要复用请求阶段上下文信息的场景。",
+    "skill_body": "在构造 Request 时，将回调所需的额外上下文数据放入 cb_kwargs 字典；回调函数签名中声明对应参数，Scrapy 会在调用回调时把 cb_kwargs 中的键值作为关键字参数传入。确保回调参数名与 cb_kwargs 键名一致，并在回调中正确使用这些数据。\n\n## Objective\n\n在请求与回调之间传递额外上下文数据\n## Applicable Signals\n\n- 回调函数需要接收请求构造阶段已知的额外数据\n- 需要在回调中复用请求阶段的上下文变量\n\n## Contraindications\n\n- 回调无需额外上下文数据\n- 数据可通过 response 本身直接获取\n\n## Intervention Moves\n\n- 在 Request 中设置 cb_kwargs 字典携带额外数据\n- 在回调函数签名中声明与 cb_kwargs 键对应的参数\n- 在回调中使用传入的附加数据构造输出\n\n## Workflow Steps\n\n- 确定回调所需的额外上下文数据\n- 构造 Request 时将数据放入 cb_kwargs\n- 在回调函数签名中声明对应参数\n- 在回调中读取并使用这些参数\n\n## Constraints\n\n- cb_kwargs 的键必须与回调函数参数名一致\n\n## Cautions\n\n- 参数名不匹配会导致回调调用失败\n\n## Output Contract\n\n- 回调函数接收到 cb_kwargs 中的附加数据并正确使用\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 构造请求时传入 cb_kwargs={'main_url': main_url, 'foo': foo}\n- Therapist/Output: def parse_page2(self, response, main_url, foo): yield dict(main_url=main_url, other_url=response.url, foo=foo)\n- Notes: 回调参数名与 cb_kwargs 键一一对应",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在请求与回调之间传递额外上下文数据",
+    "domain": "scrapy",
+    "task_family": "请求上下文传递",
+    "method_family": "cb_kwargs 参数传递",
+    "stage": "请求构造",
+    "applicable_signals": [
+      "回调函数需要接收请求构造阶段已知的额外数据",
+      "需要在回调中复用请求阶段的上下文变量"
+    ],
+    "contraindications": [
+      "回调无需额外上下文数据",
+      "数据可通过 response 本身直接获取"
+    ],
+    "intervention_moves": [
+      "在 Request 中设置 cb_kwargs 字典携带额外数据",
+      "在回调函数签名中声明与 cb_kwargs 键对应的参数",
+      "在回调中使用传入的附加数据构造输出"
+    ],
+    "triggers": [
+      "回调需要访问请求阶段产生的额外数据",
+      "需要在多个回调之间传递上下文信息"
+    ],
+    "workflow_steps": [
+      "确定回调所需的额外上下文数据",
+      "构造 Request 时将数据放入 cb_kwargs",
+      "在回调函数签名中声明对应参数",
+      "在回调中读取并使用这些参数"
+    ],
+    "constraints": [
+      "cb_kwargs 的键必须与回调函数参数名一致"
+    ],
+    "cautions": [
+      "参数名不匹配会导致回调调用失败"
+    ],
+    "output_contract": [
+      "回调函数接收到 cb_kwargs 中的附加数据并正确使用"
+    ],
+    "examples": [
+      {
+        "input": "构造请求时传入 cb_kwargs={'main_url': main_url, 'foo': foo}",
+        "output": "def parse_page2(self, response, main_url, foo): yield dict(main_url=main_url, other_url=response.url, foo=foo)",
+        "notes": "回调参数名与 cb_kwargs 键一一对应"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "request",
+      "callback",
+      "cb_kwargs",
+      "上下文传递"
+    ],
+    "support_ids": [
+      "d5b4127a-f8af-52fd-99af-da38e39e80e3"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "285e64f8-b44c-5995-83d1-9450a539ebf2"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在请求与回调之间传递额外上下文数据|scrapy|请求上下文传递|cb_kwargs 参数传递|请求构造|scrapy 回调附加数据传递"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

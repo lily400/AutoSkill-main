@@ -1,0 +1,119 @@
+{
+  "skill_id": "bfdf8b93-b24f-554c-938a-3cbb450e6e08",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能描述的是对单个 item/request 逐项进行保留、改写或丢弃的决策能力，与现有请求指纹器、cURL 构造请求等技能在能力身份上不同；peer 候选均为中间件钩子实现契约，属于不同方法层，不构成 split/merge 关系，故作为新微技能创建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "bfdf8b93-b24f-554c-938a-3cbb450e6e08",
+    "name": "Spider输出逐项过滤与改写",
+    "description": "对spider输出或start seeds中的单个item/request进行逐项处理：保留原样、改写为不同对象，或返回None丢弃，从而实现输出过滤与转换。",
+    "skill_body": "当需要过滤或改写spider产出的item，或需要拦截/替换request时，使用本技能。对每个item或request单独做决策：返回同一对象表示保留，返回不同对象表示改写，返回None表示忽略该项。处理item时调用get_processed_item(item, response)，处理request时调用对应的request处理方法；response为None表示该项来自start seeds。\n\n## Objective\n\n逐项决定item/request的保留、改写或丢弃\n## Applicable Signals\n\n- spider输出中存在需要过滤的item\n- spider输出中存在需要拦截或替换的request\n- start seeds中的item/request需要逐项处理\n\n## Contraindications\n\n- 无需对spider输出做任何变更时不应使用\n\n## Intervention Moves\n\n- 对单个item调用get_processed_item(item, response)\n- 对单个request调用对应的request处理方法\n- 返回同一对象以保留\n- 返回不同对象以改写\n- 返回None以忽略该项\n\n## Workflow Steps\n\n- 接收来自spider输出或start seeds的单个item/request\n- 判断该项应保留、改写还是丢弃\n- 保留时返回原对象，改写时返回新对象，丢弃时返回None\n- 对每个item/request重复上述逐项决策\n\n## Constraints\n\n- 每次只处理单个item或request\n- response为None表示该项来自start seeds\n- 返回值必须是item/request对象或None\n\n## Cautions\n\n- 改写时应返回新的有效对象，避免返回无效类型\n- 返回None会静默丢弃该项，需确认丢弃符合预期\n\n## Output Contract\n\n- 返回相同或不同的item/request，或返回None表示忽略该项\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: spider输出中的单个item与对应response\n- Therapist/Output: 返回同一item（保留）、改写后的item，或None（丢弃）\n- Notes: response为None表示来自start seeds\n\n### Example 2\n\n- Client/Input: spider输出中的单个request与对应response\n- Therapist/Output: 返回同一request（保留）、改写后的request，或None（丢弃）",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "逐项决定item/request的保留、改写或丢弃",
+    "domain": "scrapy",
+    "task_family": "spider_output_processing",
+    "method_family": "item_request_filtering",
+    "stage": "processing",
+    "applicable_signals": [
+      "spider输出中存在需要过滤的item",
+      "spider输出中存在需要拦截或替换的request",
+      "start seeds中的item/request需要逐项处理"
+    ],
+    "contraindications": [
+      "无需对spider输出做任何变更时不应使用"
+    ],
+    "intervention_moves": [
+      "对单个item调用get_processed_item(item, response)",
+      "对单个request调用对应的request处理方法",
+      "返回同一对象以保留",
+      "返回不同对象以改写",
+      "返回None以忽略该项"
+    ],
+    "triggers": [
+      "需要过滤或改写spider产出的item",
+      "需要拦截或替换spider输出中的request",
+      "需要对start seeds中的item/request做逐项处理"
+    ],
+    "workflow_steps": [
+      "接收来自spider输出或start seeds的单个item/request",
+      "判断该项应保留、改写还是丢弃",
+      "保留时返回原对象，改写时返回新对象，丢弃时返回None",
+      "对每个item/request重复上述逐项决策"
+    ],
+    "constraints": [
+      "每次只处理单个item或request",
+      "response为None表示该项来自start seeds",
+      "返回值必须是item/request对象或None"
+    ],
+    "cautions": [
+      "改写时应返回新的有效对象，避免返回无效类型",
+      "返回None会静默丢弃该项，需确认丢弃符合预期"
+    ],
+    "output_contract": [
+      "返回相同或不同的item/request，或返回None表示忽略该项"
+    ],
+    "examples": [
+      {
+        "input": "spider输出中的单个item与对应response",
+        "output": "返回同一item（保留）、改写后的item，或None（丢弃）",
+        "notes": "response为None表示来自start seeds"
+      },
+      {
+        "input": "spider输出中的单个request与对应response",
+        "output": "返回同一request（保留）、改写后的request，或None（丢弃）",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "spider-middleware",
+      "output-filtering",
+      "item",
+      "request"
+    ],
+    "support_ids": [
+      "ac30c3ad-d6b1-5786-aa71-a3b3bcfcb1f1"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "483a6df3-7958-5229-bc11-badcb44010aa"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|逐项决定item/request的保留、改写或丢弃|scrapy|spider_output_processing|item_request_filtering|processing|spider输出逐项过滤与改写"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

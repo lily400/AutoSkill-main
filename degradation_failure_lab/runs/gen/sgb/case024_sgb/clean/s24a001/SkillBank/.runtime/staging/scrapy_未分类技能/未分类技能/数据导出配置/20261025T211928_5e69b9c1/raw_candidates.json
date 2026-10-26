@@ -1,0 +1,1639 @@
+{
+  "schema": "autoskill.document.staging.raw_candidates.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "数据导出配置",
+  "run_id": "20261025T211928_5e69b9c1",
+  "documents": [
+    {
+      "doc_id": "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311",
+      "source_type": "document",
+      "title": "input001\\feed-exports.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# Feed exports — Scrapy 2.14.1 documentation\n\n- Feed exports\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/feed-exports.rst)\n\n---\n\n# Feed exports\n\nOne of the most frequently required features when implementing scrapers is\nbeing able to store the scraped data properly and, quite often, that means\ngenerating an “export file” with the scraped data (commonly called “export\nfeed”) to be consumed by other systems.\n\nScrapy provides this functionality out of the box with the Feed Exports, which\nallows you to generate feeds with the scraped items, using multiple\nserialization formats and storage backends.\n\nThis page provides detailed documentation for all feed export features. If you\nare looking for a step-by-step guide, check out [Zyte’s export guides](https://docs.zyte.com/web-scraping/guides/export/index.html#exporting-scraped-data).\n\n## Serialization formats\n\nFor serializing the scraped data, the feed exports use the [Item exporters](exporters.html#topics-exporters). These formats are supported out of the box:\n\n- JSON\n- JSON lines\n- CSV\n- XML\n\nBut you can also extend the supported format through the\n`FEED_EXPORTERS` setting.\n\n### JSON\n\n- Value for the `format` key in the `FEEDS` setting: `json`\n- Exporter used: [`JsonItemExporter`](exporters.html#scrapy.exporters.JsonItemExporter)\n- See [this warning](exporters.html#json-with-large-data) if you’re using JSON with\nlarge feeds.\n\n### JSON lines\n\n- Value for the `format` key in the `FEEDS` setting: `jsonlines`\n- Exporter used: [`JsonLinesItemExporter`](exporters.html#scrapy.exporters.JsonLinesItemExporter)\n\n### CSV\n\n- Value for the `format` key in the `FEEDS` setting: `csv`\n- Exporter used: [`CsvItemExporter`](exporters.html#scrapy.exporters.CsvItemExporter)\n- To specify columns to export, their order and their column names, use\n`FEED_EXPORT_FIELDS`. Other feed exporters can also use this\noption, but it is important for CSV because unlike many other export\nformats CSV uses a fixed header.\n\n### XML\n\n- Value for the `format` key in the `FEEDS` setting: `xml`\n- Exporter used: [`XmlItemExporter`](exporters.html#scrapy.exporters.XmlItemExporter)\n\n### Pickle\n\n- Value for the `format` key in the `FEEDS` setting: `pickle`\n- Exporter used: [`PickleItemExporter`](exporters.html#scrapy.exporters.PickleItemExporter)\n\n### Marshal\n\n- Value for the `format` key in the `FEEDS` setting: `marshal`\n- Exporter used: [`MarshalItemExporter`](exporters.html#scrapy.exporters.MarshalItemExporter)\n\n## Storages\n\nWhen using the feed exports you define where to store the feed using one or multiple [URIs](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)\n(through the `FEEDS` setting). The feed exports supports multiple\nstorage backend types which are defined by the URI scheme.\n\nThe storages backends supported out of the box are:\n\n- Local filesystem\n- FTP\n- S3 (requires [boto3](https://github.com/boto/boto3))\n- Google Cloud Storage (GCS) (requires [google-cloud-storage](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python))\n- Standard output\n\nSome storage backends may be unavailable if the required external libraries are\nnot available. For example, the S3 backend is only available if the [boto3](https://github.com/boto/boto3)\nlibrary is installed.\n\n## Storage URI parameters\n\nThe storage URI can also contain parameters that get replaced when the feed is\nbeing created. These parameters are:\n\n- `%(time)s` - gets replaced by a timestamp when the feed is being created\n- `%(name)s` - gets replaced by the spider name\n\nAny other named parameter gets replaced by the spider attribute of the same\nname. For example, `%(site_id)s` would get replaced by the `spider.site_id`\nattribute the moment the feed is being created.\n\nHere are some examples to illustrate:\n\n- Store in FTP using one directory per spider:\n  - `ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json`\n- Store in S3 using one directory per spider:\n  - `s3://mybucket/scraping/feeds/%(name)s/%(time)s.json`\n\n[Spider arguments](spiders.html#spiderargs) become spider attributes, hence\nthey can also be used as storage URI parameters.\n\n## Storage backends\n\n### Local filesystem\n\nThe feeds are stored in the local filesystem.\n\n- URI scheme: `file`\n- Example URI: `file:///tmp/export.csv`\n- Required external libraries: none\n\nNote that for the local filesystem storage (only) you can omit the scheme if\nyou specify an absolute path like `/tmp/export.csv` (Unix systems only).\nAlternatively you can also use a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path) object.\n\n### FTP\n\nThe feeds are stored in a FTP server.\n\n- URI scheme: `ftp`\n- Example URI: `ftp://user:pass@ftp.example.com/path/to/export.csv`\n- Required external libraries: none\n\nFTP supports two different connection modes: [active or passive](https://stackoverflow.com/a/1699163). Scrapy uses the passive connection\nmode by default. To use the active connection mode instead, set the\n`FEED_STORAGE_FTP_ACTIVE` setting to `True`.\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.\n\nThe value `True` in `overwrite` will cause you to lose the\nprevious version of your data.\n\nThis storage backend uses delayed file delivery.\n\n### S3\n\nThe feeds are stored on [Amazon S3](https://aws.amazon.com/s3/).\n\n- URI scheme: `s3`\n- Example URIs:\n  - `s3://mybucket/path/to/export.csv`\n  - `s3://aws_key:aws_secret@mybucket/path/to/export.csv`\n- Required external libraries: [boto3](https://github.com/boto/boto3) >= 1.20.0\n\nThe AWS credentials can be passed as user/password in the URI, or they can be\npassed through the following settings:\n\n- [`AWS_ACCESS_KEY_ID`](settings.html#std-setting-AWS_ACCESS_KEY_ID)\n- [`AWS_SECRET_ACCESS_KEY`](settings.html#std-setting-AWS_SECRET_ACCESS_KEY)\n- [`AWS_SESSION_TOKEN`](settings.html#std-setting-AWS_SESSION_TOKEN) (only needed for [temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html))\n\nYou can also define a custom ACL, custom endpoint, and region name for exported\nfeeds using these settings:\n\n- `FEED_STORAGE_S3_ACL`\n- [`AWS_ENDPOINT_URL`](settings.html#std-setting-AWS_ENDPOINT_URL)\n- [`AWS_REGION_NAME`](settings.html#std-setting-AWS_REGION_NAME)\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.\n\nThe value `True` in `overwrite` will cause you to lose the\nprevious version of your data.\n\nThis storage backend uses delayed file delivery.\n\n### Google Cloud Storage (GCS)\n\nThe feeds are stored on [Google Cloud Storage](https://cloud.google.com/storage/).\n\n- URI scheme: `gs`\n- Example URIs:\n  - `gs://mybucket/path/to/export.csv`\n- Required external libraries: [google-cloud-storage](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python).\n\nFor more information about authentication, please refer to [Google Cloud documentation](https://cloud.google.com/docs/authentication).\n\nYou can set a *Project ID* and *Access Control List (ACL)* through the following settings:\n\n- [`FEED_STORAGE_GCS_ACL`](settings.html#std-setting-FEED_STORAGE_GCS_ACL)\n- [`GCS_PROJECT_ID`](settings.html#std-setting-GCS_PROJECT_ID)\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.\n\nThe value `True` in `overwrite` will cause you to lose the\nprevious version of your data.\n\nThis storage backend uses delayed file delivery.\n\n### Standard output\n\nThe feeds are written to the standard output of the Scrapy process.\n\n- URI scheme: `stdout`\n- Example URI: `stdout:`\n- Required external libraries: none\n\n### Delayed file delivery\n\nAs indicated above, some of the described storage backends use delayed file\ndelivery.\n\nThese storage backends do not upload items to the feed URI as those items are\nscraped. Instead, Scrapy writes items into a temporary local file, and only\nonce all the file contents have been written (i.e. at the end of the crawl) is\nthat file uploaded to the feed URI.\n\nIf you want item delivery to start earlier when using one of these storage\nbackends, use `FEED_EXPORT_BATCH_ITEM_COUNT` to split the output items\nin multiple files, with the specified maximum item count per file. That way, as\nsoon as a file reaches the maximum item count, that file is delivered to the\nfeed URI, allowing item delivery to start way before the end of the crawl.\n\n## Item filtering\n\nYou can filter items that you want to allow for a particular feed by using the\n`item_classes` option in feeds options. Only items of\nthe specified types will be added to the feed.\n\nThe `item_classes` option is implemented by the `ItemFilter`\nclass, which is the default value of the `item_filter` feed option.\n\nYou can create your own custom filtering class by implementing `ItemFilter`’s\nmethod `accepts` and taking `feed_options` as an argument.\n\nFor instance:\n\n```\nclass MyCustomFilter:\n    def __init__(self, feed_options):\n        self.feed_options = feed_options\n\n    def accepts(self, item):\n        if \"field1\" in item and item[\"field1\"] == \"expected_data\":\n            return True\n        return False\n```\n\nYou can assign your custom filtering class to the `item_filter` option of a feed.\nSee `FEEDS` for examples.\n\n### ItemFilter\n\n***class*scrapy.extensions.feedexport.ItemFilter(*feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/library/constants.html#None)*)[[source]](../_modules/scrapy/extensions/feedexport.html#ItemFilter)**\n\nThis will be used by FeedExporter to decide if an item should be allowed\nto be exported to a particular feed.\n\n**Parameters:**\n\n**feed_options** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – feed specific options passed from FeedExporter\n\n**accepts(*item: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*) → [bool](https://docs.python.org/3/library/functions.html#bool)[[source]](../_modules/scrapy/extensions/feedexport.html#ItemFilter.accepts)**\n\nReturn `True` if item should be exported or `False` otherwise.\n\n**Parameters:**\n\n**item** ([Scrapy items](items.html#topics-items)) – scraped item which user wants to check if is acceptable\n\n**Returns:**\n\nTrue if accepted, False otherwise\n\n**Return type:**\n\n[bool](https://docs.python.org/3/library/functions.html#bool)\n\n## Post-Processing\n\nScrapy provides an option to activate plugins to post-process feeds before they are exported\nto feed storages. In addition to using builtin plugins, you\ncan create your own plugins.\n\nThese plugins can be activated through the `postprocessing` option of a feed.\nThe option must be passed a list of post-processing plugins in the order you want\nthe feed to be processed. These plugins can be declared either as an import string\nor with the imported class of the plugin. Parameters to plugins can be passed\nthrough the feed options. See feed options for examples.\n\n### Built-in Plugins\n\n***class*scrapy.extensions.postprocessing.GzipPlugin(*file: [BinaryIO](https://docs.python.org/3/library/typing.html#typing.BinaryIO)*, *feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*)[[source]](../_modules/scrapy/extensions/postprocessing.html#GzipPlugin)**\n\nCompresses received data using [gzip](https://en.wikipedia.org/wiki/Gzip).\n\nAccepted `feed_options` parameters:\n\n- gzip_compresslevel\n- gzip_mtime\n- gzip_filename\n\nSee [`gzip.GzipFile`](https://docs.python.org/3/library/gzip.html#gzip.GzipFile) for more info about parameters.\n\n***class*scrapy.extensions.postprocessing.LZMAPlugin(*file: [BinaryIO](https://docs.python.org/3/library/typing.html#typing.BinaryIO)*, *feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*)[[source]](../_modules/scrapy/extensions/postprocessing.html#LZMAPlugin)**\n\nCompresses received data using [lzma](https://en.wikipedia.org/wiki/Lempel–Ziv–Markov_chain_algorithm).\n\nAccepted `feed_options` parameters:\n\n- lzma_format\n- lzma_check\n- lzma_preset\n- lzma_filters\n\n`lzma_filters` cannot be used in pypy version 7.3.1 and older.\n\nSee [`lzma.LZMAFile`](https://docs.python.org/3/library/lzma.html#lzma.LZMAFile) for more info about parameters.\n\n***class*scrapy.extensions.postprocessing.Bz2Plugin(*file: [BinaryIO](https://docs.python.org/3/library/typing.html#typing.BinaryIO)*, *feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*)[[source]](../_modules/scrapy/extensions/postprocessing.html#Bz2Plugin)**\n\nCompresses received data using [bz2](https://en.wikipedia.org/wiki/Bzip2).\n\nAccepted `feed_options` parameters:\n\n- bz2_compresslevel\n\nSee [`bz2.BZ2File`](https://docs.python.org/3/library/bz2.html#bz2.BZ2File) for more info about parameters.\n\n### Custom Plugins\n\nEach plugin is a class that must implement the following methods:\n\n**__init__(*self*, *file*, *feed_options*)**\n\nInitialize the plugin.\n\n**Parameters:**\n\n- **file** – file-like object having at least the write, tell and close methods implemented\n- **feed_options** ([`dict`](https://docs.python.org/3/library/stdtypes.html#dict)) – feed-specific options\n\n**write(*self*, *data*)**\n\nProcess and write data ([`bytes`](https://docs.python.org/3/library/stdtypes.html#bytes) or [`memoryview`](https://docs.python.org/3/library/stdtypes.html#memoryview)) into the plugin’s target file.\nIt must return number of bytes written.\n\n**close(*self*)**\n\nClean up the plugin.\n\nFor example, you might want to close a file wrapper that you might have\nused to compress data written into the file received in the `__init__`\nmethod.\n\nDo not close the file from the `__init__` method.\n\nTo pass a parameter to your plugin, use feed options. You\ncan then access those parameters from the `__init__` method of your plugin.\n\n## Settings\n\nThese are the settings used for configuring the feed exports:\n\n- `FEEDS` (mandatory)\n- `FEED_EXPORT_ENCODING`\n- `FEED_STORE_EMPTY`\n- `FEED_EXPORT_FIELDS`\n- `FEED_EXPORT_INDENT`\n- `FEED_STORAGES`\n- `FEED_STORAGE_FTP_ACTIVE`\n- `FEED_STORAGE_S3_ACL`\n- `FEED_EXPORTERS`\n- `FEED_EXPORT_BATCH_ITEM_COUNT`\n\n### FEEDS\n\nDefault: `{}`\n\nA dictionary in which every key is a feed URI (or a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)\nobject) and each value is a nested dictionary containing configuration\nparameters for the specific feed.\n\nThis setting is required for enabling the feed export feature.\n\nSee Storage backends for supported URI schemes.\n\nFor instance:\n\n```\n{\n    'items.json': {\n        'format': 'json',\n        'encoding': 'utf8',\n        'store_empty': False,\n        'item_classes': [MyItemClass1, 'myproject.items.MyItemClass2'],\n        'fields': None,\n        'indent': 4,\n        'item_export_kwargs': {\n           'export_empty_fields': True,\n        },\n    },\n    '/home/user/documents/items.xml': {\n        'format': 'xml',\n        'fields': ['name', 'price'],\n        'item_filter': MyCustomFilter1,\n        'encoding': 'latin1',\n        'indent': 8,\n    },\n    pathlib.Path('items.csv.gz'): {\n        'format': 'csv',\n        'fields': ['price', 'name'],\n        'item_filter': 'myproject.filters.MyCustomFilter2',\n        'postprocessing': [MyPlugin1, 'scrapy.extensions.postprocessing.GzipPlugin'],\n        'gzip_compresslevel': 5,\n    },\n}\n```\n\nThe following is a list of the accepted keys and the setting that is used\nas a fallback value if that key is not provided for a specific feed definition:\n\n- `format`: the serialization format.\n\nThis setting is mandatory, there is no fallback value.\n- `batch_item_count`: falls back to\n`FEED_EXPORT_BATCH_ITEM_COUNT`.\n- `encoding`: falls back to `FEED_EXPORT_ENCODING`.\n- `fields`: falls back to `FEED_EXPORT_FIELDS`.\n- `item_classes`: list of [item classes](items.html#topics-items) to export.\n\nIf undefined or empty, all items are exported.\n- `item_filter`: a filter class to filter items to export.\n\n`ItemFilter` is used be default.\n- `indent`: falls back to `FEED_EXPORT_INDENT`.\n- `item_export_kwargs`: [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) with keyword arguments for the corresponding [item exporter class](exporters.html#topics-exporters).\n- `overwrite`: whether to overwrite the file if it already exists\n(`True`) or append to its content (`False`).\n\nThe default value depends on the storage backend:\n  - Local filesystem: `False`\n  - FTP: `True`\n\nSome FTP servers may not support appending to files (the\n`APPE` FTP command).\n  - S3: `True` (appending is not supported)\n  - Google Cloud Storage (GCS): `True` (appending is not supported)\n  - Standard output: `False` (overwriting is not supported)\n- `store_empty`: falls back to `FEED_STORE_EMPTY`.\n- `uri_params`: falls back to `FEED_URI_PARAMS`.\n- `postprocessing`: list of plugins to use for post-processing.\n\nThe plugins will be used in the order of the list passed.\n\n### FEED_EXPORT_ENCODING\n\nDefault: `\"utf-8\"` ([fallback](settings.html#default-settings): `None`)\n\nThe encoding to be used for the feed.\n\nIf set to `None`, it uses UTF-8 for everything except JSON output, which uses\nsafe numeric encoding (`\\uXXXX` sequences) for historic reasons.\n\nUse `\"utf-8\"` if you want UTF-8 for JSON too.\n\nChanged in version 2.8: The [`startproject`](commands.html#std-command-startproject) command now sets this setting to\n`\"utf-8\"` in the generated `settings.py` file.\n\n### FEED_EXPORT_FIELDS\n\nDefault: `None`\n\nUse the `FEED_EXPORT_FIELDS` setting to define the fields to export, their\norder and their output names. See [`BaseItemExporter.fields_to_export`](exporters.html#scrapy.exporters.BaseItemExporter.fields_to_export) for more information.\n\n### FEED_EXPORT_INDENT\n\nDefault: `0`\n\nAmount of spaces used to indent the output on each level. If `FEED_EXPORT_INDENT`\nis a non-negative integer, then array elements and object members will be pretty-printed\nwith that indent level. An indent level of `0` (the default), or negative,\nwill put each item on a new line. `None` selects the most compact representation.\n\nCurrently implemented only by [`JsonItemExporter`](exporters.html#scrapy.exporters.JsonItemExporter)\nand [`XmlItemExporter`](exporters.html#scrapy.exporters.XmlItemExporter), i.e. when you are exporting\nto `.json` or `.xml`.\n\n### FEED_STORE_EMPTY\n\nDefault: `True`\n\nWhether to export empty feeds (i.e. feeds with no items).\nIf `False`, and there are no items to export, no new files are created and\nexisting files are not modified, even if the overwrite feed option is enabled.\n\n### FEED_STORAGES\n\nDefault: `{}`\n\nA dict containing additional feed storage backends supported by your project.\nThe keys are URI schemes and the values are paths to storage classes.\n\n### FEED_STORAGE_FTP_ACTIVE\n\nDefault: `False`\n\nWhether to use the active connection mode when exporting feeds to an FTP server\n(`True`) or use the passive connection mode instead (`False`, default).\n\nFor information about FTP connection modes, see [What is the difference between\nactive and passive FTP?](https://stackoverflow.com/a/1699163).\n\n### FEED_STORAGE_S3_ACL\n\nDefault: `''` (empty string)\n\nA string containing a custom ACL for feeds exported to Amazon S3 by your project.\n\nFor a complete list of available values, access the [Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl) section on Amazon S3 docs.\n\n### FEED_STORAGES_BASE\n\nDefault:\n\n```\n{\n    \"\": \"scrapy.extensions.feedexport.FileFeedStorage\",\n    \"file\": \"scrapy.extensions.feedexport.FileFeedStorage\",\n    \"stdout\": \"scrapy.extensions.feedexport.StdoutFeedStorage\",\n    \"s3\": \"scrapy.extensions.feedexport.S3FeedStorage\",\n    \"ftp\": \"scrapy.extensions.feedexport.FTPFeedStorage\",\n}\n```\n\nA dict containing the built-in feed storage backends supported by Scrapy. You\ncan disable any of these backends by assigning `None` to their URI scheme in\n`FEED_STORAGES`. E.g., to disable the built-in FTP storage backend\n(without replacement), place this in your `settings.py`:\n\n```\nFEED_STORAGES = {\n    \"ftp\": None,\n}\n```\n\n### FEED_EXPORTERS\n\nDefault: `{}`\n\nA dict containing additional exporters supported by your project. The keys are\nserialization formats and the values are paths to [Item exporter](exporters.html#topics-exporters) classes.\n\n### FEED_EXPORTERS_BASE\n\nDefault:\n\n```\n{\n    \"json\": \"scrapy.exporters.JsonItemExporter\",\n    \"jsonlines\": \"scrapy.exporters.JsonLinesItemExporter\",\n    \"jsonl\": \"scrapy.exporters.JsonLinesItemExporter\",\n    \"jl\": \"scrapy.exporters.JsonLinesItemExporter\",\n    \"csv\": \"scrapy.exporters.CsvItemExporter\",\n    \"xml\": \"scrapy.exporters.XmlItemExporter\",\n    \"marshal\": \"scrapy.exporters.MarshalItemExporter\",\n    \"pickle\": \"scrapy.exporters.PickleItemExporter\",\n}\n```\n\nA dict containing the built-in feed exporters supported by Scrapy. You can\ndisable any of these exporters by assigning `None` to their serialization\nformat in `FEED_EXPORTERS`. E.g., to disable the built-in CSV exporter\n(without replacement), place this in your `settings.py`:\n\n```\nFEED_EXPORTERS = {\n    \"csv\": None,\n}\n```\n\n### FEED_EXPORT_BATCH_ITEM_COUNT\n\nDefault: `0`\n\nIf assigned an integer number higher than `0`, Scrapy generates multiple output files\nstoring up to the specified number of items in each output file.\n\nWhen generating multiple output files, you must use at least one of the following\nplaceholders in the feed URI to indicate how the different output file names are\ngenerated:\n\n- `%(batch_time)s` - gets replaced by a timestamp when the feed is being created\n(e.g. `2020-03-28T14-45-08.237134`)\n- `%(batch_id)d` - gets replaced by the 1-based sequence number of the batch.\n\nUse [printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting) to\nalter the number format. For example, to make the batch ID a 5-digit\nnumber by introducing leading zeroes as needed, use `%(batch_id)05d`\n(e.g. `3` becomes `00003`, `123` becomes `00123`).\n\nFor instance, if your settings include:\n\n```\nFEED_EXPORT_BATCH_ITEM_COUNT = 100\n```\n\nAnd your [`crawl`](commands.html#std-command-crawl) command line is:\n\n```\nscrapy crawl spidername -o \"dirname/%(batch_id)d-filename%(batch_time)s.json\"\n```\n\nThe command line above can generate a directory tree like:\n\n```\n->projectname\n-->dirname\n--->1-filename2020-03-28T14-45-08.237134.json\n--->2-filename2020-03-28T14-45-09.148903.json\n--->3-filename2020-03-28T14-45-10.046092.json\n```\n\nWhere the first and second files contain exactly 100 items. The last one contains\n100 items or fewer.\n\n### FEED_URI_PARAMS\n\nDefault: `None`\n\nA string with the import path of a function to set the parameters to apply with\n[printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting) to the\nfeed URI.\n\nThe function signature should be as follows:\n\n**scrapy.extensions.feedexport.uri_params(*params*, *spider*)**\n\nReturn a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) of key-value pairs to apply to the feed URI using\n[printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting).\n\n**Parameters:**\n\n- **params** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) –\n\ndefault key-value pairs\n\nSpecifically:\n  - `batch_id`: ID of the file batch. See\n`FEED_EXPORT_BATCH_ITEM_COUNT`.\n\nIf `FEED_EXPORT_BATCH_ITEM_COUNT` is `0`, `batch_id`\nis always `1`.\n  - `batch_time`: UTC date and time, in ISO format with `:`\nreplaced with `-`.\n\nSee `FEED_EXPORT_BATCH_ITEM_COUNT`.\n  - `time`: `batch_time`, with microseconds set to `0`.\n- **spider** ([*scrapy.Spider*](spiders.html#scrapy.Spider)) – source spider of the feed items\n\nThe function should return a new dictionary, modifying\nthe received `params` in-place is deprecated.\n\nFor example, to include the [`name`](spiders.html#scrapy.Spider.name) of the\nsource spider in the feed URI:\n\n1. Define the following function somewhere in your project:\n\n```\n# myproject/utils.py\ndef uri_params(params, spider):\n    return {**params, \"spider_name\": spider.name}\n```\n2. Point `FEED_URI_PARAMS` to that function in your settings:\n\n```\n# myproject/settings.py\nFEED_URI_PARAMS = \"myproject.utils.uri_params\"\n```\n3. Use `%(spider_name)s` in your feed URI:\n\n```\nscrapy crawl <spider_name> -o \"%(spider_name)s.jsonl\"\n```",
+      "sections": [
+        {
+          "heading": "input001\\feed-exports.md",
+          "text": "# Feed exports — Scrapy 2.14.1 documentation\n\n- Feed exports\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/feed-exports.rst)\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 161
+          },
+          "metadata": {
+            "heading_path": [
+              "input001\\feed-exports.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# Feed exports — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "Feed exports"
+            ]
+          }
+        },
+        {
+          "heading": "Feed exports",
+          "text": "One of the most frequently required features when implementing scrapers is\nbeing able to store the scraped data properly and, quite often, that means\ngenerating an “export file” with the scraped data (commonly called “export\nfeed”) to be consumed by other systems.\n\nScrapy provides this functionality out of the box with the Feed Exports, which\nallows you to generate feeds with the scraped items, using multiple\nserialization formats and storage backends.\n\nThis page provides detailed documentation for all feed export features. If you\nare looking for a step-by-step guide, check out [Zyte’s export guides](https://docs.zyte.com/web-scraping/guides/export/index.html#exporting-scraped-data).",
+          "level": 1,
+          "span": {
+            "start": 176,
+            "end": 871
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "One of the most frequently required features when implementing scrapers is",
+            "sibling_headings": [
+              "input001\\feed-exports.md"
+            ]
+          }
+        },
+        {
+          "heading": "Serialization formats",
+          "text": "For serializing the scraped data, the feed exports use the [Item exporters](exporters.html#topics-exporters). These formats are supported out of the box:\n\n- JSON\n- JSON lines\n- CSV\n- XML\n\nBut you can also extend the supported format through the\n`FEED_EXPORTERS` setting.",
+          "level": 2,
+          "span": {
+            "start": 896,
+            "end": 1169
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Serialization formats"
+            ],
+            "parent_heading": "Feed exports",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "For serializing the scraped data, the feed exports use the [Item exporters](exporters.html#topics-exporters). These formats are supported out of the box:",
+            "sibling_headings": [
+              "Storages",
+              "Item filtering",
+              "Post-Processing",
+              "Settings"
+            ]
+          }
+        },
+        {
+          "heading": "JSON",
+          "text": "- Value for the `format` key in the `FEEDS` setting: `json`\n- Exporter used: [`JsonItemExporter`](exporters.html#scrapy.exporters.JsonItemExporter)\n- See [this warning](exporters.html#json-with-large-data) if you’re using JSON with\nlarge feeds.",
+          "level": 3,
+          "span": {
+            "start": 1178,
+            "end": 1425
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Serialization formats",
+              "JSON"
+            ],
+            "parent_heading": "Serialization formats",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "- Value for the `format` key in the `FEEDS` setting: `json`",
+            "sibling_headings": [
+              "JSON lines",
+              "CSV",
+              "XML",
+              "Pickle",
+              "Marshal"
+            ]
+          }
+        },
+        {
+          "heading": "JSON lines",
+          "text": "- Value for the `format` key in the `FEEDS` setting: `jsonlines`\n- Exporter used: [`JsonLinesItemExporter`](exporters.html#scrapy.exporters.JsonLinesItemExporter)",
+          "level": 3,
+          "span": {
+            "start": 1440,
+            "end": 1605
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Serialization formats",
+              "JSON lines"
+            ],
+            "parent_heading": "Serialization formats",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "- Value for the `format` key in the `FEEDS` setting: `jsonlines`",
+            "sibling_headings": [
+              "JSON",
+              "CSV",
+              "XML",
+              "Pickle",
+              "Marshal"
+            ]
+          }
+        },
+        {
+          "heading": "CSV",
+          "text": "- Value for the `format` key in the `FEEDS` setting: `csv`\n- Exporter used: [`CsvItemExporter`](exporters.html#scrapy.exporters.CsvItemExporter)\n- To specify columns to export, their order and their column names, use\n`FEED_EXPORT_FIELDS`. Other feed exporters can also use this\noption, but it is important for CSV because unlike many other export\nformats CSV uses a fixed header.",
+          "level": 3,
+          "span": {
+            "start": 1613,
+            "end": 1995
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Serialization formats",
+              "CSV"
+            ],
+            "parent_heading": "Serialization formats",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "- Value for the `format` key in the `FEEDS` setting: `csv`",
+            "sibling_headings": [
+              "JSON",
+              "JSON lines",
+              "XML",
+              "Pickle",
+              "Marshal"
+            ]
+          }
+        },
+        {
+          "heading": "XML",
+          "text": "- Value for the `format` key in the `FEEDS` setting: `xml`\n- Exporter used: [`XmlItemExporter`](exporters.html#scrapy.exporters.XmlItemExporter)",
+          "level": 3,
+          "span": {
+            "start": 2003,
+            "end": 2150
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Serialization formats",
+              "XML"
+            ],
+            "parent_heading": "Serialization formats",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "- Value for the `format` key in the `FEEDS` setting: `xml`",
+            "sibling_headings": [
+              "JSON",
+              "JSON lines",
+              "CSV",
+              "Pickle",
+              "Marshal"
+            ]
+          }
+        },
+        {
+          "heading": "Pickle",
+          "text": "- Value for the `format` key in the `FEEDS` setting: `pickle`\n- Exporter used: [`PickleItemExporter`](exporters.html#scrapy.exporters.PickleItemExporter)",
+          "level": 3,
+          "span": {
+            "start": 2161,
+            "end": 2317
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Serialization formats",
+              "Pickle"
+            ],
+            "parent_heading": "Serialization formats",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "- Value for the `format` key in the `FEEDS` setting: `pickle`",
+            "sibling_headings": [
+              "JSON",
+              "JSON lines",
+              "CSV",
+              "XML",
+              "Marshal"
+            ]
+          }
+        },
+        {
+          "heading": "Marshal",
+          "text": "- Value for the `format` key in the `FEEDS` setting: `marshal`\n- Exporter used: [`MarshalItemExporter`](exporters.html#scrapy.exporters.MarshalItemExporter)",
+          "level": 3,
+          "span": {
+            "start": 2329,
+            "end": 2488
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Serialization formats",
+              "Marshal"
+            ],
+            "parent_heading": "Serialization formats",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "- Value for the `format` key in the `FEEDS` setting: `marshal`",
+            "sibling_headings": [
+              "JSON",
+              "JSON lines",
+              "CSV",
+              "XML",
+              "Pickle"
+            ]
+          }
+        },
+        {
+          "heading": "Storages",
+          "text": "When using the feed exports you define where to store the feed using one or multiple [URIs](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)\n(through the `FEEDS` setting). The feed exports supports multiple\nstorage backend types which are defined by the URI scheme.\n\nThe storages backends supported out of the box are:\n\n- Local filesystem\n- FTP\n- S3 (requires [boto3](https://github.com/boto/boto3))\n- Google Cloud Storage (GCS) (requires [google-cloud-storage](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python))\n- Standard output\n\nSome storage backends may be unavailable if the required external libraries are\nnot available. For example, the S3 backend is only available if the [boto3](https://github.com/boto/boto3)\nlibrary is installed.",
+          "level": 2,
+          "span": {
+            "start": 2500,
+            "end": 3294
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages"
+            ],
+            "parent_heading": "Feed exports",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "When using the feed exports you define where to store the feed using one or multiple [URIs](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier)",
+            "sibling_headings": [
+              "Serialization formats",
+              "Item filtering",
+              "Post-Processing",
+              "Settings"
+            ]
+          }
+        },
+        {
+          "heading": "Storage URI parameters",
+          "text": "The storage URI can also contain parameters that get replaced when the feed is\nbeing created. These parameters are:\n\n- `%(time)s` - gets replaced by a timestamp when the feed is being created\n- `%(name)s` - gets replaced by the spider name\n\nAny other named parameter gets replaced by the spider attribute of the same\nname. For example, `%(site_id)s` would get replaced by the `spider.site_id`\nattribute the moment the feed is being created.\n\nHere are some examples to illustrate:\n\n- Store in FTP using one directory per spider:\n  - `ftp://user:password@ftp.example.com/scraping/feeds/%(name)s/%(time)s.json`\n- Store in S3 using one directory per spider:\n  - `s3://mybucket/scraping/feeds/%(name)s/%(time)s.json`\n\n[Spider arguments](spiders.html#spiderargs) become spider attributes, hence\nthey can also be used as storage URI parameters.",
+          "level": 3,
+          "span": {
+            "start": 3320,
+            "end": 4160
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages",
+              "Storage URI parameters"
+            ],
+            "parent_heading": "Storages",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The storage URI can also contain parameters that get replaced when the feed is",
+            "sibling_headings": [
+              "Local filesystem",
+              "FTP",
+              "S3",
+              "Google Cloud Storage (GCS)",
+              "Standard output",
+              "Delayed file delivery"
+            ]
+          }
+        },
+        {
+          "heading": "Local filesystem",
+          "text": "The feeds are stored in the local filesystem.\n\n- URI scheme: `file`\n- Example URI: `file:///tmp/export.csv`\n- Required external libraries: none\n\nNote that for the local filesystem storage (only) you can omit the scheme if\nyou specify an absolute path like `/tmp/export.csv` (Unix systems only).\nAlternatively you can also use a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path) object.",
+          "level": 3,
+          "span": {
+            "start": 4202,
+            "end": 4618
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages",
+              "Local filesystem"
+            ],
+            "parent_heading": "Storages",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The feeds are stored in the local filesystem.",
+            "sibling_headings": [
+              "Storage URI parameters",
+              "FTP",
+              "S3",
+              "Google Cloud Storage (GCS)",
+              "Standard output",
+              "Delayed file delivery"
+            ]
+          }
+        },
+        {
+          "heading": "FTP",
+          "text": "The feeds are stored in a FTP server.\n\n- URI scheme: `ftp`\n- Example URI: `ftp://user:pass@ftp.example.com/path/to/export.csv`\n- Required external libraries: none\n\nFTP supports two different connection modes: [active or passive](https://stackoverflow.com/a/1699163). Scrapy uses the passive connection\nmode by default. To use the active connection mode instead, set the\n`FEED_STORAGE_FTP_ACTIVE` setting to `True`.\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.\n\nThe value `True` in `overwrite` will cause you to lose the\nprevious version of your data.\n\nThis storage backend uses delayed file delivery.",
+          "level": 3,
+          "span": {
+            "start": 4626,
+            "end": 5279
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages",
+              "FTP"
+            ],
+            "parent_heading": "Storages",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The feeds are stored in a FTP server.",
+            "sibling_headings": [
+              "Storage URI parameters",
+              "Local filesystem",
+              "S3",
+              "Google Cloud Storage (GCS)",
+              "Standard output",
+              "Delayed file delivery"
+            ]
+          }
+        },
+        {
+          "heading": "S3",
+          "text": "The feeds are stored on [Amazon S3](https://aws.amazon.com/s3/).\n\n- URI scheme: `s3`\n- Example URIs:\n  - `s3://mybucket/path/to/export.csv`\n  - `s3://aws_key:aws_secret@mybucket/path/to/export.csv`\n- Required external libraries: [boto3](https://github.com/boto/boto3) >= 1.20.0\n\nThe AWS credentials can be passed as user/password in the URI, or they can be\npassed through the following settings:\n\n- [`AWS_ACCESS_KEY_ID`](settings.html#std-setting-AWS_ACCESS_KEY_ID)\n- [`AWS_SECRET_ACCESS_KEY`](settings.html#std-setting-AWS_SECRET_ACCESS_KEY)\n- [`AWS_SESSION_TOKEN`](settings.html#std-setting-AWS_SESSION_TOKEN) (only needed for [temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html))\n\nYou can also define a custom ACL, custom endpoint, and region name for exported\nfeeds using these settings:\n\n- `FEED_STORAGE_S3_ACL`\n- [`AWS_ENDPOINT_URL`](settings.html#std-setting-AWS_ENDPOINT_URL)\n- [`AWS_REGION_NAME`](settings.html#std-setting-AWS_REGION_NAME)\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.\n\nThe value `True` in `overwrite` will cause you to lose the\nprevious version of your data.\n\nThis storage backend uses delayed file delivery.",
+          "level": 3,
+          "span": {
+            "start": 5286,
+            "end": 6523
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages",
+              "S3"
+            ],
+            "parent_heading": "Storages",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The feeds are stored on [Amazon S3](https://aws.amazon.com/s3/).",
+            "sibling_headings": [
+              "Storage URI parameters",
+              "Local filesystem",
+              "FTP",
+              "Google Cloud Storage (GCS)",
+              "Standard output",
+              "Delayed file delivery"
+            ]
+          }
+        },
+        {
+          "heading": "Google Cloud Storage (GCS)",
+          "text": "The feeds are stored on [Google Cloud Storage](https://cloud.google.com/storage/).\n\n- URI scheme: `gs`\n- Example URIs:\n  - `gs://mybucket/path/to/export.csv`\n- Required external libraries: [google-cloud-storage](https://cloud.google.com/storage/docs/reference/libraries#client-libraries-install-python).\n\nFor more information about authentication, please refer to [Google Cloud documentation](https://cloud.google.com/docs/authentication).\n\nYou can set a *Project ID* and *Access Control List (ACL)* through the following settings:\n\n- [`FEED_STORAGE_GCS_ACL`](settings.html#std-setting-FEED_STORAGE_GCS_ACL)\n- [`GCS_PROJECT_ID`](settings.html#std-setting-GCS_PROJECT_ID)\n\nThe default value for the `overwrite` key in the `FEEDS` for this\nstorage backend is: `True`.\n\nThe value `True` in `overwrite` will cause you to lose the\nprevious version of your data.\n\nThis storage backend uses delayed file delivery.",
+          "level": 3,
+          "span": {
+            "start": 6554,
+            "end": 7463
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages",
+              "Google Cloud Storage (GCS)"
+            ],
+            "parent_heading": "Storages",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The feeds are stored on [Google Cloud Storage](https://cloud.google.com/storage/).",
+            "sibling_headings": [
+              "Storage URI parameters",
+              "Local filesystem",
+              "FTP",
+              "S3",
+              "Standard output",
+              "Delayed file delivery"
+            ]
+          }
+        },
+        {
+          "heading": "Standard output",
+          "text": "The feeds are written to the standard output of the Scrapy process.\n\n- URI scheme: `stdout`\n- Example URI: `stdout:`\n- Required external libraries: none",
+          "level": 3,
+          "span": {
+            "start": 7483,
+            "end": 7638
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages",
+              "Standard output"
+            ],
+            "parent_heading": "Storages",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The feeds are written to the standard output of the Scrapy process.",
+            "sibling_headings": [
+              "Storage URI parameters",
+              "Local filesystem",
+              "FTP",
+              "S3",
+              "Google Cloud Storage (GCS)",
+              "Delayed file delivery"
+            ]
+          }
+        },
+        {
+          "heading": "Delayed file delivery",
+          "text": "As indicated above, some of the described storage backends use delayed file\ndelivery.\n\nThese storage backends do not upload items to the feed URI as those items are\nscraped. Instead, Scrapy writes items into a temporary local file, and only\nonce all the file contents have been written (i.e. at the end of the crawl) is\nthat file uploaded to the feed URI.\n\nIf you want item delivery to start earlier when using one of these storage\nbackends, use `FEED_EXPORT_BATCH_ITEM_COUNT` to split the output items\nin multiple files, with the specified maximum item count per file. That way, as\nsoon as a file reaches the maximum item count, that file is delivered to the\nfeed URI, allowing item delivery to start way before the end of the crawl.",
+          "level": 3,
+          "span": {
+            "start": 7664,
+            "end": 8401
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Storages",
+              "Delayed file delivery"
+            ],
+            "parent_heading": "Storages",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "As indicated above, some of the described storage backends use delayed file",
+            "sibling_headings": [
+              "Storage URI parameters",
+              "Local filesystem",
+              "FTP",
+              "S3",
+              "Google Cloud Storage (GCS)",
+              "Standard output"
+            ]
+          }
+        },
+        {
+          "heading": "Item filtering",
+          "text": "You can filter items that you want to allow for a particular feed by using the\n`item_classes` option in feeds options. Only items of\nthe specified types will be added to the feed.\n\nThe `item_classes` option is implemented by the `ItemFilter`\nclass, which is the default value of the `item_filter` feed option.\n\nYou can create your own custom filtering class by implementing `ItemFilter`’s\nmethod `accepts` and taking `feed_options` as an argument.\n\nFor instance:\n\n```\nclass MyCustomFilter:\n    def __init__(self, feed_options):\n        self.feed_options = feed_options\n\n    def accepts(self, item):\n        if \"field1\" in item and item[\"field1\"] == \"expected_data\":\n            return True\n        return False\n```\n\nYou can assign your custom filtering class to the `item_filter` option of a feed.\nSee `FEEDS` for examples.",
+          "level": 2,
+          "span": {
+            "start": 8419,
+            "end": 9245
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Item filtering"
+            ],
+            "parent_heading": "Feed exports",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "You can filter items that you want to allow for a particular feed by using the",
+            "sibling_headings": [
+              "Serialization formats",
+              "Storages",
+              "Post-Processing",
+              "Settings"
+            ]
+          }
+        },
+        {
+          "heading": "ItemFilter",
+          "text": "***class*scrapy.extensions.feedexport.ItemFilter(*feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)] | [None](https://docs.python.org/3/library/constants.html#None)*)[[source]](../_modules/scrapy/extensions/feedexport.html#ItemFilter)**\n\nThis will be used by FeedExporter to decide if an item should be allowed\nto be exported to a particular feed.\n\n**Parameters:**\n\n**feed_options** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – feed specific options passed from FeedExporter\n\n**accepts(*item: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*) → [bool](https://docs.python.org/3/library/functions.html#bool)[[source]](../_modules/scrapy/extensions/feedexport.html#ItemFilter.accepts)**\n\nReturn `True` if item should be exported or `False` otherwise.\n\n**Parameters:**\n\n**item** ([Scrapy items](items.html#topics-items)) – scraped item which user wants to check if is acceptable\n\n**Returns:**\n\nTrue if accepted, False otherwise\n\n**Return type:**\n\n[bool](https://docs.python.org/3/library/functions.html#bool)",
+          "level": 3,
+          "span": {
+            "start": 9260,
+            "end": 10455
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Item filtering",
+              "ItemFilter"
+            ],
+            "parent_heading": "Item filtering",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.extensions.feedexport.ItemFilter(*feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#s"
+          }
+        },
+        {
+          "heading": "Post-Processing",
+          "text": "Scrapy provides an option to activate plugins to post-process feeds before they are exported\nto feed storages. In addition to using builtin plugins, you\ncan create your own plugins.\n\nThese plugins can be activated through the `postprocessing` option of a feed.\nThe option must be passed a list of post-processing plugins in the order you want\nthe feed to be processed. These plugins can be declared either as an import string\nor with the imported class of the plugin. Parameters to plugins can be passed\nthrough the feed options. See feed options for examples.",
+          "level": 2,
+          "span": {
+            "start": 10474,
+            "end": 11037
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Post-Processing"
+            ],
+            "parent_heading": "Feed exports",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Scrapy provides an option to activate plugins to post-process feeds before they are exported",
+            "sibling_headings": [
+              "Serialization formats",
+              "Storages",
+              "Item filtering",
+              "Settings"
+            ]
+          }
+        },
+        {
+          "heading": "Built-in Plugins",
+          "text": "***class*scrapy.extensions.postprocessing.GzipPlugin(*file: [BinaryIO](https://docs.python.org/3/library/typing.html#typing.BinaryIO)*, *feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*)[[source]](../_modules/scrapy/extensions/postprocessing.html#GzipPlugin)**\n\nCompresses received data using [gzip](https://en.wikipedia.org/wiki/Gzip).\n\nAccepted `feed_options` parameters:\n\n- gzip_compresslevel\n- gzip_mtime\n- gzip_filename\n\nSee [`gzip.GzipFile`](https://docs.python.org/3/library/gzip.html#gzip.GzipFile) for more info about parameters.\n\n***class*scrapy.extensions.postprocessing.LZMAPlugin(*file: [BinaryIO](https://docs.python.org/3/library/typing.html#typing.BinaryIO)*, *feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*)[[source]](../_modules/scrapy/extensions/postprocessing.html#LZMAPlugin)**\n\nCompresses received data using [lzma](https://en.wikipedia.org/wiki/Lempel–Ziv–Markov_chain_algorithm).\n\nAccepted `feed_options` parameters:\n\n- lzma_format\n- lzma_check\n- lzma_preset\n- lzma_filters\n\n`lzma_filters` cannot be used in pypy version 7.3.1 and older.\n\nSee [`lzma.LZMAFile`](https://docs.python.org/3/library/lzma.html#lzma.LZMAFile) for more info about parameters.\n\n***class*scrapy.extensions.postprocessing.Bz2Plugin(*file: [BinaryIO](https://docs.python.org/3/library/typing.html#typing.BinaryIO)*, *feed_options: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*)[[source]](../_modules/scrapy/extensions/postprocessing.html#Bz2Plugin)**\n\nCompresses received data using [bz2](https://en.wikipedia.org/wiki/Bzip2).\n\nAccepted `feed_options` parameters:\n\n- bz2_compresslevel\n\nSee [`bz2.BZ2File`](https://docs.python.org/3/library/bz2.html#bz2.BZ2File) for more info about parameters.",
+          "level": 3,
+          "span": {
+            "start": 11058,
+            "end": 13197
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Post-Processing",
+              "Built-in Plugins"
+            ],
+            "parent_heading": "Post-Processing",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.extensions.postprocessing.GzipPlugin(*file: [BinaryIO](https://docs.python.org/3/library/typing.html#typing.BinaryIO)*, *feed_options: [dict](https://docs.python.or",
+            "sibling_headings": [
+              "Custom Plugins"
+            ]
+          }
+        },
+        {
+          "heading": "Custom Plugins",
+          "text": "Each plugin is a class that must implement the following methods:\n\n**__init__(*self*, *file*, *feed_options*)**\n\nInitialize the plugin.\n\n**Parameters:**\n\n- **file** – file-like object having at least the write, tell and close methods implemented\n- **feed_options** ([`dict`](https://docs.python.org/3/library/stdtypes.html#dict)) – feed-specific options\n\n**write(*self*, *data*)**\n\nProcess and write data ([`bytes`](https://docs.python.org/3/library/stdtypes.html#bytes) or [`memoryview`](https://docs.python.org/3/library/stdtypes.html#memoryview)) into the plugin’s target file.\nIt must return number of bytes written.\n\n**close(*self*)**\n\nClean up the plugin.\n\nFor example, you might want to close a file wrapper that you might have\nused to compress data written into the file received in the `__init__`\nmethod.\n\nDo not close the file from the `__init__` method.\n\nTo pass a parameter to your plugin, use feed options. You\ncan then access those parameters from the `__init__` method of your plugin.",
+          "level": 3,
+          "span": {
+            "start": 13216,
+            "end": 14218
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Post-Processing",
+              "Custom Plugins"
+            ],
+            "parent_heading": "Post-Processing",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Each plugin is a class that must implement the following methods:",
+            "sibling_headings": [
+              "Built-in Plugins"
+            ]
+          }
+        },
+        {
+          "heading": "Settings",
+          "text": "These are the settings used for configuring the feed exports:\n\n- `FEEDS` (mandatory)\n- `FEED_EXPORT_ENCODING`\n- `FEED_STORE_EMPTY`\n- `FEED_EXPORT_FIELDS`\n- `FEED_EXPORT_INDENT`\n- `FEED_STORAGES`\n- `FEED_STORAGE_FTP_ACTIVE`\n- `FEED_STORAGE_S3_ACL`\n- `FEED_EXPORTERS`\n- `FEED_EXPORT_BATCH_ITEM_COUNT`",
+          "level": 2,
+          "span": {
+            "start": 14230,
+            "end": 14531
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings"
+            ],
+            "parent_heading": "Feed exports",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "These are the settings used for configuring the feed exports:",
+            "sibling_headings": [
+              "Serialization formats",
+              "Storages",
+              "Item filtering",
+              "Post-Processing"
+            ]
+          }
+        },
+        {
+          "heading": "FEEDS",
+          "text": "Default: `{}`\n\nA dictionary in which every key is a feed URI (or a [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)\nobject) and each value is a nested dictionary containing configuration\nparameters for the specific feed.\n\nThis setting is required for enabling the feed export feature.\n\nSee Storage backends for supported URI schemes.\n\nFor instance:\n\n```\n{\n    'items.json': {\n        'format': 'json',\n        'encoding': 'utf8',\n        'store_empty': False,\n        'item_classes': [MyItemClass1, 'myproject.items.MyItemClass2'],\n        'fields': None,\n        'indent': 4,\n        'item_export_kwargs': {\n           'export_empty_fields': True,\n        },\n    },\n    '/home/user/documents/items.xml': {\n        'format': 'xml',\n        'fields': ['name', 'price'],\n        'item_filter': MyCustomFilter1,\n        'encoding': 'latin1',\n        'indent': 8,\n    },\n    pathlib.Path('items.csv.gz'): {\n        'format': 'csv',\n        'fields': ['price', 'name'],\n        'item_filter': 'myproject.filters.MyCustomFilter2',\n        'postprocessing': [MyPlugin1, 'scrapy.extensions.postprocessing.GzipPlugin'],\n        'gzip_compresslevel': 5,\n    },\n}\n```\n\nThe following is a list of the accepted keys and the setting that is used\nas a fallback value if that key is not provided for a specific feed definition:\n\n- `format`: the serialization format.\n\nThis setting is mandatory, there is no fallback value.\n- `batch_item_count`: falls back to\n`FEED_EXPORT_BATCH_ITEM_COUNT`.\n- `encoding`: falls back to `FEED_EXPORT_ENCODING`.\n- `fields`: falls back to `FEED_EXPORT_FIELDS`.\n- `item_classes`: list of [item classes](items.html#topics-items) to export.\n\nIf undefined or empty, all items are exported.\n- `item_filter`: a filter class to filter items to export.\n\n`ItemFilter` is used be default.\n- `indent`: falls back to `FEED_EXPORT_INDENT`.\n- `item_export_kwargs`: [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) with keyword arguments for the corresponding [item exporter class](exporters.html#topics-exporters).\n- `overwrite`: whether to overwrite the file if it already exists\n(`True`) or append to its content (`False`).\n\nThe default value depends on the storage backend:\n  - Local filesystem: `False`\n  - FTP: `True`\n\nSome FTP servers may not support appending to files (the\n`APPE` FTP command).\n  - S3: `True` (appending is not supported)\n  - Google Cloud Storage (GCS): `True` (appending is not supported)\n  - Standard output: `False` (overwriting is not supported)\n- `store_empty`: falls back to `FEED_STORE_EMPTY`.\n- `uri_params`: falls back to `FEED_URI_PARAMS`.\n- `postprocessing`: list of plugins to use for post-processing.\n\nThe plugins will be used in the order of the list passed.",
+          "level": 3,
+          "span": {
+            "start": 14541,
+            "end": 17283
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEEDS"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `{}`",
+            "sibling_headings": [
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_EXPORT_ENCODING",
+          "text": "Default: `\"utf-8\"` ([fallback](settings.html#default-settings): `None`)\n\nThe encoding to be used for the feed.\n\nIf set to `None`, it uses UTF-8 for everything except JSON output, which uses\nsafe numeric encoding (`\\uXXXX` sequences) for historic reasons.\n\nUse `\"utf-8\"` if you want UTF-8 for JSON too.\n\nChanged in version 2.8: The [`startproject`](commands.html#std-command-startproject) command now sets this setting to\n`\"utf-8\"` in the generated `settings.py` file.",
+          "level": 3,
+          "span": {
+            "start": 17308,
+            "end": 17778
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_EXPORT_ENCODING"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `\"utf-8\"` ([fallback](settings.html#default-settings): `None`)",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_EXPORT_FIELDS",
+          "text": "Default: `None`\n\nUse the `FEED_EXPORT_FIELDS` setting to define the fields to export, their\norder and their output names. See [`BaseItemExporter.fields_to_export`](exporters.html#scrapy.exporters.BaseItemExporter.fields_to_export) for more information.",
+          "level": 3,
+          "span": {
+            "start": 17801,
+            "end": 18056
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_EXPORT_FIELDS"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `None`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_EXPORT_INDENT",
+          "text": "Default: `0`\n\nAmount of spaces used to indent the output on each level. If `FEED_EXPORT_INDENT`\nis a non-negative integer, then array elements and object members will be pretty-printed\nwith that indent level. An indent level of `0` (the default), or negative,\nwill put each item on a new line. `None` selects the most compact representation.\n\nCurrently implemented only by [`JsonItemExporter`](exporters.html#scrapy.exporters.JsonItemExporter)\nand [`XmlItemExporter`](exporters.html#scrapy.exporters.XmlItemExporter), i.e. when you are exporting\nto `.json` or `.xml`.",
+          "level": 3,
+          "span": {
+            "start": 18079,
+            "end": 18649
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_EXPORT_INDENT"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `0`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_STORE_EMPTY",
+          "text": "Default: `True`\n\nWhether to export empty feeds (i.e. feeds with no items).\nIf `False`, and there are no items to export, no new files are created and\nexisting files are not modified, even if the overwrite feed option is enabled.",
+          "level": 3,
+          "span": {
+            "start": 18670,
+            "end": 18901
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_STORE_EMPTY"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `True`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_STORAGES",
+          "text": "Default: `{}`\n\nA dict containing additional feed storage backends supported by your project.\nThe keys are URI schemes and the values are paths to storage classes.",
+          "level": 3,
+          "span": {
+            "start": 18919,
+            "end": 19084
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_STORAGES"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `{}`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_STORAGE_FTP_ACTIVE",
+          "text": "Default: `False`\n\nWhether to use the active connection mode when exporting feeds to an FTP server\n(`True`) or use the passive connection mode instead (`False`, default).\n\nFor information about FTP connection modes, see [What is the difference between\nactive and passive FTP?](https://stackoverflow.com/a/1699163).",
+          "level": 3,
+          "span": {
+            "start": 19112,
+            "end": 19428
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_STORAGE_FTP_ACTIVE"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `False`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_S3_ACL",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_STORAGE_S3_ACL",
+          "text": "Default: `''` (empty string)\n\nA string containing a custom ACL for feeds exported to Amazon S3 by your project.\n\nFor a complete list of available values, access the [Canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl) section on Amazon S3 docs.",
+          "level": 3,
+          "span": {
+            "start": 19452,
+            "end": 19743
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_STORAGE_S3_ACL"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `''` (empty string)",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGES_BASE"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_STORAGES_BASE",
+          "text": "Default:\n\n```\n{\n    \"\": \"scrapy.extensions.feedexport.FileFeedStorage\",\n    \"file\": \"scrapy.extensions.feedexport.FileFeedStorage\",\n    \"stdout\": \"scrapy.extensions.feedexport.StdoutFeedStorage\",\n    \"s3\": \"scrapy.extensions.feedexport.S3FeedStorage\",\n    \"ftp\": \"scrapy.extensions.feedexport.FTPFeedStorage\",\n}\n```\n\nA dict containing the built-in feed storage backends supported by Scrapy. You\ncan disable any of these backends by assigning `None` to their URI scheme in\n`FEED_STORAGES`. E.g., to disable the built-in FTP storage backend\n(without replacement), place this in your `settings.py`:\n\n```\nFEED_STORAGES = {\n    \"ftp\": None,\n}\n```",
+          "level": 3,
+          "span": {
+            "start": 19766,
+            "end": 20410
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_STORAGES_BASE"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default:",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_EXPORTERS",
+          "text": "Default: `{}`\n\nA dict containing additional exporters supported by your project. The keys are\nserialization formats and the values are paths to [Item exporter](exporters.html#topics-exporters) classes.",
+          "level": 3,
+          "span": {
+            "start": 20429,
+            "end": 20633
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_EXPORTERS"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `{}`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_EXPORTERS_BASE",
+          "text": "Default:\n\n```\n{\n    \"json\": \"scrapy.exporters.JsonItemExporter\",\n    \"jsonlines\": \"scrapy.exporters.JsonLinesItemExporter\",\n    \"jsonl\": \"scrapy.exporters.JsonLinesItemExporter\",\n    \"jl\": \"scrapy.exporters.JsonLinesItemExporter\",\n    \"csv\": \"scrapy.exporters.CsvItemExporter\",\n    \"xml\": \"scrapy.exporters.XmlItemExporter\",\n    \"marshal\": \"scrapy.exporters.MarshalItemExporter\",\n    \"pickle\": \"scrapy.exporters.PickleItemExporter\",\n}\n```\n\nA dict containing the built-in feed exporters supported by Scrapy. You can\ndisable any of these exporters by assigning `None` to their serialization\nformat in `FEED_EXPORTERS`. E.g., to disable the built-in CSV exporter\n(without replacement), place this in your `settings.py`:\n\n```\nFEED_EXPORTERS = {\n    \"csv\": None,\n}\n```",
+          "level": 3,
+          "span": {
+            "start": 20657,
+            "end": 21423
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_EXPORTERS_BASE"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default:",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "text": "Default: `0`\n\nIf assigned an integer number higher than `0`, Scrapy generates multiple output files\nstoring up to the specified number of items in each output file.\n\nWhen generating multiple output files, you must use at least one of the following\nplaceholders in the feed URI to indicate how the different output file names are\ngenerated:\n\n- `%(batch_time)s` - gets replaced by a timestamp when the feed is being created\n(e.g. `2020-03-28T14-45-08.237134`)\n- `%(batch_id)d` - gets replaced by the 1-based sequence number of the batch.\n\nUse [printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting) to\nalter the number format. For example, to make the batch ID a 5-digit\nnumber by introducing leading zeroes as needed, use `%(batch_id)05d`\n(e.g. `3` becomes `00003`, `123` becomes `00123`).\n\nFor instance, if your settings include:\n\n```\nFEED_EXPORT_BATCH_ITEM_COUNT = 100\n```\n\nAnd your [`crawl`](commands.html#std-command-crawl) command line is:\n\n```\nscrapy crawl spidername -o \"dirname/%(batch_id)d-filename%(batch_time)s.json\"\n```\n\nThe command line above can generate a directory tree like:\n\n```\n->projectname\n-->dirname\n--->1-filename2020-03-28T14-45-08.237134.json\n--->2-filename2020-03-28T14-45-09.148903.json\n--->3-filename2020-03-28T14-45-10.046092.json\n```\n\nWhere the first and second files contain exactly 100 items. The last one contains\n100 items or fewer.",
+          "level": 3,
+          "span": {
+            "start": 21456,
+            "end": 22872
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_EXPORT_BATCH_ITEM_COUNT"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `0`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL"
+            ]
+          }
+        },
+        {
+          "heading": "FEED_URI_PARAMS",
+          "text": "Default: `None`\n\nA string with the import path of a function to set the parameters to apply with\n[printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting) to the\nfeed URI.\n\nThe function signature should be as follows:\n\n**scrapy.extensions.feedexport.uri_params(*params*, *spider*)**\n\nReturn a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) of key-value pairs to apply to the feed URI using\n[printf-style string formatting](https://docs.python.org/3/library/stdtypes.html#old-string-formatting).\n\n**Parameters:**\n\n- **params** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) –\n\ndefault key-value pairs\n\nSpecifically:\n  - `batch_id`: ID of the file batch. See\n`FEED_EXPORT_BATCH_ITEM_COUNT`.\n\nIf `FEED_EXPORT_BATCH_ITEM_COUNT` is `0`, `batch_id`\nis always `1`.\n  - `batch_time`: UTC date and time, in ISO format with `:`\nreplaced with `-`.\n\nSee `FEED_EXPORT_BATCH_ITEM_COUNT`.\n  - `time`: `batch_time`, with microseconds set to `0`.\n- **spider** ([*scrapy.Spider*](spiders.html#scrapy.Spider)) – source spider of the feed items\n\nThe function should return a new dictionary, modifying\nthe received `params` in-place is deprecated.\n\nFor example, to include the [`name`](spiders.html#scrapy.Spider.name) of the\nsource spider in the feed URI:\n\n1. Define the following function somewhere in your project:\n\n```\n# myproject/utils.py\ndef uri_params(params, spider):\n    return {**params, \"spider_name\": spider.name}\n```\n2. Point `FEED_URI_PARAMS` to that function in your settings:\n\n```\n# myproject/settings.py\nFEED_URI_PARAMS = \"myproject.utils.uri_params\"\n```\n3. Use `%(spider_name)s` in your feed URI:\n\n```\nscrapy crawl <spider_name> -o \"%(spider_name)s.jsonl\"\n```",
+          "level": 3,
+          "span": {
+            "start": 22892,
+            "end": 24629
+          },
+          "metadata": {
+            "heading_path": [
+              "Feed exports",
+              "Settings",
+              "FEED_URI_PARAMS"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `None`",
+            "sibling_headings": [
+              "FEEDS",
+              "FEED_EXPORT_ENCODING",
+              "FEED_EXPORT_FIELDS",
+              "FEED_EXPORT_INDENT",
+              "FEED_STORE_EMPTY",
+              "FEED_STORAGES",
+              "FEED_STORAGE_FTP_ACTIVE",
+              "FEED_STORAGE_S3_ACL"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case024_sgb",
+        "condition_id": "clean",
+        "lab_run_id": "s24a001",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case024_sgb",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-94375f344c6a7754",
+              "source_sha256": "a3831d75f00d59a0527a469dc26af5dcf741294e25572c46bb587b28f7e2165d",
+              "path": "inputs/input001/feed-exports.md",
+              "sha256": "a3831d75f00d59a0527a469dc26af5dcf741294e25572c46bb587b28f7e2165d",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/a3831d75f00d59a0/feed-exports.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case024_sgb\\clean\\s24a001\\inputs\\input001\\feed-exports.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "35a9b8240a229b5585567b60de5c9728e891c5e3c0d11fafdc1b519b2f19efa0",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case024_sgb\\clean\\s24a001\\inputs\\input001\\feed-exports.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "eb4265b7e7fc1ff51fe7a2569a3271cc0ab80faf",
+      "content_hash": "eb4265b7e7fc1ff51fe7a2569a3271cc0ab80faf",
+      "imported_at": "2026-10-25T13:10:10+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "ec1a1053-4493-5151-ac1f-a54c659c6ba8",
+      "doc_id": "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311",
+      "skill_id": "5ce59155-7453-5a08-a86c-28d26cba5683",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case024_sgb\\clean\\s24a001\\inputs\\input001\\feed-exports.md",
+      "section": "Feed exports",
+      "span": {
+        "start": 14101,
+        "end": 14429
+      },
+      "excerpt": "Settings\nThese are the settings used for configuring the feed exports:\n\n- `FEEDS` (mandatory)\n- `FEED_EXPORT_ENCODING`\n- `FEED_STORE_EMPTY`\n- `FEED_EXPORT_FIELDS`\n- `FEED_EXPORT_INDENT`\n- `FEED_STORAGES`\n- `FEED_STORAGE_FTP_ACTIVE`\n- `FEED_STORAGE_S3_ACL`\n- `FEED_EXPORTERS`\n- `FEED_EXPORT_BATCH_ITEM_COUNT`\n\nFEEDS\nDefault: `{}`",
+      "relation_type": "support",
+      "confidence": 0.65,
+      "metadata": {
+        "document_title": "input001\\feed-exports.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "设置 FEEDS 导出目标",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "正确填写 FEEDS 字典以指定导出 URI 与格式。",
+        "task_family": "数据导出配置",
+        "method_family": "settings 配置",
+        "stage": "导出目标声明",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "9e596e0f-0d78-5457-af8b-9e4258b8c2e8",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 35,
+        "paragraph_end": 37,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      },
+      "created_at": "2026-10-25T13:13:30+00:00"
+    },
+    {
+      "support_id": "4e26ec18-cc22-54b0-9891-eae0753d7ba2",
+      "doc_id": "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311",
+      "skill_id": "cb6f42d7-c058-5995-9d32-0a9bdff6c7a7",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case024_sgb\\clean\\s24a001\\inputs\\input001\\feed-exports.md",
+      "section": "Feed exports",
+      "span": {
+        "start": 14101,
+        "end": 14429
+      },
+      "excerpt": "Settings\nThese are the settings used for configuring the feed exports:\n\n- `FEEDS` (mandatory)\n- `FEED_EXPORT_ENCODING`\n- `FEED_STORE_EMPTY`\n- `FEED_EXPORT_FIELDS`\n- `FEED_EXPORT_INDENT`\n- `FEED_STORAGES`\n- `FEED_STORAGE_FTP_ACTIVE`\n- `FEED_STORAGE_S3_ACL`\n- `FEED_EXPORTERS`\n- `FEED_EXPORT_BATCH_ITEM_COUNT`\n\nFEEDS\nDefault: `{}`",
+      "relation_type": "support",
+      "confidence": 0.6,
+      "metadata": {
+        "document_title": "input001\\feed-exports.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Feed 导出设置参考清单",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "提供 feed 导出相关设置项的完整参考清单。",
+        "task_family": "数据导出配置",
+        "method_family": "配置参考",
+        "stage": "配置查阅",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 3,
+        "window_id": "9e596e0f-0d78-5457-af8b-9e4258b8c2e8",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 35,
+        "paragraph_end": 37,
+        "heading_path": [
+          "Feed exports"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\feed-exports.md"
+        ],
+        "subsection_headings": [
+          "Serialization formats",
+          "JSON",
+          "JSON lines",
+          "CSV",
+          "XML",
+          "Pickle",
+          "Marshal",
+          "Storages",
+          "Storage URI parameters",
+          "Local filesystem",
+          "FTP",
+          "S3",
+          "Google Cloud Storage (GCS)",
+          "Standard output",
+          "Delayed file delivery",
+          "Item filtering",
+          "ItemFilter",
+          "Post-Processing",
+          "Built-in Plugins",
+          "Custom Plugins",
+          "Settings",
+          "FEEDS",
+          "FEED_EXPORT_ENCODING",
+          "FEED_EXPORT_FIELDS",
+          "FEED_EXPORT_INDENT",
+          "FEED_STORE_EMPTY",
+          "FEED_STORAGES",
+          "FEED_STORAGE_FTP_ACTIVE",
+          "FEED_STORAGE_S3_ACL",
+          "FEED_STORAGES_BASE",
+          "FEED_EXPORTERS",
+          "FEED_EXPORTERS_BASE",
+          "FEED_EXPORT_BATCH_ITEM_COUNT",
+          "FEED_URI_PARAMS"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "One of the most frequently required features when implementing scrapers is"
+      },
+      "created_at": "2026-10-25T13:13:30+00:00"
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "62de4324-aa7d-55ab-8836-13905f2eb8c4",
+      "name": "配置 Feed 导出序列化格式",
+      "description": "为 Scrapy 抓取数据选择并配置输出序列化格式（JSON、JSON lines、CSV、XML），必要时通过 FEED_EXPORTERS 设置扩展自定义格式。当需要将抓取结果持久化为文件或流、或需要选择/扩展导出格式时使用。",
+      "skill_body": "根据抓取数据的用途选择内置序列化格式（JSON、JSON lines、CSV、XML）；若内置格式不满足需求，则通过 FEED_EXPORTERS 设置注册并启用自定义 Item exporter。确认最终选定的格式与相应 FEED_EXPORTERS 配置已落地。\n\n## Objective\n\n确定并落地抓取数据的导出序列化格式\n## Applicable Signals\n\n- 抓取结果需要写入文件或输出流\n- 现有内置格式无法满足下游消费需求\n\n## Contraindications\n\n- 仅需在内存中处理数据而不导出\n\n## Intervention Moves\n\n- 从内置格式 JSON、JSON lines、CSV、XML 中选择匹配下游需求的格式\n- 如需自定义格式，通过 FEED_EXPORTERS 设置注册扩展 exporter\n\n## Workflow Steps\n\n- 明确抓取数据的下游消费方式与格式需求\n- 在内置格式（JSON、JSON lines、CSV、XML）中选择合适格式\n- 若内置格式不足，通过 FEED_EXPORTERS 设置扩展自定义格式\n- 确认选定格式与 FEED_EXPORTERS 配置已生效\n\n## Constraints\n\n- 内置支持格式限于 JSON、JSON lines、CSV、XML\n- 自定义格式必须通过 FEED_EXPORTERS 设置扩展\n\n## Cautions\n\n- 选择格式时应考虑下游解析兼容性，避免导出后无法被消费方读取\n\n## Output Contract\n\n- 已选定并配置好的导出格式及对应 FEED_EXPORTERS 设置",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "确定并落地抓取数据的导出序列化格式",
+      "domain": "scrapy",
+      "task_family": "数据导出配置",
+      "method_family": "feed 导出配置",
+      "stage": "导出设置",
+      "applicable_signals": [
+        "抓取结果需要写入文件或输出流",
+        "现有内置格式无法满足下游消费需求"
+      ],
+      "contraindications": [
+        "仅需在内存中处理数据而不导出"
+      ],
+      "intervention_moves": [
+        "从内置格式 JSON、JSON lines、CSV、XML 中选择匹配下游需求的格式",
+        "如需自定义格式，通过 FEED_EXPORTERS 设置注册扩展 exporter"
+      ],
+      "triggers": [
+        "需要将抓取结果持久化为文件或流",
+        "需要选择导出序列化格式",
+        "需要扩展自定义导出格式"
+      ],
+      "workflow_steps": [
+        "明确抓取数据的下游消费方式与格式需求",
+        "在内置格式（JSON、JSON lines、CSV、XML）中选择合适格式",
+        "若内置格式不足，通过 FEED_EXPORTERS 设置扩展自定义格式",
+        "确认选定格式与 FEED_EXPORTERS 配置已生效"
+      ],
+      "constraints": [
+        "内置支持格式限于 JSON、JSON lines、CSV、XML",
+        "自定义格式必须通过 FEED_EXPORTERS 设置扩展"
+      ],
+      "cautions": [
+        "选择格式时应考虑下游解析兼容性，避免导出后无法被消费方读取"
+      ],
+      "output_contract": [
+        "已选定并配置好的导出格式及对应 FEED_EXPORTERS 设置"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "feed-export",
+        "serialization",
+        "FEED_EXPORTERS"
+      ],
+      "support_ids": [
+        "46e001ab-439a-5dfd-807a-493bf030cd86"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "3245f4bc-e5f4-5cea-b5c6-d615db45400b"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|确定并落地抓取数据的导出序列化格式|scrapy|数据导出配置|feed 导出配置|导出设置|配置 feed 导出序列化格式"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "b43d0cf1-cc5b-5896-bfff-4e2023eded9e",
+      "name": "配置 Scrapy Feed 导出",
+      "description": "通过 FEEDS 及相关设置配置 Scrapy 抓取结果的导出目标、格式与存储后端，使抓取到的 item 按指定格式持久化到文件、FTP、S3、GCS 或标准输出。适用于需要将抓取结果落盘或写入远程存储的场景。",
+      "skill_body": "为 Scrapy 项目建立可用的 feed 导出配置：先确认导出目标（本地文件、FTP、S3、GCS 或标准输出）与序列化格式（JSON、JSON lines、CSV、XML、Pickle、Marshal），再在设置中配置 FEEDS（必填）及必要的导出设置（如 FEED_EXPORT_ENCODING、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORE_EMPTY、FEED_STORAGES、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT 等），最后验证导出目标可正常写入。\n\n## Objective\n\n为 Scrapy 项目建立可用的 feed 导出配置，使抓取结果按指定格式写入指定存储。\n## Applicable Signals\n\n- 需要把抓取结果保存为 JSON/CSV/XML 等文件\n- 需要配置导出到远程存储（FTP/S3/GCS）\n- 需要控制导出字段、编码或缩进\n\n## Contraindications\n\n- 仅需在内存中处理 item 而不落盘\n- 未确定导出目标与格式时\n\n## Intervention Moves\n\n- 确定导出目标与存储后端\n- 选择序列化格式\n- 配置 FEEDS 必填项\n- 按需配置导出相关设置\n- 验证导出目标可正常写入\n\n## Workflow Steps\n\n- 确认导出目标（本地文件、FTP、S3、GCS 或标准输出）与序列化格式（JSON、JSON lines、CSV、XML、Pickle、Marshal）\n- 在设置中配置 FEEDS（必填）\n- 按需配置导出相关设置：FEED_EXPORT_ENCODING、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORE_EMPTY、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT\n- 验证导出目标可正常写入\n\n## Constraints\n\n- FEEDS 为必填设置\n- 导出设置需与所选存储后端和格式匹配\n\n## Cautions\n\n- 未确定导出目标与格式时不应开始配置\n- 仅需内存处理 item 时无需配置 feed 导出\n\n## Output Contract\n\n- 一份包含 FEEDS 及必要导出设置的可用配置，导出目标可正常写入。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为 Scrapy 项目建立可用的 feed 导出配置，使抓取结果按指定格式写入指定存储。",
+      "domain": "scrapy",
+      "task_family": "数据导出配置",
+      "method_family": "settings 配置",
+      "stage": "抓取结果输出",
+      "applicable_signals": [
+        "需要把抓取结果保存为 JSON/CSV/XML 等文件",
+        "需要配置导出到远程存储（FTP/S3/GCS）",
+        "需要控制导出字段、编码或缩进"
+      ],
+      "contraindications": [
+        "仅需在内存中处理 item 而不落盘",
+        "未确定导出目标与格式时"
+      ],
+      "intervention_moves": [
+        "确定导出目标与存储后端",
+        "选择序列化格式",
+        "配置 FEEDS 必填项",
+        "按需配置导出相关设置",
+        "验证导出目标可正常写入"
+      ],
+      "triggers": [
+        "需要把抓取结果保存为 JSON/CSV/XML 等文件",
+        "需要配置导出到远程存储（FTP/S3/GCS）",
+        "需要控制导出字段、编码或缩进",
+        "需要将抓取结果输出到标准输出"
+      ],
+      "workflow_steps": [
+        "确认导出目标（本地文件、FTP、S3、GCS 或标准输出）与序列化格式（JSON、JSON lines、CSV、XML、Pickle、Marshal）",
+        "在设置中配置 FEEDS（必填）",
+        "按需配置导出相关设置：FEED_EXPORT_ENCODING、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORE_EMPTY、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT",
+        "验证导出目标可正常写入"
+      ],
+      "constraints": [
+        "FEEDS 为必填设置",
+        "导出设置需与所选存储后端和格式匹配"
+      ],
+      "cautions": [
+        "未确定导出目标与格式时不应开始配置",
+        "仅需内存处理 item 时无需配置 feed 导出"
+      ],
+      "output_contract": [
+        "一份包含 FEEDS 及必要导出设置的可用配置，导出目标可正常写入。"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "feed-exports",
+        "settings",
+        "数据导出"
+      ],
+      "support_ids": [
+        "030b741c-7407-5c41-9a63-8c373aa2aeba"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "ce92c335-81a9-5c95-a9f3-fc433d95a293"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|为 scrapy 项目建立可用的 feed 导出配置，使抓取结果按指定格式写入指定存储。|scrapy|数据导出配置|settings 配置|抓取结果输出|配置 scrapy feed 导出"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "5ce59155-7453-5a08-a86c-28d26cba5683",
+      "name": "设置 FEEDS 导出目标",
+      "description": "在 Scrapy 的 FEEDS 设置中声明导出目标，指定 URI 与序列化格式（及可选参数），作为 feed 导出的强制入口配置。适用于需要新增或修改导出目标时。",
+      "skill_body": "在 Scrapy 项目设置中配置 FEEDS 字典：以导出 URI 为键，值为包含 format 等可选参数的映射。FEEDS 为强制设置，默认空字典 {}。仅当需要新增或修改导出目标时执行；若只是调整编码、缩进等次要参数，应改用对应独立设置而非改动 FEEDS 结构。\n\n## Objective\n\n正确填写 FEEDS 字典以指定导出 URI 与格式。\n## Applicable Signals\n\n- 需要新增一个导出目标\n- 需要修改现有导出 URI 或格式\n\n## Contraindications\n\n- 仅调整编码或缩进等次要参数时不应改动 FEEDS 结构\n- 未确定导出 URI 或格式时不应写入 FEEDS\n\n## Intervention Moves\n\n- 在设置中定义 FEEDS 字典\n- 以 URI 为键、格式映射为值声明导出目标\n- 确认 FEEDS 非空且包含有效 URI 与格式\n\n## Workflow Steps\n\n- 确认需要新增或修改的导出目标 URI 与格式\n- 在设置中编写 FEEDS 字典，URI 作为键，值为含 format 的映射\n- 校验 FEEDS 中包含有效的 URI 与格式映射\n\n## Constraints\n\n- FEEDS 为强制设置，默认值为空字典 {}\n- 导出目标必须以 URI 与格式映射的形式声明\n\n## Cautions\n\n- 编码、缩进、字段等次要参数应通过各自独立设置调整，避免与 FEEDS 入口配置混淆\n\n## Output Contract\n\n- FEEDS 中包含有效的 URI 与格式映射。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确填写 FEEDS 字典以指定导出 URI 与格式。",
+      "domain": "scrapy",
+      "task_family": "数据导出配置",
+      "method_family": "settings 配置",
+      "stage": "导出目标声明",
+      "applicable_signals": [
+        "需要新增一个导出目标",
+        "需要修改现有导出 URI 或格式"
+      ],
+      "contraindications": [
+        "仅调整编码或缩进等次要参数时不应改动 FEEDS 结构",
+        "未确定导出 URI 或格式时不应写入 FEEDS"
+      ],
+      "intervention_moves": [
+        "在设置中定义 FEEDS 字典",
+        "以 URI 为键、格式映射为值声明导出目标",
+        "确认 FEEDS 非空且包含有效 URI 与格式"
+      ],
+      "triggers": [
+        "需要新增一个导出目标",
+        "需要修改现有导出 URI 或格式",
+        "需要为 feed 导出声明强制入口配置"
+      ],
+      "workflow_steps": [
+        "确认需要新增或修改的导出目标 URI 与格式",
+        "在设置中编写 FEEDS 字典，URI 作为键，值为含 format 的映射",
+        "校验 FEEDS 中包含有效的 URI 与格式映射"
+      ],
+      "constraints": [
+        "FEEDS 为强制设置，默认值为空字典 {}",
+        "导出目标必须以 URI 与格式映射的形式声明"
+      ],
+      "cautions": [
+        "编码、缩进、字段等次要参数应通过各自独立设置调整，避免与 FEEDS 入口配置混淆"
+      ],
+      "output_contract": [
+        "FEEDS 中包含有效的 URI 与格式映射。"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "feed-exports",
+        "settings",
+        "FEEDS",
+        "数据导出"
+      ],
+      "support_ids": [
+        "ec1a1053-4493-5151-ac1f-a54c659c6ba8"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "db5c4fd0-87de-59df-b44a-ddc9afb24a7d"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.65,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|正确填写 feeds 字典以指定导出 uri 与格式。|scrapy|数据导出配置|settings 配置|导出目标声明|设置 feeds 导出目标"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "cb6f42d7-c058-5995-9d32-0a9bdff6c7a7",
+      "name": "Feed 导出设置参考清单",
+      "description": "提供 Scrapy feed 导出相关设置项的参考清单，用于查阅有哪些导出配置项，或在排查导出行为时对照设置项；仅作参考，不执行具体配置操作。",
+      "skill_body": "当调用方需要了解 feed 导出涉及哪些设置项，或需要对照设置清单排查导出行为时，输出一份设置项参考清单。清单应包含：FEEDS（必填）、FEED_EXPORT_ENCODING、FEED_STORE_EMPTY、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT。仅提供清单与用途说明，不代为执行配置修改。\n\n## Objective\n\n提供 feed 导出相关设置项的完整参考清单。\n## Applicable Signals\n\n- 调用方询问 feed 导出有哪些可配置项\n- 调用方需要对照设置清单定位导出行为\n\n## Contraindications\n\n- 需要直接执行导出配置操作时不应使用本参考清单\n- 需要具体设置取值语义或示例时，本清单不提供执行动作\n\n## Intervention Moves\n\n- 列出 feed 导出相关设置项名称\n- 标注 FEEDS 为必填项\n- 说明清单用途为查阅与对照\n\n## Workflow Steps\n\n- 确认调用方需求为查阅设置项清单\n- 输出 feed 导出设置项清单，标注 FEEDS 为必填\n- 说明清单仅用于查阅与对照，不执行配置\n\n## Constraints\n\n- 仅提供设置项清单，不代为修改配置\n- 清单内容以来源列出的设置项为准，不扩展未列出的项\n\n## Cautions\n\n- FEEDS 为必填设置，其余为可选配置项\n- 本资产为参考型知识，不包含执行步骤\n\n## Output Contract\n\n- 一份可对照的 feed 导出设置项清单，包含 FEEDS（必填）及编码、空结果存储、导出字段、缩进、存储后端、FTP/S3 相关、导出器、批量条数等设置项。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: feed 导出有哪些相关设置项？\n- Therapist/Output: FEEDS（必填）、FEED_EXPORT_ENCODING、FEED_STORE_EMPTY、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "提供 feed 导出相关设置项的完整参考清单。",
+      "domain": "scrapy",
+      "task_family": "数据导出配置",
+      "method_family": "配置参考",
+      "stage": "配置查阅",
+      "applicable_signals": [
+        "调用方询问 feed 导出有哪些可配置项",
+        "调用方需要对照设置清单定位导出行为"
+      ],
+      "contraindications": [
+        "需要直接执行导出配置操作时不应使用本参考清单",
+        "需要具体设置取值语义或示例时，本清单不提供执行动作"
+      ],
+      "intervention_moves": [
+        "列出 feed 导出相关设置项名称",
+        "标注 FEEDS 为必填项",
+        "说明清单用途为查阅与对照"
+      ],
+      "triggers": [
+        "需要了解有哪些 feed 导出相关设置项",
+        "排查导出行为时对照设置清单",
+        "查阅 feed 导出可用配置项"
+      ],
+      "workflow_steps": [
+        "确认调用方需求为查阅设置项清单",
+        "输出 feed 导出设置项清单，标注 FEEDS 为必填",
+        "说明清单仅用于查阅与对照，不执行配置"
+      ],
+      "constraints": [
+        "仅提供设置项清单，不代为修改配置",
+        "清单内容以来源列出的设置项为准，不扩展未列出的项"
+      ],
+      "cautions": [
+        "FEEDS 为必填设置，其余为可选配置项",
+        "本资产为参考型知识，不包含执行步骤"
+      ],
+      "output_contract": [
+        "一份可对照的 feed 导出设置项清单，包含 FEEDS（必填）及编码、空结果存储、导出字段、缩进、存储后端、FTP/S3 相关、导出器、批量条数等设置项。"
+      ],
+      "examples": [
+        {
+          "input": "feed 导出有哪些相关设置项？",
+          "output": "FEEDS（必填）、FEED_EXPORT_ENCODING、FEED_STORE_EMPTY、FEED_EXPORT_FIELDS、FEED_EXPORT_INDENT、FEED_STORAGES、FEED_STORAGE_FTP_ACTIVE、FEED_STORAGE_S3_ACL、FEED_EXPORTERS、FEED_EXPORT_BATCH_ITEM_COUNT。",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "feed导出",
+        "配置参考",
+        "设置项"
+      ],
+      "support_ids": [
+        "4e26ec18-cc22-54b0-9891-eae0753d7ba2"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "70858426-21bc-5616-b48b-f12c036ddaec"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.6,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|提供 feed 导出相关设置项的完整参考清单。|scrapy|数据导出配置|配置参考|配置查阅|feed 导出设置参考清单"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ]
+}

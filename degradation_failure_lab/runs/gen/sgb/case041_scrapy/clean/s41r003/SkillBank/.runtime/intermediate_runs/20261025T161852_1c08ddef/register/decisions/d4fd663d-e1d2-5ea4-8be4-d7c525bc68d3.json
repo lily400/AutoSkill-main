@@ -1,0 +1,109 @@
+{
+  "skill_id": "d4fd663d-e1d2-5ea4-8be4-d7c525bc68d3",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能是 Scrapy errback 请求异常处理的微技能，现有技能中无相同能力（现有为中间件返回值路由与 hostname 判定），且与 peer 候选虽主题相近但属于独立候选，故新建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "d4fd663d-e1d2-5ea4-8be4-d7c525bc68d3",
+    "name": "Scrapy 请求错误回调处理",
+    "description": "为 Request 配置 errback 回调，捕获并分类处理请求处理过程中的异常（连接超时、DNS 错误、HTTP 错误等），并记录或转交错误。适用于需要稳健处理下载失败的爬虫。",
+    "skill_body": "当某个 Request 存在下载失败风险（连接超时、DNS 解析失败、HTTP 错误等）时，为该 Request 注册 errback 回调。errback 接收 Twisted Failure 作为第一个参数，在回调中判断异常类型（如 HttpError、DNSLookupError、TimeoutError、TCPTimedOutError），记录错误并按需分类处理或转交，避免爬虫因单个请求失败而中断。\n\n## Objective\n\n在请求失败时通过 errback 捕获并分类处理异常，避免爬虫中断\n## Applicable Signals\n\n- 请求可能因连接超时、DNS 错误或 HTTP 错误失败\n- 需要记录并分类请求处理异常\n\n## Contraindications\n\n- 仅需正常响应处理且无失败风险\n\n## Intervention Moves\n\n- 为 Request 指定 errback 回调函数\n- 在 errback 中接收 Failure 参数并判断异常类型\n- 记录错误并按需分类处理或转交\n\n## Workflow Steps\n\n- 识别存在下载失败风险的 Request\n- 为该 Request 注册 errback 回调\n- 在 errback 中接收 Failure 作为第一个参数\n- 判断异常类型（如 HttpError、DNSLookupError、TimeoutError、TCPTimedOutError）\n- 记录错误并按需分类处理或转交\n\n## Constraints\n\n- errback 的第一个参数为 Twisted Failure\n- 异常分类需依据具体异常类型判断\n\n## Cautions\n\n- errback 仅处理请求处理过程中的异常，不替代正常响应回调\n\n## Output Contract\n\n- 已注册 errback 的 Request，异常被捕获并记录或转交\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请求可能因 DNS 解析失败或连接超时而失败\n- Therapist/Output: 为该 Request 注册 errback，在回调中捕获 DNSLookupError 与 TimeoutError 并记录\n- Notes: errback 接收 Failure 作为第一个参数",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在请求失败时通过 errback 捕获并分类处理异常，避免爬虫中断",
+    "domain": "scrapy",
+    "task_family": "请求异常处理",
+    "method_family": "errback 回调",
+    "stage": "请求处理",
+    "applicable_signals": [
+      "请求可能因连接超时、DNS 错误或 HTTP 错误失败",
+      "需要记录并分类请求处理异常"
+    ],
+    "contraindications": [
+      "仅需正常响应处理且无失败风险"
+    ],
+    "intervention_moves": [
+      "为 Request 指定 errback 回调函数",
+      "在 errback 中接收 Failure 参数并判断异常类型",
+      "记录错误并按需分类处理或转交"
+    ],
+    "triggers": [
+      "需要捕获连接超时或 DNS 错误",
+      "需要记录并分类请求处理异常",
+      "请求处理可能抛出异常且需避免爬虫中断"
+    ],
+    "workflow_steps": [
+      "识别存在下载失败风险的 Request",
+      "为该 Request 注册 errback 回调",
+      "在 errback 中接收 Failure 作为第一个参数",
+      "判断异常类型（如 HttpError、DNSLookupError、TimeoutError、TCPTimedOutError）",
+      "记录错误并按需分类处理或转交"
+    ],
+    "constraints": [
+      "errback 的第一个参数为 Twisted Failure",
+      "异常分类需依据具体异常类型判断"
+    ],
+    "cautions": [
+      "errback 仅处理请求处理过程中的异常，不替代正常响应回调"
+    ],
+    "output_contract": [
+      "已注册 errback 的 Request，异常被捕获并记录或转交"
+    ],
+    "examples": [
+      {
+        "input": "请求可能因 DNS 解析失败或连接超时而失败",
+        "output": "为该 Request 注册 errback，在回调中捕获 DNSLookupError 与 TimeoutError 并记录",
+        "notes": "errback 接收 Failure 作为第一个参数"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "errback",
+      "异常处理",
+      "请求处理"
+    ],
+    "support_ids": [
+      "b1cbac02-de8a-588e-a847-7560284e1d8e"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "3dd8ffb3-f72a-5dd7-a7d2-640faca3417b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在请求失败时通过 errback 捕获并分类处理异常，避免爬虫中断|scrapy|请求异常处理|errback 回调|请求处理|scrapy 请求错误回调处理"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

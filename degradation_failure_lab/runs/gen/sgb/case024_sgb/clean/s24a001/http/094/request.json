@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"73a590a4-6d1d-596f-b842-7ead4a57d901\", \"name\": \"批量 Feed 输出文件命名占位符配置\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"为多文件 feed 输出配置唯一且可排序的文件名\", \"applicable_signals\": [\"feed 导出配置将产生多个输出文件\", \"需要按批次时间或批次序号区分文件名\"], \"contraindications\": [\"仅导出单个输出文件\", \"不需要区分批次文件名\"], \"workflow_steps\": [\"确认本次导出会生成多个输出文件。\", \"在 feed URI 中至少加入一个批次占位符：%(batch_time)s 或 %(batch_id)d。\", \"如需固定位数或可排序编号，改用 printf 风格格式化，例如 %(batch_id)05d。\", \"校验 URI 能生成唯一且可排序的文件名后交付配置。\"], \"constraints\": [\"多文件导出时 feed URI 必须至少包含一个批次占位符\", \"占位符需使用 printf 风格字符串格式化语法\"], \"triggers\": [\"需要一次导出生成多个文件\", \"输出文件名需要按批次区分或排序\"], \"output_contract\": [\"包含 batch_time 或 batch_id 占位符的 feed URI 配置\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"d5862d9c-e48d-5b19-9342-c94d0fbc3157\", \"name\": \"Feed 存储后端 URI 配置\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为 feed 导出配置正确的存储后端与 URI\", \"applicable_signals\": [\"需要将 feed 写入远程或本地存储\", \"需要多目标存储输出\", \"需要按 URI scheme 选择存储后端\"], \"workflow_steps\": [\"确定 feed 的目标存储位置（本地、FTP、S3、GCS 或标准输出）\", \"在 FEEDS 设置中写入对应的一个或多个 URI\", \"确认每个 URI 的 scheme 与目标存储后端匹配\", \"如需自定义或扩展后端，调整 FEED_STORAGES 相关设置\"], \"output_contract\": [\"已按 URI scheme 配置好存储后端的 FEEDS 设置\"], \"score\": 0.6308162853801231}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

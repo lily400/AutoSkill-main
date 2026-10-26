@@ -1,0 +1,54 @@
+{
+  "support_id": "e3ff6f02-f2ea-5a8d-81b1-f3e2467a1637",
+  "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+  "skill_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+  "section": "Downloader Middleware",
+  "span": {
+    "start": 212,
+    "end": 4646
+  },
+  "excerpt": "The downloader middleware is a framework of hooks into Scrapy’s\nrequest/response processing. It’s a light, low-level system for globally\naltering Scrapy’s requests and responses.\n\nActivating a downloader middleware\nTo activate a downloader middleware component, add it to the\n[`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class paths and their values are the middleware orders.\n\nHere’s an example:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}\n```\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\nWriting your own downloader middleware\nEach downloader middleware is a [component](components.html#topics-components) that\ndefines one or more of these methods:\n\n***class*scrapy.downloadermiddlewares.DownloaderMiddleware**\n\nAny of the downloader middleware methods may be defined as a\ncoroutine function (`async def`).\n\n**process_request(*request*)**\n\nThis method is called for each request that goes through the download\nmiddleware.\n\n`process_request()` should either: return `None`, return a\n[`Response`](request-response.html#scrapy.http.Response) object, return a [`Request`](request-response.html#scrapy.Request)\nobject, or raise [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest).\n\nIf it returns `None`, Scrapy will continue processing this request, executing all\nother middlewares until, finally, the appropriate downloader handler is called\nthe request performed (and its response downloaded).\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, Scrapy will stop calling\n`process_request()` methods and reschedule the returned request. Once the newly returned\nrequest is performed, the appropriate middleware chain will be called on\nthe downloaded response.\n\n**Parameters:**\n\n**request** ([`Request`](request-response.html#scrapy.Request) object) – the request being processed\n\n**process_response(*request*, *response*)**",
+  "relation_type": "support",
+  "confidence": 0.85,
+  "metadata": {
+    "document_title": "input002\\downloader-middleware.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "下载器中间件激活与排序配置",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "visible_role": "parent",
+    "objective": "正确注册并排序下载器中间件，使请求/响应处理链按预期生效",
+    "task_family": "middleware_configuration",
+    "method_family": "settings_registration",
+    "stage": "setup",
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "candidate_slot": 1,
+    "window_id": "a5034a16-4ed6-5115-9bb4-9d161ee91274",
+    "window_strategy": "strict",
+    "anchor_hits": [],
+    "paragraph_start": 0,
+    "paragraph_end": 21,
+    "heading_path": [
+      "Downloader Middleware"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input002\\downloader-middleware.md"
+    ],
+    "subsection_headings": [
+      "Activating a downloader middleware",
+      "Writing your own downloader middleware"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+  },
+  "created_at": "2026-10-25T08:20:03+00:00"
+}

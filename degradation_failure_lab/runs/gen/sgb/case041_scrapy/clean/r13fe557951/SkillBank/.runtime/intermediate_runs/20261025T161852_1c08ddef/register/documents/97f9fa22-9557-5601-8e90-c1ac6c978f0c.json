@@ -1,0 +1,157 @@
+{
+  "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+  "title": "input001\\offsite.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+  "documents": [
+    {
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "source_type": "document",
+      "title": "input001\\offsite.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# scrapy.downloadermiddlewares.offsite — Scrapy 2.14.1 documentation\n\n- [Module code](../../index.html)\n- scrapy.downloadermiddlewares.offsite\n\n---\n\n# Source code for scrapy.downloadermiddlewares.offsite\n\n```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\n    from scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\n    def __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\n    @classmethod\n    def from_crawler(cls, crawler: Crawler) -> Self:\n        assert crawler.stats\n        o = cls(crawler.stats)\n        crawler.signals.connect(o.spider_opened, signal=signals.spider_opened)\n        crawler.signals.connect(o.request_scheduled, signal=signals.request_scheduled)\n        o.crawler = crawler\n        return o\n\n    def spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\n    def request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\n    @_warn_spider_arg\n    def process_request(self, request: Request, spider: Spider | None = None) -> None:\n        assert self.crawler.spider\n        if (\n            request.dont_filter\n            or request.meta.get(\"allow_offsite\")\n            or self.should_follow(request, self.crawler.spider)\n        ):\n            return\n        domain = urlparse_cached(request).hostname\n        if domain and domain not in self.domains_seen:\n            self.domains_seen.add(domain)\n            logger.debug(\n                \"Filtered offsite request to %(domain)r: %(request)s\",\n                {\"domain\": domain, \"request\": request},\n                extra={\"spider\": self.crawler.spider},\n            )\n            self.stats.inc_value(\"offsite/domains\")\n        self.stats.inc_value(\"offsite/filtered\")\n        raise IgnoreRequest\n\n    def should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))\n\n    def get_host_regex(self, spider: Spider) -> re.Pattern[str]:\n        \"\"\"Override this method to implement a different offsite policy\"\"\"\n        allowed_domains = getattr(spider, \"allowed_domains\", None)\n        if not allowed_domains:\n            return re.compile(\"\")  # allow all by default\n        url_pattern = re.compile(r\"^https?://.*$\")\n        port_pattern = re.compile(r\":\\d+$\")\n        domains = []\n        for domain in allowed_domains:\n            if domain is None:\n                continue\n            if url_pattern.match(domain):\n                message = (\n                    \"allowed_domains accepts only domains, not URLs. \"\n                    f\"Ignoring URL entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            elif port_pattern.search(domain):\n                message = (\n                    \"allowed_domains accepts only domains without ports. \"\n                    f\"Ignoring entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            else:\n                domains.append(re.escape(domain))\n        regex = rf\"^(.*\\.)?({'|'.join(domains)})$\"\n        return re.compile(regex)\n```",
+      "sections": [
+        {
+          "heading": "input001\\offsite.md",
+          "text": "# scrapy.downloadermiddlewares.offsite — Scrapy 2.14.1 documentation\n\n- [Module code](../../index.html)\n- scrapy.downloadermiddlewares.offsite\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 149
+          },
+          "metadata": {
+            "heading_path": [
+              "input001\\offsite.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# scrapy.downloadermiddlewares.offsite — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "# Source code for scrapy.downloadermiddlewares.offsite"
+            ]
+          }
+        },
+        {
+          "heading": "# Source code for scrapy.downloadermiddlewares.offsite",
+          "text": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\n    from scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\n    def __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\n    @classmethod\n    def from_crawler(cls, crawler: Crawler) -> Self:\n        assert crawler.stats\n        o = cls(crawler.stats)\n        crawler.signals.connect(o.spider_opened, signal=signals.spider_opened)\n        crawler.signals.connect(o.request_scheduled, signal=signals.request_scheduled)\n        o.crawler = crawler\n        return o\n\n    def spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\n    def request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\n    @_warn_spider_arg\n    def process_request(self, request: Request, spider: Spider | None = None) -> None:\n        assert self.crawler.spider\n        if (\n            request.dont_filter\n            or request.meta.get(\"allow_offsite\")\n            or self.should_follow(request, self.crawler.spider)\n        ):\n            return\n        domain = urlparse_cached(request).hostname\n        if domain and domain not in self.domains_seen:\n            self.domains_seen.add(domain)\n            logger.debug(\n                \"Filtered offsite request to %(domain)r: %(request)s\",\n                {\"domain\": domain, \"request\": request},\n                extra={\"spider\": self.crawler.spider},\n            )\n            self.stats.inc_value(\"offsite/domains\")\n        self.stats.inc_value(\"offsite/filtered\")\n        raise IgnoreRequest\n\n    def should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))\n\n    def get_host_regex(self, spider: Spider) -> re.Pattern[str]:\n        \"\"\"Override this method to implement a different offsite policy\"\"\"\n        allowed_domains = getattr(spider, \"allowed_domains\", None)\n        if not allowed_domains:\n            return re.compile(\"\")  # allow all by default\n        url_pattern = re.compile(r\"^https?://.*$\")\n        port_pattern = re.compile(r\":\\d+$\")\n        domains = []\n        for domain in allowed_domains:\n            if domain is None:\n                continue\n            if url_pattern.match(domain):\n                message = (\n                    \"allowed_domains accepts only domains, not URLs. \"\n                    f\"Ignoring URL entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            elif port_pattern.search(domain):\n                message = (\n                    \"allowed_domains accepts only domains without ports. \"\n                    f\"Ignoring entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            else:\n                domains.append(re.escape(domain))\n        regex = rf\"^(.*\\.)?({'|'.join(domains)})$\"\n        return re.compile(regex)\n```",
+          "level": 1,
+          "span": {
+            "start": 204,
+            "end": 3800
+          },
+          "metadata": {
+            "heading_path": [
+              "# Source code for scrapy.downloadermiddlewares.offsite"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "```",
+            "sibling_headings": [
+              "input001\\offsite.md"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case041_scrapy",
+        "condition_id": "clean",
+        "lab_run_id": "r13fe557951",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case041_scrapy",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-bc70867938051bc4",
+              "source_sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "path": "inputs/input001/offsite.md",
+              "sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/dad43df16d07e2c3/offsite.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-db8ff4e788d28693",
+              "source_sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "path": "inputs/input002/downloader-middleware.md",
+              "sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/491f737b9d4743ec/downloader-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md"
+            },
+            {
+              "input_id": "input003",
+              "source_id": "sgb-819d117ddb8328d1",
+              "source_sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "path": "inputs/input003/request-response.md",
+              "sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/9f6d99ec9d95647c/request-response.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md"
+            },
+            {
+              "input_id": "input004",
+              "source_id": "sgb-ac10205061a5d910",
+              "source_sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "path": "inputs/input004/spider-middleware.md",
+              "sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/3772c49ba00a9fe4/spider-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "ff125a5c28b13b1e3277abcd2f6dd4189abf18063537df59af9ac480bcece012",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "0118572fccd47ca6c5716927e0dec9d88678afa4",
+      "content_hash": "0118572fccd47ca6c5716927e0dec9d88678afa4",
+      "imported_at": "2026-10-25T08:18:53+00:00"
+    }
+  ],
+  "support_records": [],
+  "skill_specs": [],
+  "hierarchy_updates": [],
+  "lifecycles": [],
+  "change_logs": [],
+  "version_history": [],
+  "provenance_links": [],
+  "upserted_store_skills": [],
+  "staging_runs": [],
+  "visible_tree": {
+    "store_root": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\SkillBank",
+    "affected_families": [
+      "未分类技能"
+    ],
+    "parent_paths": [],
+    "child_paths": [],
+    "library_manifest_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\SkillBank\\.runtime\\library_manifest.json",
+    "readme_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\SkillBank\\README.md"
+  },
+  "errors": [],
+  "dry_run": false,
+  "processed_documents": 1,
+  "total_documents": 4,
+  "action_counts": {},
+  "skipped": false
+}

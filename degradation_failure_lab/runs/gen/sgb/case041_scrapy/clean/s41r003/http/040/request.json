@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"bbb2cc51-443c-5e23-a285-3b443df42cb5\", \"name\": \"请求指纹规范化计算\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"对单个请求计算规范化指纹哈希\", \"applicable_signals\": [\"自定义指纹器需要复用标准指纹逻辑\", \"存在等价但字面不同的 URL（如参数顺序不同）\", \"请求含会话 cookie 等应被忽略的随机成分\"], \"contraindications\": [\"需要完全自定义非哈希指纹策略时不应使用本微技能\"], \"workflow_steps\": [\"确认当前处于自定义 RequestFingerprinter 的 fingerprint() 实现中\", \"调用 scrapy.utils.request.fingerprint()（默认参数）并传入 request\", \"确认返回值是唯一标识该请求资源的 bytes 对象\", \"验证等价 URL（参数顺序不同）得到相同指纹，含会话 cookie 的请求指纹不受随机成分影响\"], \"constraints\": [\"fingerprint() 必须返回 bytes 对象\", \"指纹应唯一标识请求指向的资源\", \"默认实现基于 canonicalize_url 规范化 URL 并结合 method、body 生成 SHA1\"], \"triggers\": [\"需要在 fingerprint() 方法内复用标准指纹算法\", \"URL 参数顺序不同但指向同一资源\", \"请求仅因会话 cookie 等随机成分不同而应视为同一资源\"], \"output_contract\": [\"基于规范化 URL、method、body 的 SHA1 指纹（bytes），可唯一标识请求资源。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"510558b9-fb00-5b76-9c72-4bcd1afa13fa\", \"name\": \"自定义请求指纹器实现\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为请求生成稳定且唯一的指纹以支持去重\", \"applicable_signals\": [\"默认指纹无法区分或误合并资源\", \"需要忽略随机 cookie 或参数顺序差异\"], \"workflow_steps\": [\"确认默认指纹无法满足去重需求（如误合并或无法区分资源）\", \"编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes\", \"如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()\", \"通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径\"], \"output_contract\": [\"返回唯一标识请求的 bytes 指纹\"], \"score\": 0.8169400073776892}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

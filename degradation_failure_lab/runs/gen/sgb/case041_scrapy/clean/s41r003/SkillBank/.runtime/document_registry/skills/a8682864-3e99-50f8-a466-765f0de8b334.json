@@ -1,0 +1,124 @@
+{
+  "skill_id": "a8682864-3e99-50f8-a466-765f0de8b334",
+  "name": "响应批量链接跟进生成器",
+  "description": "使用 response.follow_all 通过 urls、css 或 xpath 参数批量生成跟进 Request 的生成器，自动跳过无法获取链接的选择器。适用于需要遍历页面所有链接的场景。",
+  "skill_body": "在解析回调中需要一次性跟进页面多个链接时，调用 response.follow_all 生成 Request 生成器。\n\n执行要点：\n1. 选择一种链接来源参数：urls（列表）、css 或 xpath，三者互斥，只能传其一。\n2. urls 元素可为相对 URL、Link 对象、指向 <link>/<a> 的 Selector，或属性 Selector（非 SelectorList）。\n3. 其余参数与 Request.__init__() 相同，可传 callback、meta 等。\n4. 将生成器 yield 出去（或迭代 yield 每个 Request），交由引擎调度。\n5. 注意：当传入 SelectorList 或使用 css/xpath 参数时，无法获取链接的选择器（如无 href 的 <a>）不会产生 Request，无需额外过滤。\n\n## Objective\n\n批量生成跟进多个链接的 Request 生成器\n## Applicable Signals\n\n- 页面包含多个待跟进链接\n- 希望用 css 或 xpath 一次性提取并跟进链接\n- 需要以生成器方式产出多个 Request\n\n## Contraindications\n\n- 仅需跟进单个链接（应使用 response.follow）\n- 同时传入 urls、css、xpath 中的多个参数\n\n## Intervention Moves\n\n- 调用 response.follow_all 并仅传入 urls、css、xpath 之一\n- 将生成器 yield 给引擎\n- 依赖内置逻辑自动跳过无法获取链接的选择器\n\n## Workflow Steps\n\n- 确定链接来源：urls 列表、css 选择器或 xpath 选择器，三选一\n- 调用 response.follow_all(urls=... 或 css=... 或 xpath=...)，按需附加 callback、meta 等 Request 参数\n- 在解析回调中 yield 该生成器（或迭代 yield 每个 Request）\n- 确认无 href 等无法获取链接的选择器已被自动跳过\n\n## Constraints\n\n- urls、css、xpath 三者互斥，仅允许传入其一\n- urls 元素可为相对 URL、Link 对象、Selector 或属性 Selector（非 SelectorList）\n- 其余参数与 Request.__init__() 一致\n\n## Cautions\n\n- 传入 SelectorList 或使用 css/xpath 时，无法获取链接的选择器不会产生 Request，属预期行为\n- 不要与单链接 follow 混用同一批链接来源\n\n## Output Contract\n\n- 产出多个 Request 实例的生成器，交由引擎调度跟进\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: response.follow_all(css='a.my_link', callback=self.parse_item)\n- Therapist/Output: yield 生成器，逐个产出指向各链接的 Request\n- Notes: css 参数批量提取链接\n\n### Example 2\n\n- Client/Input: response.follow_all(xpath='//img/@src')\n- Therapist/Output: yield 生成器，逐个产出指向各图片 URL 的 Request\n- Notes: xpath 属性选择器批量提取",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "批量生成跟进多个链接的 Request 生成器",
+  "domain": "scrapy",
+  "task_family": "crawl_navigation",
+  "method_family": "request_construction",
+  "stage": "parse",
+  "applicable_signals": [
+    "页面包含多个待跟进链接",
+    "希望用 css 或 xpath 一次性提取并跟进链接",
+    "需要以生成器方式产出多个 Request"
+  ],
+  "contraindications": [
+    "仅需跟进单个链接（应使用 response.follow）",
+    "同时传入 urls、css、xpath 中的多个参数"
+  ],
+  "intervention_moves": [
+    "调用 response.follow_all 并仅传入 urls、css、xpath 之一",
+    "将生成器 yield 给引擎",
+    "依赖内置逻辑自动跳过无法获取链接的选择器"
+  ],
+  "triggers": [
+    "需要一次性跟进页面中多个链接",
+    "使用 css/xpath 参数批量提取链接",
+    "解析回调中需生成多个 Request"
+  ],
+  "workflow_steps": [
+    "确定链接来源：urls 列表、css 选择器或 xpath 选择器，三选一",
+    "调用 response.follow_all(urls=... 或 css=... 或 xpath=...)，按需附加 callback、meta 等 Request 参数",
+    "在解析回调中 yield 该生成器（或迭代 yield 每个 Request）",
+    "确认无 href 等无法获取链接的选择器已被自动跳过"
+  ],
+  "constraints": [
+    "urls、css、xpath 三者互斥，仅允许传入其一",
+    "urls 元素可为相对 URL、Link 对象、Selector 或属性 Selector（非 SelectorList）",
+    "其余参数与 Request.__init__() 一致"
+  ],
+  "cautions": [
+    "传入 SelectorList 或使用 css/xpath 时，无法获取链接的选择器不会产生 Request，属预期行为",
+    "不要与单链接 follow 混用同一批链接来源"
+  ],
+  "output_contract": [
+    "产出多个 Request 实例的生成器，交由引擎调度跟进"
+  ],
+  "examples": [
+    {
+      "input": "response.follow_all(css='a.my_link', callback=self.parse_item)",
+      "output": "yield 生成器，逐个产出指向各链接的 Request",
+      "notes": "css 参数批量提取链接"
+    },
+    {
+      "input": "response.follow_all(xpath='//img/@src')",
+      "output": "yield 生成器，逐个产出指向各图片 URL 的 Request",
+      "notes": "xpath 属性选择器批量提取"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "follow_all",
+    "request_construction",
+    "crawl_navigation",
+    "parse"
+  ],
+  "support_ids": [
+    "e05e63fb-f014-51d6-881d-5c9a663625c9"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "39bfa663-dc6a-553b-883f-698aca6c5884"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|批量生成跟进多个链接的 request 生成器|scrapy|crawl_navigation|request_construction|parse|响应批量链接跟进生成器",
+    "change_action": "create",
+    "llm_reason": "候选技能描述 response.follow_all 批量生成跟进 Request，与现有下载器中间件钩子路由技能在能力身份上完全不同，且与 peer 的单链接 follow 技能为不同能力，应新建独立 micro_skill。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

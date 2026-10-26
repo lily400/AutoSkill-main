@@ -1,0 +1,113 @@
+{
+  "skill_id": "f41fcf7a-591a-589d-8a77-8abaa0960bf8",
+  "name": "从 cURL 命令构造 Scrapy Request",
+  "description": "使用 Request.from_curl 从 cURL 命令字符串创建 Scrapy Request，自动填充 HTTP 方法、URL、头、cookie 和 body；当已有 cURL 命令（如从浏览器复制）需要转为 Scrapy 请求时使用。",
+  "skill_body": "当调用方提供 cURL 命令字符串并希望得到可用的 Scrapy Request 时：调用 Request.from_curl 解析该命令，自动填充方法、URL、头、cookie 和 body；如需覆盖命令中的同名参数，可传入与 Request 类相同的参数（优先于 cURL 中的值）；默认忽略无法识别的选项，若希望遇到未知选项时报错，显式传入 ignore_unknown_options=False。返回构造好的 Request 对象。\n\n## Objective\n\n将 cURL 命令转换为可用的 Scrapy Request 对象\n## Applicable Signals\n\n- 输入为 cURL 命令字符串\n- 需要复用浏览器复制的请求\n\n## Contraindications\n\n- 请求参数需完全手工构造时\n- cURL 含无法识别选项且不希望报错时需显式设置 ignore_unknown_options\n\n## Intervention Moves\n\n- 调用 Request.from_curl 解析 cURL 命令\n- 按需传入与 Request 相同的参数以覆盖 cURL 中的值\n- 按需设置 ignore_unknown_options=False 使未知选项报错\n\n## Workflow Steps\n\n- 获取 cURL 命令字符串\n- 调用 Request.from_curl 构造 Request，自动填充方法、URL、头、cookie、body\n- 如需覆盖命令中的同名参数，传入对应 Request 参数\n- 如需对未知选项报错，传入 ignore_unknown_options=False\n- 返回构造好的 Request 对象\n\n## Constraints\n\n- 传入的 Request 参数优先并覆盖 cURL 命令中的同名参数\n- 默认忽略无法识别的选项\n\n## Cautions\n\n- 未知选项默认被忽略，若需严格校验须显式设置 ignore_unknown_options=False\n\n## Output Contract\n\n- 生成包含正确方法、URL、头、cookie、body 的 Request 对象",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "dc522835-58a3-552c-bd8b-30ad389282ea",
+  "parent_candidate_ids": [
+    "dc522835-58a3-552c-bd8b-30ad389282ea"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.72,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "将 cURL 命令转换为可用的 Scrapy Request 对象",
+  "domain": "scrapy",
+  "task_family": "请求构造",
+  "method_family": "cURL 转换",
+  "stage": "请求发起",
+  "applicable_signals": [
+    "输入为 cURL 命令字符串",
+    "需要复用浏览器复制的请求"
+  ],
+  "contraindications": [
+    "请求参数需完全手工构造时",
+    "cURL 含无法识别选项且不希望报错时需显式设置 ignore_unknown_options"
+  ],
+  "intervention_moves": [
+    "调用 Request.from_curl 解析 cURL 命令",
+    "按需传入与 Request 相同的参数以覆盖 cURL 中的值",
+    "按需设置 ignore_unknown_options=False 使未知选项报错"
+  ],
+  "triggers": [
+    "已有 cURL 命令需转为 Scrapy 请求",
+    "需复用从浏览器复制的请求"
+  ],
+  "workflow_steps": [
+    "获取 cURL 命令字符串",
+    "调用 Request.from_curl 构造 Request，自动填充方法、URL、头、cookie、body",
+    "如需覆盖命令中的同名参数，传入对应 Request 参数",
+    "如需对未知选项报错，传入 ignore_unknown_options=False",
+    "返回构造好的 Request 对象"
+  ],
+  "constraints": [
+    "传入的 Request 参数优先并覆盖 cURL 命令中的同名参数",
+    "默认忽略无法识别的选项"
+  ],
+  "cautions": [
+    "未知选项默认被忽略，若需严格校验须显式设置 ignore_unknown_options=False"
+  ],
+  "output_contract": [
+    "生成包含正确方法、URL、头、cookie、body 的 Request 对象"
+  ],
+  "examples": [],
+  "tags": [
+    "scrapy",
+    "request",
+    "curl",
+    "请求构造"
+  ],
+  "support_ids": [
+    "b275728a-e3c9-5819-902f-f13604bd3c53"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "24182893-60e5-5e10-9a4e-3a2652cef6a0"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|将 curl 命令转换为可用的 scrapy request 对象|scrapy|请求构造|curl 转换|请求发起|从 curl 命令构造 scrapy request",
+    "change_action": "create",
+    "llm_reason": "候选技能是从 cURL 命令构造 Scrapy Request 的独立微技能，与现有请求判定、中间件路由等技能能力不同，且与 peer 候选（cb_kwargs、FormRequest、callback 路由）方法族各异，应新建。",
+    "parent_skill_id": "dc522835-58a3-552c-bd8b-30ad389282ea",
+    "parent_candidate_ids": [
+      "dc522835-58a3-552c-bd8b-30ad389282ea"
+    ],
+    "hierarchy_confidence": 0.72,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

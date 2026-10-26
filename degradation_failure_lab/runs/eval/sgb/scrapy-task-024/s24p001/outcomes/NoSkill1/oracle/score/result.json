@@ -1,0 +1,55 @@
+{
+  "protocol": "unchanged original 19 assertions + candidate response bridge; original source assertions read exact submitted bytes",
+  "oracle_original_sha256": "dbde11a8dce8a699101792be3b48e85a672e91a0cdc6cc4de32862cffeeb3918",
+  "candidate_sha256": "2083663caf5337c7af89cdc45366ba5c13ebf1bb6f2e65ea35c42b4c7b39bd21",
+  "environment": "Linux Python3.13.9, no-network, nonroot, isolated candidate and trusted scorer containers",
+  "task_result": {
+    "tests": 19,
+    "passed": 14,
+    "failed": 5,
+    "errors": 0,
+    "exit_code": 1
+  },
+  "rule_result": {
+    "rule_id": "scrapy024.ftp-default-overwrite",
+    "assertion": "test_supported_backends[ftp://server/export.json-True]",
+    "passed": true
+  },
+  "failures": [
+    {
+      "name": "test_supported_backends[file:///tmp/export.json-False]",
+      "detail": "AssertionError: Incorrect default overwrite for file:///tmp/export.json: expected False, got True\nassert True is False"
+    },
+    {
+      "name": "test_supported_backends[file:///tmp/export.csv-False]",
+      "detail": "AssertionError: Incorrect default overwrite for file:///tmp/export.csv: expected False, got True\nassert True is False"
+    },
+    {
+      "name": "test_supported_backends[/tmp/export.json-False]",
+      "detail": "AssertionError: Incorrect default overwrite for /tmp/export.json: expected False, got True\nassert True is False"
+    },
+    {
+      "name": "test_supported_backends[s3://bucket/export.json-True]",
+      "detail": "AssertionError: Incorrect default overwrite for s3://bucket/export.json: expected True, got False\nassert False is True"
+    },
+    {
+      "name": "test_supported_backends[gs://bucket/export.json-True]",
+      "detail": "AssertionError: Incorrect default overwrite for gs://bucket/export.json: expected True, got False\nassert False is True"
+    }
+  ],
+  "loading_errors": [],
+  "environment_errors": [],
+  "revised_oracle": "NOT_CREATED",
+  "model_calls": 0,
+  "failure_category": "task_assertion_error",
+  "candidate_binding_verified": true,
+  "infra_ok": true,
+  "task_success": false,
+  "failed_tests": [
+    "test_supported_backends[file:///tmp/export.json-False]",
+    "test_supported_backends[file:///tmp/export.csv-False]",
+    "test_supported_backends[/tmp/export.json-False]",
+    "test_supported_backends[s3://bucket/export.json-True]",
+    "test_supported_backends[gs://bucket/export.json-True]"
+  ]
+}

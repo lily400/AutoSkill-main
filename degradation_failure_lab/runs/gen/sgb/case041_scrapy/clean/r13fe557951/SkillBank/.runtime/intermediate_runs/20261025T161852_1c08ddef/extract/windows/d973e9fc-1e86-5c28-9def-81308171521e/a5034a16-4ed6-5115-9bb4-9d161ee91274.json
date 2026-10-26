@@ -1,0 +1,364 @@
+{
+  "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+  "title": "input002\\downloader-middleware.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+  "window_id": "a5034a16-4ed6-5115-9bb4-9d161ee91274",
+  "section_heading": "Downloader Middleware",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "e3ff6f02-f2ea-5a8d-81b1-f3e2467a1637",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+      "section": "Downloader Middleware",
+      "span": {
+        "start": 212,
+        "end": 4646
+      },
+      "excerpt": "The downloader middleware is a framework of hooks into Scrapy’s\nrequest/response processing. It’s a light, low-level system for globally\naltering Scrapy’s requests and responses.\n\nActivating a downloader middleware\nTo activate a downloader middleware component, add it to the\n[`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class paths and their values are the middleware orders.\n\nHere’s an example:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}\n```\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\nWriting your own downloader middleware\nEach downloader middleware is a [component](components.html#topics-components) that\ndefines one or more of these methods:\n\n***class*scrapy.downloadermiddlewares.DownloaderMiddleware**\n\nAny of the downloader middleware methods may be defined as a\ncoroutine function (`async def`).\n\n**process_request(*request*)**\n\nThis method is called for each request that goes through the download\nmiddleware.\n\n`process_request()` should either: return `None`, return a\n[`Response`](request-response.html#scrapy.http.Response) object, return a [`Request`](request-response.html#scrapy.Request)\nobject, or raise [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest).\n\nIf it returns `None`, Scrapy will continue processing this request, executing all\nother middlewares until, finally, the appropriate downloader handler is called\nthe request performed (and its response downloaded).\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, Scrapy will stop calling\n`process_request()` methods and reschedule the returned request. Once the newly returned\nrequest is performed, the appropriate middleware chain will be called on\nthe downloaded response.\n\n**Parameters:**\n\n**request** ([`Request`](request-response.html#scrapy.Request) object) – the request being processed\n\n**process_response(*request*, *response*)**",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\downloader-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "下载器中间件激活与排序配置",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "正确注册并排序下载器中间件，使请求/响应处理链按预期生效",
+        "task_family": "middleware_configuration",
+        "method_family": "settings_registration",
+        "stage": "setup",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "a5034a16-4ed6-5115-9bb4-9d161ee91274",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 21,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      },
+      "created_at": "2026-10-25T08:20:03+00:00"
+    },
+    {
+      "support_id": "371d95b2-6f91-5918-85c2-421e9090f962",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md",
+      "section": "Downloader Middleware",
+      "span": {
+        "start": 212,
+        "end": 4646
+      },
+      "excerpt": "The downloader middleware is a framework of hooks into Scrapy’s\nrequest/response processing. It’s a light, low-level system for globally\naltering Scrapy’s requests and responses.\n\nActivating a downloader middleware\nTo activate a downloader middleware component, add it to the\n[`DOWNLOADER_MIDDLEWARES`](settings.html#std-setting-DOWNLOADER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class paths and their values are the middleware orders.\n\nHere’s an example:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}\n```\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\nWriting your own downloader middleware\nEach downloader middleware is a [component](components.html#topics-components) that\ndefines one or more of these methods:\n\n***class*scrapy.downloadermiddlewares.DownloaderMiddleware**\n\nAny of the downloader middleware methods may be defined as a\ncoroutine function (`async def`).\n\n**process_request(*request*)**\n\nThis method is called for each request that goes through the download\nmiddleware.\n\n`process_request()` should either: return `None`, return a\n[`Response`](request-response.html#scrapy.http.Response) object, return a [`Request`](request-response.html#scrapy.Request)\nobject, or raise [`IgnoreRequest`](exceptions.html#scrapy.exceptions.IgnoreRequest).\n\nIf it returns `None`, Scrapy will continue processing this request, executing all\nother middlewares until, finally, the appropriate downloader handler is called\nthe request performed (and its response downloaded).\n\nIf it returns a [`Request`](request-response.html#scrapy.Request) object, Scrapy will stop calling\n`process_request()` methods and reschedule the returned request. Once the newly returned\nrequest is performed, the appropriate middleware chain will be called on\nthe downloaded response.\n\n**Parameters:**\n\n**request** ([`Request`](request-response.html#scrapy.Request) object) – the request being processed\n\n**process_response(*request*, *response*)**",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input002\\downloader-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "process_request 请求拦截与分流",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在请求进入下载器前按规则改写、重调度、短路或丢弃请求",
+        "task_family": "request_processing",
+        "method_family": "hook_implementation",
+        "stage": "request_phase",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "a5034a16-4ed6-5115-9bb4-9d161ee91274",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 21,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      },
+      "created_at": "2026-10-25T08:20:03+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "4dfc43a3-38c0-52d0-a1b8-281174c8c12f",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "name": "下载器中间件激活与排序配置",
+      "description": "通过 DOWNLOADER_MIDDLEWARES 设置注册自定义下载器中间件并指定执行顺序，可用 None 禁用内置中间件。适用于需要全局改变请求/响应处理链的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "正确注册并排序下载器中间件，使请求/响应处理链按预期生效",
+      "domain": "scrapy",
+      "task_family": "middleware_configuration",
+      "method_family": "settings_registration",
+      "stage": "setup",
+      "applicable_signals": [
+        "需要启用自定义下载器中间件",
+        "需要调整或禁用内置中间件顺序"
+      ],
+      "contraindications": [
+        "仅需修改爬虫解析逻辑而非请求/响应链",
+        "中间件依赖的专属设置尚未确认"
+      ],
+      "intervention_moves": [
+        "在 DOWNLOADER_MIDDLEWARES 中添加中间件类路径与顺序值",
+        "将需禁用的内置中间件类路径值设为 None",
+        "确认中间件依赖的专属设置已启用"
+      ],
+      "workflow_steps": [
+        "确定要启用的自定义下载器中间件类路径",
+        "在 DOWNLOADER_MIDDLEWARES 字典中为每个中间件指定顺序值",
+        "如需禁用内置中间件，将其类路径值设为 None",
+        "检查中间件是否依赖特定设置并确认已启用"
+      ],
+      "triggers": [
+        "需要启用自定义下载器中间件",
+        "需要调整或禁用内置中间件顺序"
+      ],
+      "constraints": [
+        "DOWNLOADER_MIDDLEWARES 为字典，键为中间件类路径，值为中间件顺序",
+        "禁用内置中间件时使用 None 作为值"
+      ],
+      "cautions": [
+        "部分中间件可能需要通过特定设置启用，需查阅各中间件文档"
+      ],
+      "output_contract": [
+        "DOWNLOADER_MIDDLEWARES 配置字典，含类路径与顺序值"
+      ],
+      "examples": [
+        {
+          "input": "需要启用自定义下载器中间件",
+          "output": "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}",
+          "notes": null
+        },
+        {
+          "input": "需要禁用内置 UserAgentMiddleware",
+          "output": "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}",
+          "notes": null
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "e3ff6f02-f2ea-5a8d-81b1-f3e2467a1637"
+      ],
+      "metadata": {
+        "prompt": "在 Scrapy 项目的 settings 中配置 DOWNLOADER_MIDDLEWARES 字典：键为中间件类路径，值为中间件顺序（整数）。如需禁用某个内置中间件，将其类路径的值设为 None。配置完成后确认中间件依赖的专属设置是否已启用。",
+        "tags": [
+          "scrapy",
+          "downloader-middleware",
+          "settings",
+          "middleware-configuration"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Downloader Middleware"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "a5034a16-4ed6-5115-9bb4-9d161ee91274",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 21,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      }
+    },
+    {
+      "draft_id": "89533969-1bf3-5e8d-9681-d667098e858c",
+      "doc_id": "d973e9fc-1e86-5c28-9def-81308171521e",
+      "name": "process_request 请求拦截与分流",
+      "description": "实现下载器中间件的 process_request 钩子，在请求进入下载器前按规则改写、重调度、短路或丢弃请求。适用于需要在下载前修改请求或按条件重定向、过滤请求的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在请求进入下载器前按规则改写、重调度、短路或丢弃请求",
+      "domain": "scrapy",
+      "task_family": "request_processing",
+      "method_family": "hook_implementation",
+      "stage": "request_phase",
+      "applicable_signals": [
+        "需要在下载前修改请求",
+        "需要按条件重定向或丢弃请求",
+        "需要提前短路请求、跳过下载"
+      ],
+      "contraindications": [
+        "只需处理已下载的响应",
+        "需要跨阶段编排整个中间件链"
+      ],
+      "intervention_moves": [
+        "返回 None 继续处理该请求",
+        "返回 Request 对象以停止后续 process_request 并重新调度",
+        "返回 Response 对象以提前短路、跳过下载",
+        "抛出 IgnoreRequest 以丢弃该请求"
+      ],
+      "workflow_steps": [
+        "在下载器中间件组件中定义 process_request(request) 方法",
+        "根据业务规则判断应继续、重调度、短路还是丢弃",
+        "返回 None 继续沿中间件链处理",
+        "返回 Request 对象以重新调度该请求",
+        "返回 Response 对象以提前短路",
+        "抛出 IgnoreRequest 以丢弃请求"
+      ],
+      "triggers": [
+        "需要在下载前修改请求",
+        "需要按条件重定向或丢弃请求",
+        "需要提前短路请求、跳过下载"
+      ],
+      "constraints": [
+        "process_request 只能返回 None、Response、Request 或抛出 IgnoreRequest",
+        "返回 Request 时会停止调用后续 process_request 方法并重新调度该请求",
+        "方法可定义为协程函数（async def）"
+      ],
+      "cautions": [
+        "返回 Request 会中断当前中间件链，需确认重调度不会造成循环",
+        "部分中间件可能需通过特定设置启用"
+      ],
+      "output_contract": [
+        "process_request 方法返回 None/Request/Response 或抛出 IgnoreRequest 的明确分支逻辑"
+      ],
+      "examples": [
+        {
+          "input": "请求需在下载前被改写后继续处理",
+          "output": "process_request 返回 None，Scrapy 继续执行其余中间件直至下载",
+          "notes": "继续处理路径"
+        },
+        {
+          "input": "请求需被重定向到新地址",
+          "output": "process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度",
+          "notes": "重调度路径"
+        },
+        {
+          "input": "请求应被过滤丢弃",
+          "output": "process_request 抛出 IgnoreRequest",
+          "notes": "丢弃路径"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "371d95b2-6f91-5918-85c2-421e9090f962"
+      ],
+      "metadata": {
+        "prompt": "实现 process_request(request) 方法，根据业务规则选择四种返回值之一：返回 None 表示继续沿中间件链处理该请求；返回 Request 对象表示停止调用后续 process_request 并重新调度该请求；返回 Response 对象表示提前短路、跳过下载；抛出 IgnoreRequest 表示丢弃该请求。方法可定义为协程函数（async def）。确保每个分支逻辑明确、互斥且可预测。",
+        "tags": [
+          "scrapy",
+          "downloader-middleware",
+          "process_request",
+          "request_processing",
+          "hook_implementation"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Downloader Middleware"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "a5034a16-4ed6-5115-9bb4-9d161ee91274",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 21,
+        "heading_path": [
+          "Downloader Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\downloader-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a downloader middleware",
+          "Writing your own downloader middleware"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The downloader middleware is a framework of hooks into Scrapy’s"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

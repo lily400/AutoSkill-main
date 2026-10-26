@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"9719683e-0a4a-5d7e-8169-5d7d854d94d9\", \"name\": \"请求错误回调处理（errback）\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在请求失败时按异常类型分流处理并记录日志\", \"applicable_signals\": [\"请求需要自定义失败处理而非默认日志\", \"需要针对不同下载异常类型做差异化响应\"], \"contraindications\": [\"仅需默认失败日志、无需分类处理时\", \"失败原因与请求处理无关（如解析逻辑错误）\"], \"workflow_steps\": [\"在构造 scrapy.Request 时传入 errback 参数指向错误处理函数\", \"在 errback 函数中接收 failure 参数并记录 repr(failure)\", \"按 failure.check() 判断异常类型并进入对应分支\", \"在 HttpError 分支读取 failure.value.response 并记录其 URL\", \"在 DNSLookupError 与 TimeoutError/TCPTimedOutError 分支读取 failure.request 并记录其 URL\"], \"constraints\": [\"errback 必须与请求一同配置，否则失败不会进入自定义处理\", \"分支判断应使用 failure.check() 而非直接比较异常类型\"], \"triggers\": [\"需要区分 HTTP 错误、DNS 错误、超时等不同失败类型\", \"希望在请求失败时记录日志或产出诊断数据\"], \"output_contract\": [\"按失败类型分支处理的 errback 函数及对应日志输出\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76\", \"name\": \"自定义请求指纹器\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"按业务比较规则生成请求唯一指纹以控制去重\", \"applicable_signals\": [\"默认请求指纹器无法区分或错误合并本应不同/相同的请求\", \"业务要求对 URL 大小写、片段、查询参数或请求头采用特定比较方式\"], \"workflow_steps\": [\"确认默认请求指纹器无法满足当前去重需求，并明确差异点\", \"定义业务比较规则：是否大小写敏感、是否包含 URL 片段、包含或排除哪些查询参数、是否纳入请求头\", \"编写自定义请求指纹器类，按上述规则规范化请求并生成唯一标识\", \"在项目配置中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类\", \"运行爬虫并验证去重行为符合预期\"], \"output_contract\": [\"配置生效的自定义请求指纹器类及去重行为验证结果\"], \"score\": 0.438999417380478}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "skill_id": "8efb2db6-37e9-5869-8b32-ec06a4206585",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能是使用 FormRequest 构造表单 POST 请求的独立微技能，与现有 hostname 判定/域名正则构建技能在能力身份上完全不同，且与 peer 候选（cb_kwargs、from_curl、errback）方法族不同，应新建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "8efb2db6-37e9-5869-8b32-ec06a4206585",
+    "name": "FormRequest 表单提交构造",
+    "description": "使用 FormRequest 构造带 formdata 的 POST 请求，并绑定 callback 处理响应，用于向表单 action 端点提交结构化字段数据。",
+    "skill_body": "当需要向表单 action 端点以 POST 方式提交结构化字段时，构造 FormRequest 对象：设置 url 为目标表单端点，formdata 为字段字典，callback 为处理响应的回调方法，并以列表形式返回该请求对象。\n\n## Objective\n\n构造并发送携带表单数据的 POST 请求\n## Applicable Signals\n\n- 目标端点接受表单编码提交\n- 需要以 POST 方式发送结构化字段\n- 需要为提交后的响应绑定回调处理\n\n## Contraindications\n\n- 目标端点不接受表单编码\n- 仅需 GET 抓取静态页面\n\n## Intervention Moves\n\n- 指定表单 action 端点为 url\n- 以字典形式提供 formdata 字段\n- 绑定 callback 处理响应\n- 以列表形式返回请求对象\n\n## Workflow Steps\n\n- 确认目标表单 action 端点及需提交的字段\n- 构造 FormRequest，设置 url、formdata 与 callback\n- 以列表形式返回该 FormRequest 对象\n\n## Constraints\n\n- formdata 应为字段名到值的映射\n- callback 应指向可处理该响应的回调方法\n\n## Cautions\n\n- 若端点不接受表单编码，应改用其他请求类型\n- 仅需 GET 抓取静态页面时不应使用本技能\n\n## Output Contract\n\n- 返回一个带 formdata 与 callback 的 FormRequest 对象列表\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要向表单 action 端点提交 name 与 age 字段\n- Therapist/Output: return [FormRequest(url=\"http://www.example.com/post/action\", formdata={\"name\": \"John Doe\", \"age\": \"27\"}, callback=self.after_post)]\n- Notes: 以列表形式返回带 formdata 与 callback 的 FormRequest",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "构造并发送携带表单数据的 POST 请求",
+    "domain": "scrapy",
+    "task_family": "请求构造",
+    "method_family": "FormRequest",
+    "stage": "请求生成",
+    "applicable_signals": [
+      "目标端点接受表单编码提交",
+      "需要以 POST 方式发送结构化字段",
+      "需要为提交后的响应绑定回调处理"
+    ],
+    "contraindications": [
+      "目标端点不接受表单编码",
+      "仅需 GET 抓取静态页面"
+    ],
+    "intervention_moves": [
+      "指定表单 action 端点为 url",
+      "以字典形式提供 formdata 字段",
+      "绑定 callback 处理响应",
+      "以列表形式返回请求对象"
+    ],
+    "triggers": [
+      "需要向表单 action 端点提交字段数据",
+      "需要以 POST 方式发送结构化表单"
+    ],
+    "workflow_steps": [
+      "确认目标表单 action 端点及需提交的字段",
+      "构造 FormRequest，设置 url、formdata 与 callback",
+      "以列表形式返回该 FormRequest 对象"
+    ],
+    "constraints": [
+      "formdata 应为字段名到值的映射",
+      "callback 应指向可处理该响应的回调方法"
+    ],
+    "cautions": [
+      "若端点不接受表单编码，应改用其他请求类型",
+      "仅需 GET 抓取静态页面时不应使用本技能"
+    ],
+    "output_contract": [
+      "返回一个带 formdata 与 callback 的 FormRequest 对象列表"
+    ],
+    "examples": [
+      {
+        "input": "需要向表单 action 端点提交 name 与 age 字段",
+        "output": "return [FormRequest(url=\"http://www.example.com/post/action\", formdata={\"name\": \"John Doe\", \"age\": \"27\"}, callback=self.after_post)]",
+        "notes": "以列表形式返回带 formdata 与 callback 的 FormRequest"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "FormRequest",
+      "POST",
+      "表单提交",
+      "请求构造"
+    ],
+    "support_ids": [
+      "2ba446da-1f01-5ab6-be5e-a904789f17b3"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "32edccb5-ce5e-5220-aee9-78d02f0cae17"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|构造并发送携带表单数据的 post 请求|scrapy|请求构造|formrequest|请求生成|formrequest 表单提交构造"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

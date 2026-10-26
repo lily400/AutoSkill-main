@@ -1,0 +1,118 @@
+{
+  "skill_id": "d9545371-1c8c-5f0e-aa54-f9568fa3fffd",
+  "name": "process_spider_input 返回值契约",
+  "description": "确保自定义 Spider 中间件的 process_spider_input 钩子符合 Scrapy 框架契约：对每个进入 Spider 的响应调用，必须返回 None 或抛出异常；返回 None 时处理链继续执行后续中间件直至交给 Spider。用于实现该钩子时校验返回值行为。",
+  "skill_body": "实现或审查 process_spider_input 方法时，确认其返回值符合契约：正常放行时返回 None，让 Scrapy 继续执行后续中间件直至响应交给 Spider；需要中断或报错时抛出异常。不要返回其他值，也不要在该方法内直接处理响应内容。\n\n## Objective\n\n保证 process_spider_input 返回值符合框架约定\n## Applicable Signals\n\n- 正在编写 process_spider_input 方法\n- 需要确认响应是否继续沿中间件链传递\n\n## Contraindications\n\n- 实现其他不涉及该返回契约的钩子\n\n## Intervention Moves\n\n- 正常放行时返回 None\n- 需要中断时抛出异常\n- 避免返回其他值\n\n## Workflow Steps\n\n- 确认当前实现的是 process_spider_input 钩子\n- 在正常路径返回 None 以继续处理链\n- 在需要中断或报错时抛出异常\n- 检查方法中不存在返回非 None 值的分支\n\n## Constraints\n\n- 返回值只能是 None 或抛出异常\n- 返回 None 后由 Scrapy 继续执行后续中间件直至交给 Spider\n\n## Cautions\n\n- 不要在该钩子中返回响应对象或其他值来替代框架的继续处理逻辑\n\n## Output Contract\n\n- 返回 None 或抛出异常的实现，处理链可继续\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 实现 process_spider_input 以放行响应\n- Therapist/Output: def process_spider_input(self, response):\n    return None\n- Notes: 返回 None 表示继续处理链",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c",
+  "parent_candidate_ids": [
+    "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.9,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "保证 process_spider_input 返回值符合框架约定",
+  "domain": "scrapy",
+  "task_family": "middleware_implementation",
+  "method_family": "return_value_contract",
+  "stage": "implementation",
+  "applicable_signals": [
+    "正在编写 process_spider_input 方法",
+    "需要确认响应是否继续沿中间件链传递"
+  ],
+  "contraindications": [
+    "实现其他不涉及该返回契约的钩子"
+  ],
+  "intervention_moves": [
+    "正常放行时返回 None",
+    "需要中断时抛出异常",
+    "避免返回其他值"
+  ],
+  "triggers": [
+    "实现 process_spider_input 方法",
+    "审查 Spider 中间件钩子返回值",
+    "响应进入 Spider 前需要放行或中断"
+  ],
+  "workflow_steps": [
+    "确认当前实现的是 process_spider_input 钩子",
+    "在正常路径返回 None 以继续处理链",
+    "在需要中断或报错时抛出异常",
+    "检查方法中不存在返回非 None 值的分支"
+  ],
+  "constraints": [
+    "返回值只能是 None 或抛出异常",
+    "返回 None 后由 Scrapy 继续执行后续中间件直至交给 Spider"
+  ],
+  "cautions": [
+    "不要在该钩子中返回响应对象或其他值来替代框架的继续处理逻辑"
+  ],
+  "output_contract": [
+    "返回 None 或抛出异常的实现，处理链可继续"
+  ],
+  "examples": [
+    {
+      "input": "实现 process_spider_input 以放行响应",
+      "output": "def process_spider_input(self, response):\n    return None",
+      "notes": "返回 None 表示继续处理链"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "spider-middleware",
+    "process_spider_input",
+    "return-contract"
+  ],
+  "support_ids": [
+    "69864f90-125d-56fd-9925-86135340ca3a"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "92c1e006-96a2-5ce7-929d-bb196abccae1"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.75,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|保证 process_spider_input 返回值符合框架约定|scrapy|middleware_implementation|return_value_contract|implementation|process_spider_input 返回值契约",
+    "change_action": "create",
+    "llm_reason": "候选技能描述 process_spider_input 返回值契约，与现有技能（域名正则构建、下载器中间件 process_exception）及 peer 候选（process_spider_output/async、BaseSpiderMiddleware）在能力身份上均不同，属于新的独立微技能。",
+    "parent_skill_id": "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c",
+    "parent_candidate_ids": [
+      "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c"
+    ],
+    "hierarchy_confidence": 0.9,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

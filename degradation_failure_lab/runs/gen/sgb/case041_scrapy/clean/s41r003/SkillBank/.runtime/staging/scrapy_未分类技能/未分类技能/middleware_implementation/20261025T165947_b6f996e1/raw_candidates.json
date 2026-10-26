@@ -1,0 +1,537 @@
+{
+  "schema": "autoskill.document.staging.raw_candidates.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "middleware_implementation",
+  "run_id": "20261025T165947_b6f996e1",
+  "documents": [
+    {
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "source_type": "document",
+      "title": "input004\\spider-middleware.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# Spider Middleware — Scrapy 2.14.1 documentation\n\n- Spider Middleware\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/spider-middleware.rst)\n\n---\n\n# Spider Middleware\n\nThe spider middleware is a framework of hooks into Scrapy’s spider processing\nmechanism where you can plug custom functionality to process the responses that\nare sent to [Spiders](spiders.html#topics-spiders) for processing and to process the requests\nand items that are generated from spiders.\n\n## Activating a spider middleware\n\nTo activate a spider middleware component, add it to the\n[`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class path and their values are the middleware orders.\n\nHere’s an example:\n\n```\nSPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}\n```\n\nThe [`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting is merged with the\n[`SPIDER_MIDDLEWARES_BASE`](settings.html#std-setting-SPIDER_MIDDLEWARES_BASE) setting defined in Scrapy (and not meant to\nbe overridden) and then sorted by order to get the final sorted list of enabled\nmiddlewares: the first middleware is the one closer to the engine and the last\nis the one closer to the spider. In other words,\nthe `process_spider_input()`\nmethod of each middleware will be invoked in increasing\nmiddleware order (100, 200, 300, …), and the\n`process_spider_output()` method\nof each middleware will be invoked in decreasing order.\n\nTo decide which order to assign to your middleware see the\n[`SPIDER_MIDDLEWARES_BASE`](settings.html#std-setting-SPIDER_MIDDLEWARES_BASE) setting and pick a value according to where\nyou want to insert the middleware. The order does matter because each\nmiddleware performs a different action and your middleware could depend on some\nprevious (or subsequent) middleware being applied.\n\nIf you want to disable a builtin middleware (the ones defined in\n[`SPIDER_MIDDLEWARES_BASE`](settings.html#std-setting-SPIDER_MIDDLEWARES_BASE), and enabled by default) you must define it\nin your project [`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting and assign `None` as its\nvalue. For example, if you want to disable the off-site middleware:\n\n```\nSPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\n## Writing your own spider middleware\n\nEach spider middleware is a [component](components.html#topics-components) that defines\none or more of these methods:\n\n***class*scrapy.spidermiddlewares.SpiderMiddleware**\n\n***async*process_start(*start: AsyncIterator[Any]*, */*) → AsyncIterator[Any]**\n\nIterate over the output of [`start()`](spiders.html#scrapy.Spider.start) or that\nof the `process_start()` method of an earlier spider middleware,\noverriding it. For example:\n\n```\nasync def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request\n```\n\nYou may yield the same type of objects as [`start()`](spiders.html#scrapy.Spider.start).\n\nTo write spider middlewares that work on Scrapy versions lower than\n2.13, define also a synchronous `process_start_requests()` method\nthat returns an iterable. For example:\n\n```\ndef process_start_requests(self, start, spider):\n    yield from start\n```\n\n**process_spider_input(*response*)**\n\nThis method is called for each response that goes through the spider\nmiddleware and into the spider, for processing.\n\n`process_spider_input()` should return `None` or raise an\nexception.\n\nIf it returns `None`, Scrapy will continue processing this response,\nexecuting all other middlewares until, finally, the response is handed\nto the spider for processing.\n\nIf it raises an exception, Scrapy won’t bother calling any other spider\nmiddleware `process_spider_input()` and will call the request\nerrback if there is one, otherwise it will start the `process_spider_exception()`\nchain. The output of the errback is chained back in the other\ndirection for `process_spider_output()` to process it, or\n`process_spider_exception()` if it raised an exception.\n\n**Parameters:**\n\n**response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_spider_output(*response*, *result*)**\n\nThis method is called with the results returned from the Spider, after\nit has processed the response.\n\n`process_spider_output()` must return an iterable of\n[`Request`](request-response.html#scrapy.Request) objects and [item objects](items.html#topics-items).\n\nConsider defining this method as an [asynchronous generator](https://docs.python.org/3/glossary.html#term-asynchronous-generator),\nwhich will be a requirement in a future version of Scrapy. However, if\nyou plan on sharing your spider middleware with other people, consider\neither [enforcing Scrapy 2.7](components.html#enforce-component-requirements)\nas a minimum requirement of your spider middleware, or [making\nyour spider middleware universal](coroutines.html#universal-spider-middleware) so that\nit works with Scrapy versions earlier than Scrapy 2.7.\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response which generated this output from the\nspider\n- **result** (an iterable of [`Request`](request-response.html#scrapy.Request) objects and\n[item objects](items.html#topics-items)) – the result returned by the spider\n\n***async*process_spider_output_async(*response*, *result*)**\n\nIf defined, this method must be an [asynchronous generator](https://docs.python.org/3/glossary.html#term-asynchronous-generator),\nwhich will be called instead of `process_spider_output()` if\n`result` is an [asynchronous iterable](https://docs.python.org/3/glossary.html#term-asynchronous-iterable).\n\n**process_spider_exception(*response*, *exception*)**\n\nThis method is called when a spider or `process_spider_output()`\nmethod (from a previous spider middleware) raises an exception.\n\n`process_spider_exception()` should return either `None` or an\niterable of [`Request`](request-response.html#scrapy.Request) or [item](items.html#topics-items)\nobjects.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_spider_exception()` in the following\nmiddleware components, until no middleware components are left and the\nexception reaches the engine (where it’s logged and discarded).\n\nIf it returns an iterable the `process_spider_output()` pipeline\nkicks in, starting from the next spider middleware, and no other\n`process_spider_exception()` will be called.\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed when the exception was\nraised\n- **exception** ([`Exception`](https://docs.python.org/3/library/exceptions.html#Exception) object) – the exception raised\n\n### Base class for custom spider middlewares\n\nScrapy provides a base class for custom spider middlewares. It’s not required\nto use it but it can help with simplifying middleware implementations and\nreducing the amount of boilerplate code in [universal middlewares](coroutines.html#universal-spider-middleware).\n\n***class*scrapy.spidermiddlewares.base.BaseSpiderMiddleware(*crawler: [Crawler](api.html#scrapy.crawler.Crawler)*)[[source]](../_modules/scrapy/spidermiddlewares/base.html#BaseSpiderMiddleware)**\n\nOptional base class for spider middlewares.\n\nAdded in version 2.13.\n\nThis class provides helper methods for asynchronous\n`process_spider_output()` and `process_start()` methods. Middlewares\nthat don’t have either of these methods don’t need to use this class.\n\nYou can override the\n`get_processed_request()`\nmethod to add processing code for requests and the\n`get_processed_item()`\nmethod to add processing code for items. These methods take a single\nrequest or item from the spider output iterable and return a request or\nitem (the same or a new one), or `None` to remove this request or item\nfrom the processing.\n\n**get_processed_item(*item: Any*, *response: [Response](request-response.html#scrapy.http.Response) | [None](https://docs.python.org/3/library/constants.html#None)*) → Any[[source]](../_modules/scrapy/spidermiddlewares/base.html#BaseSpiderMiddleware.get_processed_item)**\n\nReturn a processed item from the spider output.\n\nThis method is called with a single item from the start seeds or the\nspider output. It should return the same or a different item, or\n`None` to ignore it.\n\n**Parameters:**\n\n- **item** (*item object*) – the input item\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object or `None` for\nstart seeds) – the response being processed\n\n**Returns:**\n\nthe processed item or `None`\n\n**get_processed_request(*request: [Request](request-response.html#scrapy.Request)*, *response: [Response](request-response.html#scrapy.http.Response) | [None](https://docs.python.org/3/library/constants.html#None)*) → [Request](request-response.html#scrapy.Request) | [None](https://docs.python.org/3/library/constants.html#None)[[source]](../_modules/scrapy/spidermiddlewares/base.html#BaseSpiderMiddleware.get_processed_request)**\n\nReturn a processed request from the spider output.\n\nThis method is called with a single request from the start seeds or the\nspider output. It should return the same or a different request, or\n`None` to ignore it.\n\n**Parameters:**\n\n- **request** ([`Request`](request-response.html#scrapy.Request) object) – the input request\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object or `None` for\nstart seeds) – the response being processed\n\n**Returns:**\n\nthe processed request or `None`\n\n## Built-in spider middleware reference\n\nThis page describes all spider middleware components that come with Scrapy. For\ninformation on how to use them and how to write your own spider middleware, see\nthe spider middleware usage guide.\n\nFor a list of the components enabled by default (and their orders) see the\n[`SPIDER_MIDDLEWARES_BASE`](settings.html#std-setting-SPIDER_MIDDLEWARES_BASE) setting.\n\n### DepthMiddleware\n\n***class*scrapy.spidermiddlewares.depth.DepthMiddleware[[source]](../_modules/scrapy/spidermiddlewares/depth.html#DepthMiddleware)**\n\nDepthMiddleware is used for tracking the depth of each Request inside the\nsite being scraped. It works by setting `request.meta['depth'] = 0` whenever\nthere is no value previously set (usually just the first Request) and\nincrementing it by 1 otherwise.\n\nIt can be used to limit the maximum depth to scrape, control Request\npriority based on their depth, and things like that.\n\nThe `DepthMiddleware` can be configured through the following\nsettings (see the settings documentation for more info):\n\n> - [`DEPTH_LIMIT`](settings.html#std-setting-DEPTH_LIMIT) - The maximum depth that will be allowed to\n> crawl for any site. If zero, no limit will be imposed.\n> - [`DEPTH_STATS_VERBOSE`](settings.html#std-setting-DEPTH_STATS_VERBOSE) - Whether to collect the number of\n> requests for each depth.\n> - [`DEPTH_PRIORITY`](settings.html#std-setting-DEPTH_PRIORITY) - Whether to prioritize the requests based on\n> their depth.\n\n### HttpErrorMiddleware\n\n***class*scrapy.spidermiddlewares.httperror.HttpErrorMiddleware[[source]](../_modules/scrapy/spidermiddlewares/httperror.html#HttpErrorMiddleware)**\n\nFilter out unsuccessful (erroneous) HTTP responses so that spiders don’t\nhave to deal with them, which (most of the time) imposes an overhead,\nconsumes more resources, and makes the spider logic more complex.\n\nAccording to the [HTTP standard](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html), successful responses are those whose\nstatus codes are in the 200-300 range.\n\nIf you still want to process response codes outside that range, you can\nspecify which response codes the spider is able to handle using the\n`handle_httpstatus_list` spider attribute or\n`HTTPERROR_ALLOWED_CODES` setting.\n\nFor example, if you want your spider to handle 404 responses you can do\nthis:\n\n```\nfrom scrapy.spiders import CrawlSpider\n\nclass MySpider(CrawlSpider):\n    handle_httpstatus_list = [404]\n```\n\nThe `handle_httpstatus_list` key of [`Request.meta`](request-response.html#scrapy.Request.meta) can also be used to specify which response codes to\nallow on a per-request basis. You can also set the meta key `handle_httpstatus_all`\nto `True` if you want to allow any response code for a request, and `False` to\ndisable the effects of the `handle_httpstatus_all` key.\n\nKeep in mind, however, that it’s usually a bad idea to handle non-200\nresponses, unless you really know what you’re doing.\n\nFor more information see: [HTTP Status Code Definitions](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html).\n\n#### HttpErrorMiddleware settings\n\n##### HTTPERROR_ALLOWED_CODES\n\nDefault: `[]`\n\nPass all responses with non-200 status codes contained in this list.\n\n##### HTTPERROR_ALLOW_ALL\n\nDefault: `False`\n\nPass all responses, regardless of its status code.\n\n### RefererMiddleware\n\n***class*scrapy.spidermiddlewares.referer.RefererMiddleware[[source]](../_modules/scrapy/spidermiddlewares/referer.html#RefererMiddleware)**\n\nPopulates Request `Referer` header, based on the URL of the Response which\ngenerated it.\n\n#### RefererMiddleware settings\n\n##### REFERER_ENABLED\n\nDefault: `True`\n\nWhether to enable referer middleware.\n\n##### REFERRER_POLICY\n\nDefault: `'scrapy.spidermiddlewares.referer.DefaultReferrerPolicy'`\n\n[Referrer Policy](https://www.w3.org/TR/referrer-policy) to apply when populating Request “Referer” header.\n\nYou can also set the Referrer Policy per request,\nusing the special `\"referrer_policy\"` [Request.meta](request-response.html#topics-request-meta) key,\nwith the same acceptable values as for the `REFERRER_POLICY` setting.\n\n###### Acceptable values for REFERRER_POLICY\n\n- either a path to a `scrapy.spidermiddlewares.referer.ReferrerPolicy`\nsubclass — a custom policy or one of the built-in ones (see classes below),\n- or one or more comma-separated standard W3C-defined string values,\n- or the special `\"scrapy-default\"`.\n\n| String value | Class name (as a string) |\n| --- | --- |\n| `\"scrapy-default\"` (default) | `scrapy.spidermiddlewares.referer.DefaultReferrerPolicy` |\n| [“no-referrer”](https://www.w3.org/TR/referrer-policy/#referrer-policy-no-referrer) | `scrapy.spidermiddlewares.referer.NoReferrerPolicy` |\n| [“no-referrer-when-downgrade”](https://www.w3.org/TR/referrer-policy/#referrer-policy-no-referrer-when-downgrade) | `scrapy.spidermiddlewares.referer.NoReferrerWhenDowngradePolicy` |\n| [“same-origin”](https://www.w3.org/TR/referrer-policy/#referrer-policy-same-origin) | `scrapy.spidermiddlewares.referer.SameOriginPolicy` |\n| [“origin”](https://www.w3.org/TR/referrer-policy/#referrer-policy-origin) | `scrapy.spidermiddlewares.referer.OriginPolicy` |\n| [“strict-origin”](https://www.w3.org/TR/referrer-policy/#referrer-policy-strict-origin) | `scrapy.spidermiddlewares.referer.StrictOriginPolicy` |\n| [“origin-when-cross-origin”](https://www.w3.org/TR/referrer-policy/#referrer-policy-origin-when-cross-origin) | `scrapy.spidermiddlewares.referer.OriginWhenCrossOriginPolicy` |\n| [“strict-origin-when-cross-origin”](https://www.w3.org/TR/referrer-policy/#referrer-policy-strict-origin-when-cross-origin) | `scrapy.spidermiddlewares.referer.StrictOriginWhenCrossOriginPolicy` |\n| [“unsafe-url”](https://www.w3.org/TR/referrer-policy/#referrer-policy-unsafe-url) | `scrapy.spidermiddlewares.referer.UnsafeUrlPolicy` |\n\n***class*scrapy.spidermiddlewares.referer.ReferrerPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#ReferrerPolicy)**\n\nAbstract base class for referrer policies.\n\n***class*scrapy.spidermiddlewares.referer.DefaultReferrerPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#DefaultReferrerPolicy)**\n\nA variant of “no-referrer-when-downgrade”,\nwith the addition that “Referer” is not sent if the parent request was\nusing `file://` or `s3://` scheme.\n\nScrapy’s default referrer policy — just like [“no-referrer-when-downgrade”](https://www.w3.org/TR/referrer-policy/#referrer-policy-no-referrer-when-downgrade),\nthe W3C-recommended value for browsers — will send a non-empty\n“Referer” header from any `http(s)://` to any `https://` URL,\neven if the domain is different.\n\n[“same-origin”](https://www.w3.org/TR/referrer-policy/#referrer-policy-same-origin) may be a better choice if you want to remove referrer\ninformation for cross-domain requests.\n\n***class*scrapy.spidermiddlewares.referer.NoReferrerPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#NoReferrerPolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-no-referrer](https://www.w3.org/TR/referrer-policy/#referrer-policy-no-referrer)\n\nThe simplest policy is “no-referrer”, which specifies that no referrer information\nis to be sent along with requests made from a particular request client to any origin.\nThe header will be omitted entirely.\n\n***class*scrapy.spidermiddlewares.referer.NoReferrerWhenDowngradePolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#NoReferrerWhenDowngradePolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-no-referrer-when-downgrade](https://www.w3.org/TR/referrer-policy/#referrer-policy-no-referrer-when-downgrade)\n\nThe “no-referrer-when-downgrade” policy sends a full URL along with requests\nfrom a TLS-protected environment settings object to a potentially trustworthy URL,\nand requests from clients which are not TLS-protected to any origin.\n\nRequests from TLS-protected clients to non-potentially trustworthy URLs,\non the other hand, will contain no referrer information.\nA Referer HTTP header will not be sent.\n\nThis is a user agent’s default behavior, if no policy is otherwise specified.\n\n“no-referrer-when-downgrade” policy is the W3C-recommended default,\nand is used by major web browsers.\n\nHowever, it is NOT Scrapy’s default referrer policy (see `DefaultReferrerPolicy`).\n\n***class*scrapy.spidermiddlewares.referer.SameOriginPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#SameOriginPolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-same-origin](https://www.w3.org/TR/referrer-policy/#referrer-policy-same-origin)\n\nThe “same-origin” policy specifies that a full URL, stripped for use as a referrer,\nis sent as referrer information when making same-origin requests from a particular request client.\n\nCross-origin requests, on the other hand, will contain no referrer information.\nA Referer HTTP header will not be sent.\n\n***class*scrapy.spidermiddlewares.referer.OriginPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#OriginPolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-origin](https://www.w3.org/TR/referrer-policy/#referrer-policy-origin)\n\nThe “origin” policy specifies that only the ASCII serialization\nof the origin of the request client is sent as referrer information\nwhen making both same-origin requests and cross-origin requests\nfrom a particular request client.\n\n***class*scrapy.spidermiddlewares.referer.StrictOriginPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#StrictOriginPolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-strict-origin](https://www.w3.org/TR/referrer-policy/#referrer-policy-strict-origin)\n\nThe “strict-origin” policy sends the ASCII serialization\nof the origin of the request client when making requests:\n- from a TLS-protected environment settings object to a potentially trustworthy URL, and\n- from non-TLS-protected environment settings objects to any origin.\n\nRequests from TLS-protected request clients to non- potentially trustworthy URLs,\non the other hand, will contain no referrer information.\nA Referer HTTP header will not be sent.\n\n***class*scrapy.spidermiddlewares.referer.OriginWhenCrossOriginPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#OriginWhenCrossOriginPolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-origin-when-cross-origin](https://www.w3.org/TR/referrer-policy/#referrer-policy-origin-when-cross-origin)\n\nThe “origin-when-cross-origin” policy specifies that a full URL,\nstripped for use as a referrer, is sent as referrer information\nwhen making same-origin requests from a particular request client,\nand only the ASCII serialization of the origin of the request client\nis sent as referrer information when making cross-origin requests\nfrom a particular request client.\n\n***class*scrapy.spidermiddlewares.referer.StrictOriginWhenCrossOriginPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#StrictOriginWhenCrossOriginPolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-strict-origin-when-cross-origin](https://www.w3.org/TR/referrer-policy/#referrer-policy-strict-origin-when-cross-origin)\n\nThe “strict-origin-when-cross-origin” policy specifies that a full URL,\nstripped for use as a referrer, is sent as referrer information\nwhen making same-origin requests from a particular request client,\nand only the ASCII serialization of the origin of the request client\nwhen making cross-origin requests:\n\n- from a TLS-protected environment settings object to a potentially trustworthy URL, and\n- from non-TLS-protected environment settings objects to any origin.\n\nRequests from TLS-protected clients to non- potentially trustworthy URLs,\non the other hand, will contain no referrer information.\nA Referer HTTP header will not be sent.\n\n***class*scrapy.spidermiddlewares.referer.UnsafeUrlPolicy[[source]](../_modules/scrapy/spidermiddlewares/referer.html#UnsafeUrlPolicy)**\n\n[https://www.w3.org/TR/referrer-policy/#referrer-policy-unsafe-url](https://www.w3.org/TR/referrer-policy/#referrer-policy-unsafe-url)\n\nThe “unsafe-url” policy specifies that a full URL, stripped for use as a referrer,\nis sent along with both cross-origin requests\nand same-origin requests made from a particular request client.\n\nNote: The policy’s name doesn’t lie; it is unsafe.\nThis policy will leak origins and paths from TLS-protected resources\nto insecure origins.\nCarefully consider the impact of setting such a policy for potentially sensitive documents.\n\n“unsafe-url” policy is NOT recommended.\n\n### StartSpiderMiddleware\n\n***class*scrapy.spidermiddlewares.start.StartSpiderMiddleware(*crawler: [Crawler](api.html#scrapy.crawler.Crawler)*)[[source]](../_modules/scrapy/spidermiddlewares/start.html#StartSpiderMiddleware)**\n\nSet `is_start_request`.\n\n#### is_start_request\n\n[`meta`](request-response.html#scrapy.Request.meta) key that is set to `True` in [start\nrequests](spiders.html#start-requests), allowing you to tell start requests apart from\nother requests, e.g. in [downloader middlewares](downloader-middleware.html#topics-downloader-middleware).\n\n### UrlLengthMiddleware\n\n***class*scrapy.spidermiddlewares.urllength.UrlLengthMiddleware[[source]](../_modules/scrapy/spidermiddlewares/urllength.html#UrlLengthMiddleware)**\n\nFilters out requests with URLs longer than URLLENGTH_LIMIT\n\nThe `UrlLengthMiddleware` can be configured through the following\nsettings (see the settings documentation for more info):\n\n> - [`URLLENGTH_LIMIT`](settings.html#std-setting-URLLENGTH_LIMIT) - The maximum URL length to allow for crawled URLs.",
+      "sections": [
+        {
+          "heading": "input004\\spider-middleware.md",
+          "text": "# Spider Middleware — Scrapy 2.14.1 documentation\n\n- Spider Middleware\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/spider-middleware.rst)\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 176
+          },
+          "metadata": {
+            "heading_path": [
+              "input004\\spider-middleware.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# Spider Middleware — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "Spider Middleware"
+            ]
+          }
+        },
+        {
+          "heading": "Spider Middleware",
+          "text": "The spider middleware is a framework of hooks into Scrapy’s spider processing\nmechanism where you can plug custom functionality to process the responses that\nare sent to [Spiders](spiders.html#topics-spiders) for processing and to process the requests\nand items that are generated from spiders.",
+          "level": 1,
+          "span": {
+            "start": 196,
+            "end": 493
+          },
+          "metadata": {
+            "heading_path": [
+              "Spider Middleware"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing",
+            "sibling_headings": [
+              "input004\\spider-middleware.md"
+            ]
+          }
+        },
+        {
+          "heading": "Activating a spider middleware",
+          "text": "To activate a spider middleware component, add it to the\n[`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class path and their values are the middleware orders.\n\nHere’s an example:\n\n```\nSPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}\n```\n\nThe [`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting is merged with the\n[`SPIDER_MIDDLEWARES_BASE`](settings.html#std-setting-SPIDER_MIDDLEWARES_BASE) setting defined in Scrapy (and not meant to\nbe overridden) and then sorted by order to get the final sorted list of enabled\nmiddlewares: the first middleware is the one closer to the engine and the last\nis the one closer to the spider. In other words,\nthe `process_spider_input()`\nmethod of each middleware will be invoked in increasing\nmiddleware order (100, 200, 300, …), and the\n`process_spider_output()` method\nof each middleware will be invoked in decreasing order.\n\nTo decide which order to assign to your middleware see the\n[`SPIDER_MIDDLEWARES_BASE`](settings.html#std-setting-SPIDER_MIDDLEWARES_BASE) setting and pick a value according to where\nyou want to insert the middleware. The order does matter because each\nmiddleware performs a different action and your middleware could depend on some\nprevious (or subsequent) middleware being applied.\n\nIf you want to disable a builtin middleware (the ones defined in\n[`SPIDER_MIDDLEWARES_BASE`](settings.html#std-setting-SPIDER_MIDDLEWARES_BASE), and enabled by default) you must define it\nin your project [`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting and assign `None` as its\nvalue. For example, if you want to disable the off-site middleware:\n\n```\nSPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.",
+          "level": 2,
+          "span": {
+            "start": 527,
+            "end": 2595
+          },
+          "metadata": {
+            "heading_path": [
+              "Spider Middleware",
+              "Activating a spider middleware"
+            ],
+            "parent_heading": "Spider Middleware",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "To activate a spider middleware component, add it to the",
+            "sibling_headings": [
+              "Writing your own spider middleware",
+              "Built-in spider middleware reference"
+            ]
+          }
+        },
+        {
+          "heading": "Writing your own spider middleware",
+          "text": "Each spider middleware is a [component](components.html#topics-components) that defines\none or more of these methods:\n\n***class*scrapy.spidermiddlewares.SpiderMiddleware**\n\n***async*process_start(*start: AsyncIterator[Any]*, */*) → AsyncIterator[Any]**\n\nIterate over the output of [`start()`](spiders.html#scrapy.Spider.start) or that\nof the `process_start()` method of an earlier spider middleware,\noverriding it. For example:\n\n```\nasync def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request\n```\n\nYou may yield the same type of objects as [`start()`](spiders.html#scrapy.Spider.start).\n\nTo write spider middlewares that work on Scrapy versions lower than\n2.13, define also a synchronous `process_start_requests()` method\nthat returns an iterable. For example:\n\n```\ndef process_start_requests(self, start, spider):\n    yield from start\n```\n\n**process_spider_input(*response*)**\n\nThis method is called for each response that goes through the spider\nmiddleware and into the spider, for processing.\n\n`process_spider_input()` should return `None` or raise an\nexception.\n\nIf it returns `None`, Scrapy will continue processing this response,\nexecuting all other middlewares until, finally, the response is handed\nto the spider for processing.\n\nIf it raises an exception, Scrapy won’t bother calling any other spider\nmiddleware `process_spider_input()` and will call the request\nerrback if there is one, otherwise it will start the `process_spider_exception()`\nchain. The output of the errback is chained back in the other\ndirection for `process_spider_output()` to process it, or\n`process_spider_exception()` if it raised an exception.\n\n**Parameters:**\n\n**response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_spider_output(*response*, *result*)**\n\nThis method is called with the results returned from the Spider, after\nit has processed the response.\n\n`process_spider_output()` must return an iterable of\n[`Request`](request-response.html#scrapy.Request) objects and [item objects](items.html#topics-items).\n\nConsider defining this method as an [asynchronous generator](https://docs.python.org/3/glossary.html#term-asynchronous-generator),\nwhich will be a requirement in a future version of Scrapy. However, if\nyou plan on sharing your spider middleware with other people, consider\neither [enforcing Scrapy 2.7](components.html#enforce-component-requirements)\nas a minimum requirement of your spider middleware, or [making\nyour spider middleware universal](coroutines.html#universal-spider-middleware) so that\nit works with Scrapy versions earlier than Scrapy 2.7.\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response which generated this output from the\nspider\n- **result** (an iterable of [`Request`](request-response.html#scrapy.Request) objects and\n[item objects](items.html#topics-items)) – the result returned by the spider\n\n***async*process_spider_output_async(*response*, *result*)**\n\nIf defined, this method must be an [asynchronous generator](https://docs.python.org/3/glossary.html#term-asynchronous-generator),\nwhich will be called instead of `process_spider_output()` if\n`result` is an [asynchronous iterable](https://docs.python.org/3/glossary.html#term-asynchronous-iterable).\n\n**process_spider_exception(*response*, *exception*)**\n\nThis method is called when a spider or `process_spider_output()`\nmethod (from a previous spider middleware) raises an exception.\n\n`process_spider_exception()` should return either `None` or an\niterable of [`Request`](request-response.html#scrapy.Request) or [item](items.html#topics-items)\nobjects.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_spider_exception()` in the following\nmiddleware components, until no middleware components are left and the\nexception reaches the engine (where it’s logged and discarded).\n\nIf it returns an iterable the `process_spider_output()` pipeline\nkicks in, starting from the next spider middleware, and no other\n`process_spider_exception()` will be called.\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed when the exception was\nraised\n- **exception** ([`Exception`](https://docs.python.org/3/library/exceptions.html#Exception) object) – the exception raised",
+          "level": 2,
+          "span": {
+            "start": 2633,
+            "end": 7081
+          },
+          "metadata": {
+            "heading_path": [
+              "Spider Middleware",
+              "Writing your own spider middleware"
+            ],
+            "parent_heading": "Spider Middleware",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Each spider middleware is a [component](components.html#topics-components) that defines",
+            "sibling_headings": [
+              "Activating a spider middleware",
+              "Built-in spider middleware reference"
+            ]
+          }
+        },
+        {
+          "heading": "Base class for custom spider middlewares",
+          "text": "Scrapy provides a base class for custom spider middlewares. It’s not required\nto use it but it can help with simplifying middleware implementations and\nreducing the amount of boilerplate code in [universal middlewares](coroutines.html#universal-spider-middleware).\n\n***class*scrapy.spidermiddlewares.base.BaseSpiderMiddleware(*crawler: [Crawler](api.html#scrapy.crawler.Crawler)*)[[source]](../_modules/scrapy/spidermiddlewares/base.html#BaseSpiderMiddleware)**\n\nOptional base class for spider middlewares.\n\nAdded in version 2.13.\n\nThis class provides helper methods for asynchronous\n`process_spider_output()` and `process_start()` methods. Middlewares\nthat don’t have either of these methods don’t need to use this class.\n\nYou can override the\n`get_processed_request()`\nmethod to add processing code for requests and the\n`get_processed_item()`\nmethod to add processing code for items. These methods take a single\nrequest or item from the spider output iterable and return a request or\nitem (the same or a new one), or `None` to remove this request or item\nfrom the processing.\n\n**get_processed_item(*item: Any*, *response: [Response](request-response.html#scrapy.http.Response) | [None](https://docs.python.org/3/library/constants.html#None)*) → Any[[source]](../_modules/scrapy/spidermiddlewares/base.html#BaseSpiderMiddleware.get_processed_item)**\n\nReturn a processed item from the spider output.\n\nThis method is called with a single item from the start seeds or the\nspider output. It should return the same or a different item, or\n`None` to ignore it.\n\n**Parameters:**\n\n- **item** (*item object*) – the input item\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object or `None` for\nstart seeds) – the response being processed\n\n**Returns:**\n\nthe processed item or `None`\n\n**get_processed_request(*request: [Request](request-response.html#scrapy.Request)*, *response: [Response](request-response.html#scrapy.http.Response) | [None](https://docs.python.org/3/library/constants.html#None)*) → [Request](request-response.html#scrapy.Request) | [None](https://docs.python.org/3/library/constants.html#None)[[source]](../_modules/scrapy/spidermiddlewares/base.html#BaseSpiderMiddleware.get_processed_request)**\n\nReturn a processed request from the spider output.\n\nThis method is called with a single request from the start seeds or the\nspider output. It should return the same or a different request, or\n`None` to ignore it.\n\n**Parameters:**\n\n- **request** ([`Request`](request-response.html#scrapy.Request) object) – the input request\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object or `None` for\nstart seeds) – the response being processed\n\n**Returns:**\n\nthe processed request or `None`",
+          "level": 3,
+          "span": {
+            "start": 7126,
+            "end": 9872
+          },
+          "metadata": {
+            "heading_path": [
+              "Spider Middleware",
+              "Writing your own spider middleware",
+              "Base class for custom spider middlewares"
+            ],
+            "parent_heading": "Writing your own spider middleware",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Scrapy provides a base class for custom spider middlewares. It’s not required"
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case041_scrapy",
+        "condition_id": "clean",
+        "lab_run_id": "r13fe557951",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case041_scrapy",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-bc70867938051bc4",
+              "source_sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "path": "inputs/input001/offsite.md",
+              "sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/dad43df16d07e2c3/offsite.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-db8ff4e788d28693",
+              "source_sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "path": "inputs/input002/downloader-middleware.md",
+              "sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/491f737b9d4743ec/downloader-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md"
+            },
+            {
+              "input_id": "input003",
+              "source_id": "sgb-819d117ddb8328d1",
+              "source_sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "path": "inputs/input003/request-response.md",
+              "sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/9f6d99ec9d95647c/request-response.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md"
+            },
+            {
+              "input_id": "input004",
+              "source_id": "sgb-ac10205061a5d910",
+              "source_sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "path": "inputs/input004/spider-middleware.md",
+              "sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/3772c49ba00a9fe4/spider-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "ff125a5c28b13b1e3277abcd2f6dd4189abf18063537df59af9ac480bcece012",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "e381682177acfa4850a9e3af3b236dd608e0d40d",
+      "content_hash": "e381682177acfa4850a9e3af3b236dd608e0d40d",
+      "imported_at": "2026-10-25T08:19:00+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "6403a20f-0aeb-5d76-942e-0077de1bb22e",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "skill_id": "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+      "section": "Spider Middleware",
+      "span": {
+        "start": 196,
+        "end": 4319
+      },
+      "excerpt": "The spider middleware is a framework of hooks into Scrapy’s spider processing\nmechanism where you can plug custom functionality to process the responses that\nare sent to [Spiders](spiders.html#topics-spiders) for processing and to process the requests\nand items that are generated from spiders.\n\nActivating a spider middleware\nTo activate a spider middleware component, add it to the\n[`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class path and their values are the middleware orders.\n\nHere’s an example:\n\n```\nSPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}\n```\n\n```\nSPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\nWriting your own spider middleware\nEach spider middleware is a [component](components.html#topics-components) that defines\none or more of these methods:\n\n***class*scrapy.spidermiddlewares.SpiderMiddleware**\n\n***async*process_start(*start: AsyncIterator[Any]*, */*) → AsyncIterator[Any]**\n\nIterate over the output of [`start()`](spiders.html#scrapy.Spider.start) or that\nof the `process_start()` method of an earlier spider middleware,\noverriding it. For example:\n\n```\nasync def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request\n```\n\nYou may yield the same type of objects as [`start()`](spiders.html#scrapy.Spider.start).\n\nTo write spider middlewares that work on Scrapy versions lower than\n2.13, define also a synchronous `process_start_requests()` method\nthat returns an iterable. For example:\n\n```\ndef process_start_requests(self, start, spider):\n    yield from start\n```\n\n**process_spider_input(*response*)**\n\nThis method is called for each response that goes through the spider\nmiddleware and into the spider, for processing.\n\n`process_spider_input()` should return `None` or raise an\nexception.\n\nIf it returns `None`, Scrapy will continue processing this response,\nexecuting all other middlewares until, finally, the response is handed\nto the spider for processing.\n\n**Parameters:**",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input004\\spider-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "编写自定义 Spider 中间件方法",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "实现一个或多个 Spider 中间件钩子方法以定制处理流程",
+        "task_family": "middleware_implementation",
+        "method_family": "hook_method_override",
+        "stage": "implementation",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "127eeaa1-f98c-57bf-997f-f146dbe00458",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 22,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      },
+      "created_at": "2026-10-25T08:26:56+00:00"
+    },
+    {
+      "support_id": "69864f90-125d-56fd-9925-86135340ca3a",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "skill_id": "d9545371-1c8c-5f0e-aa54-f9568fa3fffd",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+      "section": "Spider Middleware",
+      "span": {
+        "start": 196,
+        "end": 4319
+      },
+      "excerpt": "The spider middleware is a framework of hooks into Scrapy’s spider processing\nmechanism where you can plug custom functionality to process the responses that\nare sent to [Spiders](spiders.html#topics-spiders) for processing and to process the requests\nand items that are generated from spiders.\n\nActivating a spider middleware\nTo activate a spider middleware component, add it to the\n[`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class path and their values are the middleware orders.\n\nHere’s an example:\n\n```\nSPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}\n```\n\n```\nSPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\nWriting your own spider middleware\nEach spider middleware is a [component](components.html#topics-components) that defines\none or more of these methods:\n\n***class*scrapy.spidermiddlewares.SpiderMiddleware**\n\n***async*process_start(*start: AsyncIterator[Any]*, */*) → AsyncIterator[Any]**\n\nIterate over the output of [`start()`](spiders.html#scrapy.Spider.start) or that\nof the `process_start()` method of an earlier spider middleware,\noverriding it. For example:\n\n```\nasync def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request\n```\n\nYou may yield the same type of objects as [`start()`](spiders.html#scrapy.Spider.start).\n\nTo write spider middlewares that work on Scrapy versions lower than\n2.13, define also a synchronous `process_start_requests()` method\nthat returns an iterable. For example:\n\n```\ndef process_start_requests(self, start, spider):\n    yield from start\n```\n\n**process_spider_input(*response*)**\n\nThis method is called for each response that goes through the spider\nmiddleware and into the spider, for processing.\n\n`process_spider_input()` should return `None` or raise an\nexception.\n\nIf it returns `None`, Scrapy will continue processing this response,\nexecuting all other middlewares until, finally, the response is handed\nto the spider for processing.\n\n**Parameters:**",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input004\\spider-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "process_spider_input 返回值契约",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "保证 process_spider_input 返回值符合框架约定",
+        "task_family": "middleware_implementation",
+        "method_family": "return_value_contract",
+        "stage": "implementation",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 3,
+        "window_id": "127eeaa1-f98c-57bf-997f-f146dbe00458",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 22,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      },
+      "created_at": "2026-10-25T08:26:56+00:00"
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c",
+      "name": "编写自定义 Spider 中间件钩子方法",
+      "description": "实现 SpiderMiddleware 子类的钩子方法（process_start、process_start_requests、process_spider_input），用于定制 Spider 启动输出、进入 Spider 的响应以及 Spider 产出的请求与 item 的处理逻辑。",
+      "skill_body": "实现一个 SpiderMiddleware 子类，按需覆盖一个或多个钩子方法：\n1. 继承 scrapy.spidermiddlewares.SpiderMiddleware。\n2. 若需处理 Spider 启动输出，实现 async process_start(start)，遍历 start 并 yield 与 start 相同类型的对象；如需兼容 2.13 以下版本，另实现同步 process_start_requests(start, spider) 并 yield from start。\n3. 若需处理进入 Spider 的响应，实现 process_spider_input(response)，返回 None 表示继续处理，或抛出异常中断。\n4. 仅实现当前需求所需的钩子，保持方法职责单一。\n5. 完成后交由注册配置环节将类路径写入 SPIDER_MIDDLEWARES。\n\n## Objective\n\n实现一个或多个 Spider 中间件钩子方法以定制处理流程\n## Applicable Signals\n\n- 需要拦截并处理发往 Spider 的响应\n- 需要处理 Spider 生成的请求或 item\n- 需要定制 Spider 启动输出\n\n## Contraindications\n\n- 仅需调整已有中间件顺序而无需新逻辑\n\n## Intervention Moves\n\n- 继承 SpiderMiddleware 基类\n- 实现 async process_start 遍历并 yield 启动输出\n- 为旧版本补充同步 process_start_requests\n- 实现 process_spider_input 返回 None 或抛出异常\n\n## Workflow Steps\n\n- 确认需要定制的处理点（启动输出、进入响应、产出请求/item）\n- 创建继承 SpiderMiddleware 的子类\n- 按需实现对应钩子方法\n- 确保 process_spider_input 返回 None 或抛出异常\n- 将类路径交由注册配置环节写入 SPIDER_MIDDLEWARES\n\n## Constraints\n\n- process_spider_input 只能返回 None 或抛出异常\n- process_start 需为 async 并 yield 与 start 相同类型的对象\n- 兼容旧版本时需额外提供同步 process_start_requests\n\n## Cautions\n\n- 部分中间件可能还需通过特定设置启用，需查阅对应中间件文档\n\n## Output Contract\n\n- 可注册的 SpiderMiddleware 子类，含已实现的钩子方法\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要处理 Spider 启动输出\n- Therapist/Output: async def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request\n- Notes: 兼容旧版本可另加同步 process_start_requests\n\n### Example 2\n\n- Client/Input: 需要处理进入 Spider 的响应\n- Therapist/Output: 实现 process_spider_input(response)，返回 None 继续处理或抛出异常中断",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "实现一个或多个 Spider 中间件钩子方法以定制处理流程",
+      "domain": "scrapy",
+      "task_family": "middleware_implementation",
+      "method_family": "hook_method_override",
+      "stage": "implementation",
+      "applicable_signals": [
+        "需要拦截并处理发往 Spider 的响应",
+        "需要处理 Spider 生成的请求或 item",
+        "需要定制 Spider 启动输出"
+      ],
+      "contraindications": [
+        "仅需调整已有中间件顺序而无需新逻辑"
+      ],
+      "intervention_moves": [
+        "继承 SpiderMiddleware 基类",
+        "实现 async process_start 遍历并 yield 启动输出",
+        "为旧版本补充同步 process_start_requests",
+        "实现 process_spider_input 返回 None 或抛出异常"
+      ],
+      "triggers": [
+        "需要拦截并处理发往 Spider 的响应",
+        "需要处理 Spider 生成的请求或 item",
+        "需要定制 Spider 启动输出"
+      ],
+      "workflow_steps": [
+        "确认需要定制的处理点（启动输出、进入响应、产出请求/item）",
+        "创建继承 SpiderMiddleware 的子类",
+        "按需实现对应钩子方法",
+        "确保 process_spider_input 返回 None 或抛出异常",
+        "将类路径交由注册配置环节写入 SPIDER_MIDDLEWARES"
+      ],
+      "constraints": [
+        "process_spider_input 只能返回 None 或抛出异常",
+        "process_start 需为 async 并 yield 与 start 相同类型的对象",
+        "兼容旧版本时需额外提供同步 process_start_requests"
+      ],
+      "cautions": [
+        "部分中间件可能还需通过特定设置启用，需查阅对应中间件文档"
+      ],
+      "output_contract": [
+        "可注册的 SpiderMiddleware 子类，含已实现的钩子方法"
+      ],
+      "examples": [
+        {
+          "input": "需要处理 Spider 启动输出",
+          "output": "async def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request",
+          "notes": "兼容旧版本可另加同步 process_start_requests"
+        },
+        {
+          "input": "需要处理进入 Spider 的响应",
+          "output": "实现 process_spider_input(response)，返回 None 继续处理或抛出异常中断",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "spider-middleware",
+        "hook-method",
+        "middleware_implementation"
+      ],
+      "support_ids": [
+        "6403a20f-0aeb-5d76-942e-0077de1bb22e"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "231962a7-f450-5fd1-8f1a-6f04316311af"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|实现一个或多个 spider 中间件钩子方法以定制处理流程|scrapy|middleware_implementation|hook_method_override|implementation|编写自定义 spider 中间件钩子方法"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "d9545371-1c8c-5f0e-aa54-f9568fa3fffd",
+      "name": "process_spider_input 返回值契约",
+      "description": "确保自定义 Spider 中间件的 process_spider_input 钩子符合 Scrapy 框架契约：对每个进入 Spider 的响应调用，必须返回 None 或抛出异常；返回 None 时处理链继续执行后续中间件直至交给 Spider。用于实现该钩子时校验返回值行为。",
+      "skill_body": "实现或审查 process_spider_input 方法时，确认其返回值符合契约：正常放行时返回 None，让 Scrapy 继续执行后续中间件直至响应交给 Spider；需要中断或报错时抛出异常。不要返回其他值，也不要在该方法内直接处理响应内容。\n\n## Objective\n\n保证 process_spider_input 返回值符合框架约定\n## Applicable Signals\n\n- 正在编写 process_spider_input 方法\n- 需要确认响应是否继续沿中间件链传递\n\n## Contraindications\n\n- 实现其他不涉及该返回契约的钩子\n\n## Intervention Moves\n\n- 正常放行时返回 None\n- 需要中断时抛出异常\n- 避免返回其他值\n\n## Workflow Steps\n\n- 确认当前实现的是 process_spider_input 钩子\n- 在正常路径返回 None 以继续处理链\n- 在需要中断或报错时抛出异常\n- 检查方法中不存在返回非 None 值的分支\n\n## Constraints\n\n- 返回值只能是 None 或抛出异常\n- 返回 None 后由 Scrapy 继续执行后续中间件直至交给 Spider\n\n## Cautions\n\n- 不要在该钩子中返回响应对象或其他值来替代框架的继续处理逻辑\n\n## Output Contract\n\n- 返回 None 或抛出异常的实现，处理链可继续\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 实现 process_spider_input 以放行响应\n- Therapist/Output: def process_spider_input(self, response):\n    return None\n- Notes: 返回 None 表示继续处理链",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "保证 process_spider_input 返回值符合框架约定",
+      "domain": "scrapy",
+      "task_family": "middleware_implementation",
+      "method_family": "return_value_contract",
+      "stage": "implementation",
+      "applicable_signals": [
+        "正在编写 process_spider_input 方法",
+        "需要确认响应是否继续沿中间件链传递"
+      ],
+      "contraindications": [
+        "实现其他不涉及该返回契约的钩子"
+      ],
+      "intervention_moves": [
+        "正常放行时返回 None",
+        "需要中断时抛出异常",
+        "避免返回其他值"
+      ],
+      "triggers": [
+        "实现 process_spider_input 方法",
+        "审查 Spider 中间件钩子返回值",
+        "响应进入 Spider 前需要放行或中断"
+      ],
+      "workflow_steps": [
+        "确认当前实现的是 process_spider_input 钩子",
+        "在正常路径返回 None 以继续处理链",
+        "在需要中断或报错时抛出异常",
+        "检查方法中不存在返回非 None 值的分支"
+      ],
+      "constraints": [
+        "返回值只能是 None 或抛出异常",
+        "返回 None 后由 Scrapy 继续执行后续中间件直至交给 Spider"
+      ],
+      "cautions": [
+        "不要在该钩子中返回响应对象或其他值来替代框架的继续处理逻辑"
+      ],
+      "output_contract": [
+        "返回 None 或抛出异常的实现，处理链可继续"
+      ],
+      "examples": [
+        {
+          "input": "实现 process_spider_input 以放行响应",
+          "output": "def process_spider_input(self, response):\n    return None",
+          "notes": "返回 None 表示继续处理链"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "spider-middleware",
+        "process_spider_input",
+        "return-contract"
+      ],
+      "support_ids": [
+        "69864f90-125d-56fd-9925-86135340ca3a"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "92c1e006-96a2-5ce7-929d-bb196abccae1"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|保证 process_spider_input 返回值符合框架约定|scrapy|middleware_implementation|return_value_contract|implementation|process_spider_input 返回值契约"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ]
+}

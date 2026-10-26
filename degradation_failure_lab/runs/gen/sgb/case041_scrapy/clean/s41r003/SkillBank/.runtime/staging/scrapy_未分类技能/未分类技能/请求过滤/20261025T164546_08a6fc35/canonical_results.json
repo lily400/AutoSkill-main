@@ -1,0 +1,161 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "请求过滤",
+  "run_id": "20261025T164546_08a6fc35",
+  "skills": [
+    {
+      "skill_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "name": "Offsite请求域名过滤",
+      "description": "在请求被调度时，基于spider允许域名的正则判断请求是否属于站内；站外请求应被忽略，站内请求继续进入调度。用于控制爬虫只跟随允许域名范围内的链接。",
+      "skill_body": "当请求进入调度阶段时，使用spider允许域名正则对请求hostname进行匹配：解析请求URL得到hostname（无法解析时视为空字符串），用host_regex.search(host)判断是否站内；站内请求放行继续调度，站外请求按忽略处理。\n\n## Objective\n\n在请求调度阶段过滤掉不属于允许域名的站外请求\n## Applicable Signals\n\n- spider已配置允许域名范围\n- 请求被调度时需判断是否站内\n- 存在站外链接需要被拦截\n\n## Contraindications\n\n- 需要跨域抓取且无域名白名单\n- 请求URL无法解析出hostname时不应直接放行\n\n## Intervention Moves\n\n- 在spider_opened时构建host_regex\n- 在request_scheduled中调用process_request处理请求\n- 用urlparse_cached获取hostname，None时置为空字符串\n- 用host_regex.search(host)判断是否站内并决定放行或忽略\n\n## Workflow Steps\n\n- spider_opened阶段通过get_host_regex(spider)构建host_regex\n- 请求被调度时触发request_scheduled，调用process_request\n- 解析请求得到hostname，无法解析时使用空字符串\n- 用host_regex.search(host)判断是否站内\n- 站内请求继续进入调度，站外请求被忽略\n\n## Constraints\n\n- 域名判断必须基于spider允许域名正则\n- hostname为None时不得直接放行，应按空字符串处理\n\n## Cautions\n\n- hostname可能为None（如javascript链接），需按空字符串处理以避免误判\n- 过滤发生在调度阶段，需确保host_regex在spider_opened时已构建\n\n## Output Contract\n\n- 站外请求被忽略，站内请求继续进入调度\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请求hostname不在允许域名正则范围内\n- Therapist/Output: 该请求被忽略，不进入调度\n- Notes: 站外请求拦截\n\n### Example 2\n\n- Client/Input: 请求hostname匹配允许域名正则\n- Therapist/Output: 该请求继续进入调度\n- Notes: 站内请求放行",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "在请求调度阶段过滤掉不属于允许域名的站外请求",
+      "domain": "scrapy",
+      "task_family": "请求过滤",
+      "method_family": "域名正则匹配",
+      "stage": "request_scheduled",
+      "applicable_signals": [
+        "spider已配置允许域名范围",
+        "请求被调度时需判断是否站内",
+        "存在站外链接需要被拦截"
+      ],
+      "contraindications": [
+        "需要跨域抓取且无域名白名单",
+        "请求URL无法解析出hostname时不应直接放行"
+      ],
+      "intervention_moves": [
+        "在spider_opened时构建host_regex",
+        "在request_scheduled中调用process_request处理请求",
+        "用urlparse_cached获取hostname，None时置为空字符串",
+        "用host_regex.search(host)判断是否站内并决定放行或忽略"
+      ],
+      "triggers": [
+        "需要限制爬虫只抓取指定域名",
+        "需要拦截站外链接请求",
+        "请求进入request_scheduled阶段需要做域名归属判断"
+      ],
+      "workflow_steps": [
+        "spider_opened阶段通过get_host_regex(spider)构建host_regex",
+        "请求被调度时触发request_scheduled，调用process_request",
+        "解析请求得到hostname，无法解析时使用空字符串",
+        "用host_regex.search(host)判断是否站内",
+        "站内请求继续进入调度，站外请求被忽略"
+      ],
+      "constraints": [
+        "域名判断必须基于spider允许域名正则",
+        "hostname为None时不得直接放行，应按空字符串处理"
+      ],
+      "cautions": [
+        "hostname可能为None（如javascript链接），需按空字符串处理以避免误判",
+        "过滤发生在调度阶段，需确保host_regex在spider_opened时已构建"
+      ],
+      "output_contract": [
+        "站外请求被忽略，站内请求继续进入调度"
+      ],
+      "examples": [
+        {
+          "input": "请求hostname不在允许域名正则范围内",
+          "output": "该请求被忽略，不进入调度",
+          "notes": "站外请求拦截"
+        },
+        {
+          "input": "请求hostname匹配允许域名正则",
+          "output": "该请求继续进入调度",
+          "notes": "站内请求放行"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "offsite",
+        "域名过滤",
+        "请求调度",
+        "IgnoreRequest"
+      ],
+      "support_ids": [
+        "ee446c4a-4013-576f-8aea-d08349d973a6"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "f5632c0c-aae0-5207-a5b7-1f1fda9b816c"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|在请求调度阶段过滤掉不属于允许域名的站外请求|scrapy|请求过滤|域名正则匹配|request_scheduled|offsite请求域名过滤",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "bd0670f5-1cb1-42e0-8a00-22216dd97424",
+      "entity_type": "skill",
+      "entity_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:46+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+        "doc_ids": [
+          "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+        ],
+        "support_added": [
+          "ee446c4a-4013-576f-8aea-d08349d973a6"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

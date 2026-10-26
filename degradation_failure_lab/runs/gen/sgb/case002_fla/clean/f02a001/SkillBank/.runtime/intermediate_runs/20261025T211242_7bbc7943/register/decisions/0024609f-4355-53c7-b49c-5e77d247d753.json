@@ -1,0 +1,117 @@
+{
+  "skill_id": "0024609f-4355-53c7-b49c-5e77d247d753",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "0024609f-4355-53c7-b49c-5e77d247d753",
+    "name": "跨工件指标口径核对",
+    "description": "在汇总报告前，对多份工件中重叠的同一指标做一致性校验，识别并标注口径冲突（如比率与分子分母不符、涨幅表述与原始数值不符），输出冲突清单及建议口径。",
+    "skill_body": "当多份工件包含重叠指标或存在可疑比率/涨幅表述时，执行本微技能：逐项提取各工件中的同一指标及其原始数值，重算可推导的比率与涨幅，与工件中报告的数值比对，标注不一致项并给出建议采用的口径。仅做核对与标注，不重写整体报告。\n\n## Objective\n\n识别并标注跨工件数据不一致项\n## Applicable Signals\n\n- 多份工件含重叠指标\n- 存在可疑比率或涨幅表述\n- 报告数值与原始计数可交叉推导\n\n## Contraindications\n\n- 仅单一数据源无交叉项\n\n## Intervention Moves\n\n- 提取各工件中同一指标及其原始数值\n- 对可推导的比率/涨幅进行重算\n- 将重算结果与工件报告值比对\n- 标注冲突项并给出建议口径\n\n## Workflow Steps\n\n- 列出各工件中重叠的指标及其原始数值\n- 对可推导指标重算比率或涨幅（如点击率=点击/打开，涨幅=峰值相对基线）\n- 将重算值与工件报告值逐项比对\n- 标注不一致项，说明冲突来源与建议采用口径\n- 输出核对清单供报告汇总使用\n\n## Constraints\n\n- 仅做核对与标注，不擅自改写原始工件\n- 冲突项须同时保留原始数值与报告数值以便追溯\n\n## Cautions\n\n- 部分指标口径可能因归一化管线版本不同而差异，需注明来源\n- 无法重算的指标仅标注存疑，不臆断结论\n\n## Output Contract\n\n- 一份标注冲突项及建议口径的核对清单\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 工件报告CTR为58.0%，但打开率41.8%、点击率18.2%\n- Therapist/Output: 冲突项：报告CTR 58.0%与打开/点击值不符，建议采用点击/打开推导口径并标注来源\n- Notes: 比率类指标需重算校验\n\n### Example 2\n\n- Client/Input: 某邮件称工单涨幅“+320%”，但原始数值显示增幅较低\n- Therapist/Output: 冲突项：涨幅表述与原始计数不符，建议以原始数值重算涨幅并标注\n- Notes: 涨幅类表述需与原始数值核对",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "识别并标注跨工件数据不一致项",
+    "domain": "品牌声誉管理",
+    "task_family": "数据质量校验",
+    "method_family": "指标一致性核对",
+    "stage": "报告前数据清洗",
+    "applicable_signals": [
+      "多份工件含重叠指标",
+      "存在可疑比率或涨幅表述",
+      "报告数值与原始计数可交叉推导"
+    ],
+    "contraindications": [
+      "仅单一数据源无交叉项"
+    ],
+    "intervention_moves": [
+      "提取各工件中同一指标及其原始数值",
+      "对可推导的比率/涨幅进行重算",
+      "将重算结果与工件报告值比对",
+      "标注冲突项并给出建议口径"
+    ],
+    "triggers": [
+      "多份工件含重叠指标",
+      "存在可疑比率或涨幅表述",
+      "汇总报告前的数据清洗环节"
+    ],
+    "workflow_steps": [
+      "列出各工件中重叠的指标及其原始数值",
+      "对可推导指标重算比率或涨幅（如点击率=点击/打开，涨幅=峰值相对基线）",
+      "将重算值与工件报告值逐项比对",
+      "标注不一致项，说明冲突来源与建议采用口径",
+      "输出核对清单供报告汇总使用"
+    ],
+    "constraints": [
+      "仅做核对与标注，不擅自改写原始工件",
+      "冲突项须同时保留原始数值与报告数值以便追溯"
+    ],
+    "cautions": [
+      "部分指标口径可能因归一化管线版本不同而差异，需注明来源",
+      "无法重算的指标仅标注存疑，不臆断结论"
+    ],
+    "output_contract": [
+      "一份标注冲突项及建议口径的核对清单"
+    ],
+    "examples": [
+      {
+        "input": "工件报告CTR为58.0%，但打开率41.8%、点击率18.2%",
+        "output": "冲突项：报告CTR 58.0%与打开/点击值不符，建议采用点击/打开推导口径并标注来源",
+        "notes": "比率类指标需重算校验"
+      },
+      {
+        "input": "某邮件称工单涨幅“+320%”，但原始数值显示增幅较低",
+        "output": "冲突项：涨幅表述与原始计数不符，建议以原始数值重算涨幅并标注",
+        "notes": "涨幅类表述需与原始数值核对"
+      }
+    ],
+    "tags": [
+      "数据质量校验",
+      "指标一致性",
+      "报告前清洗",
+      "品牌声誉管理"
+    ],
+    "support_ids": [
+      "1fdaf2ad-ef79-59ad-990f-d78824e91ee1"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "75aa7e90-4d52-5a60-a979-eb1cda52f1fd"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "brand reputation management",
+      "taxonomy_id": "brand reputation management",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "brand reputation management|||micro_skill|micro|micro_skill_node|识别并标注跨工件数据不一致项|品牌声誉管理|数据质量校验|指标一致性核对|报告前数据清洗|跨工件指标口径核对"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,114 @@
+{
+  "skill_id": "43affaf4-7057-57e5-9e23-916199739db6",
+  "name": "WeakKeyDictionary 指纹缓存",
+  "description": "在自行实现请求指纹算法（未使用 scrapy.utils.request.fingerprint()）时，使用 WeakKeyDictionary 缓存指纹，确保每个请求只计算一次，同时避免请求对象因缓存引用而无法释放。",
+  "skill_body": "当你在自定义 RequestFingerprinter 中从零编写指纹逻辑、且未调用 scrapy.utils.request.fingerprint() 时，使用 WeakKeyDictionary 作为指纹缓存：先检查 request 是否已在缓存中，未命中则计算指纹并写入缓存，命中则直接返回缓存值。不要使用普通 dict 缓存，以免请求对象被永久持有。\n\n## Objective\n\n以 WeakKeyDictionary 缓存指纹，兼顾 CPU 与内存效率\n## Applicable Signals\n\n- 自定义指纹逻辑未复用内置 fingerprint() 工具函数\n- 需要保证每个请求的指纹只计算一次\n\n## Contraindications\n\n- 直接使用内置 fingerprint() 工具函数时无需自行实现缓存\n\n## Intervention Moves\n\n- 声明类级 cache = WeakKeyDictionary()\n- 在 fingerprint 方法中先查缓存，未命中再计算并写入\n- 命中缓存时直接返回已存指纹\n\n## Workflow Steps\n\n- 确认未使用 scrapy.utils.request.fingerprint()，需要自行实现指纹逻辑\n- 在指纹器类中定义 cache = WeakKeyDictionary()\n- 在 fingerprint(request) 中判断 request 是否在 cache 中\n- 未命中时计算指纹并写入 cache，命中时返回缓存值\n\n## Constraints\n\n- 必须使用 WeakKeyDictionary 而非普通 dict 作为缓存容器\n- 缓存键为 request 对象本身\n\n## Cautions\n\n- 使用普通 dict 会导致请求对象无法释放，造成内存泄漏\n\n## Output Contract\n\n- 带 WeakKeyDictionary 缓存的指纹方法，每个请求的指纹仅计算一次且不阻止请求对象被回收\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 自定义 RequestFingerprinter，仅按 URL 计算指纹\n- Therapist/Output: class RequestFingerprinter:\n    cache = WeakKeyDictionary()\n    def fingerprint(self, request):\n        if request not in self.cache:\n            fp = sha1()\n            fp.update(to_bytes(request.url))\n            self.cache[request] = fp.digest()\n        return self.cache[request]\n- Notes: 缓存避免重复计算，弱引用避免内存泄漏",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "以 WeakKeyDictionary 缓存指纹，兼顾 CPU 与内存效率",
+  "domain": "scrapy",
+  "task_family": "指纹缓存",
+  "method_family": "弱引用缓存",
+  "stage": "实现细节",
+  "applicable_signals": [
+    "自定义指纹逻辑未复用内置 fingerprint() 工具函数",
+    "需要保证每个请求的指纹只计算一次"
+  ],
+  "contraindications": [
+    "直接使用内置 fingerprint() 工具函数时无需自行实现缓存"
+  ],
+  "intervention_moves": [
+    "声明类级 cache = WeakKeyDictionary()",
+    "在 fingerprint 方法中先查缓存，未命中再计算并写入",
+    "命中缓存时直接返回已存指纹"
+  ],
+  "triggers": [
+    "自行编写指纹算法而未使用 scrapy.utils.request.fingerprint()",
+    "实现自定义 RequestFingerprinter 的 fingerprint 方法"
+  ],
+  "workflow_steps": [
+    "确认未使用 scrapy.utils.request.fingerprint()，需要自行实现指纹逻辑",
+    "在指纹器类中定义 cache = WeakKeyDictionary()",
+    "在 fingerprint(request) 中判断 request 是否在 cache 中",
+    "未命中时计算指纹并写入 cache，命中时返回缓存值"
+  ],
+  "constraints": [
+    "必须使用 WeakKeyDictionary 而非普通 dict 作为缓存容器",
+    "缓存键为 request 对象本身"
+  ],
+  "cautions": [
+    "使用普通 dict 会导致请求对象无法释放，造成内存泄漏"
+  ],
+  "output_contract": [
+    "带 WeakKeyDictionary 缓存的指纹方法，每个请求的指纹仅计算一次且不阻止请求对象被回收"
+  ],
+  "examples": [
+    {
+      "input": "自定义 RequestFingerprinter，仅按 URL 计算指纹",
+      "output": "class RequestFingerprinter:\n    cache = WeakKeyDictionary()\n    def fingerprint(self, request):\n        if request not in self.cache:\n            fp = sha1()\n            fp.update(to_bytes(request.url))\n            self.cache[request] = fp.digest()\n        return self.cache[request]",
+      "notes": "缓存避免重复计算，弱引用避免内存泄漏"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "fingerprint",
+    "cache",
+    "WeakKeyDictionary",
+    "memory"
+  ],
+  "support_ids": [
+    "06d4ac18-d31a-54db-aa6b-a41083998f76"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "e78bb564-f0c5-53b3-b10e-6500fc71dc6d"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.85,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|以 weakkeydictionary 缓存指纹，兼顾 cpu 与内存效率|scrapy|指纹缓存|弱引用缓存|实现细节|weakkeydictionary 指纹缓存",
+    "change_action": "create",
+    "llm_reason": "候选技能描述的是自行实现请求指纹时使用 WeakKeyDictionary 缓存指纹的独立微技能，与现有 hostname 判定/域名正则构建技能在能力身份上不同，且无同层可合并的现有技能，故新建。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"2d611108-970f-5e54-8821-4b26efe3a8bc\", \"name\": \"Feed URI 参数生成器\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"为 feed 导出 URI 生成动态参数\", \"applicable_signals\": [\"需要按批次或时间动态构造 feed 文件路径\", \"配置 FEED_URI_PARAMS 时\"], \"contraindications\": [\"仅需静态固定输出路径时\", \"不涉及 feed 导出配置时\"], \"workflow_steps\": [\"接收 params（默认键值对字典）与 spider（feed 条目来源 spider）\", \"生成 batch_id：文件批次 ID，当 FEED_EXPORT_BATCH_ITEM_COUNT 为 0 时恒为 1\", \"生成 batch_time：UTC 日期时间，ISO 格式且将 ':' 替换为 '-'\", \"生成 time：batch_time 且微秒置为 0\", \"返回包含上述键的新字典，不就地修改传入的 params\"], \"constraints\": [\"函数应返回新字典\", \"就地修改传入的 params 已弃用，应避免\"], \"triggers\": [\"需要按批次或时间动态构造 feed 文件路径\", \"配置 FEED_URI_PARAMS 时\"], \"output_contract\": [\"返回包含 batch_id、batch_time、time 等键的新参数字典\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"d5862d9c-e48d-5b19-9342-c94d0fbc3157\", \"name\": \"Feed 存储后端 URI 配置\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为 feed 导出配置正确的存储后端与 URI\", \"applicable_signals\": [\"需要将 feed 写入远程或本地存储\", \"需要多目标存储输出\", \"需要按 URI scheme 选择存储后端\"], \"workflow_steps\": [\"确定 feed 的目标存储位置（本地、FTP、S3、GCS 或标准输出）\", \"在 FEEDS 设置中写入对应的一个或多个 URI\", \"确认每个 URI 的 scheme 与目标存储后端匹配\", \"如需自定义或扩展后端，调整 FEED_STORAGES 相关设置\"], \"output_contract\": [\"已按 URI scheme 配置好存储后端的 FEEDS 设置\"], \"score\": 0.5041085118847085}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

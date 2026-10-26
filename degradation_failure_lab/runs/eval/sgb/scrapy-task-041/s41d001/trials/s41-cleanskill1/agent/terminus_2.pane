@@ -1,0 +1,30 @@
+[?2004hroot@95b833959487:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> import scrapy
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> class AgentSpider(scrapy.Spider):
+[?2004l[?2004h>     name = "agent_spider"
+[?2004l[?2004h>     allowed_domains = ["example.com"]
+[?2004l[?2004h> 
+[?2004l[?2004h>     def start_requests(self):
+[?2004l[?2004h>         yield scrapy.Request(
+[?2004l[?2004h>             url="http://other.com/resource",
+[?2004l[?2004h>             meta={"allow_offsite": True},
+[?2004l[?2004h>         )
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ sed -n '1,200p' /workspace/agent_output.py
+[?2004limport scrapy
+
+
+class AgentSpider(scrapy.Spider):
+    name = "agent_spider"
+    allowed_domains = ["example.com"]
+
+    def start_requests(self):
+        yield scrapy.Request(
+            url="http://other.com/resource",
+            meta={"allow_offsite": True},
+        )
+[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

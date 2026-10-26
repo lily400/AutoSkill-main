@@ -1,0 +1,597 @@
+[?2004hroot@dffd71b77eb3:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ pwd
+[?2004l/workspace
+[?2004hp1$ ls -la /workspace
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 25 13:22 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+[?2004hp1$ ls -la /workspace/tests
+[?2004lls: cannot access '/workspace/tests': No such file or directory
+[?2004hp1$ ls -la /workspace/agent_output.py
+[?2004lls: cannot access '/workspace/agent_output.py': No such file or directory
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l:
+[?2004h> from datetime import datetime, timedelta, timezone
+[?2004l[?2004h> from typing import Any, Dict, List, Optional, Set, Tuple
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> COORDINATOR_RECIPIENT = "coordinator"
+[?2004l[?2004h> DAY7_OFFSET = timedelta(days=7)
+[?2004l[?2004h> DAY30_OFFSET = timedelta(days=30)
+[?2004l[?2004h> REQUIRED_SECTIONS = set(range(1, 8))
+[?2004ldra[?2004h> REQUIRED_STAKEHOLDERS = {
+[?2004ld_[?2004h>     "customers",
+[?2004l[?2004h>     "employees",
+[?2004l[?2004h>     "investors",
+[?2004l[?2004h>     "regulators",
+[?2004l[?2004h>     "partners",
+[?2004l[?2004h> }
+[?2004l[?2004h> REQUIRED_INTERNAL_DATA = {
+[?2004l[?2004h>     "customer_support",
+[?2004l[?2004h>     "social_media",
+[?2004l[?2004h>     "web_analytics",
+[?2004l[?2004h>     "media_coverage",
+[?2004l[?2004h>     "product_metrics",
+[?2004l[?2004h> }
+[?2004l_DAY30")
+
+    codes.updat[?2004h> EXTERNAL_SHARING_TRIGGERS = (
+[?2004l[?2004h>     "public",
+[?2004l[?2004h>     "external",
+[?2004l[?2004h>     "share",
+[?2004l[?2004h>     "publish",
+[?2004l[?2004h>     "release",
+[?2004l[?2004h>     "broadcast",
+[?2004l[?2004h> )
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _parse_ts(ts: str) -> datetime:
+[?2004l[?2004h>     return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004lon[?2004h> def _iso_z(dt: datetime) -> str:
+[?2004l[?2004h>     return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _is_external_request(requested_action: str, requested_content: str) -> bool:
+[?2004l[?2004h>     text = f"{requested_action} {requested_content}".lower()
+[?2004l[?2004h>     return any(tok in text for tok in EXTERNAL_SHARING_TRIGGERS)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _draft_violations(draft: Dict[str, Any], due_ts: datetime, input_data: Dict[str, Any]) -> List[str]:
+[?2004l[?2004h>     codes: List[str] = []
+[?2004l[?2004h>     report_ts = _parse_ts(draft["report_ts"])
+[?2004l[?2004h>     if report_ts != due_ts:
+[?2004l[?2004h>         codes.append("MIN_WAIT_VIOLATION")
+[?2004l[?2004h>     if draft.get("recipient") != COORDINATOR_RECIPIENT:
+[?2004l[?2004h>         codes.append("RECIPIENT_NOT_COORD")
+[?2004l[?2004h>     if set(draft.get("sections_present", [])) != REQUIRED_SECTIONS:
+[?2004l[?2004h>         codes.append("SECTIONS_INCOMPLETE")
+[?2004l[?2004h>     if not draft.get("has_trust_snapshot", False):
+[?2004l[?2004h>         codes.append("TRUST_SNAPSHOT_MISSING")
+[?2004l[?2004h>     if set(draft.get("stakeholder_scores_present", [])) != REQUIRED_STAKEHOLDERS:
+[?2004l[?2004h>         codes.append("TRUST_STAKEHOLDERS_INCOMPLETE")
+[?2004l[?2004h>     if not draft.get("mentions_likes_discounted", False):
+[?2004l[?2004h>         codes.append("LIKES_NOT_DISCOUNTED")
+[?2004l[?2004h>     if not draft.get("has_ire_comparison", False):
+[?2004l[?2004h>         codes.append("IRE_COMPARISON_MISSING")
+[?2004l[?2004h>     if not draft.get("has_channel_effectiveness", False):
+[?2004l[?2004h>         codes.append("CHANNEL_EFFECTIVENESS_MISSING")
+[?2004l[?2004h>     tj = draft.get("has_timing_judgments", {}) or {}
+[?2004l[?2004h>     if not isinstance(tj, dict) or ("fast_enough" not in tj) or ("missed_window" not in tj) or not isinstance(tj.get("fast_enough"), bool) or not isinstance(tjj.get("missed_window"), bool):
+[?2004l[?2004h>         codes.append("TIMING_JUDGMENTS_MISSING")
+[?2004l[?2004h>     if set(draft.get("references_internal_data", [])) != REQUIRED_INTERNAL_DATA:
+[?2004l[?2004h>         codes.append("INTERNAL_DATA_MISSING")
+[?2004l[?2004h>     if input_data.get("company_public", False) and not draft.get("references_stock", False):
+[?2004l[?2004h>         codes.append("STOCK_REQUIRED_MISSING")
+[?2004l[?2004h>     if any(bool(v) for v in (input_data.get("artifact_flags") or {}).values()) and not draft.get("has_conflict_handling", False):
+[?2004l[?2004h>         codes.append("CONFLICT_HANDLING_MISSING")
+[?2004l[?2004h>     return codes
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+[?2004l[?2004h>     activation_ts = _parse_ts(input_data["activation_ts"])
+[?2004l[?2004h>     due7 = activation_ts + DAY7_OFFSET
+[?2004l[?2004h>     due30 = activation_ts + DAY30_OFFSET
+[?2004l[?2004h>     drafts = input_data.get("drafts", []) or []
+[?2004l[?2004h> 
+[?2004l[?2004h>     violations_by_due = {"day7": set(), "day30": set()}
+[?2004l[?2004h>     selected_day7 = None
+[?2004l[?2004h>     selected_day30 = None
+[?2004l[?2004h> 
+[?2004l[?2004h>     def select_for_due(due_ts: datetime, label: str) -> Optional[str]:
+[?2004l[?2004h>         matching = [d for d in drafts if _parse_ts(d["report_ts"]) == due_ts]
+[?2004l[?2004h>         if not matching:
+[?2004l[?2004h>             return None
+[?2004l[?2004h>         compliant: List[Tuple[datetime, int, Dict[str, Any]]] = []
+[?2004l[?2004h>         for idx, draft in enumerate(matching):
+[?2004l[?2004h>             v = _draft_violations(draft, due_ts, input_data)
+[?2004l[?2004h>             if not v:
+[?2004l[?2004h>                 compliant.append((_parse_ts(draft["report_ts"]), idx, draft))
+[?2004l[?2004h>             else:
+[?2004l[?2004h>                 violations_by_due[label].update(v)
+[?2004l[?2004h>         if compliant:
+[?2004l[?2004h>             compliant.sort(key=lambda x: (x[0], x[1]))
+[?2004l[?2004h>             return compliant[0][2]["report_ts"]
+[?2004l[?2004h>         return None
+[?2004l[?2004h> 
+[?2004l[?2004h>     selected_day7 = select_for_due(due7, "day7")
+[?2004l[?2004h>     selected_day30 = select_for_due(due30, "day30")
+[?2004l[?2004h> 
+[?2004l[?2004h>     codes: Set[str] = set()
+[?2004l[?2004h>     if any(_parse_ts(d["report_ts"]) == due7 for d in drafts):
+[?2004l[?2004h>         if selected_day7 is None:
+[?2004l[?2004h>             if not any(_parse_ts(d["report_ts"]) == due7 for d in drafts):
+[?2004l[?2004h>                 codes.add("MISSING_DAY7")
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             pass
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         codes.add("MISSING_DAY7")
+[?2004l[?2004h> 
+[?2004l[?2004h>     if any(_parse_ts(d["report_ts"]) == due30 for d in drafts):
+[?2004l[?2004h>         if selected_day30 is None:
+[?2004l[?2004h>             if not any(_parse_ts(d["report_ts"]) == due30 for d in drafts):
+[?2004l[?2004h>                 codes.add("MISSING_DAY30")
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             pass
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         codes.add("MISSING_DAY30")
+[?2004l[?2004h> 
+[?2004l[?2004h>     codes.update(violations_by_due["day7"])
+[?2004l[?2004h>     codes.update(violations_by_due["day30"])
+[?2004l[?2004h> 
+[?2004l[?2004h>     request_actions: List[str] = []
+[?2004l[?2004h>     external_req = False
+[?2004l[?2004h>     for req in input_data.get("requests", []) or []:
+[?2004l[?2004h>         if _is_external_request(req.get("requested_action", ""), req.get("requested_content", "")):
+[?2004l[?2004h>             request_actions.append("ROUTE_INTERNAL_ONLY")
+[?2004l[?2004h>             external_req = True
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             request_actions.append("ACK_INTERNAL")
+[?2004l[?2004h>     if external_req:
+[?2004l[?2004h>         codes.add("EXTERNAL_SHARING_REQUEST")
+[?2004l[?2004h> 
+[?2004l[?2004h>     status = "ok" if not codes else "needs_fix"
+[?2004l[?2004h>     return {
+[?2004l[?2004h>         "status": status,
+[?2004l[?2004h>         "codes": sorted(codes),
+[?2004l[?2004h>         "selected_day7": selected_day7,
+[?2004l[?2004h>         "selected_day30": selected_day30,
+[?2004l[?2004h>         "request_actions": request_actions,
+[?2004l[?2004h>     }
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ python3 - <<'PY'
+[?2004l[?2004h> from agent_output import solve
+[?2004l[?2004h> print(callable(solve))
+[?2004l[?2004h> PY
+[?2004lTrue
+[?2004hp1$ sed -n '1,260p' /workspace/agent_output.py
+[?2004lfrom __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+
+COORDINATOR_RECIPIENT = "coordinator"
+DAY7_OFFSET = timedelta(days=7)
+DAY30_OFFSET = timedelta(days=30)
+REQUIRED_SECTIONS = set(range(1, 8))
+REQUIRED_STAKEHOLDERS = {
+    "customers",
+    "employees",
+    "investors",
+    "regulators",
+    "partners",
+}
+REQUIRED_INTERNAL_DATA = {
+    "customer_support",
+    "social_media",
+    "web_analytics",
+    "media_coverage",
+    "product_metrics",
+}
+EXTERNAL_SHARING_TRIGGERS = (
+    "public",
+    "external",
+    "share",
+    "publish",
+    "release",
+    "broadcast",
+)
+
+
+def _parse_ts(ts: str) -> datetime:
+    return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+
+def _iso_z(dt: datetime) -> str:
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _is_external_request(requested_action: str, requested_content: str) -> bool:
+    text = f"{requested_action} {requested_content}".lower()
+    return any(tok in text for tok in EXTERNAL_SHARING_TRIGGERS)
+
+
+def _draft_violations(draft: Dict[str, Any], due_ts: datetime, input_data: Dict[str, Any]) -> List[str]:
+    codes: List[str] = []
+    report_ts = _parse_ts(draft["report_ts"])
+    if report_ts != due_ts:
+        codes.append("MIN_WAIT_VIOLATION")
+    if draft.get("recipient") != COORDINATOR_RECIPIENT:
+        codes.append("RECIPIENT_NOT_COORD")
+    if set(draft.get("sections_present", [])) != REQUIRED_SECTIONS:
+        codes.append("SECTIONS_INCOMPLETE")
+    if not draft.get("has_trust_snapshot", False):
+        codes.append("TRUST_SNAPSHOT_MISSING")
+    if set(draft.get("stakeholder_scores_present", [])) != REQUIRED_STAKEHOLDERS:
+        codes.append("TRUST_STAKEHOLDERS_INCOMPLETE")
+    if not draft.get("mentions_likes_discounted", False):
+        codes.append("LIKES_NOT_DISCOUNTED")
+    if not draft.get("has_ire_comparison", False):
+        codes.append("IRE_COMPARISON_MISSING")
+    if not draft.get("has_channel_effectiveness", False):
+        codes.append("CHANNEL_EFFECTIVENESS_MISSING")
+    tj = draft.get("has_timing_judgments", {}) or {}
+    if not isinstance(tj, dict) or ("fast_enough" not in tj) or ("missed_window" not in tj) or not isinstance(tj.get("fast_enough"), bool) or not isinstance(tj.get("missed_window"), bool):
+        codes.append("TIMING_JUDGMENTS_MISSING")
+    if set(draft.get("references_internal_data", [])) != REQUIRED_INTERNAL_DATA:
+        codes.append("INTERNAL_DATA_MISSING")
+    if input_data.get("company_public", False) and not draft.get("references_stock", False):
+        codes.append("STOCK_REQUIRED_MISSING")
+    if any(bool(v) for v in (input_data.get("artifact_flags") or {}).values()) and not draft.get("has_conflict_handling", False):
+        codes.append("CONFLICT_HANDLING_MISSING")
+    return codes
+
+
+def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+    activation_ts = _parse_ts(input_data["activation_ts"])
+    due7 = activation_ts + DAY7_OFFSET
+    due30 = activation_ts + DAY30_OFFSET
+    drafts = input_data.get("drafts", []) or []
+
+    violations_by_due = {"day7": set(), "day30": set()}
+    selected_day7 = None
+    selected_day30 = None
+
+    def select_for_due(due_ts: datetime, label: str) -> Optional[str]:
+        matching = [d for d in drafts if _parse_ts(d["report_ts"]) == due_ts]
+        if not matching:
+            return None
+        compliant: List[Tuple[datetime, int, Dict[str, Any]]] = []
+        for idx, draft in enumerate(matching):
+            v = _draft_violations(draft, due_ts, input_data)
+            if not v:
+                compliant.append((_parse_ts(draft["report_ts"]), idx, draft))
+            else:
+                violations_by_due[label].update(v)
+        if compliant:
+            compliant.sort(key=lambda x: (x[0], x[1]))
+            return compliant[0][2]["report_ts"]
+        return None
+
+    selected_day7 = select_for_due(due7, "day7")
+    selected_day30 = select_for_due(due30, "day30")
+
+    codes: Set[str] = set()
+    if any(_parse_ts(d["report_ts"]) == due7 for d in drafts):
+        if selected_day7 is None:
+            if not any(_parse_ts(d["report_ts"]) == due7 for d in drafts):
+                codes.add("MISSING_DAY7")
+        else:
+            pass
+    else:
+        codes.add("MISSING_DAY7")
+
+    if any(_parse_ts(d["report_ts"]) == due30 for d in drafts):
+        if selected_day30 is None:
+            if not any(_parse_ts(d["report_ts"]) == due30 for d in drafts):
+                codes.add("MISSING_DAY30")
+        else:
+            pass
+    else:
+        codes.add("MISSING_DAY30")
+
+    codes.update(violations_by_due["day7"])
+    codes.update(violations_by_due["day30"])
+
+    request_actions: List[str] = []
+    external_req = False
+    for req in input_data.get("requests", []) or []:
+        if _is_external_request(req.get("requested_action", ""), req.get("requested_content", "")):
+            request_actions.append("ROUTE_INTERNAL_ONLY")
+            external_req = True
+        else:
+            request_actions.append("ACK_INTERNAL")
+    if external_req:
+        codes.add("EXTERNAL_SHARING_REQUEST")
+
+    status = "ok" if not codes else "needs_fix"
+    return {
+        "status": status,
+        "codes": sorted(codes),
+        "selected_day7": selected_day7,
+        "selected_day30": selected_day30,
+        "request_actions": request_actions,
+    }
+[?2004hp1$ python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> print(Path('/workspace/agent_output.py').read_text())
+[?2004l[?2004h> PY
+[?2004lfrom __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+
+COORDINATOR_RECIPIENT = "coordinator"
+DAY7_OFFSET = timedelta(days=7)
+DAY30_OFFSET = timedelta(days=30)
+REQUIRED_SECTIONS = set(range(1, 8))
+REQUIRED_STAKEHOLDERS = {
+    "customers",
+    "employees",
+    "investors",
+    "regulators",
+    "partners",
+}
+REQUIRED_INTERNAL_DATA = {
+    "customer_support",
+    "social_media",
+    "web_analytics",
+    "media_coverage",
+    "product_metrics",
+}
+EXTERNAL_SHARING_TRIGGERS = (
+    "public",
+    "external",
+    "share",
+    "publish",
+    "release",
+    "broadcast",
+)
+
+
+def _parse_ts(ts: str) -> datetime:
+    return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+
+def _iso_z(dt: datetime) -> str:
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _is_external_request(requested_action: str, requested_content: str) -> bool:
+    text = f"{requested_action} {requested_content}".lower()
+    return any(tok in text for tok in EXTERNAL_SHARING_TRIGGERS)
+
+
+def _draft_violations(draft: Dict[str, Any], due_ts: datetime, input_data: Dict[str, Any]) -> List[str]:
+    codes: List[str] = []
+    report_ts = _parse_ts(draft["report_ts"])
+    if report_ts != due_ts:
+        codes.append("MIN_WAIT_VIOLATION")
+    if draft.get("recipient") != COORDINATOR_RECIPIENT:
+        codes.append("RECIPIENT_NOT_COORD")
+    if set(draft.get("sections_present", [])) != REQUIRED_SECTIONS:
+        codes.append("SECTIONS_INCOMPLETE")
+    if not draft.get("has_trust_snapshot", False):
+        codes.append("TRUST_SNAPSHOT_MISSING")
+    if set(draft.get("stakeholder_scores_present", [])) != REQUIRED_STAKEHOLDERS:
+        codes.append("TRUST_STAKEHOLDERS_INCOMPLETE")
+    if not draft.get("mentions_likes_discounted", False):
+        codes.append("LIKES_NOT_DISCOUNTED")
+    if not draft.get("has_ire_comparison", False):
+        codes.append("IRE_COMPARISON_MISSING")
+    if not draft.get("has_channel_effectiveness", False):
+        codes.append("CHANNEL_EFFECTIVENESS_MISSING")
+    tj = draft.get("has_timing_judgments", {}) or {}
+    if not isinstance(tj, dict) or ("fast_enough" not in tj) or ("missed_window" not in tj) or not isinstance(tj.get("fast_enough"), bool) or not isinstance(tj.get("missed_window"), bool):
+        codes.append("TIMING_JUDGMENTS_MISSING")
+    if set(draft.get("references_internal_data", [])) != REQUIRED_INTERNAL_DATA:
+        codes.append("INTERNAL_DATA_MISSING")
+    if input_data.get("company_public", False) and not draft.get("references_stock", False):
+        codes.append("STOCK_REQUIRED_MISSING")
+    if any(bool(v) for v in (input_data.get("artifact_flags") or {}).values()) and not draft.get("has_conflict_handling", False):
+        codes.append("CONFLICT_HANDLING_MISSING")
+    return codes
+
+
+def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+    activation_ts = _parse_ts(input_data["activation_ts"])
+    due7 = activation_ts + DAY7_OFFSET
+    due30 = activation_ts + DAY30_OFFSET
+    drafts = input_data.get("drafts", []) or []
+
+    violations_by_due = {"day7": set(), "day30": set()}
+    selected_day7 = None
+    selected_day30 = None
+
+    def select_for_due(due_ts: datetime, label: str) -> Optional[str]:
+        matching = [d for d in drafts if _parse_ts(d["report_ts"]) == due_ts]
+        if not matching:
+            return None
+        compliant: List[Tuple[datetime, int, Dict[str, Any]]] = []
+        for idx, draft in enumerate(matching):
+            v = _draft_violations(draft, due_ts, input_data)
+            if not v:
+                compliant.append((_parse_ts(draft["report_ts"]), idx, draft))
+            else:
+                violations_by_due[label].update(v)
+        if compliant:
+            compliant.sort(key=lambda x: (x[0], x[1]))
+            return compliant[0][2]["report_ts"]
+        return None
+
+    selected_day7 = select_for_due(due7, "day7")
+    selected_day30 = select_for_due(due30, "day30")
+
+    codes: Set[str] = set()
+    if any(_parse_ts(d["report_ts"]) == due7 for d in drafts):
+        if selected_day7 is None:
+            if not any(_parse_ts(d["report_ts"]) == due7 for d in drafts):
+                codes.add("MISSING_DAY7")
+        else:
+            pass
+    else:
+        codes.add("MISSING_DAY7")
+
+    if any(_parse_ts(d["report_ts"]) == due30 for d in drafts):
+        if selected_day30 is None:
+            if not any(_parse_ts(d["report_ts"]) == due30 for d in drafts):
+                codes.add("MISSING_DAY30")
+        else:
+            pass
+    else:
+        codes.add("MISSING_DAY30")
+
+    codes.update(violations_by_due["day7"])
+    codes.update(violations_by_due["day30"])
+
+    request_actions: List[str] = []
+    external_req = False
+    for req in input_data.get("requests", []) or []:
+        if _is_external_request(req.get("requested_action", ""), req.get("requested_content", "")):
+            request_actions.append("ROUTE_INTERNAL_ONLY")
+            external_req = True
+        else:
+            request_actions.append("ACK_INTERNAL")
+    if external_req:
+        codes.add("EXTERNAL_SHARING_REQUEST")
+
+    status = "ok" if not codes else "needs_fix"
+    return {
+        "status": status,
+        "codes": sorted(codes),
+        "selected_day7": selected_day7,
+        "selected_day30": selected_day30,
+        "request_actions": request_actions,
+    }
+
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from datetime import datetime, timedelta, timezone
+[?2004l[?2004h> from typing import Any, Dict, List, Optional, Set, Tuple
+[?2004l[?2004h> 
+[?2004l[?2004h> COORDINATOR_RECIPIENT = "coordinator"
+[?2004l[?2004h> DAY7_OFFSET = timedelta(days=7)
+[?2004l[?2004h> DAY30_OFFSET = timedelta(days=30)
+[?2004l[?2004h> REQUIRED_SECTIONS = set(range(1, 8))
+[?2004l[?2004h> REQUIRED_STAKEHOLDERS = {"customers", "employees", "investors", "regulators", "partners"}
+[?2004lse[?2004h> REQUIRED_INTERNAL_DATA = {
+[?2004l[?2004h>     "customer_support",
+[?2004l[?2004h>     "social_media",
+[?2004l[?2004h>     "web_analytics",
+[?2004l[?2004h>     "media_coverage",
+[?2004l[?2004h>     "product_metrics",
+[?2004l[?2004h> }
+[?2004l[?2004h> EXTERNAL_SHARING_TRIGGERS = ("public", "external", "share", "publish", "release", "broadcast")
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _parse_ts(ts: str) -> datetime:
+[?2004l[?2004h>     return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _is_external_request(requested_action: str, requested_content: str) -> bool:
+[?2004l[?2004h>     text = f"{requested_action} {requested_content}".lower()
+[?2004l[?2004h>     return any(tok in text for tok in EXTERNAL_SHARING_TRIGGERS)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _validate_exact_due_draft(draft: Dict[str, Any], input_data: Dict[str, Any]) -> List[str]:
+[?2004l[?2004h>     codes: List[str] = []
+[?2004l[?2004h>     if draft.get("recipient") != COORDINATOR_RECIPIENT:
+[?2004l[?2004h>         codes.append("RECIPIENT_NOT_COORD")
+[?2004l[?2004h>     if set(draft.get("sections_present", [])) != REQUIRED_SECTIONS:
+[?2004l[?2004h>         codes.append("SECTIONS_INCOMPLETE")
+[?2004l[?2004h>     if not draft.get("has_trust_snapshot", False):
+[?2004l[?2004h>         codes.append("TRUST_SNAPSHOT_MISSING")
+[?2004l[?2004h>     if set(draft.get("stakeholder_scores_present", [])) != REQUIRED_STAKEHOLDERS:
+[?2004l[?2004h>         codes.append("TRUST_STAKEHOLDERS_INCOMPLETE")
+[?2004l[?2004h>     if not draft.get("mentions_likes_discounted", False):
+[?2004l[?2004h>         codes.append("LIKES_NOT_DISCOUNTED")
+[?2004l[?2004h>     if not draft.get("has_ire_comparison", False):
+[?2004l[?2004h>         codes.append("IRE_COMPARISON_MISSING")
+[?2004l[?2004h>     if not draft.get("has_channel_effectiveness", False):
+[?2004l[?2004h>         codes.append("CHANNEL_EFFECTIVENESS_MISSING")
+[?2004l[?2004h>     tj = draft.get("has_timing_judgments")
+[?2004l[?2004h>     if not isinstance(tj, dict) or not isinstance(tj.get("fast_enough"), bool) or not isinstance(tj.get("missed_window"), bool):
+[?2004l[?2004h>         codes.append("TIMING_JUDGMENTS_MISSING")
+[?2004l[?2004h>     if set(draft.get("references_internal_data", [])) != REQUIRED_INTERNAL_DATA:
+[?2004l[?2004h>         codes.append("INTERNAL_DATA_MISSING")
+[?2004l[?2004h>     if input_data.get("company_public", False) and not draft.get("references_stock", False):
+[?2004l[?2004h>         codes.append("STOCK_REQUIRED_MISSING")
+[?2004l[?2004h>     if any(bool(v) for v in (input_data.get("artifact_flags") or {}).values()) and not draft.get("has_conflict_handling", False):
+[?2004l[?2004h>         codes.append("CONFLICT_HANDLING_MISSING")
+[?2004l[?2004h>     return codes
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _process_due(due_ts: datetime, drafts: List[Dict[str, Any]], input_data: Dict[str, Any]) -> Tuple[Optional[str], Set[str], bool]:
+[?2004l[?2004h>     matching = [d for d in drafts if _parse_ts(d["report_ts"]) == due_ts]
+[?2004l[?2004h>     if not matching:
+[?2004l[?2004h>         return None, set(), True
+[?2004l[?2004h> 
+[?2004l[?2004h>     violations: Set[str] = set()
+[?2004l[?2004h>     compliant: List[Tuple[int, str]] = []
+[?2004l[?2004h>     for idx, draft in enumerate(matching):
+[?2004l[?2004h>         v = _validate_exact_due_draft(draft, input_data)
+[?2004l[?2004h>         if v:
+[?2004l[?2004h>             violations.update(v)
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             compliant.append((idx, draft["report_ts"]))
+[?2004l[?2004h>     if compliant:
+[?2004l[?2004h>         compliant.sort(key=lambda x: x[0])
+[?2004l[?2004h>         return compliant[0][1], violations, False
+[?2004l[?2004h>     return None, violations, False
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+[?2004l[?2004h>     activation_ts = _parse_ts(input_data["activation_ts"])
+[?2004l[?2004h>     due7 = activation_ts + DAY7_OFFSET
+[?2004l[?2004h>     due30 = activation_ts + DAY30_OFFSET
+[?2004l[?2004h>     drafts = input_data.get("drafts", []) or []
+[?2004l[?2004h> 
+[?2004l[?2004h>     selected_day7, day7_violations, day7_missing = _process_due(due7, drafts, input_data)
+[?2004l[?2004h>     selected_day30, day30_violations, day30_missing = _process_due(due30, drafts, input_data)
+[?2004l[?2004h> 
+[?2004l[?2004h>     codes: Set[str] = set()
+[?2004l[?2004h>     if day7_missing:
+[?2004l[?2004h>         codes.add("MISSING_DAY7")
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         codes.update(day7_violations)
+[?2004l[?2004h>     if day30_missing:
+[?2004l[?2004h>         codes.add("MISSING_DAY30")
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         codes.update(day30_violations)
+[?2004l[?2004h> 
+[?2004l[?2004h>     request_actions: List[str] = []
+[?2004l[?2004h>     external_flag = False
+[?2004l[?2004h>     for req in input_data.get("requests", []) or []:
+[?2004l[?2004h>         if _is_external_request(req.get("requested_action", ""), req.get("requested_content", "")):
+[?2004l[?2004h>             request_actions.append("ROUTE_INTERNAL_ONLY")
+[?2004l[?2004h>             external_flag = True
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             request_actions.append("ACK_INTERNAL")
+[?2004l[?2004h>     if external_flag:
+[?2004l[?2004h>         codes.add("EXTERNAL_SHARING_REQUEST")
+[?2004l[?2004h> 
+[?2004l[?2004h>     return {
+[?2004l[?2004h>         "status": "ok" if not codes else "needs_fix",
+[?2004l[?2004h>         "codes": sorted(codes),
+[?2004l[?2004h>         "selected_day7": selected_day7,
+[?2004l[?2004h>         "selected_day30": selected_day30,
+[?2004l[?2004h>         "request_actions": request_actions,
+[?2004l[?2004h>     }
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ python3 - <<'PY'
+[?2004l[?2004h> from agent_output import solve
+[?2004l[?2004h> print(solve({"activation_ts":"2024-01-01T00:00:00Z","company_public":False,"tma_platforms":[],"drafts":[],"artifact_flags":{},"requests":[]}))
+[?2004l[?2004h> PY
+[?2004l{'status': 'needs_fix', 'codes': ['MISSING_DAY30', 'MISSING_DAY7'], 'selected_day7': None, 'selected_day30': None, 'request_actions': []}
+[?2004hp1$ 

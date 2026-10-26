@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"f41fcf7a-591a-589d-8a77-8abaa0960bf8\", \"name\": \"从 cURL 命令构造 Scrapy Request\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"将 cURL 命令转换为可用的 Scrapy Request 对象\", \"applicable_signals\": [\"输入为 cURL 命令字符串\", \"需要复用浏览器复制的请求\"], \"contraindications\": [\"请求参数需完全手工构造时\", \"cURL 含无法识别选项且不希望报错时需显式设置 ignore_unknown_options\"], \"workflow_steps\": [\"获取 cURL 命令字符串\", \"调用 Request.from_curl 构造 Request，自动填充方法、URL、头、cookie、body\", \"如需覆盖命令中的同名参数，传入对应 Request 参数\", \"如需对未知选项报错，传入 ignore_unknown_options=False\", \"返回构造好的 Request 对象\"], \"constraints\": [\"传入的 Request 参数优先并覆盖 cURL 命令中的同名参数\", \"默认忽略无法识别的选项\"], \"triggers\": [\"已有 cURL 命令需转为 Scrapy 请求\", \"需复用从浏览器复制的请求\"], \"output_contract\": [\"生成包含正确方法、URL、头、cookie、body 的 Request 对象\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"dc522835-58a3-552c-bd8b-30ad389282ea\", \"name\": \"Scrapy 请求构造与回调数据传递\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"构造可正确路由回调并携带附加数据的 Scrapy 请求\", \"applicable_signals\": [\"需要发起新的抓取请求\", \"需要向回调函数传递额外上下文数据\"], \"workflow_steps\": [\"确定请求目标 url\", \"按需绑定 callback 与 errback\", \"将需要传给回调的上下文数据放入 cb_kwargs\", \"如需 cookie，使用 Request 的 cookies 参数而非 Cookie 头\", \"按需设置 priority、dont_filter、encoding、flags 等参数\", \"确认回调与 cb_kwargs 已正确绑定\"], \"output_contract\": [\"一个配置完整、回调与 cb_kwargs 正确绑定的 Request 对象\"], \"score\": 0.589496875807402}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

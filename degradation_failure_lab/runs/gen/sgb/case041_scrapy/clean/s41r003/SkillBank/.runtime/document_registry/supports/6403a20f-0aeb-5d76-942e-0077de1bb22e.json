@@ -1,0 +1,55 @@
+{
+  "support_id": "6403a20f-0aeb-5d76-942e-0077de1bb22e",
+  "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+  "skill_id": "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+  "section": "Spider Middleware",
+  "span": {
+    "start": 196,
+    "end": 4319
+  },
+  "excerpt": "The spider middleware is a framework of hooks into Scrapy’s spider processing\nmechanism where you can plug custom functionality to process the responses that\nare sent to [Spiders](spiders.html#topics-spiders) for processing and to process the requests\nand items that are generated from spiders.\n\nActivating a spider middleware\nTo activate a spider middleware component, add it to the\n[`SPIDER_MIDDLEWARES`](settings.html#std-setting-SPIDER_MIDDLEWARES) setting, which is a dict whose keys are the\nmiddleware class path and their values are the middleware orders.\n\nHere’s an example:\n\n```\nSPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}\n```\n\n```\nSPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}\n```\n\nFinally, keep in mind that some middlewares may need to be enabled through a\nparticular setting. See each middleware documentation for more info.\n\nWriting your own spider middleware\nEach spider middleware is a [component](components.html#topics-components) that defines\none or more of these methods:\n\n***class*scrapy.spidermiddlewares.SpiderMiddleware**\n\n***async*process_start(*start: AsyncIterator[Any]*, */*) → AsyncIterator[Any]**\n\nIterate over the output of [`start()`](spiders.html#scrapy.Spider.start) or that\nof the `process_start()` method of an earlier spider middleware,\noverriding it. For example:\n\n```\nasync def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request\n```\n\nYou may yield the same type of objects as [`start()`](spiders.html#scrapy.Spider.start).\n\nTo write spider middlewares that work on Scrapy versions lower than\n2.13, define also a synchronous `process_start_requests()` method\nthat returns an iterable. For example:\n\n```\ndef process_start_requests(self, start, spider):\n    yield from start\n```\n\n**process_spider_input(*response*)**\n\nThis method is called for each response that goes through the spider\nmiddleware and into the spider, for processing.\n\n`process_spider_input()` should return `None` or raise an\nexception.\n\nIf it returns `None`, Scrapy will continue processing this response,\nexecuting all other middlewares until, finally, the response is handed\nto the spider for processing.\n\n**Parameters:**",
+  "relation_type": "support",
+  "confidence": 0.8,
+  "metadata": {
+    "document_title": "input004\\spider-middleware.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "编写自定义 Spider 中间件方法",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "visible_role": "parent",
+    "objective": "实现一个或多个 Spider 中间件钩子方法以定制处理流程",
+    "task_family": "middleware_implementation",
+    "method_family": "hook_method_override",
+    "stage": "implementation",
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "candidate_slot": 2,
+    "window_id": "127eeaa1-f98c-57bf-997f-f146dbe00458",
+    "window_strategy": "strict",
+    "anchor_hits": [],
+    "paragraph_start": 0,
+    "paragraph_end": 22,
+    "heading_path": [
+      "Spider Middleware"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input004\\spider-middleware.md"
+    ],
+    "subsection_headings": [
+      "Activating a spider middleware",
+      "Writing your own spider middleware",
+      "Base class for custom spider middlewares"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+  },
+  "created_at": "2026-10-25T08:26:56+00:00"
+}

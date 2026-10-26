@@ -1,0 +1,112 @@
+{
+  "skill_id": "bf71575c-b5d5-58ca-8289-0e9c2383eb7e",
+  "name": "Scrapy 标准输出 Feed 导出",
+  "description": "将抓取到的 item 通过 stdout 存储后端直接写入 Scrapy 进程的标准输出，无需任何外部库。适用于需要即时查看导出结果或通过管道交给下游进程、且不需要持久化文件的场景。",
+  "skill_body": "当需要把 feed 导出到进程标准输出时，配置一个使用 stdout: URI 的 feed 导出。确认该存储后端不需要任何外部库；若需要持久化文件或远程存储，或需要延迟文件投递语义，则改用其他存储后端。\n\n## Objective\n\n使用 stdout 存储后端将 feed 输出到进程标准输出\n## Applicable Signals\n\n- 需要即时查看导出结果而不落盘\n- 导出结果需通过管道交给下游进程\n\n## Contraindications\n\n- 需要持久化文件或远程存储\n- 需要延迟文件投递语义\n\n## Intervention Moves\n\n- 选择 stdout 存储后端\n- 配置使用 stdout: URI 的 feed 导出\n- 确认无需安装外部库\n\n## Workflow Steps\n\n- 确认导出目标是进程标准输出而非文件或远程存储\n- 配置 feed 使用 stdout: URI（URI scheme 为 stdout）\n- 确认无需额外外部库即可运行\n- 运行后从标准输出读取序列化后的 item\n\n## Constraints\n\n- 仅覆盖 stdout 这一单一存储后端配置动作\n- 不适用于需要持久化或延迟文件投递的场景\n\n## Cautions\n\n- 标准输出会与进程其他输出混在一起，下游消费时需注意区分\n\n## Output Contract\n\n- 配置了 stdout: URI 的 feed 导出，item 序列化后写入标准输出",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "d5862d9c-e48d-5b19-9342-c94d0fbc3157",
+  "parent_candidate_ids": [
+    "d5862d9c-e48d-5b19-9342-c94d0fbc3157"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.82,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "使用 stdout 存储后端将 feed 输出到进程标准输出",
+  "domain": "scrapy",
+  "task_family": "feed_export",
+  "method_family": "storage_backend_config",
+  "stage": "export_configuration",
+  "applicable_signals": [
+    "需要即时查看导出结果而不落盘",
+    "导出结果需通过管道交给下游进程"
+  ],
+  "contraindications": [
+    "需要持久化文件或远程存储",
+    "需要延迟文件投递语义"
+  ],
+  "intervention_moves": [
+    "选择 stdout 存储后端",
+    "配置使用 stdout: URI 的 feed 导出",
+    "确认无需安装外部库"
+  ],
+  "triggers": [
+    "需要即时查看导出结果而不落盘",
+    "导出结果需通过管道交给下游进程"
+  ],
+  "workflow_steps": [
+    "确认导出目标是进程标准输出而非文件或远程存储",
+    "配置 feed 使用 stdout: URI（URI scheme 为 stdout）",
+    "确认无需额外外部库即可运行",
+    "运行后从标准输出读取序列化后的 item"
+  ],
+  "constraints": [
+    "仅覆盖 stdout 这一单一存储后端配置动作",
+    "不适用于需要持久化或延迟文件投递的场景"
+  ],
+  "cautions": [
+    "标准输出会与进程其他输出混在一起，下游消费时需注意区分"
+  ],
+  "output_contract": [
+    "配置了 stdout: URI 的 feed 导出，item 序列化后写入标准输出"
+  ],
+  "examples": [],
+  "tags": [
+    "scrapy",
+    "feed_export",
+    "stdout",
+    "storage_backend"
+  ],
+  "support_ids": [
+    "a94207c3-62f6-54cf-bfdb-2f3ce62c93dc"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "1b915012-30b4-53de-9e71-df1a6eef5244"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.72,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|使用 stdout 存储后端将 feed 输出到进程标准输出|scrapy|feed_export|storage_backend_config|export_configuration|scrapy 标准输出 feed 导出",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "d5862d9c-e48d-5b19-9342-c94d0fbc3157",
+    "parent_candidate_ids": [
+      "d5862d9c-e48d-5b19-9342-c94d0fbc3157"
+    ],
+    "hierarchy_confidence": 0.82,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

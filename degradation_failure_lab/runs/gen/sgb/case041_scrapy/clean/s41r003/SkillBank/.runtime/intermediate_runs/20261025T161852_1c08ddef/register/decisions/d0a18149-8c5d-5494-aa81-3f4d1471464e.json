@@ -1,0 +1,104 @@
+{
+  "skill_id": "d0a18149-8c5d-5494-aa81-3f4d1471464e",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选内容与同批 peer 候选“Scrapy Request 回调与错误回调路由配置”高度重叠，后者已覆盖 HttpErrorMiddleware 对非 2xx 响应转 errback 的规则及 callback/NO_CALLBACK 取值，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "d0a18149-8c5d-5494-aa81-3f4d1471464e",
+    "name": "非2xx响应错误转errback规则",
+    "description": "依据 HttpErrorMiddleware 默认行为，将非 2xx 响应作为异常发送到 errback 而非正常 callback，用于确保非成功响应走错误处理路径。",
+    "skill_body": "当需要处理非 2xx 响应或配置 errback 逻辑时，依赖 HttpErrorMiddleware 的默认行为：非 2xx 响应会被抛出为异常并发送到 errback，而不是进入正常 callback。据此在 errback 中实现错误处理逻辑，并注意 callback 的取值（None 表示使用 spider 的 parse()，或 NO_CALLBACK()）。\n\n## Objective\n\n确保非成功响应走错误处理路径\n## Applicable Signals\n\n- 需要处理非 2xx 响应\n- 配置 errback 逻辑\n- 期望非成功响应走错误处理路径\n\n## Contraindications\n\n- 已显式禁用 HttpErrorMiddleware\n\n## Intervention Moves\n\n- 依赖 HttpErrorMiddleware 默认将非 2xx 响应抛出为异常\n- 在 errback 中实现错误处理逻辑\n- 明确 callback 取值（None 使用 parse()，或 NO_CALLBACK()）\n\n## Workflow Steps\n\n- 确认 HttpErrorMiddleware 处于启用状态（默认启用）\n- 为非 2xx 响应配置 errback 处理逻辑\n- 明确 callback 取值：None 表示使用 spider 的 parse()，或使用 NO_CALLBACK()\n- 在 errback 中捕获并处理由非 2xx 响应抛出的异常\n\n## Constraints\n\n- 非 2xx 响应默认不进入正常 callback，而是作为异常发送到 errback\n- 若已显式禁用 HttpErrorMiddleware，则此规则不适用\n\n## Cautions\n\n- 禁用 HttpErrorMiddleware 会改变非 2xx 响应的路由行为，需相应调整错误处理逻辑\n\n## Output Contract\n\n- 非 2xx 响应被路由至 errback 处理",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保非成功响应走错误处理路径",
+    "domain": "scrapy",
+    "task_family": "响应错误处理",
+    "method_family": "HTTP 状态异常路由",
+    "stage": "响应处理",
+    "applicable_signals": [
+      "需要处理非 2xx 响应",
+      "配置 errback 逻辑",
+      "期望非成功响应走错误处理路径"
+    ],
+    "contraindications": [
+      "已显式禁用 HttpErrorMiddleware"
+    ],
+    "intervention_moves": [
+      "依赖 HttpErrorMiddleware 默认将非 2xx 响应抛出为异常",
+      "在 errback 中实现错误处理逻辑",
+      "明确 callback 取值（None 使用 parse()，或 NO_CALLBACK()）"
+    ],
+    "triggers": [
+      "需要处理非 2xx 响应",
+      "配置 errback 逻辑",
+      "期望非成功响应走错误处理路径"
+    ],
+    "workflow_steps": [
+      "确认 HttpErrorMiddleware 处于启用状态（默认启用）",
+      "为非 2xx 响应配置 errback 处理逻辑",
+      "明确 callback 取值：None 表示使用 spider 的 parse()，或使用 NO_CALLBACK()",
+      "在 errback 中捕获并处理由非 2xx 响应抛出的异常"
+    ],
+    "constraints": [
+      "非 2xx 响应默认不进入正常 callback，而是作为异常发送到 errback",
+      "若已显式禁用 HttpErrorMiddleware，则此规则不适用"
+    ],
+    "cautions": [
+      "禁用 HttpErrorMiddleware 会改变非 2xx 响应的路由行为，需相应调整错误处理逻辑"
+    ],
+    "output_contract": [
+      "非 2xx 响应被路由至 errback 处理"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "HttpErrorMiddleware",
+      "errback",
+      "响应错误处理",
+      "HTTP状态码"
+    ],
+    "support_ids": [
+      "1d41df81-38f8-56f7-b9bf-6fa57715a189"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "045d984d-246b-5787-a459-04e3da5648f0"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||safety_rule|micro|safety_rule_node|确保非成功响应走错误处理路径|scrapy|响应错误处理|http 状态异常路由|响应处理|非2xx响应错误转errback规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

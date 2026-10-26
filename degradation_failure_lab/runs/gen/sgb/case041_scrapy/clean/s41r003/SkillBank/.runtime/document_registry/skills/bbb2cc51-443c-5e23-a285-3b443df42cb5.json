@@ -1,0 +1,127 @@
+{
+  "skill_id": "bbb2cc51-443c-5e23-a285-3b443df42cb5",
+  "name": "请求指纹规范化计算",
+  "description": "在自定义 RequestFingerprinter 的 fingerprint() 方法内复用标准指纹逻辑：对 request.url 做 canonicalize_url 规范化，结合 method 与 body 生成 SHA1 哈希，从而忽略参数顺序、会话 cookie 等随机成分，得到唯一标识请求资源的指纹。",
+  "skill_body": "当需要在自定义 RequestFingerprinter 的 fingerprint() 方法中复用标准指纹算法时，调用 scrapy.utils.request.fingerprint()（默认参数）。该函数对 request.url 取 canonicalize_url 规范化版本，并结合 request.method 与 request.body 计算 SHA1 哈希，返回 bytes。确保返回值为 bytes 且能唯一标识请求指向的资源；对参数顺序不同但等价的 URL 应得到相同指纹，对仅因会话 cookie 等随机成分不同的请求应忽略这些成分。\n\n## Objective\n\n对单个请求计算规范化指纹哈希\n## Applicable Signals\n\n- 自定义指纹器需要复用标准指纹逻辑\n- 存在等价但字面不同的 URL（如参数顺序不同）\n- 请求含会话 cookie 等应被忽略的随机成分\n\n## Contraindications\n\n- 需要完全自定义非哈希指纹策略时不应使用本微技能\n\n## Intervention Moves\n\n- 在 fingerprint() 中调用 scrapy.utils.request.fingerprint() 并传入 request\n- 依赖 canonicalize_url 规范化 request.url\n- 结合 request.method 与 request.body 计算 SHA1 哈希\n- 返回 bytes 类型的指纹\n\n## Workflow Steps\n\n- 确认当前处于自定义 RequestFingerprinter 的 fingerprint() 实现中\n- 调用 scrapy.utils.request.fingerprint()（默认参数）并传入 request\n- 确认返回值是唯一标识该请求资源的 bytes 对象\n- 验证等价 URL（参数顺序不同）得到相同指纹，含会话 cookie 的请求指纹不受随机成分影响\n\n## Constraints\n\n- fingerprint() 必须返回 bytes 对象\n- 指纹应唯一标识请求指向的资源\n- 默认实现基于 canonicalize_url 规范化 URL 并结合 method、body 生成 SHA1\n\n## Cautions\n\n- 若需非哈希或完全自定义策略，应自行实现 fingerprint() 而非复用标准函数\n\n## Output Contract\n\n- 基于规范化 URL、method、body 的 SHA1 指纹（bytes），可唯一标识请求资源。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111\n- Therapist/Output: 两者经 canonicalize_url 规范化后得到相同指纹\n- Notes: 参数顺序不同但指向同一资源\n\n### Example 2\n\n- Client/Input: 仅会话 cookie 不同的同一页面请求\n- Therapist/Output: 指纹忽略 cookie 随机成分，得到相同指纹\n- Notes: 会话 id 等随机成分不应影响指纹",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+  "parent_candidate_ids": [
+    "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.95,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "对单个请求计算规范化指纹哈希",
+  "domain": "scrapy",
+  "task_family": "请求去重",
+  "method_family": "URL规范化与哈希",
+  "stage": "请求处理",
+  "applicable_signals": [
+    "自定义指纹器需要复用标准指纹逻辑",
+    "存在等价但字面不同的 URL（如参数顺序不同）",
+    "请求含会话 cookie 等应被忽略的随机成分"
+  ],
+  "contraindications": [
+    "需要完全自定义非哈希指纹策略时不应使用本微技能"
+  ],
+  "intervention_moves": [
+    "在 fingerprint() 中调用 scrapy.utils.request.fingerprint() 并传入 request",
+    "依赖 canonicalize_url 规范化 request.url",
+    "结合 request.method 与 request.body 计算 SHA1 哈希",
+    "返回 bytes 类型的指纹"
+  ],
+  "triggers": [
+    "需要在 fingerprint() 方法内复用标准指纹算法",
+    "URL 参数顺序不同但指向同一资源",
+    "请求仅因会话 cookie 等随机成分不同而应视为同一资源"
+  ],
+  "workflow_steps": [
+    "确认当前处于自定义 RequestFingerprinter 的 fingerprint() 实现中",
+    "调用 scrapy.utils.request.fingerprint()（默认参数）并传入 request",
+    "确认返回值是唯一标识该请求资源的 bytes 对象",
+    "验证等价 URL（参数顺序不同）得到相同指纹，含会话 cookie 的请求指纹不受随机成分影响"
+  ],
+  "constraints": [
+    "fingerprint() 必须返回 bytes 对象",
+    "指纹应唯一标识请求指向的资源",
+    "默认实现基于 canonicalize_url 规范化 URL 并结合 method、body 生成 SHA1"
+  ],
+  "cautions": [
+    "若需非哈希或完全自定义策略，应自行实现 fingerprint() 而非复用标准函数"
+  ],
+  "output_contract": [
+    "基于规范化 URL、method、body 的 SHA1 指纹（bytes），可唯一标识请求资源。"
+  ],
+  "examples": [
+    {
+      "input": "两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111",
+      "output": "两者经 canonicalize_url 规范化后得到相同指纹",
+      "notes": "参数顺序不同但指向同一资源"
+    },
+    {
+      "input": "仅会话 cookie 不同的同一页面请求",
+      "output": "指纹忽略 cookie 随机成分，得到相同指纹",
+      "notes": "会话 id 等随机成分不应影响指纹"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "请求去重",
+    "指纹",
+    "URL规范化",
+    "SHA1"
+  ],
+  "support_ids": [
+    "dc44d88e-0494-5b0c-bc90-ad37742213b0"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "4bffa34f-1c1f-50d1-a311-889527f3304f"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.75,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|对单个请求计算规范化指纹哈希|scrapy|请求去重|url规范化与哈希|请求处理|请求指纹规范化计算",
+    "llm_reason": "候选技能描述在自定义 RequestFingerprinter 的 fingerprint() 内复用标准指纹逻辑（canonicalize_url + method + body 生成 SHA1），与现有 hostname 安全判定/正则构建技能能力不同，也与 peer 中自定义指纹器实现、errback 处理技能语义不同，属于新的独立微技能。",
+    "change_action": "create",
+    "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+    "parent_candidate_ids": [
+      "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+    ],
+    "hierarchy_confidence": 0.95,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

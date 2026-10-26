@@ -1,0 +1,780 @@
+{
+  "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+  "title": "input001\\offsite.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+  "support_records": [
+    {
+      "support_id": "ee446c4a-4013-576f-8aea-d08349d973a6",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+      "section": "# Source code for scrapy.downloadermiddlewares.offsite",
+      "span": {
+        "start": 204,
+        "end": 2592
+      },
+      "excerpt": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\nfrom scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\ndef __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\ndef spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\ndef request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\ndef should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input001\\offsite.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Offsite请求域名过滤",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "在请求调度阶段过滤掉不属于允许域名的站外请求",
+        "task_family": "请求过滤",
+        "method_family": "域名正则匹配",
+        "stage": "request_scheduled",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      },
+      "created_at": "2026-10-25T08:19:15+00:00"
+    },
+    {
+      "support_id": "df27c7ab-e3e2-5b68-b833-647faad9c2a8",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+      "section": "# Source code for scrapy.downloadermiddlewares.offsite",
+      "span": {
+        "start": 204,
+        "end": 2592
+      },
+      "excerpt": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\nfrom scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\ndef __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\ndef spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\ndef request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\ndef should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\offsite.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "允许域名正则构建",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在spider_opened阶段构建host_regex",
+        "task_family": "域名规则初始化",
+        "method_family": "正则表达式构建",
+        "stage": "spider_opened",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      },
+      "created_at": "2026-10-25T08:19:15+00:00"
+    },
+    {
+      "support_id": "c95ebfa6-0c76-52d0-b88e-8655b01a26f2",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+      "section": "# Source code for scrapy.downloadermiddlewares.offsite",
+      "span": {
+        "start": 204,
+        "end": 2592
+      },
+      "excerpt": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\nfrom scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\ndef __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\ndef spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\ndef request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\ndef should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\offsite.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "请求hostname安全判定",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "判断单个请求是否属于允许域名",
+        "task_family": "请求判定",
+        "method_family": "URL解析加正则匹配",
+        "stage": "should_follow",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 3,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      },
+      "created_at": "2026-10-25T08:19:15+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "f5632c0c-aae0-5207-a5b7-1f1fda9b816c",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "name": "Offsite请求域名过滤",
+      "description": "在请求被调度时，基于spider允许域名的正则判断请求是否属于站内；站外请求应被忽略，站内请求继续进入调度。用于控制爬虫只跟随允许域名范围内的链接。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "在请求调度阶段过滤掉不属于允许域名的站外请求",
+      "domain": "scrapy",
+      "task_family": "请求过滤",
+      "method_family": "域名正则匹配",
+      "stage": "request_scheduled",
+      "applicable_signals": [
+        "spider已配置允许域名范围",
+        "请求被调度时需判断是否站内",
+        "存在站外链接需要被拦截"
+      ],
+      "contraindications": [
+        "需要跨域抓取且无域名白名单",
+        "请求URL无法解析出hostname时不应直接放行"
+      ],
+      "intervention_moves": [
+        "在spider_opened时构建host_regex",
+        "在request_scheduled中调用process_request处理请求",
+        "用urlparse_cached获取hostname，None时置为空字符串",
+        "用host_regex.search(host)判断是否站内并决定放行或忽略"
+      ],
+      "workflow_steps": [
+        "spider_opened阶段通过get_host_regex(spider)构建host_regex",
+        "请求被调度时触发request_scheduled，调用process_request",
+        "解析请求得到hostname，无法解析时使用空字符串",
+        "用host_regex.search(host)判断是否站内",
+        "站内请求继续进入调度，站外请求被忽略"
+      ],
+      "triggers": [
+        "需要限制爬虫只抓取指定域名",
+        "需要拦截站外链接请求",
+        "请求进入request_scheduled阶段需要做域名归属判断"
+      ],
+      "constraints": [
+        "域名判断必须基于spider允许域名正则",
+        "hostname为None时不得直接放行，应按空字符串处理"
+      ],
+      "cautions": [
+        "hostname可能为None（如javascript链接），需按空字符串处理以避免误判",
+        "过滤发生在调度阶段，需确保host_regex在spider_opened时已构建"
+      ],
+      "output_contract": [
+        "站外请求被忽略，站内请求继续进入调度"
+      ],
+      "examples": [
+        {
+          "input": "请求hostname不在允许域名正则范围内",
+          "output": "该请求被忽略，不进入调度",
+          "notes": "站外请求拦截"
+        },
+        {
+          "input": "请求hostname匹配允许域名正则",
+          "output": "该请求继续进入调度",
+          "notes": "站内请求放行"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "ee446c4a-4013-576f-8aea-d08349d973a6"
+      ],
+      "metadata": {
+        "prompt": "当请求进入调度阶段时，使用spider允许域名正则对请求hostname进行匹配：解析请求URL得到hostname（无法解析时视为空字符串），用host_regex.search(host)判断是否站内；站内请求放行继续调度，站外请求按忽略处理。",
+        "tags": [
+          "scrapy",
+          "offsite",
+          "域名过滤",
+          "请求调度",
+          "IgnoreRequest"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      }
+    },
+    {
+      "draft_id": "69e66254-54bb-5dd6-b07c-da44b09cb5bd",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "name": "允许域名正则构建",
+      "description": "在 spider 打开阶段，根据 spider 配置生成用于匹配允许域名的正则表达式，供后续请求过滤复用。用于初始化站内域名判定规则。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在spider_opened阶段构建host_regex",
+      "domain": "scrapy",
+      "task_family": "域名规则初始化",
+      "method_family": "正则表达式构建",
+      "stage": "spider_opened",
+      "applicable_signals": [
+        "spider启动时需要初始化域名匹配规则"
+      ],
+      "contraindications": [
+        "spider尚未打开或未配置允许域名"
+      ],
+      "intervention_moves": [
+        "在spider_opened中调用get_host_regex(spider)",
+        "将返回的正则对象保存为self.host_regex供后续复用"
+      ],
+      "workflow_steps": [
+        "在spider_opened(self, spider)中调用self.get_host_regex(spider)",
+        "将结果赋值给self.host_regex",
+        "后续请求过滤逻辑直接复用该正则对象"
+      ],
+      "triggers": [
+        "spider启动时需要初始化域名匹配规则",
+        "需要在请求过滤前准备站内域名判定规则"
+      ],
+      "constraints": [
+        "仅在spider_opened阶段执行初始化",
+        "本步骤不执行请求过滤，只构建规则"
+      ],
+      "cautions": [
+        "hostname可能为None（如javascript链接），匹配时需容错处理"
+      ],
+      "output_contract": [
+        "生成可复用的host_regex正则对象"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "df27c7ab-e3e2-5b68-b833-647faad9c2a8"
+      ],
+      "metadata": {
+        "prompt": "在 spider_opened 阶段调用 get_host_regex(spider) 构建 host_regex 正则对象并保存为实例属性，供后续 should_follow 等请求过滤逻辑复用。仅做规则初始化，不在此步骤过滤请求。",
+        "tags": [
+          "scrapy",
+          "offsite",
+          "域名规则",
+          "正则构建",
+          "spider_opened"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      }
+    },
+    {
+      "draft_id": "58f9c066-0f49-52b9-b075-d916cd44e2e3",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "name": "请求hostname安全判定",
+      "description": "对单个请求解析其URL的hostname，并用已构建的允许域名正则判断该请求是否应被跟随；hostname为空（如javascript链接等错误URL）时按不匹配处理。用于单请求的站内/站外判定。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "判断单个请求是否属于允许域名",
+      "domain": "scrapy",
+      "task_family": "请求判定",
+      "method_family": "URL解析加正则匹配",
+      "stage": "should_follow",
+      "applicable_signals": [
+        "需要对单个请求做站内/站外判定",
+        "host_regex已初始化可用"
+      ],
+      "contraindications": [
+        "host_regex尚未初始化",
+        "需要构建或修改允许域名正则",
+        "需要执行调度阶段的批量过滤"
+      ],
+      "intervention_moves": [
+        "用缓存URL解析获取请求hostname",
+        "hostname为空时按不匹配处理",
+        "用host_regex对hostname执行search并返回布尔结果"
+      ],
+      "workflow_steps": [
+        "取得已初始化的host_regex",
+        "通过urlparse_cached解析请求，取hostname，空值置为空字符串",
+        "用host_regex.search(host)判断是否匹配",
+        "返回布尔值表示是否应跟随该请求"
+      ],
+      "triggers": [
+        "需要对单个请求做站内/站外判定",
+        "已有host_regex并需判断某请求是否应跟随"
+      ],
+      "constraints": [
+        "hostname可能为None（如javascript链接），须按不匹配处理",
+        "仅做单请求判定，不构建正则、不做调度过滤"
+      ],
+      "cautions": [
+        "host_regex未初始化时不应调用本判定"
+      ],
+      "output_contract": [
+        "返回布尔值表示是否应跟随该请求"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "c95ebfa6-0c76-52d0-b88e-8655b01a26f2"
+      ],
+      "metadata": {
+        "prompt": "输入一个请求对象与已初始化的host_regex。先通过缓存的URL解析取得请求的hostname；若hostname为None或空字符串，则视为不匹配。否则用host_regex对hostname执行search，返回布尔结果表示是否应跟随该请求。不要在此步骤构建或修改正则，也不要执行调度阶段的过滤逻辑。",
+        "tags": [
+          "scrapy",
+          "offsite",
+          "should_follow",
+          "hostname",
+          "正则匹配"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      }
+    }
+  ],
+  "skill_specs": [
+    {
+      "skill_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "name": "Offsite请求域名过滤",
+      "description": "在请求被调度时，基于spider允许域名的正则判断请求是否属于站内；站外请求应被忽略，站内请求继续进入调度。用于控制爬虫只跟随允许域名范围内的链接。",
+      "skill_body": "当请求进入调度阶段时，使用spider允许域名正则对请求hostname进行匹配：解析请求URL得到hostname（无法解析时视为空字符串），用host_regex.search(host)判断是否站内；站内请求放行继续调度，站外请求按忽略处理。\n\n## Objective\n\n在请求调度阶段过滤掉不属于允许域名的站外请求\n## Applicable Signals\n\n- spider已配置允许域名范围\n- 请求被调度时需判断是否站内\n- 存在站外链接需要被拦截\n\n## Contraindications\n\n- 需要跨域抓取且无域名白名单\n- 请求URL无法解析出hostname时不应直接放行\n\n## Intervention Moves\n\n- 在spider_opened时构建host_regex\n- 在request_scheduled中调用process_request处理请求\n- 用urlparse_cached获取hostname，None时置为空字符串\n- 用host_regex.search(host)判断是否站内并决定放行或忽略\n\n## Workflow Steps\n\n- spider_opened阶段通过get_host_regex(spider)构建host_regex\n- 请求被调度时触发request_scheduled，调用process_request\n- 解析请求得到hostname，无法解析时使用空字符串\n- 用host_regex.search(host)判断是否站内\n- 站内请求继续进入调度，站外请求被忽略\n\n## Constraints\n\n- 域名判断必须基于spider允许域名正则\n- hostname为None时不得直接放行，应按空字符串处理\n\n## Cautions\n\n- hostname可能为None（如javascript链接），需按空字符串处理以避免误判\n- 过滤发生在调度阶段，需确保host_regex在spider_opened时已构建\n\n## Output Contract\n\n- 站外请求被忽略，站内请求继续进入调度\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请求hostname不在允许域名正则范围内\n- Therapist/Output: 该请求被忽略，不进入调度\n- Notes: 站外请求拦截\n\n### Example 2\n\n- Client/Input: 请求hostname匹配允许域名正则\n- Therapist/Output: 该请求继续进入调度\n- Notes: 站内请求放行",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "在请求调度阶段过滤掉不属于允许域名的站外请求",
+      "domain": "scrapy",
+      "task_family": "请求过滤",
+      "method_family": "域名正则匹配",
+      "stage": "request_scheduled",
+      "applicable_signals": [
+        "spider已配置允许域名范围",
+        "请求被调度时需判断是否站内",
+        "存在站外链接需要被拦截"
+      ],
+      "contraindications": [
+        "需要跨域抓取且无域名白名单",
+        "请求URL无法解析出hostname时不应直接放行"
+      ],
+      "intervention_moves": [
+        "在spider_opened时构建host_regex",
+        "在request_scheduled中调用process_request处理请求",
+        "用urlparse_cached获取hostname，None时置为空字符串",
+        "用host_regex.search(host)判断是否站内并决定放行或忽略"
+      ],
+      "triggers": [
+        "需要限制爬虫只抓取指定域名",
+        "需要拦截站外链接请求",
+        "请求进入request_scheduled阶段需要做域名归属判断"
+      ],
+      "workflow_steps": [
+        "spider_opened阶段通过get_host_regex(spider)构建host_regex",
+        "请求被调度时触发request_scheduled，调用process_request",
+        "解析请求得到hostname，无法解析时使用空字符串",
+        "用host_regex.search(host)判断是否站内",
+        "站内请求继续进入调度，站外请求被忽略"
+      ],
+      "constraints": [
+        "域名判断必须基于spider允许域名正则",
+        "hostname为None时不得直接放行，应按空字符串处理"
+      ],
+      "cautions": [
+        "hostname可能为None（如javascript链接），需按空字符串处理以避免误判",
+        "过滤发生在调度阶段，需确保host_regex在spider_opened时已构建"
+      ],
+      "output_contract": [
+        "站外请求被忽略，站内请求继续进入调度"
+      ],
+      "examples": [
+        {
+          "input": "请求hostname不在允许域名正则范围内",
+          "output": "该请求被忽略，不进入调度",
+          "notes": "站外请求拦截"
+        },
+        {
+          "input": "请求hostname匹配允许域名正则",
+          "output": "该请求继续进入调度",
+          "notes": "站内请求放行"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "offsite",
+        "域名过滤",
+        "请求调度",
+        "IgnoreRequest"
+      ],
+      "support_ids": [
+        "ee446c4a-4013-576f-8aea-d08349d973a6"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "f5632c0c-aae0-5207-a5b7-1f1fda9b816c"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "",
+        "family_id": "",
+        "profile_id": "",
+        "domain_root_name": "",
+        "domain_root_id": "",
+        "taxonomy_axis": "",
+        "family_bucket_label": "",
+        "visible_levels": {},
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|在请求调度阶段过滤掉不属于允许域名的站外请求|scrapy|请求过滤|域名正则匹配|request_scheduled|offsite请求域名过滤"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "name": "允许域名正则构建",
+      "description": "在 spider_opened 阶段根据 spider 配置构建用于匹配允许域名的 host_regex 正则对象，供后续请求过滤逻辑复用。",
+      "skill_body": "在 spider_opened 阶段调用 get_host_regex(spider) 构建 host_regex 正则对象并保存为实例属性，供后续 should_follow 等请求过滤逻辑复用。仅做规则初始化，不在此步骤过滤请求。\n\n## Objective\n\n在spider_opened阶段构建host_regex\n## Applicable Signals\n\n- spider启动时需要初始化域名匹配规则\n\n## Contraindications\n\n- spider尚未打开或未配置允许域名\n\n## Intervention Moves\n\n- 在spider_opened中调用get_host_regex(spider)\n- 将返回的正则对象保存为self.host_regex供后续复用\n\n## Workflow Steps\n\n- 在spider_opened(self, spider)中调用self.get_host_regex(spider)\n- 将结果赋值给self.host_regex\n- 后续请求过滤逻辑直接复用该正则对象\n\n## Constraints\n\n- 仅在spider_opened阶段执行初始化\n- 本步骤不执行请求过滤，只构建规则\n\n## Cautions\n\n- hostname可能为None（如javascript链接），匹配时需容错处理\n\n## Output Contract\n\n- 生成可复用的host_regex正则对象",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在spider_opened阶段构建host_regex",
+      "domain": "scrapy",
+      "task_family": "域名规则初始化",
+      "method_family": "正则表达式构建",
+      "stage": "spider_opened",
+      "applicable_signals": [
+        "spider启动时需要初始化域名匹配规则"
+      ],
+      "contraindications": [
+        "spider尚未打开或未配置允许域名"
+      ],
+      "intervention_moves": [
+        "在spider_opened中调用get_host_regex(spider)",
+        "将返回的正则对象保存为self.host_regex供后续复用"
+      ],
+      "triggers": [
+        "spider启动时需要初始化域名匹配规则",
+        "需要在请求过滤前准备站内域名判定规则"
+      ],
+      "workflow_steps": [
+        "在spider_opened(self, spider)中调用self.get_host_regex(spider)",
+        "将结果赋值给self.host_regex",
+        "后续请求过滤逻辑直接复用该正则对象"
+      ],
+      "constraints": [
+        "仅在spider_opened阶段执行初始化",
+        "本步骤不执行请求过滤，只构建规则"
+      ],
+      "cautions": [
+        "hostname可能为None（如javascript链接），匹配时需容错处理"
+      ],
+      "output_contract": [
+        "生成可复用的host_regex正则对象"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "offsite",
+        "域名规则",
+        "正则构建",
+        "spider_opened"
+      ],
+      "support_ids": [
+        "df27c7ab-e3e2-5b68-b833-647faad9c2a8"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "69e66254-54bb-5dd6-b07c-da44b09cb5bd"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "",
+        "family_id": "",
+        "profile_id": "",
+        "domain_root_name": "",
+        "domain_root_id": "",
+        "taxonomy_axis": "",
+        "family_bucket_label": "",
+        "visible_levels": {},
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在spider_opened阶段构建host_regex|scrapy|域名规则初始化|正则表达式构建|spider_opened|允许域名正则构建"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "name": "请求hostname安全判定",
+      "description": "对单个请求解析其URL的hostname，并用已初始化的允许域名正则判断该请求是否应被跟随；hostname为空（如javascript链接等错误URL）时按不匹配处理。用于单请求的站内/站外判定。",
+      "skill_body": "输入一个请求对象与已初始化的host_regex。先通过缓存的URL解析取得请求的hostname；若hostname为None或空字符串，则视为不匹配。否则用host_regex对hostname执行search，返回布尔结果表示是否应跟随该请求。不要在此步骤构建或修改正则，也不要执行调度阶段的过滤逻辑。\n\n## Objective\n\n判断单个请求是否属于允许域名\n## Applicable Signals\n\n- 需要对单个请求做站内/站外判定\n- host_regex已初始化可用\n\n## Contraindications\n\n- host_regex尚未初始化\n- 需要构建或修改允许域名正则\n- 需要执行调度阶段的批量过滤\n\n## Intervention Moves\n\n- 用缓存URL解析获取请求hostname\n- hostname为空时按不匹配处理\n- 用host_regex对hostname执行search并返回布尔结果\n\n## Workflow Steps\n\n- 取得已初始化的host_regex\n- 通过urlparse_cached解析请求，取hostname，空值置为空字符串\n- 用host_regex.search(host)判断是否匹配\n- 返回布尔值表示是否应跟随该请求\n\n## Constraints\n\n- hostname可能为None（如javascript链接），须按不匹配处理\n- 仅做单请求判定，不构建正则、不做调度过滤\n\n## Cautions\n\n- host_regex未初始化时不应调用本判定\n\n## Output Contract\n\n- 返回布尔值表示是否应跟随该请求",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "判断单个请求是否属于允许域名",
+      "domain": "scrapy",
+      "task_family": "请求判定",
+      "method_family": "URL解析加正则匹配",
+      "stage": "should_follow",
+      "applicable_signals": [
+        "需要对单个请求做站内/站外判定",
+        "host_regex已初始化可用"
+      ],
+      "contraindications": [
+        "host_regex尚未初始化",
+        "需要构建或修改允许域名正则",
+        "需要执行调度阶段的批量过滤"
+      ],
+      "intervention_moves": [
+        "用缓存URL解析获取请求hostname",
+        "hostname为空时按不匹配处理",
+        "用host_regex对hostname执行search并返回布尔结果"
+      ],
+      "triggers": [
+        "需要对单个请求做站内/站外判定",
+        "已有host_regex并需判断某请求是否应跟随"
+      ],
+      "workflow_steps": [
+        "取得已初始化的host_regex",
+        "通过urlparse_cached解析请求，取hostname，空值置为空字符串",
+        "用host_regex.search(host)判断是否匹配",
+        "返回布尔值表示是否应跟随该请求"
+      ],
+      "constraints": [
+        "hostname可能为None（如javascript链接），须按不匹配处理",
+        "仅做单请求判定，不构建正则、不做调度过滤"
+      ],
+      "cautions": [
+        "host_regex未初始化时不应调用本判定"
+      ],
+      "output_contract": [
+        "返回布尔值表示是否应跟随该请求"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "offsite",
+        "should_follow",
+        "hostname",
+        "正则匹配"
+      ],
+      "support_ids": [
+        "c95ebfa6-0c76-52d0-b88e-8655b01a26f2"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "58f9c066-0f49-52b9-b075-d916cd44e2e3"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "",
+        "family_id": "",
+        "profile_id": "",
+        "domain_root_name": "",
+        "domain_root_id": "",
+        "taxonomy_axis": "",
+        "family_bucket_label": "",
+        "visible_levels": {},
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|判断单个请求是否属于允许域名|scrapy|请求判定|url解析加正则匹配|should_follow|请求hostname安全判定"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "errors": [],
+  "group_count": 3,
+  "processed_documents": 1,
+  "total_documents": 4,
+  "skipped": false
+}

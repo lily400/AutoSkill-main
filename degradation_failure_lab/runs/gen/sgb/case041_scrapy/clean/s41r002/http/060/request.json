@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"be9aee15-e037-5420-b34a-eb9af1223666\", \"name\": \"process_request 请求拦截与分流\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在请求进入下载器前按规则改写、重调度、短路或丢弃请求\", \"applicable_signals\": [\"需要在下载前修改请求\", \"需要按条件重定向或丢弃请求\", \"需要提前短路请求、跳过下载\"], \"contraindications\": [\"只需处理已下载的响应\", \"需要跨阶段编排整个中间件链\"], \"workflow_steps\": [\"在下载器中间件组件中定义 process_request(request) 方法\", \"根据业务规则判断应继续、重调度、短路还是丢弃\", \"返回 None 继续沿中间件链处理\", \"返回 Request 对象以重新调度该请求\", \"返回 Response 对象以提前短路\", \"抛出 IgnoreRequest 以丢弃请求\"], \"constraints\": [\"process_request 只能返回 None、Response、Request 或抛出 IgnoreRequest\", \"返回 Request 时会停止调用后续 process_request 方法并重新调度该请求\", \"方法可定义为协程函数（async def）\"], \"triggers\": [\"需要在下载前修改请求\", \"需要按条件重定向或丢弃请求\", \"需要提前短路请求、跳过下载\"], \"output_contract\": [\"process_request 方法返回 None/Request/Response 或抛出 IgnoreRequest 的明确分支逻辑\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"76394f52-1f81-5c91-8ae3-fd51b942c5e1\", \"name\": \"下载器中间件激活与排序配置\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"正确注册并排序下载器中间件，使请求/响应处理链按预期生效\", \"applicable_signals\": [\"需要启用自定义下载器中间件\", \"需要调整或禁用内置中间件顺序\"], \"workflow_steps\": [\"确定要启用的自定义下载器中间件类路径\", \"在 DOWNLOADER_MIDDLEWARES 字典中为每个中间件指定顺序值\", \"如需禁用内置中间件，将其类路径值设为 None\", \"检查中间件是否依赖特定设置并确认已启用\"], \"output_contract\": [\"DOWNLOADER_MIDDLEWARES 配置字典，含类路径与顺序值\"], \"score\": 0.5046038679498049}, {\"skill_id\": \"0f70cd3f-8916-5100-949a-b17f1bc29338\", \"name\": \"Offsite请求域名过滤\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"在请求调度阶段过滤掉不属于允许域名的站外请求\", \"applicable_signals\": [\"spider已配置允许域名范围\", \"请求被调度时需判断是否站内\", \"存在站外链接需要被拦截\"], \"workflow_steps\": [\"spider_opened阶段通过get_host_regex(spider)构建host_regex\", \"请求被调度时触发request_scheduled，调用process_request\", \"解析请求得到hostname，无法解析时使用空字符串\", \"用host_regex.search(host)判断是否站内\", \"站内请求继续进入调度，站外请求被忽略\"], \"output_contract\": [\"站外请求被忽略，站内请求继续进入调度\"], \"score\": 0.3305449937032496}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

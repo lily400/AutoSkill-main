@@ -1,0 +1,144 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "指纹合规",
+  "run_id": "20261025T165852_7ffa5fd3",
+  "skills": [
+    {
+      "skill_id": "84be0366-caaf-5091-b9c2-99289be1395a",
+      "name": "请求指纹格式约束校验",
+      "description": "在把请求指纹交给依赖指纹的内置组件（如 FilesystemCacheStorage）之前，校验指纹满足该组件要求的格式限制（至少 1 字节长），避免缓存或去重组件报错。",
+      "skill_body": "在将请求指纹交给依赖指纹的内置组件（如 HTTP 缓存存储）之前，先确认指纹满足该组件要求的格式限制。当前已知限制：指纹长度至少为 1 字节。若指纹为空或过短，应先修正指纹生成逻辑再继续，不要直接交给下游组件。\n\n## Objective\n\n确保生成的请求指纹满足内置组件格式限制\n## Applicable Signals\n\n- 准备启用或已启用依赖请求指纹的内置组件\n- 自定义 RequestFingerprinter 返回的指纹可能为空或过短\n\n## Contraindications\n\n- 不使用任何依赖指纹的内置组件时\n\n## Intervention Moves\n\n- 识别下游组件对指纹格式的附加限制\n- 校验指纹长度是否满足至少 1 字节的要求\n- 不满足时阻止指纹进入下游组件并修正生成逻辑\n\n## Workflow Steps\n\n- 确认当前流程中哪些内置组件会使用请求指纹（如 FilesystemCacheStorage）\n- 查阅该组件对指纹格式的附加限制\n- 对生成的指纹执行格式校验，至少检查长度是否不少于 1 字节\n- 校验通过后再交给下游组件；未通过则修正指纹生成逻辑并重新校验\n\n## Constraints\n\n- 指纹必须满足使用它的组件所施加的格式限制\n- 内置 FilesystemCacheStorage 要求指纹至少 1 字节长\n\n## Cautions\n\n- 不同组件可能施加额外限制，需按实际使用的组件逐一确认\n- 本规则只做约束校验，不负责指纹生成算法实现\n\n## Output Contract\n\n- 通过格式校验的指纹（至少 1 字节），可安全交给依赖指纹的下游组件使用",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "确保生成的请求指纹满足内置组件格式限制",
+      "domain": "scrapy",
+      "task_family": "指纹合规",
+      "method_family": "约束校验",
+      "stage": "请求处理",
+      "applicable_signals": [
+        "准备启用或已启用依赖请求指纹的内置组件",
+        "自定义 RequestFingerprinter 返回的指纹可能为空或过短"
+      ],
+      "contraindications": [
+        "不使用任何依赖指纹的内置组件时"
+      ],
+      "intervention_moves": [
+        "识别下游组件对指纹格式的附加限制",
+        "校验指纹长度是否满足至少 1 字节的要求",
+        "不满足时阻止指纹进入下游组件并修正生成逻辑"
+      ],
+      "triggers": [
+        "自定义指纹器接入 HTTP 缓存等组件前",
+        "指纹可能为空或过短时"
+      ],
+      "workflow_steps": [
+        "确认当前流程中哪些内置组件会使用请求指纹（如 FilesystemCacheStorage）",
+        "查阅该组件对指纹格式的附加限制",
+        "对生成的指纹执行格式校验，至少检查长度是否不少于 1 字节",
+        "校验通过后再交给下游组件；未通过则修正指纹生成逻辑并重新校验"
+      ],
+      "constraints": [
+        "指纹必须满足使用它的组件所施加的格式限制",
+        "内置 FilesystemCacheStorage 要求指纹至少 1 字节长"
+      ],
+      "cautions": [
+        "不同组件可能施加额外限制，需按实际使用的组件逐一确认",
+        "本规则只做约束校验，不负责指纹生成算法实现"
+      ],
+      "output_contract": [
+        "通过格式校验的指纹（至少 1 字节），可安全交给依赖指纹的下游组件使用"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "request-fingerprint",
+        "constraint-check",
+        "httpcache"
+      ],
+      "support_ids": [
+        "70ba5213-2b48-5b3a-8844-cdc863587fe6"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "43093333-06f7-50bc-ba04-3df3c13c2fb8"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||safety_rule|micro|safety_rule_node|确保生成的请求指纹满足内置组件格式限制|scrapy|指纹合规|约束校验|请求处理|请求指纹格式约束校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "03e22d73-36c0-48a1-b276-102fe8eb2c49",
+      "entity_type": "skill",
+      "entity_id": "84be0366-caaf-5091-b9c2-99289be1395a",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "84be0366-caaf-5091-b9c2-99289be1395a",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "70ba5213-2b48-5b3a-8844-cdc863587fe6"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "请求去重配置",
+  "run_id": "20261025T165852_d4122384",
+  "skills": [
+    {
+      "skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+      "name": "自定义请求指纹器实现",
+      "description": "实现并配置自定义 RequestFingerprinter，用于按需纳入特定请求头或 URL 片段计算请求指纹，或完全自定义指纹逻辑，从而改变 Scrapy 默认去重指纹行为。适用于需要定制请求去重指纹的场景。",
+      "skill_body": "当默认指纹无法满足去重需求时，按以下步骤实现自定义请求指纹器：\n1. 明确定制目标：是纳入特定请求头、保留 URL 片段，还是完全自定义算法。\n2. 若仅需纳入特定请求头，优先复用 scrapy.utils.request.fingerprint()，通过 include_headers 参数传入需纳入的请求头列表。\n3. 若需保留 URL 片段，将 keep_fragments 设为 True（例如处理无头浏览器请求时）。\n4. 若完全自定义指纹逻辑，实现一个带 fingerprint(self, request) 方法的类；若不使用 scrapy.utils.request.fingerprint()，必须用 WeakKeyDictionary 缓存指纹，确保每个请求只计算一次并避免请求对象长期驻留内存。\n5. 在 settings 中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义类（如 \"my_project.utils.RequestFingerprinter\"）。\n6. 如需在 spider 回调中按请求覆盖指纹，可让指纹器优先读取 request.meta 中的指纹，缺失时回退到 scrapy.utils.request.fingerprint()。\n\n## Objective\n\n按业务需求定制请求指纹计算逻辑并正确接入 Scrapy 去重流程\n## Applicable Signals\n\n- 默认指纹忽略请求头导致不同请求被误判为重复\n- 需要 URL 片段参与去重判断\n- 业务要求自定义指纹算法\n- 默认指纹无法区分或误合并资源\n- 需要忽略随机 cookie 或参数顺序差异\n\n## Contraindications\n\n- 默认指纹已满足去重需求\n- 仅需调整下载中间件行为\n- 仅需默认 URL+method+body 的 SHA1 指纹\n\n## Intervention Moves\n\n- 复用 fingerprint() 并传入 include_headers\n- 设置 keep_fragments=True 保留片段\n- 从零实现 fingerprint 方法并用 WeakKeyDictionary 缓存\n- 通过 REQUEST_FINGERPRINTER_CLASS 注册自定义类\n- 在指纹器中读取 request.meta 支持按请求覆盖\n- 设置 REQUEST_FINGERPRINTER_CLASS 为自定义指纹器类或导入路径\n- 实现 fingerprint(request) 方法返回 bytes 指纹\n- 在实现中复用 scrapy.utils.request.fingerprint() 处理常见场景\n\n## Workflow Steps\n\n- 确定指纹定制目标（请求头、片段或完全自定义）\n- 选择实现方式：复用 fingerprint() 或从零实现\n- 若从零实现，使用 WeakKeyDictionary 缓存指纹\n- 在 settings 中配置 REQUEST_FINGERPRINTER_CLASS\n- 如需按请求覆盖，实现从 request.meta 读取指纹并回退到默认逻辑\n- 确认默认指纹无法满足去重需求（如误合并或无法区分资源）\n- 编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes\n- 如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()\n- 通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径\n\n## Constraints\n\n- 不使用 scrapy.utils.request.fingerprint() 时必须用 WeakKeyDictionary 缓存指纹\n- 缓存需保证每个请求只计算一次指纹\n- REQUEST_FINGERPRINTER_CLASS 需指向可导入的类路径\n- fingerprint() 必须返回 bytes 对象\n- 自定义指纹器须遵循请求指纹限制\n\n## Cautions\n\n- 请求头默认被忽略，需显式通过 include_headers 纳入\n- URL 片段默认被忽略，需显式设置 keep_fragments=True\n- 缓存若使用普通字典会导致请求对象无法释放内存\n- 默认指纹器基于规范化 URL、method 和 body 生成 SHA1，忽略会话 cookie 等随机成分需自定义实现\n\n## Output Contract\n\n- 可用的 RequestFingerprinter 类及 settings 中 REQUEST_FINGERPRINTER_CLASS 配置\n- 返回唯一标识请求的 bytes 指纹\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要将名为 X-ID 的请求头纳入指纹计算\n- Therapist/Output: 定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=[\"X-ID\"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = \"my_project.utils.RequestFingerprinter\"\n- Notes: 复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存\n\n### Example 2\n\n- Client/Input: 仅按请求 URL 计算指纹，忽略方法、请求体及规范化\n- Therapist/Output: 从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果\n- Notes: 从零实现时必须使用 WeakKeyDictionary 缓存",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "6ea881fb-07e2-5ee9-8311-f419990e543a",
+        "476dd988-1326-59c4-be91-32595e7d8692",
+        "bbb2cc51-443c-5e23-a285-3b443df42cb5",
+        "d4fd663d-e1d2-5ea4-8be4-d7c525bc68d3"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "按业务需求定制请求指纹计算逻辑并正确接入 Scrapy 去重流程",
+      "domain": "scrapy",
+      "task_family": "请求去重配置",
+      "method_family": "指纹定制",
+      "stage": "配置与实现",
+      "applicable_signals": [
+        "默认指纹忽略请求头导致不同请求被误判为重复",
+        "需要 URL 片段参与去重判断",
+        "业务要求自定义指纹算法",
+        "默认指纹无法区分或误合并资源",
+        "需要忽略随机 cookie 或参数顺序差异"
+      ],
+      "contraindications": [
+        "默认指纹已满足去重需求",
+        "仅需调整下载中间件行为",
+        "仅需默认 URL+method+body 的 SHA1 指纹"
+      ],
+      "intervention_moves": [
+        "复用 fingerprint() 并传入 include_headers",
+        "设置 keep_fragments=True 保留片段",
+        "从零实现 fingerprint 方法并用 WeakKeyDictionary 缓存",
+        "通过 REQUEST_FINGERPRINTER_CLASS 注册自定义类",
+        "在指纹器中读取 request.meta 支持按请求覆盖",
+        "设置 REQUEST_FINGERPRINTER_CLASS 为自定义指纹器类或导入路径",
+        "实现 fingerprint(request) 方法返回 bytes 指纹",
+        "在实现中复用 scrapy.utils.request.fingerprint() 处理常见场景"
+      ],
+      "triggers": [
+        "需要将特定请求头纳入指纹计算",
+        "需要保留 URL 片段参与指纹",
+        "需要完全自定义指纹算法",
+        "默认指纹导致去重不符合预期",
+        "默认指纹无法区分或误合并资源",
+        "需要忽略随机 cookie 或参数顺序差异",
+        "需要改变默认指纹逻辑"
+      ],
+      "workflow_steps": [
+        "确定指纹定制目标（请求头、片段或完全自定义）",
+        "选择实现方式：复用 fingerprint() 或从零实现",
+        "若从零实现，使用 WeakKeyDictionary 缓存指纹",
+        "在 settings 中配置 REQUEST_FINGERPRINTER_CLASS",
+        "如需按请求覆盖，实现从 request.meta 读取指纹并回退到默认逻辑",
+        "确认默认指纹无法满足去重需求（如误合并或无法区分资源）",
+        "编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes",
+        "如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()",
+        "通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径"
+      ],
+      "constraints": [
+        "不使用 scrapy.utils.request.fingerprint() 时必须用 WeakKeyDictionary 缓存指纹",
+        "缓存需保证每个请求只计算一次指纹",
+        "REQUEST_FINGERPRINTER_CLASS 需指向可导入的类路径",
+        "fingerprint() 必须返回 bytes 对象",
+        "自定义指纹器须遵循请求指纹限制"
+      ],
+      "cautions": [
+        "请求头默认被忽略，需显式通过 include_headers 纳入",
+        "URL 片段默认被忽略，需显式设置 keep_fragments=True",
+        "缓存若使用普通字典会导致请求对象无法释放内存",
+        "默认指纹器基于规范化 URL、method 和 body 生成 SHA1，忽略会话 cookie 等随机成分需自定义实现"
+      ],
+      "output_contract": [
+        "可用的 RequestFingerprinter 类及 settings 中 REQUEST_FINGERPRINTER_CLASS 配置",
+        "返回唯一标识请求的 bytes 指纹"
+      ],
+      "examples": [
+        {
+          "input": "需要将名为 X-ID 的请求头纳入指纹计算",
+          "output": "定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=[\"X-ID\"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = \"my_project.utils.RequestFingerprinter\"",
+          "notes": "复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存"
+        },
+        {
+          "input": "仅按请求 URL 计算指纹，忽略方法、请求体及规范化",
+          "output": "从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果",
+          "notes": "从零实现时必须使用 WeakKeyDictionary 缓存"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "请求去重",
+        "指纹定制",
+        "REQUEST_FINGERPRINTER_CLASS",
+        "WeakKeyDictionary",
+        "指纹计算"
+      ],
+      "support_ids": [
+        "01328c84-92a6-5654-91c4-f4f61433a574",
+        "e2dc9bf4-16a6-5561-9cec-b856efd38c54"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "5c7c683e-a7b9-55a8-8807-6756c1c45f3d",
+          "d9a06189-229a-5ec6-96d7-63806ea26d15"
+        ],
+        "support_summary": {
+          "support": 2,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|按业务需求定制请求指纹计算逻辑并正确接入 scrapy 去重流程|scrapy|请求去重配置|指纹定制|配置与实现|自定义请求指纹器实现",
+        "change_action": "create",
+        "llm_reason": "候选技能聚焦于自定义 RequestFingerprinter 的具体实现细节（include_headers、keep_fragments、WeakKeyDictionary 缓存、meta 覆盖），与现有下载器中间件配置和 Offsite 域名过滤技能能力不同；peer 候选虽同属指纹配置主题，但均为独立候选，不构成对现有技能的 split/merge 关系，故作为新能力创建。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "6ea881fb-07e2-5ee9-8311-f419990e543a"
+        ],
+        "merged_from_skill_ids": [
+          "510558b9-fb00-5b76-9c72-4bcd1afa13fa"
+        ],
+        "duplicate_consolidation_ids": [
+          "510558b9-fb00-5b76-9c72-4bcd1afa13fa"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "7bcf713a-38ff-4cab-ae39-d75bcea4fd23",
+      "entity_type": "skill",
+      "entity_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能聚焦于自定义 RequestFingerprinter 的具体实现细节（include_headers、keep_fragments、WeakKeyDictionary 缓存、meta 覆盖），与现有下载器中间件配置和 Offsite 域名过滤技能能力不同；peer 候选虽同属指纹配置主题，但均为独立候选，不构成对现有技能的 split/merge 关系，故作为新能力创建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "01328c84-92a6-5654-91c4-f4f61433a574"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

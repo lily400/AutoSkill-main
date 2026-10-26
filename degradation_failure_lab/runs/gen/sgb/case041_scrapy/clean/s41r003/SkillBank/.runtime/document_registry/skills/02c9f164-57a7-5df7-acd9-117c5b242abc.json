@@ -1,0 +1,121 @@
+{
+  "skill_id": "02c9f164-57a7-5df7-acd9-117c5b242abc",
+  "name": "响应链接跟进生成请求",
+  "description": "使用 response.follow 从相对 URL、Link、Selector 或属性 Selector 构造并返回单个 Request 以跟进链接；适用于解析阶段需要跳转到下一页面时。",
+  "skill_body": "在解析回调中，当需要从当前响应跟进单个链接到下一页面时，调用 response.follow(url, ...)。url 可为绝对 URL、相对 URL、Link 对象、指向 <link>/<a> 元素的 Selector，或属性 Selector（非 SelectorList）。其余参数与 Request.__init__() 相同。返回一个可调度的 Request 实例。若需批量跟进多个链接，改用 follow_all；若目标是提取数据而非生成请求，改用选择器方法。\n\n## Objective\n\n基于响应中的链接生成单个后续 Request\n## Applicable Signals\n\n- 当前响应中存在需要跳转的单个链接\n- 链接以相对 URL、Link 对象或 Selector 形式给出\n\n## Contraindications\n\n- 需要批量跟进多个链接（应使用 follow_all）\n- 目标不是生成请求而是提取数据\n\n## Intervention Moves\n\n- 调用 response.follow(url, ...) 并传入与 Request.__init__() 相同的参数\n- url 支持绝对 URL、相对 URL、Link 对象、<link>/<a> 的 Selector 或属性 Selector\n- 返回生成的 Request 实例供调度\n\n## Workflow Steps\n\n- 确认需要跟进的是单个链接\n- 确定 url 形式（绝对/相对 URL、Link、Selector 或属性 Selector）\n- 调用 response.follow(url, ...) 构造 Request\n- 返回该 Request 实例\n\n## Constraints\n\n- url 若为 Selector，须为单个 Selector 而非 SelectorList\n- 其余参数与 Request.__init__() 一致\n\n## Cautions\n\n- 批量跟进场景不应使用本技能，应改用 follow_all\n\n## Output Contract\n\n- 返回一个可调度的 Request 实例\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: response.follow(response.css('a.my_link')[0])\n- Therapist/Output: 返回一个指向该链接的 Request 实例\n- Notes: 传入 <a> 元素的 Selector\n\n### Example 2\n\n- Client/Input: response.follow(response.css('a::attr(href)')[0])\n- Therapist/Output: 返回一个指向该 href 的 Request 实例\n- Notes: 传入属性 Selector",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "基于响应中的链接生成单个后续 Request",
+  "domain": "scrapy",
+  "task_family": "crawl_navigation",
+  "method_family": "request_construction",
+  "stage": "parse",
+  "applicable_signals": [
+    "当前响应中存在需要跳转的单个链接",
+    "链接以相对 URL、Link 对象或 Selector 形式给出"
+  ],
+  "contraindications": [
+    "需要批量跟进多个链接（应使用 follow_all）",
+    "目标不是生成请求而是提取数据"
+  ],
+  "intervention_moves": [
+    "调用 response.follow(url, ...) 并传入与 Request.__init__() 相同的参数",
+    "url 支持绝对 URL、相对 URL、Link 对象、<link>/<a> 的 Selector 或属性 Selector",
+    "返回生成的 Request 实例供调度"
+  ],
+  "triggers": [
+    "需要跟进单个链接到下一页面",
+    "链接为相对 URL 或 Selector 对象",
+    "解析阶段需要构造后续请求"
+  ],
+  "workflow_steps": [
+    "确认需要跟进的是单个链接",
+    "确定 url 形式（绝对/相对 URL、Link、Selector 或属性 Selector）",
+    "调用 response.follow(url, ...) 构造 Request",
+    "返回该 Request 实例"
+  ],
+  "constraints": [
+    "url 若为 Selector，须为单个 Selector 而非 SelectorList",
+    "其余参数与 Request.__init__() 一致"
+  ],
+  "cautions": [
+    "批量跟进场景不应使用本技能，应改用 follow_all"
+  ],
+  "output_contract": [
+    "返回一个可调度的 Request 实例"
+  ],
+  "examples": [
+    {
+      "input": "response.follow(response.css('a.my_link')[0])",
+      "output": "返回一个指向该链接的 Request 实例",
+      "notes": "传入 <a> 元素的 Selector"
+    },
+    {
+      "input": "response.follow(response.css('a::attr(href)')[0])",
+      "output": "返回一个指向该 href 的 Request 实例",
+      "notes": "传入属性 Selector"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "request",
+    "follow",
+    "navigation",
+    "parse"
+  ],
+  "support_ids": [
+    "c2bbece7-f81e-5786-b6d8-76683c79c474"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "81fb93dd-396f-5717-b8e5-02f00bab050b"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.85,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|基于响应中的链接生成单个后续 request|scrapy|crawl_navigation|request_construction|parse|响应链接跟进生成请求",
+    "change_action": "create",
+    "llm_reason": "候选技能是 Scrapy 中 response.follow 单链接跟进构造的独立微技能，与现有 hostname 判定、中间件返回值路由等技能能力不同，且与 peer 的 follow_all 批量跟进为不同能力，应新建。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

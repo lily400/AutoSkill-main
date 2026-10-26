@@ -1,0 +1,13 @@
+{
+  "correct": {
+    "source": "\"\"\"Built-in backend overwrite defaults from the supplied source document.\"\"\"\nfrom urllib.parse import urlsplit as _urlsplit\n\ndef default_feed_overwrite(uri):\n    if not isinstance(uri, str):\n        raise TypeError(\"uri must be a string\")\n    if not uri:\n        raise ValueError(\"uri must not be empty\")\n    if uri.startswith(\"/\"):\n        return False\n    defaults = {\"file\": False, \"ftp\": True, \"s3\": True, \"gs\": True, \"stdout\": False}\n    scheme = _urlsplit(uri).scheme\n    if scheme not in defaults:\n        raise ValueError(\"unsupported scheme\")\n    return defaults[scheme]\n",
+    "passed": 19
+  },
+  "ftp_mutant": {
+    "source": "\"\"\"Built-in backend overwrite defaults from the supplied source document.\"\"\"\nfrom urllib.parse import urlsplit as _urlsplit\n\ndef default_feed_overwrite(uri):\n    if not isinstance(uri, str):\n        raise TypeError(\"uri must be a string\")\n    if not uri:\n        raise ValueError(\"uri must not be empty\")\n    if uri.startswith(\"/\"):\n        return False\n    defaults = {\"file\": False, \"ftp\": False, \"s3\": True, \"gs\": True, \"stdout\": False}\n    scheme = _urlsplit(uri).scheme\n    if scheme not in defaults:\n        raise ValueError(\"unsupported scheme\")\n    return defaults[scheme]\n",
+    "passed": 18,
+    "failed": [
+      "test_supported_backends[ftp://server/export.json-True]"
+    ]
+  }
+}

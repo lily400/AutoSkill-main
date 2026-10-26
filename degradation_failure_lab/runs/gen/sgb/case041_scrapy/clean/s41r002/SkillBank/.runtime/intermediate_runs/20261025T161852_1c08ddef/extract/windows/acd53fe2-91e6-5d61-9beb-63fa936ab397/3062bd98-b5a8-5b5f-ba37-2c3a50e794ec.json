@@ -1,0 +1,658 @@
+{
+  "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+  "title": "input003\\request-response.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+  "window_id": "3062bd98-b5a8-5b5f-ba37-2c3a50e794ec",
+  "section_heading": "Requests and Responses",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "09e04765-caeb-5abd-88f0-b22b645bbfa8",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+      "section": "Requests and Responses",
+      "span": {
+        "start": 12512,
+        "end": 17112
+      },
+      "excerpt": "Create a Request object from a string containing a [cURL](https://curl.se/) command. It populates the HTTP method, the\nURL, the headers, the cookies and the body. It accepts the same\narguments as the `Request` class, taking preference and\noverriding the values of the same arguments contained in the cURL\ncommand.\n\nUnrecognized options are ignored by default. To raise an error when\nfinding unknown options call this method by passing\n`ignore_unknown_options=False`.\n\nTo translate a cURL command into a Scrapy request,\nyou may use [curl2scrapy](https://michael-shub.github.io/curl2scrapy/).\n\nReturn a dictionary containing the Request’s data.\n\nUse `request_from_dict()` to convert back into a `Request` object.\n\nIf a spider is given, this method will try to find out the name of the spider methods used as callback\nand errback and include them in the output dict, raising an exception if they cannot be found.\n\nWhen assigned to the `callback` parameter of\n`Request`, it indicates that the request is not meant\nto have a spider callback at all.\n\nFor example:\n\n```\nRequest(\"https://example.com\", callback=NO_CALLBACK)\n```\n\nCreate a `Request` object from a dict.\n\nIf a spider is given, it will try to resolve the callbacks looking at the\nspider for methods with the same name.\n\nPassing additional data to callback functions\nThe callback of a request is a function that will be called when the response\nof that request is downloaded. The callback function will be called with the\ndownloaded `Response` object as its first argument.\n\nExample:\n\n```\ndef parse_page1(self, response):\n    return scrapy.Request(\n        \"http://www.example.com/some_page.html\", callback=self.parse_page2\n    )\n\ndef parse_page2(self, response):\n    # this would log http://www.example.com/some_page.html\n    self.logger.info(\"Visited %s\", response.url)\n```\n\nIn some cases you may be interested in passing arguments to those callback\nfunctions so you can receive the arguments later, in the second callback.\nThe following example shows how to achieve this by using the\n`Request.cb_kwargs` attribute:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    request.cb_kwargs[\"foo\"] = \"bar\"  # add more arguments for the callback\n    yield request",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input003\\request-response.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "通过 cb_kwargs 向回调传递附加数据",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在请求链的回调之间可靠传递附加参数",
+        "task_family": "请求构造",
+        "method_family": "回调参数传递",
+        "stage": "请求发起",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "3062bd98-b5a8-5b5f-ba37-2c3a50e794ec",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 34,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      },
+      "created_at": "2026-10-25T08:22:18+00:00"
+    },
+    {
+      "support_id": "8b155343-8d64-5d4b-8936-647a305bccd7",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+      "section": "Requests and Responses",
+      "span": {
+        "start": 12512,
+        "end": 17112
+      },
+      "excerpt": "Create a Request object from a string containing a [cURL](https://curl.se/) command. It populates the HTTP method, the\nURL, the headers, the cookies and the body. It accepts the same\narguments as the `Request` class, taking preference and\noverriding the values of the same arguments contained in the cURL\ncommand.\n\nUnrecognized options are ignored by default. To raise an error when\nfinding unknown options call this method by passing\n`ignore_unknown_options=False`.\n\nTo translate a cURL command into a Scrapy request,\nyou may use [curl2scrapy](https://michael-shub.github.io/curl2scrapy/).\n\nReturn a dictionary containing the Request’s data.\n\nUse `request_from_dict()` to convert back into a `Request` object.\n\nIf a spider is given, this method will try to find out the name of the spider methods used as callback\nand errback and include them in the output dict, raising an exception if they cannot be found.\n\nWhen assigned to the `callback` parameter of\n`Request`, it indicates that the request is not meant\nto have a spider callback at all.\n\nFor example:\n\n```\nRequest(\"https://example.com\", callback=NO_CALLBACK)\n```\n\nCreate a `Request` object from a dict.\n\nIf a spider is given, it will try to resolve the callbacks looking at the\nspider for methods with the same name.\n\nPassing additional data to callback functions\nThe callback of a request is a function that will be called when the response\nof that request is downloaded. The callback function will be called with the\ndownloaded `Response` object as its first argument.\n\nExample:\n\n```\ndef parse_page1(self, response):\n    return scrapy.Request(\n        \"http://www.example.com/some_page.html\", callback=self.parse_page2\n    )\n\ndef parse_page2(self, response):\n    # this would log http://www.example.com/some_page.html\n    self.logger.info(\"Visited %s\", response.url)\n```\n\nIn some cases you may be interested in passing arguments to those callback\nfunctions so you can receive the arguments later, in the second callback.\nThe following example shows how to achieve this by using the\n`Request.cb_kwargs` attribute:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    request.cb_kwargs[\"foo\"] = \"bar\"  # add more arguments for the callback\n    yield request",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input003\\request-response.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "使用 errback 捕获请求处理异常",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在请求失败时通过 errback 捕获并处理异常",
+        "task_family": "异常处理",
+        "method_family": "errback 回调",
+        "stage": "请求失败处理",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "3062bd98-b5a8-5b5f-ba37-2c3a50e794ec",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 34,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      },
+      "created_at": "2026-10-25T08:22:18+00:00"
+    },
+    {
+      "support_id": "b275728a-e3c9-5819-902f-f13604bd3c53",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+      "section": "Requests and Responses",
+      "span": {
+        "start": 12512,
+        "end": 17112
+      },
+      "excerpt": "Create a Request object from a string containing a [cURL](https://curl.se/) command. It populates the HTTP method, the\nURL, the headers, the cookies and the body. It accepts the same\narguments as the `Request` class, taking preference and\noverriding the values of the same arguments contained in the cURL\ncommand.\n\nUnrecognized options are ignored by default. To raise an error when\nfinding unknown options call this method by passing\n`ignore_unknown_options=False`.\n\nTo translate a cURL command into a Scrapy request,\nyou may use [curl2scrapy](https://michael-shub.github.io/curl2scrapy/).\n\nReturn a dictionary containing the Request’s data.\n\nUse `request_from_dict()` to convert back into a `Request` object.\n\nIf a spider is given, this method will try to find out the name of the spider methods used as callback\nand errback and include them in the output dict, raising an exception if they cannot be found.\n\nWhen assigned to the `callback` parameter of\n`Request`, it indicates that the request is not meant\nto have a spider callback at all.\n\nFor example:\n\n```\nRequest(\"https://example.com\", callback=NO_CALLBACK)\n```\n\nCreate a `Request` object from a dict.\n\nIf a spider is given, it will try to resolve the callbacks looking at the\nspider for methods with the same name.\n\nPassing additional data to callback functions\nThe callback of a request is a function that will be called when the response\nof that request is downloaded. The callback function will be called with the\ndownloaded `Response` object as its first argument.\n\nExample:\n\n```\ndef parse_page1(self, response):\n    return scrapy.Request(\n        \"http://www.example.com/some_page.html\", callback=self.parse_page2\n    )\n\ndef parse_page2(self, response):\n    # this would log http://www.example.com/some_page.html\n    self.logger.info(\"Visited %s\", response.url)\n```\n\nIn some cases you may be interested in passing arguments to those callback\nfunctions so you can receive the arguments later, in the second callback.\nThe following example shows how to achieve this by using the\n`Request.cb_kwargs` attribute:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    request.cb_kwargs[\"foo\"] = \"bar\"  # add more arguments for the callback\n    yield request",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input003\\request-response.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "从 cURL 命令构造 Request",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "将 cURL 命令转换为可用的 Scrapy Request 对象",
+        "task_family": "请求构造",
+        "method_family": "cURL 转换",
+        "stage": "请求发起",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 3,
+        "window_id": "3062bd98-b5a8-5b5f-ba37-2c3a50e794ec",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 34,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      },
+      "created_at": "2026-10-25T08:22:18+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "3087bfea-b955-5fed-8cf4-a682aa24e1cf",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "name": "通过 cb_kwargs 向回调传递附加数据",
+      "description": "在构造 Request 时使用 cb_kwargs 将上下文数据传入后续回调函数，并在回调中读取这些参数，实现跨请求的状态传递。适用于需要在第二个回调中复用第一个回调的上下文数据，或回调函数需要额外参数而非仅 response 的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在请求链的回调之间可靠传递附加参数",
+      "domain": "scrapy",
+      "task_family": "请求构造",
+      "method_family": "回调参数传递",
+      "stage": "请求发起",
+      "applicable_signals": [
+        "回调函数需要接收 response 之外的上下文数据",
+        "需要在后续回调中复用前一回调获得的信息"
+      ],
+      "contraindications": [
+        "无需跨回调传递数据时",
+        "参数可通过 response 本身获取时"
+      ],
+      "intervention_moves": [
+        "在 scrapy.Request 构造时设置 cb_kwargs=dict(...)",
+        "在 yield 前向 request.cb_kwargs 追加额外键值",
+        "在目标回调函数签名中声明对应参数以接收数据"
+      ],
+      "workflow_steps": [
+        "确认目标回调需要 response 之外的附加数据",
+        "在构造 Request 时通过 cb_kwargs 传入字典",
+        "如需追加参数，在 yield 前修改 request.cb_kwargs",
+        "在回调函数签名中声明对应参数名接收数据"
+      ],
+      "triggers": [
+        "需要在第二个回调中复用第一个回调的上下文数据",
+        "回调函数需要额外参数而非仅 response"
+      ],
+      "constraints": [
+        "cb_kwargs 仅用于回调参数传递，不用于请求序列化或异常处理",
+        "参数键名需与回调函数签名一致"
+      ],
+      "cautions": [
+        "避免将可通过 response 获取的数据重复放入 cb_kwargs"
+      ],
+      "output_contract": [
+        "回调函数成功接收到 cb_kwargs 中的参数"
+      ],
+      "examples": [
+        {
+          "input": "def parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    request.cb_kwargs[\"foo\"] = \"bar\"\n    yield request",
+          "output": "parse_page2 回调被调用时可读取 main_url 与 foo 参数",
+          "notes": "在 yield 前可继续向 cb_kwargs 追加参数"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "09e04765-caeb-5abd-88f0-b22b645bbfa8"
+      ],
+      "metadata": {
+        "prompt": "当需要在请求链的回调之间传递附加数据时：1) 在构造 scrapy.Request 时通过 cb_kwargs 传入字典参数；2) 可在 yield 前继续向 request.cb_kwargs 追加更多参数；3) 在目标回调函数签名中声明对应参数名以接收这些值。仅在数据无法从 response 本身获取时使用。",
+        "tags": [
+          "scrapy",
+          "request",
+          "callback",
+          "cb_kwargs",
+          "状态传递"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Requests and Responses"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "3062bd98-b5a8-5b5f-ba37-2c3a50e794ec",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 34,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      }
+    },
+    {
+      "draft_id": "706c6c1b-fee1-5f06-bf2e-98f6bbd42713",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "name": "使用 errback 捕获请求处理异常",
+      "description": "为 Request 指定 errback 回调，在下载或处理失败时接收 Failure 对象并访问其中的附加数据，实现自定义异常处理。当请求可能失败且需要自定义错误处理，或需要在失败时访问请求附加数据时使用。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在请求失败时通过 errback 捕获并处理异常",
+      "domain": "scrapy",
+      "task_family": "异常处理",
+      "method_family": "errback 回调",
+      "stage": "请求失败处理",
+      "applicable_signals": [
+        "请求可能失败需要自定义错误处理",
+        "需要在失败时访问请求附加数据"
+      ],
+      "contraindications": [
+        "请求无失败风险或使用默认错误处理即可时"
+      ],
+      "intervention_moves": [
+        "在 Request 构造时指定 errback 参数",
+        "在 errback 函数中接收并处理 Failure 对象",
+        "通过附加数据在 errback 中获取请求上下文"
+      ],
+      "workflow_steps": [
+        "识别需要自定义失败处理的请求",
+        "编写 errback 处理函数，接收 Failure 对象",
+        "在构造 Request 时传入 errback 参数",
+        "在 errback 中访问 Failure 及请求附加数据进行处理"
+      ],
+      "triggers": [
+        "请求可能失败需要自定义错误处理",
+        "需要在失败时访问请求附加数据",
+        "需要区分正常回调与失败回调路径"
+      ],
+      "constraints": [
+        "errback 函数需正确接收 Failure 对象作为参数",
+        "附加数据需在请求构造时通过 cb_kwargs 或 meta 传入"
+      ],
+      "cautions": [
+        "errback 仅处理失败路径，正常响应仍由 callback 处理",
+        "未指定 errback 时失败将走默认错误处理"
+      ],
+      "output_contract": [
+        "errback 被调用并处理 Failure 对象"
+      ],
+      "examples": [
+        {
+          "input": "Request(\"https://example.com\", callback=self.parse_page2, errback=self.errback_handler)",
+          "output": "请求失败时 errback_handler 被调用并接收 Failure 对象",
+          "notes": "errback 专注失败路径处理"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "8b155343-8d64-5d4b-8936-647a305bccd7"
+      ],
+      "metadata": {
+        "prompt": "当需要为某个 Request 定制失败处理时，在构造 Request 时传入 errback 参数指向处理函数。errback 会在请求下载或处理失败时被调用，接收一个 Failure 对象作为参数。可通过 Failure 访问异常信息，并结合请求附加数据（如 cb_kwargs 或 meta）进行后续处理。确保 errback 函数签名正确并能处理 Failure 对象。",
+        "tags": [
+          "scrapy",
+          "errback",
+          "异常处理",
+          "Request",
+          "Failure"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Requests and Responses"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "3062bd98-b5a8-5b5f-ba37-2c3a50e794ec",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 34,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      }
+    },
+    {
+      "draft_id": "24182893-60e5-5e10-9a4e-3a2652cef6a0",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "name": "从 cURL 命令构造 Request",
+      "description": "使用 Request.from_curl 从 cURL 命令字符串创建 Scrapy Request，自动填充 HTTP 方法、URL、头、cookie 和 body；当已有 cURL 命令（如从浏览器复制）需要转为 Scrapy 请求时使用。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "将 cURL 命令转换为可用的 Scrapy Request 对象",
+      "domain": "scrapy",
+      "task_family": "请求构造",
+      "method_family": "cURL 转换",
+      "stage": "请求发起",
+      "applicable_signals": [
+        "输入为 cURL 命令字符串",
+        "需要复用浏览器复制的请求"
+      ],
+      "contraindications": [
+        "请求参数需完全手工构造时",
+        "cURL 含无法识别选项且不希望报错时需显式设置 ignore_unknown_options"
+      ],
+      "intervention_moves": [
+        "调用 Request.from_curl 解析 cURL 命令",
+        "按需传入与 Request 相同的参数以覆盖 cURL 中的值",
+        "按需设置 ignore_unknown_options=False 使未知选项报错"
+      ],
+      "workflow_steps": [
+        "获取 cURL 命令字符串",
+        "调用 Request.from_curl 构造 Request，自动填充方法、URL、头、cookie、body",
+        "如需覆盖命令中的同名参数，传入对应 Request 参数",
+        "如需对未知选项报错，传入 ignore_unknown_options=False",
+        "返回构造好的 Request 对象"
+      ],
+      "triggers": [
+        "已有 cURL 命令需转为 Scrapy 请求",
+        "需复用从浏览器复制的请求"
+      ],
+      "constraints": [
+        "传入的 Request 参数优先并覆盖 cURL 命令中的同名参数",
+        "默认忽略无法识别的选项"
+      ],
+      "cautions": [
+        "未知选项默认被忽略，若需严格校验须显式设置 ignore_unknown_options=False"
+      ],
+      "output_contract": [
+        "生成包含正确方法、URL、头、cookie、body 的 Request 对象"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "b275728a-e3c9-5819-902f-f13604bd3c53"
+      ],
+      "metadata": {
+        "prompt": "当调用方提供 cURL 命令字符串并希望得到可用的 Scrapy Request 时：调用 Request.from_curl 解析该命令，自动填充方法、URL、头、cookie 和 body；如需覆盖命令中的同名参数，可传入与 Request 类相同的参数（优先于 cURL 中的值）；默认忽略无法识别的选项，若希望遇到未知选项时报错，显式传入 ignore_unknown_options=False。返回构造好的 Request 对象。",
+        "tags": [
+          "scrapy",
+          "request",
+          "curl",
+          "请求构造"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Requests and Responses"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "3062bd98-b5a8-5b5f-ba37-2c3a50e794ec",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 13,
+        "paragraph_end": 34,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

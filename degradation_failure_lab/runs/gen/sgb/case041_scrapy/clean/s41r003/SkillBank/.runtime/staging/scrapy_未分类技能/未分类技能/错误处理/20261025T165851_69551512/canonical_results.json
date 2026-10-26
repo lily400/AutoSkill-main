@@ -1,0 +1,168 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "错误处理",
+  "run_id": "20261025T165851_69551512",
+  "skills": [
+    {
+      "skill_id": "9719683e-0a4a-5d7e-8169-5d7d854d94d9",
+      "name": "请求错误回调处理（errback）",
+      "description": "为 Scrapy 请求配置 errback，并按失败类型（HttpError、DNSLookupError、TimeoutError/TCPTimedOutError）分支记录与处理异常。适用于需要区分不同下载失败并做针对性处理的爬虫。",
+      "skill_body": "在发起请求时为其指定 errback 回调；在 errback 中接收 failure 对象，先用 failure.check() 判断异常类型，再按类型分支处理：HttpError 时从 failure.value.response 取非 200 响应并记录其 URL；DNSLookupError 时从 failure.request 取原始请求并记录其 URL；TimeoutError/TCPTimedOutError 时同样从 failure.request 取请求并记录。始终先记录 failure 的 repr 作为兜底日志。\n\n## Objective\n\n在请求失败时按异常类型分流处理并记录日志\n## Applicable Signals\n\n- 请求需要自定义失败处理而非默认日志\n- 需要针对不同下载异常类型做差异化响应\n\n## Contraindications\n\n- 仅需默认失败日志、无需分类处理时\n- 失败原因与请求处理无关（如解析逻辑错误）\n\n## Intervention Moves\n\n- 在 scrapy.Request 中设置 errback 指向处理函数\n- 在 errback 中先记录 repr(failure) 作为通用日志\n- 使用 failure.check(HttpError) 分支，从 failure.value.response 获取非 200 响应\n- 使用 failure.check(DNSLookupError) 分支，从 failure.request 获取原始请求\n- 使用 failure.check(TimeoutError, TCPTimedOutError) 分支，从 failure.request 获取原始请求\n\n## Workflow Steps\n\n- 在构造 scrapy.Request 时传入 errback 参数指向错误处理函数\n- 在 errback 函数中接收 failure 参数并记录 repr(failure)\n- 按 failure.check() 判断异常类型并进入对应分支\n- 在 HttpError 分支读取 failure.value.response 并记录其 URL\n- 在 DNSLookupError 与 TimeoutError/TCPTimedOutError 分支读取 failure.request 并记录其 URL\n\n## Constraints\n\n- errback 必须与请求一同配置，否则失败不会进入自定义处理\n- 分支判断应使用 failure.check() 而非直接比较异常类型\n\n## Cautions\n\n- 不同异常类型可获取的对象不同：HttpError 提供 response，DNS/超时提供 request\n- 未覆盖的异常类型应保留通用日志以便排查\n\n## Output Contract\n\n- 按失败类型分支处理的 errback 函数及对应日志输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请求失败并触发 errback，failure 为 HttpError\n- Therapist/Output: 记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 \"HttpError on <url>\"\n- Notes: HttpError 分支可访问响应对象\n\n### Example 2\n\n- Client/Input: 请求失败并触发 errback，failure 为 DNSLookupError\n- Therapist/Output: 记录 repr(failure)，并从 failure.request 取原始请求，记录 \"DNSLookupError on <url>\"\n- Notes: DNS 分支只能访问原始请求\n\n### Example 3\n\n- Client/Input: 请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError\n- Therapist/Output: 记录 repr(failure)，并从 failure.request 取原始请求，记录 \"TimeoutError on <url>\"\n- Notes: 超时分支只能访问原始请求",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76",
+      "parent_candidate_ids": [
+        "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.6,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在请求失败时按异常类型分流处理并记录日志",
+      "domain": "scrapy",
+      "task_family": "错误处理",
+      "method_family": "errback 分支处理",
+      "stage": "请求调度",
+      "applicable_signals": [
+        "请求需要自定义失败处理而非默认日志",
+        "需要针对不同下载异常类型做差异化响应"
+      ],
+      "contraindications": [
+        "仅需默认失败日志、无需分类处理时",
+        "失败原因与请求处理无关（如解析逻辑错误）"
+      ],
+      "intervention_moves": [
+        "在 scrapy.Request 中设置 errback 指向处理函数",
+        "在 errback 中先记录 repr(failure) 作为通用日志",
+        "使用 failure.check(HttpError) 分支，从 failure.value.response 获取非 200 响应",
+        "使用 failure.check(DNSLookupError) 分支，从 failure.request 获取原始请求",
+        "使用 failure.check(TimeoutError, TCPTimedOutError) 分支，从 failure.request 获取原始请求"
+      ],
+      "triggers": [
+        "需要区分 HTTP 错误、DNS 错误、超时等不同失败类型",
+        "希望在请求失败时记录日志或产出诊断数据"
+      ],
+      "workflow_steps": [
+        "在构造 scrapy.Request 时传入 errback 参数指向错误处理函数",
+        "在 errback 函数中接收 failure 参数并记录 repr(failure)",
+        "按 failure.check() 判断异常类型并进入对应分支",
+        "在 HttpError 分支读取 failure.value.response 并记录其 URL",
+        "在 DNSLookupError 与 TimeoutError/TCPTimedOutError 分支读取 failure.request 并记录其 URL"
+      ],
+      "constraints": [
+        "errback 必须与请求一同配置，否则失败不会进入自定义处理",
+        "分支判断应使用 failure.check() 而非直接比较异常类型"
+      ],
+      "cautions": [
+        "不同异常类型可获取的对象不同：HttpError 提供 response，DNS/超时提供 request",
+        "未覆盖的异常类型应保留通用日志以便排查"
+      ],
+      "output_contract": [
+        "按失败类型分支处理的 errback 函数及对应日志输出"
+      ],
+      "examples": [
+        {
+          "input": "请求失败并触发 errback，failure 为 HttpError",
+          "output": "记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 \"HttpError on <url>\"",
+          "notes": "HttpError 分支可访问响应对象"
+        },
+        {
+          "input": "请求失败并触发 errback，failure 为 DNSLookupError",
+          "output": "记录 repr(failure)，并从 failure.request 取原始请求，记录 \"DNSLookupError on <url>\"",
+          "notes": "DNS 分支只能访问原始请求"
+        },
+        {
+          "input": "请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError",
+          "output": "记录 repr(failure)，并从 failure.request 取原始请求，记录 \"TimeoutError on <url>\"",
+          "notes": "超时分支只能访问原始请求"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "errback",
+        "错误处理",
+        "请求调度"
+      ],
+      "support_ids": [
+        "1d48009e-8ac2-5a3d-be19-6fffbcf003ee"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "c4797127-5c24-58b7-a661-9ad7a8663701"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在请求失败时按异常类型分流处理并记录日志|scrapy|错误处理|errback 分支处理|请求调度|请求错误回调处理（errback）",
+        "change_action": "create",
+        "llm_reason": "候选技能聚焦于按异常类型（HttpError/DNSLookupError/TimeoutError）分支处理 errback 失败，与现有技能（中间件返回值路由、hostname 判定）能力不同；peer 候选虽相关但属于不同细分能力，故新建独立 micro_skill。",
+        "parent_skill_id": "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76",
+        "parent_candidate_ids": [
+          "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76"
+        ],
+        "hierarchy_confidence": 0.6,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "8ca6ba08-8495-4f99-86aa-ee0d0ef3a456",
+      "entity_type": "skill",
+      "entity_id": "9719683e-0a4a-5d7e-8169-5d7d854d94d9",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能聚焦于按异常类型（HttpError/DNSLookupError/TimeoutError）分支处理 errback 失败，与现有技能（中间件返回值路由、hostname 判定）能力不同；peer 候选虽相关但属于不同细分能力，故新建独立 micro_skill。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "9719683e-0a4a-5d7e-8169-5d7d854d94d9",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "1d48009e-8ac2-5a3d-be19-6fffbcf003ee"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

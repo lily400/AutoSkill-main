@@ -1,0 +1,105 @@
+{
+  "skill_id": "239fecfd-293b-512a-b2a7-a4df9c9c077c",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能是 FormRequest.from_response 表单预填充与提交的通用微技能，与现有 hostname 判定/正则构建技能能力不同；peer 候选为登录模拟等不同任务族，不构成同一能力的拆分或合并关系，故新建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "239fecfd-293b-512a-b2a7-a4df9c9c077c",
+    "name": "FormRequest.from_response 表单预填充与提交",
+    "description": "从响应中的 HTML 表单预填充字段并构造 FormRequest，支持按 name/id/xpath/css/number 选择表单、覆盖字段、模拟点击控件或禁用点击。用于需要基于已有页面表单发起 POST 提交的爬取场景。",
+    "skill_body": "当响应包含需要提交的 HTML 表单时，使用 FormRequest.from_response() 基于该响应构造 FormRequest：先通过 formname/formid/formxpath/formcss/formnumber 定位目标表单（默认第一个），再用 formdata 覆盖或排除字段（值为 None 时排除该字段），用 clickdata 指定模拟点击的控件（或 dont_click=True 不点击任何元素），其余参数直接传给 FormRequest 构造函数。\n\n## Objective\n\n基于响应中的表单自动构造并提交 FormRequest\n## Applicable Signals\n\n- 响应包含需要提交的 HTML 表单\n- 需要模拟用户登录或表单 POST 提交\n\n## Contraindications\n\n- 目标页面无表单或表单由 JS 动态生成\n- 需要构造非表单类请求\n\n## Intervention Moves\n\n- 用 formname/formid/formxpath/formcss/formnumber 定位目标表单\n- 用 formdata 覆盖或排除表单字段\n- 用 clickdata 指定模拟点击的控件，或用 dont_click 禁用点击\n- 将其余参数直接传给 FormRequest 构造函数\n\n## Workflow Steps\n\n- 确认响应中包含可解析的 HTML 表单\n- 选择表单定位方式：formname、formid、formxpath、formcss 或 formnumber（默认 0）\n- 用 formdata 覆盖已有字段；将某字段值设为 None 以从请求中排除该字段\n- 用 clickdata 指定要模拟点击的控件（可用 nr 属性按零基索引定位），或设 dont_click=True 不点击任何元素\n- 将其余参数直接传给 FormRequest 构造函数以完成请求构造\n\n## Constraints\n\n- formnumber 默认使用第一个表单（索引 0）\n- formdata 中值为 None 的字段不会包含在请求中，即使响应表单中存在该字段\n- 未提供 clickdata 时默认模拟点击第一个可点击元素\n\n## Cautions\n\n- 表单由 JS 动态生成时 from_response 无法预填充，需改用其他方式构造请求\n\n## Output Contract\n\n- 一个已预填充表单字段的 FormRequest 对象",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "基于响应中的表单自动构造并提交 FormRequest",
+    "domain": "scrapy",
+    "task_family": "表单提交",
+    "method_family": "FormRequest.from_response",
+    "stage": "请求构造",
+    "applicable_signals": [
+      "响应包含需要提交的 HTML 表单",
+      "需要模拟用户登录或表单 POST 提交"
+    ],
+    "contraindications": [
+      "目标页面无表单或表单由 JS 动态生成",
+      "需要构造非表单类请求"
+    ],
+    "intervention_moves": [
+      "用 formname/formid/formxpath/formcss/formnumber 定位目标表单",
+      "用 formdata 覆盖或排除表单字段",
+      "用 clickdata 指定模拟点击的控件，或用 dont_click 禁用点击",
+      "将其余参数直接传给 FormRequest 构造函数"
+    ],
+    "triggers": [
+      "响应包含需要提交的 HTML 表单",
+      "需要模拟用户登录或表单 POST 提交"
+    ],
+    "workflow_steps": [
+      "确认响应中包含可解析的 HTML 表单",
+      "选择表单定位方式：formname、formid、formxpath、formcss 或 formnumber（默认 0）",
+      "用 formdata 覆盖已有字段；将某字段值设为 None 以从请求中排除该字段",
+      "用 clickdata 指定要模拟点击的控件（可用 nr 属性按零基索引定位），或设 dont_click=True 不点击任何元素",
+      "将其余参数直接传给 FormRequest 构造函数以完成请求构造"
+    ],
+    "constraints": [
+      "formnumber 默认使用第一个表单（索引 0）",
+      "formdata 中值为 None 的字段不会包含在请求中，即使响应表单中存在该字段",
+      "未提供 clickdata 时默认模拟点击第一个可点击元素"
+    ],
+    "cautions": [
+      "表单由 JS 动态生成时 from_response 无法预填充，需改用其他方式构造请求"
+    ],
+    "output_contract": [
+      "一个已预填充表单字段的 FormRequest 对象"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "FormRequest",
+      "表单提交",
+      "请求构造"
+    ],
+    "support_ids": [
+      "3a491268-7b7a-55b0-a4aa-18c9f64c077a"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "fee7a4a3-5b82-59db-9114-c28fcfd70398"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|基于响应中的表单自动构造并提交 formrequest|scrapy|表单提交|formrequest.from_response|请求构造|formrequest.from_response 表单预填充与提交"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

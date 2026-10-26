@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="9" time="0.227" timestamp="2026-10-25T13:30:15.460503+00:00" hostname="ffa421c81af2"><testcase classname="eval" name="test_cl_case[1-case0]" time="0.003"><failure message="AssertionError: case_1.codes: len 3 != 0&#10;assert 3 == 0&#10; +  where 3 = len(['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   0 = len([])">case_index = 1
+case = {'expected_output': {'codes': [], 'request_actions': [], 'selected_day30': '2025-03-31T14:05:00Z', 'selected_day7': '2...: True, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = [], path = 'case_1.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_1.codes: len 3 != 0
+E           assert 3 == 0
+E            +  where 3 = len(['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   0 = len([])
+
+oracle/eval.py:85: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[2-case1]" time="0.003" /><testcase classname="eval" name="test_cl_case[3-case2]" time="0.003"><failure message="AssertionError: case_3.codes: len 3 != 1&#10;assert 3 == 1&#10; +  where 3 = len(['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   1 = len(['RECIPIENT_NOT_COORD'])">case_index = 3
+case = {'expected_output': {'codes': ['RECIPIENT_NOT_COORD'], 'request_actions': [], 'selected_day30': '2025-04-02T15:00:00Z'...: True, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = ['RECIPIENT_NOT_COORD'], path = 'case_3.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_3.codes: len 3 != 1
+E           assert 3 == 1
+E            +  where 3 = len(['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   1 = len(['RECIPIENT_NOT_COORD'])
+
+oracle/eval.py:85: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[4-case3]" time="0.003"><failure message="AssertionError: case_4.codes: len 5 != 3&#10;assert 5 == 3&#10; +  where 5 = len(['CONFLICT_HANDLING_MISSING', 'INTERNAL_DATA_MISSING', 'MISSING_DAY30', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   3 = len(['CONFLICT_HANDLING_MISSING', 'MISSING_DAY30', 'TRUST_STAKEHOLDERS_INCOMPLETE'])">case_index = 4
+case = {'expected_output': {'codes': ['CONFLICT_HANDLING_MISSING', 'MISSING_DAY30', 'TRUST_STAKEHOLDERS_INCOMPLETE'], 'reques... False, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['CONFLICT_HANDLING_MISSING', 'INTERNAL_DATA_MISSING', 'MISSING_DAY30', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = ['CONFLICT_HANDLING_MISSING', 'MISSING_DAY30', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+path = 'case_4.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_4.codes: len 5 != 3
+E           assert 5 == 3
+E            +  where 5 = len(['CONFLICT_HANDLING_MISSING', 'INTERNAL_DATA_MISSING', 'MISSING_DAY30', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   3 = len(['CONFLICT_HANDLING_MISSING', 'MISSING_DAY30', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+
+oracle/eval.py:85: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[5-case4]" time="0.002"><failure message="AssertionError: case_5.codes: len 4 != 1&#10;assert 4 == 1&#10; +  where 4 = len(['INTERNAL_DATA_MISSING', 'LIKES_NOT_DISCOUNTED', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   1 = len(['LIKES_NOT_DISCOUNTED'])">case_index = 5
+case = {'expected_output': {'codes': ['LIKES_NOT_DISCOUNTED'], 'request_actions': [], 'selected_day30': '2025-07-31T14:05:00Z...: True, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['INTERNAL_DATA_MISSING', 'LIKES_NOT_DISCOUNTED', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = ['LIKES_NOT_DISCOUNTED'], path = 'case_5.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_5.codes: len 4 != 1
+E           assert 4 == 1
+E            +  where 4 = len(['INTERNAL_DATA_MISSING', 'LIKES_NOT_DISCOUNTED', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   1 = len(['LIKES_NOT_DISCOUNTED'])
+
+oracle/eval.py:85: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[6-case5]" time="0.003"><failure message="AssertionError: case_6.codes: len 4 != 1&#10;assert 4 == 1&#10; +  where 4 = len(['INTERNAL_DATA_MISSING', 'IRE_COMPARISON_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   1 = len(['IRE_COMPARISON_MISSING'])">case_index = 6
+case = {'expected_output': {'codes': ['IRE_COMPARISON_MISSING'], 'request_actions': [], 'selected_day30': '2025-06-11T14:00:0...: True, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['INTERNAL_DATA_MISSING', 'IRE_COMPARISON_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = ['IRE_COMPARISON_MISSING'], path = 'case_6.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_6.codes: len 4 != 1
+E           assert 4 == 1
+E            +  where 4 = len(['INTERNAL_DATA_MISSING', 'IRE_COMPARISON_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   1 = len(['IRE_COMPARISON_MISSING'])
+
+oracle/eval.py:85: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[7-case6]" time="0.003"><failure message="AssertionError: case_7.codes: len 4 != 1&#10;assert 4 == 1&#10; +  where 4 = len(['EXTERNAL_SHARING_REQUEST', 'INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   1 = len(['EXTERNAL_SHARING_REQUEST'])">case_index = 7
+case = {'expected_output': {'codes': ['EXTERNAL_SHARING_REQUEST'], 'request_actions': ['ROUTE_INTERNAL_ONLY'], 'selected_day3... False, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['EXTERNAL_SHARING_REQUEST', 'INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = ['EXTERNAL_SHARING_REQUEST'], path = 'case_7.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_7.codes: len 4 != 1
+E           assert 4 == 1
+E            +  where 4 = len(['EXTERNAL_SHARING_REQUEST', 'INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   1 = len(['EXTERNAL_SHARING_REQUEST'])
+
+oracle/eval.py:85: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[8-case7]" time="0.003"><failure message="AssertionError: case_8.codes: len 4 != 2&#10;assert 4 == 2&#10; +  where 4 = len(['INTERNAL_DATA_MISSING', 'MISSING_DAY30', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   2 = len(['INTERNAL_DATA_MISSING', 'MISSING_DAY30'])">case_index = 8
+case = {'expected_output': {'codes': ['INTERNAL_DATA_MISSING', 'MISSING_DAY30'], 'request_actions': [], 'selected_day30': Non...: True, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['INTERNAL_DATA_MISSING', 'MISSING_DAY30', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = ['INTERNAL_DATA_MISSING', 'MISSING_DAY30'], path = 'case_8.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_8.codes: len 4 != 2
+E           assert 4 == 2
+E            +  where 4 = len(['INTERNAL_DATA_MISSING', 'MISSING_DAY30', 'RECIPIENT_NOT_COORD', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   2 = len(['INTERNAL_DATA_MISSING', 'MISSING_DAY30'])
+
+oracle/eval.py:85: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[9-case8]" time="0.003"><failure message="AssertionError: case_9.codes: len 4 != 1&#10;assert 4 == 1&#10; +  where 4 = len(['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'STOCK_REQUIRED_MISSING', 'TRUST_STAKEHOLDERS_INCOMPLETE'])&#10; +  and   1 = len(['STOCK_REQUIRED_MISSING'])">case_index = 9
+case = {'expected_output': {'codes': ['STOCK_REQUIRED_MISSING'], 'request_actions': [], 'selected_day30': '2025-04-02T15:00:0...: True, 'has_ire_comparison': True, 'has_timing_judgments': {'fast_enough': True, 'missed_window': False}, ...}], ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = ['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'STOCK_REQUIRED_MISSING', 'TRUST_STAKEHOLDERS_INCOMPLETE']
+expected = ['STOCK_REQUIRED_MISSING'], path = 'case_9.codes'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+&gt;           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_9.codes: len 4 != 1
+E           assert 4 == 1
+E            +  where 4 = len(['INTERNAL_DATA_MISSING', 'RECIPIENT_NOT_COORD', 'STOCK_REQUIRED_MISSING', 'TRUST_STAKEHOLDERS_INCOMPLETE'])
+E            +  and   1 = len(['STOCK_REQUIRED_MISSING'])
+
+oracle/eval.py:85: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,518 @@
+{
+  "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+  "title": "input004\\spider-middleware.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+  "window_id": "c7c5f3aa-ee05-5aca-87c7-8a5829be51dd",
+  "section_heading": "Spider Middleware",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "0888492a-b818-5434-8baf-e71f4e603fd5",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+      "section": "Spider Middleware",
+      "span": {
+        "start": 4321,
+        "end": 7070
+      },
+      "excerpt": "**response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_spider_output(*response*, *result*)**\n\nThis method is called with the results returned from the Spider, after\nit has processed the response.\n\n`process_spider_output()` must return an iterable of\n[`Request`](request-response.html#scrapy.Request) objects and [item objects](items.html#topics-items).\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response which generated this output from the\nspider\n- **result** (an iterable of [`Request`](request-response.html#scrapy.Request) objects and\n[item objects](items.html#topics-items)) – the result returned by the spider\n\n***async*process_spider_output_async(*response*, *result*)**\n\nIf defined, this method must be an [asynchronous generator](https://docs.python.org/3/glossary.html#term-asynchronous-generator),\nwhich will be called instead of `process_spider_output()` if\n`result` is an [asynchronous iterable](https://docs.python.org/3/glossary.html#term-asynchronous-iterable).\n\n**process_spider_exception(*response*, *exception*)**\n\nThis method is called when a spider or `process_spider_output()`\nmethod (from a previous spider middleware) raises an exception.\n\n`process_spider_exception()` should return either `None` or an\niterable of [`Request`](request-response.html#scrapy.Request) or [item](items.html#topics-items)\nobjects.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_spider_exception()` in the following\nmiddleware components, until no middleware components are left and the\nexception reaches the engine (where it’s logged and discarded).\n\nIf it returns an iterable the `process_spider_output()` pipeline\nkicks in, starting from the next spider middleware, and no other\n`process_spider_exception()` will be called.\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed when the exception was\nraised\n- **exception** ([`Exception`](https://docs.python.org/3/library/exceptions.html#Exception) object) – the exception raised",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input004\\spider-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Spider中间件输出处理钩子实现",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在 Spider 输出阶段拦截并改写 Request/item 结果流",
+        "task_family": "spider_middleware",
+        "method_family": "hook_implementation",
+        "stage": "spider_output_processing",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "c7c5f3aa-ee05-5aca-87c7-8a5829be51dd",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 23,
+        "paragraph_end": 38,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      },
+      "created_at": "2026-10-25T08:27:16+00:00"
+    },
+    {
+      "support_id": "f246147f-5108-51fa-aed5-5bcdda50058f",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+      "section": "Spider Middleware",
+      "span": {
+        "start": 4321,
+        "end": 7070
+      },
+      "excerpt": "**response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_spider_output(*response*, *result*)**\n\nThis method is called with the results returned from the Spider, after\nit has processed the response.\n\n`process_spider_output()` must return an iterable of\n[`Request`](request-response.html#scrapy.Request) objects and [item objects](items.html#topics-items).\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response which generated this output from the\nspider\n- **result** (an iterable of [`Request`](request-response.html#scrapy.Request) objects and\n[item objects](items.html#topics-items)) – the result returned by the spider\n\n***async*process_spider_output_async(*response*, *result*)**\n\nIf defined, this method must be an [asynchronous generator](https://docs.python.org/3/glossary.html#term-asynchronous-generator),\nwhich will be called instead of `process_spider_output()` if\n`result` is an [asynchronous iterable](https://docs.python.org/3/glossary.html#term-asynchronous-iterable).\n\n**process_spider_exception(*response*, *exception*)**\n\nThis method is called when a spider or `process_spider_output()`\nmethod (from a previous spider middleware) raises an exception.\n\n`process_spider_exception()` should return either `None` or an\niterable of [`Request`](request-response.html#scrapy.Request) or [item](items.html#topics-items)\nobjects.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_spider_exception()` in the following\nmiddleware components, until no middleware components are left and the\nexception reaches the engine (where it’s logged and discarded).\n\nIf it returns an iterable the `process_spider_output()` pipeline\nkicks in, starting from the next spider middleware, and no other\n`process_spider_exception()` will be called.\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed when the exception was\nraised\n- **exception** ([`Exception`](https://docs.python.org/3/library/exceptions.html#Exception) object) – the exception raised",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input004\\spider-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Spider中间件异步输出钩子实现",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在异步结果流场景下提供异步输出处理",
+        "task_family": "spider_middleware",
+        "method_family": "async_hook_implementation",
+        "stage": "spider_output_processing",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "c7c5f3aa-ee05-5aca-87c7-8a5829be51dd",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 23,
+        "paragraph_end": 38,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      },
+      "created_at": "2026-10-25T08:27:16+00:00"
+    },
+    {
+      "support_id": "95142d24-e939-5852-9565-319303e04d3d",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md",
+      "section": "Spider Middleware",
+      "span": {
+        "start": 4321,
+        "end": 7070
+      },
+      "excerpt": "**response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed\n\n**process_spider_output(*response*, *result*)**\n\nThis method is called with the results returned from the Spider, after\nit has processed the response.\n\n`process_spider_output()` must return an iterable of\n[`Request`](request-response.html#scrapy.Request) objects and [item objects](items.html#topics-items).\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response which generated this output from the\nspider\n- **result** (an iterable of [`Request`](request-response.html#scrapy.Request) objects and\n[item objects](items.html#topics-items)) – the result returned by the spider\n\n***async*process_spider_output_async(*response*, *result*)**\n\nIf defined, this method must be an [asynchronous generator](https://docs.python.org/3/glossary.html#term-asynchronous-generator),\nwhich will be called instead of `process_spider_output()` if\n`result` is an [asynchronous iterable](https://docs.python.org/3/glossary.html#term-asynchronous-iterable).\n\n**process_spider_exception(*response*, *exception*)**\n\nThis method is called when a spider or `process_spider_output()`\nmethod (from a previous spider middleware) raises an exception.\n\n`process_spider_exception()` should return either `None` or an\niterable of [`Request`](request-response.html#scrapy.Request) or [item](items.html#topics-items)\nobjects.\n\nIf it returns `None`, Scrapy will continue processing this exception,\nexecuting any other `process_spider_exception()` in the following\nmiddleware components, until no middleware components are left and the\nexception reaches the engine (where it’s logged and discarded).\n\nIf it returns an iterable the `process_spider_output()` pipeline\nkicks in, starting from the next spider middleware, and no other\n`process_spider_exception()` will be called.\n\n**Parameters:**\n\n- **response** ([`Response`](request-response.html#scrapy.http.Response) object) – the response being processed when the exception was\nraised\n- **exception** ([`Exception`](https://docs.python.org/3/library/exceptions.html#Exception) object) – the exception raised",
+      "relation_type": "support",
+      "confidence": 0.82,
+      "metadata": {
+        "document_title": "input004\\spider-middleware.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Spider中间件异常处理钩子实现",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在 Spider 阶段异常时选择继续传播或接管输出",
+        "task_family": "spider_middleware",
+        "method_family": "exception_hook_implementation",
+        "stage": "spider_exception_handling",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 3,
+        "window_id": "c7c5f3aa-ee05-5aca-87c7-8a5829be51dd",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 23,
+        "paragraph_end": 38,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      },
+      "created_at": "2026-10-25T08:27:16+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "d1267e9d-a06b-5fbd-845a-1169e4648a61",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "name": "Spider中间件输出处理钩子实现",
+      "description": "实现 process_spider_output 钩子，对 Spider 处理响应后返回的 Request/item 可迭代结果进行拦截与改写，并返回新的可迭代对象。适用于需要在爬虫输出进入后续中间件前统一过滤或转换结果的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在 Spider 输出阶段拦截并改写 Request/item 结果流",
+      "domain": "scrapy",
+      "task_family": "spider_middleware",
+      "method_family": "hook_implementation",
+      "stage": "spider_output_processing",
+      "applicable_signals": [
+        "Spider 已处理响应并返回结果流",
+        "需要在结果流进入后续中间件前介入"
+      ],
+      "contraindications": [
+        "处理的是下载器请求/响应阶段而非 Spider 输出",
+        "仅需记录日志而无需改变结果流"
+      ],
+      "intervention_moves": [
+        "定义 process_spider_output(response, result) 方法",
+        "遍历 result 中的 Request 与 item 对象",
+        "按需过滤或转换结果",
+        "返回新的 Request/item 可迭代对象"
+      ],
+      "workflow_steps": [
+        "实现 process_spider_output(response, result) 方法，接收 response 与 Spider 返回的 result",
+        "对 result 中的 Request 对象和 item 对象进行过滤或改写",
+        "返回由 Request 对象和 item 对象组成的可迭代对象"
+      ],
+      "triggers": [
+        "需要过滤或改写 Spider 产出的 Request/item",
+        "需要在输出进入下游中间件前统一处理结果"
+      ],
+      "constraints": [
+        "process_spider_output 必须返回 Request 对象和 item 对象的可迭代对象",
+        "response 为生成该输出的响应对象",
+        "result 为 Spider 返回的可迭代结果"
+      ],
+      "cautions": [
+        "若 result 为异步可迭代对象，需改用 process_spider_output_async 异步生成器变体",
+        "异常处理应使用 process_spider_exception，而非在输出钩子中吞掉异常"
+      ],
+      "output_contract": [
+        "返回符合契约的 Request/item 可迭代对象"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "0888492a-b818-5434-8baf-e71f4e603fd5"
+      ],
+      "metadata": {
+        "prompt": "实现 process_spider_output(response, result) 钩子：接收当前 response 与 Spider 返回的 result（Request 与 item 对象的可迭代对象），对结果流进行过滤或改写，并返回一个由 Request 对象和 item 对象组成的可迭代对象。确保返回值符合契约，供后续 Spider 中间件继续处理。",
+        "tags": [
+          "scrapy",
+          "spider_middleware",
+          "process_spider_output",
+          "hook"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Spider Middleware"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "c7c5f3aa-ee05-5aca-87c7-8a5829be51dd",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 23,
+        "paragraph_end": 38,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      }
+    },
+    {
+      "draft_id": "c11e3178-c5d6-5ed3-8d1c-7db3b10ad4f7",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "name": "Spider中间件异步输出钩子实现",
+      "description": "实现 process_spider_output_async 异步生成器方法，在 Spider 输出结果为异步可迭代对象时替代同步 process_spider_output 被调用，用于异步爬虫管道中处理异步结果流。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在异步结果流场景下提供异步输出处理",
+      "domain": "scrapy",
+      "task_family": "spider_middleware",
+      "method_family": "async_hook_implementation",
+      "stage": "spider_output_processing",
+      "applicable_signals": [
+        "Spider 输出结果为异步可迭代对象",
+        "需要异步生成器形式的输出处理"
+      ],
+      "contraindications": [
+        "结果为同步可迭代对象",
+        "未启用异步爬虫管道"
+      ],
+      "intervention_moves": [
+        "定义 async 生成器方法 process_spider_output_async(response, result)",
+        "在方法内异步产出 Request 对象与 item 对象",
+        "确保仅在 result 为异步可迭代时依赖该钩子"
+      ],
+      "workflow_steps": [
+        "确认 Spider 输出 result 为异步可迭代对象",
+        "在中间件中定义 async 生成器方法 process_spider_output_async(response, result)",
+        "在生成器中产出 Request 对象与 item 对象",
+        "验证异步结果流被正确传递至后续中间件"
+      ],
+      "triggers": [
+        "Spider 输出结果为异步可迭代对象",
+        "需要异步生成器形式的输出处理",
+        "异步爬虫管道中需处理异步结果流"
+      ],
+      "constraints": [
+        "方法必须为异步生成器",
+        "仅在 result 为异步可迭代对象时被调用，替代 process_spider_output"
+      ],
+      "cautions": [
+        "同步结果流仍走 process_spider_output，不应依赖异步钩子处理"
+      ],
+      "output_contract": [
+        "定义可被调用的异步生成器方法 process_spider_output_async，产出 Request 与 item 对象"
+      ],
+      "examples": [
+        {
+          "input": "Spider 返回异步可迭代的 result",
+          "output": "process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item",
+          "notes": "仅在 result 为异步可迭代时触发"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "f246147f-5108-51fa-aed5-5bcdda50058f"
+      ],
+      "metadata": {
+        "prompt": "在 Spider 中间件中定义 async 生成器方法 process_spider_output_async(response, result)。当 Spider 返回的 result 为异步可迭代对象时，Scrapy 会调用该方法而非 process_spider_output。方法需以异步生成器形式产出 Request 对象与 item 对象，保持与同步输出钩子一致的输出语义。",
+        "tags": [
+          "scrapy",
+          "spider_middleware",
+          "async",
+          "process_spider_output_async"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Spider Middleware"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "c7c5f3aa-ee05-5aca-87c7-8a5829be51dd",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 23,
+        "paragraph_end": 38,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      }
+    },
+    {
+      "draft_id": "62340056-18ef-5aba-9d0a-79da5218f211",
+      "doc_id": "0846bc81-9f63-5a03-baf2-464e92f3e728",
+      "name": "Spider中间件异常处理钩子实现",
+      "description": "实现 process_spider_exception 钩子，在 Spider 或上游 process_spider_output 抛异常时，决定返回 None 让异常继续传播，或返回 Request/item 可迭代对象接管输出管道。适用于需要集中处理爬虫阶段异常的中间件。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在 Spider 阶段异常时选择继续传播或接管输出",
+      "domain": "scrapy",
+      "task_family": "spider_middleware",
+      "method_family": "exception_hook_implementation",
+      "stage": "spider_exception_handling",
+      "applicable_signals": [
+        "Spider 或上游 process_spider_output 抛出异常",
+        "需要自定义异常走向而非默认记录丢弃",
+        "需要在异常后恢复 Request/item 输出流"
+      ],
+      "contraindications": [
+        "处理正常输出流而非异常时应使用 process_spider_output",
+        "异常应直接交由引擎记录丢弃时无需实现该钩子"
+      ],
+      "intervention_moves": [
+        "实现 process_spider_exception(response, exception) 方法",
+        "判断异常是否由本中间件接管",
+        "返回 None 表示继续传播",
+        "返回 Request/item 可迭代对象表示接管并进入 process_spider_output 管道"
+      ],
+      "workflow_steps": [
+        "定义 process_spider_exception(response, exception) 方法",
+        "根据 response 与 exception 判断是否接管",
+        "若继续传播则返回 None",
+        "若接管则返回 Request 或 item 对象的可迭代对象",
+        "确认接管后 process_spider_output 从下一个中间件开始执行且不再调用其他 process_spider_exception"
+      ],
+      "triggers": [
+        "需要捕获并处理 Spider 或 process_spider_output 抛出的异常",
+        "需要决定异常是否继续传播至引擎",
+        "需要在中间件层集中接管爬虫阶段异常并恢复输出流"
+      ],
+      "constraints": [
+        "返回值只能是 None 或 Request/item 的可迭代对象",
+        "返回 None 时异常继续沿中间件链传播至引擎",
+        "返回可迭代对象时不再调用其他 process_spider_exception"
+      ],
+      "cautions": [
+        "返回非可迭代的单个对象会违反返回契约",
+        "接管异常会跳过后续中间件的异常处理钩子"
+      ],
+      "output_contract": [
+        "返回 None 或 Request/item 可迭代对象以明确异常走向"
+      ],
+      "examples": [
+        {
+          "input": "Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃",
+          "output": "process_spider_exception 返回 None",
+          "notes": "异常继续传播至引擎"
+        },
+        {
+          "input": "Spider 处理响应时抛出异常，本中间件希望恢复输出流",
+          "output": "process_spider_exception 返回包含 Request 或 item 的可迭代对象",
+          "notes": "process_spider_output 从下一个中间件开始执行"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.82,
+      "support_ids": [
+        "95142d24-e939-5852-9565-319303e04d3d"
+      ],
+      "metadata": {
+        "prompt": "在自定义 Spider 中间件中实现 process_spider_exception(response, exception) 钩子。判断当前异常是否应由本中间件接管：若需继续传播，返回 None，Scrapy 会继续调用后续中间件的 process_spider_exception，直至异常到达引擎被记录并丢弃；若需接管，返回一个 Request 或 item 对象的可迭代对象，此时 process_spider_output 管道从下一个中间件开始执行，且不再调用其他 process_spider_exception。确保返回值类型符合契约，不要返回非可迭代的单个对象。",
+        "tags": [
+          "scrapy",
+          "spider_middleware",
+          "exception_handling",
+          "process_spider_exception"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Spider Middleware"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "c7c5f3aa-ee05-5aca-87c7-8a5829be51dd",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 23,
+        "paragraph_end": 38,
+        "heading_path": [
+          "Spider Middleware"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input004\\spider-middleware.md"
+        ],
+        "subsection_headings": [
+          "Activating a spider middleware",
+          "Writing your own spider middleware",
+          "Base class for custom spider middlewares"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The spider middleware is a framework of hooks into Scrapy’s spider processing"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

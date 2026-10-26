@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"55a14cc4-a8f7-564e-b68a-bd3c5bd396ff\", \"name\": \"回调参数透传至 errback\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在失败回调中访问原始回调参数以继续处理\", \"applicable_signals\": [\"失败后仍需基于原始请求上下文产出数据或做后续处理\"], \"contraindications\": [\"失败处理不需要原始回调参数时\"], \"workflow_steps\": [\"确定失败后仍需使用的上下文参数\", \"在发起请求时通过 cb_kwargs 传入这些参数\", \"在 errback 中通过 failure.request.cb_kwargs 取回参数\", \"基于取回的参数产出结果或继续处理\"], \"constraints\": [\"cb_kwargs 中的参数需与 callback 签名匹配\", \"errback 中通过 failure.request.cb_kwargs 访问参数\"], \"triggers\": [\"失败后仍需基于原始请求上下文产出数据或做后续处理\", \"需要在 errback 中访问 callback 的参数\"], \"output_contract\": [\"errback 中通过 failure.request.cb_kwargs 取回参数并产出结果\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"508a30a5-6330-5c7e-a9a0-583ed481e86d\", \"name\": \"Scrapy 自定义请求指纹器配置\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"定制请求指纹以控制去重行为\", \"applicable_signals\": [\"默认去重指纹不满足需求\", \"需要自定义请求唯一性判定\"], \"workflow_steps\": [\"确认默认去重指纹为何不满足需求\", \"决定使用 REQUEST_FINGERPRINTER_CLASS 配置现有指纹器，或编写自定义 request fingerprinter\", \"实现或配置指纹器，遵守请求指纹限制\", \"验证去重行为符合预期\"], \"output_contract\": [\"已配置或实现的自定义请求指纹器，去重行为符合预期\"], \"score\": 0.4293553544749985}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "skill_id": "65e1a9ed-69fb-5e8d-87f3-1bf759519ddd",
+  "name": "Scrapy Request 回调与错误回调路由配置",
+  "description": "为 Scrapy Request 指定 callback 或 errback，并处理 None/NO_CALLBACK 默认行为，使响应或异常被路由到正确的处理函数。适用于需要自定义响应处理或捕获请求处理异常的场景。",
+  "skill_body": "在构造 Scrapy Request 时，明确指定 callback 用于处理正常响应、errback 用于处理异常。若 callback 为 None（默认），则响应交由 spider 的 parse() 方法处理；若使用 NO_CALLBACK()，则显式声明不回调。注意 HttpErrorMiddleware 默认对非 2xx 响应抛出异常并转交 errback，因此需要捕获 HTTP 错误时应配置 errback。\n\n## Objective\n\n正确配置请求的回调与错误回调路由\n## Applicable Signals\n\n- 需要自定义响应处理函数\n- 需要捕获请求处理异常\n- 需要显式声明不回调\n\n## Contraindications\n\n- 使用默认 parse 即可满足需求\n\n## Intervention Moves\n\n- 为 Request 指定 callback 处理正常响应\n- 为 Request 指定 errback 处理异常\n- 使用 None 默认交由 parse() 处理\n- 使用 NO_CALLBACK() 显式声明不回调\n\n## Workflow Steps\n\n- 判断是否需要自定义响应处理：若默认 parse() 足够，则 callback 保持 None。\n- 若需自定义处理，指定 callback 为对应处理函数。\n- 若需捕获请求处理异常，指定 errback 为异常处理函数。\n- 若需显式声明不回调，使用 NO_CALLBACK()。\n- 注意 HttpErrorMiddleware 默认对非 2xx 响应抛出异常并转交 errback，据此配置错误处理。\n\n## Constraints\n\n- callback 为 None 时响应交由 spider 的 parse() 方法处理\n- NO_CALLBACK() 用于显式声明不回调\n\n## Cautions\n\n- HttpErrorMiddleware 默认对非 2xx 响应抛出异常并发送到 errback，未配置 errback 时异常可能未被捕获\n\n## Output Contract\n\n- Request 携带正确的 callback/errback 配置\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要自定义响应处理函数\n- Therapist/Output: Request(url, callback=self.custom_parse)\n\n### Example 2\n\n- Client/Input: 需要捕获请求处理异常\n- Therapist/Output: Request(url, callback=self.parse, errback=self.handle_error)",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "正确配置请求的回调与错误回调路由",
+  "domain": "scrapy",
+  "task_family": "请求配置",
+  "method_family": "callback/errback 路由",
+  "stage": "请求构造",
+  "applicable_signals": [
+    "需要自定义响应处理函数",
+    "需要捕获请求处理异常",
+    "需要显式声明不回调"
+  ],
+  "contraindications": [
+    "使用默认 parse 即可满足需求"
+  ],
+  "intervention_moves": [
+    "为 Request 指定 callback 处理正常响应",
+    "为 Request 指定 errback 处理异常",
+    "使用 None 默认交由 parse() 处理",
+    "使用 NO_CALLBACK() 显式声明不回调"
+  ],
+  "triggers": [
+    "需要自定义响应处理函数",
+    "需要捕获请求处理异常",
+    "需要显式声明不回调"
+  ],
+  "workflow_steps": [
+    "判断是否需要自定义响应处理：若默认 parse() 足够，则 callback 保持 None。",
+    "若需自定义处理，指定 callback 为对应处理函数。",
+    "若需捕获请求处理异常，指定 errback 为异常处理函数。",
+    "若需显式声明不回调，使用 NO_CALLBACK()。",
+    "注意 HttpErrorMiddleware 默认对非 2xx 响应抛出异常并转交 errback，据此配置错误处理。"
+  ],
+  "constraints": [
+    "callback 为 None 时响应交由 spider 的 parse() 方法处理",
+    "NO_CALLBACK() 用于显式声明不回调"
+  ],
+  "cautions": [
+    "HttpErrorMiddleware 默认对非 2xx 响应抛出异常并发送到 errback，未配置 errback 时异常可能未被捕获"
+  ],
+  "output_contract": [
+    "Request 携带正确的 callback/errback 配置"
+  ],
+  "examples": [
+    {
+      "input": "需要自定义响应处理函数",
+      "output": "Request(url, callback=self.custom_parse)",
+      "notes": null
+    },
+    {
+      "input": "需要捕获请求处理异常",
+      "output": "Request(url, callback=self.parse, errback=self.handle_error)",
+      "notes": null
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "request",
+    "callback",
+    "errback",
+    "路由"
+  ],
+  "support_ids": [
+    "1af53c44-b4c7-59ec-85f5-47ab11df8b85"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "ab403165-4997-5779-9e25-c9b609348728"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|正确配置请求的回调与错误回调路由|scrapy|请求配置|callback/errback 路由|请求构造|scrapy request 回调与错误回调路由配置",
+    "change_action": "create",
+    "llm_reason": "候选技能描述的是 Request 构造阶段的 callback/errback 路由配置，与现有下载器中间件 process_response 返回值路由、hostname 安全判定等技能在能力身份、任务族和方法族上均不同，属于新的独立微技能。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

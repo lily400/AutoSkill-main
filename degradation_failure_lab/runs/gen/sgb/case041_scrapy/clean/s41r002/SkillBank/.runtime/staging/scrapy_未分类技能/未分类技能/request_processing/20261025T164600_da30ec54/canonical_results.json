@@ -1,0 +1,174 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "request_processing",
+  "run_id": "20261025T164600_da30ec54",
+  "skills": [
+    {
+      "skill_id": "be9aee15-e037-5420-b34a-eb9af1223666",
+      "name": "process_request 请求拦截与分流",
+      "description": "实现下载器中间件的 process_request 钩子，在请求进入下载器前按规则改写、重调度、短路或丢弃请求。适用于需要在下载前修改请求或按条件重定向、过滤请求的场景。",
+      "skill_body": "实现 process_request(request) 方法，根据业务规则选择四种返回值之一：返回 None 表示继续沿中间件链处理该请求；返回 Request 对象表示停止调用后续 process_request 并重新调度该请求；返回 Response 对象表示提前短路、跳过下载；抛出 IgnoreRequest 表示丢弃该请求。方法可定义为协程函数（async def）。确保每个分支逻辑明确、互斥且可预测。\n\n## Objective\n\n在请求进入下载器前按规则改写、重调度、短路或丢弃请求\n## Applicable Signals\n\n- 需要在下载前修改请求\n- 需要按条件重定向或丢弃请求\n- 需要提前短路请求、跳过下载\n\n## Contraindications\n\n- 只需处理已下载的响应\n- 需要跨阶段编排整个中间件链\n\n## Intervention Moves\n\n- 返回 None 继续处理该请求\n- 返回 Request 对象以停止后续 process_request 并重新调度\n- 返回 Response 对象以提前短路、跳过下载\n- 抛出 IgnoreRequest 以丢弃该请求\n\n## Workflow Steps\n\n- 在下载器中间件组件中定义 process_request(request) 方法\n- 根据业务规则判断应继续、重调度、短路还是丢弃\n- 返回 None 继续沿中间件链处理\n- 返回 Request 对象以重新调度该请求\n- 返回 Response 对象以提前短路\n- 抛出 IgnoreRequest 以丢弃请求\n\n## Constraints\n\n- process_request 只能返回 None、Response、Request 或抛出 IgnoreRequest\n- 返回 Request 时会停止调用后续 process_request 方法并重新调度该请求\n- 方法可定义为协程函数（async def）\n\n## Cautions\n\n- 返回 Request 会中断当前中间件链，需确认重调度不会造成循环\n- 部分中间件可能需通过特定设置启用\n\n## Output Contract\n\n- process_request 方法返回 None/Request/Response 或抛出 IgnoreRequest 的明确分支逻辑\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请求需在下载前被改写后继续处理\n- Therapist/Output: process_request 返回 None，Scrapy 继续执行其余中间件直至下载\n- Notes: 继续处理路径\n\n### Example 2\n\n- Client/Input: 请求需被重定向到新地址\n- Therapist/Output: process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度\n- Notes: 重调度路径\n\n### Example 3\n\n- Client/Input: 请求应被过滤丢弃\n- Therapist/Output: process_request 抛出 IgnoreRequest\n- Notes: 丢弃路径",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+      "parent_candidate_ids": [
+        "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+        "0f70cd3f-8916-5100-949a-b17f1bc29338"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.62,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在请求进入下载器前按规则改写、重调度、短路或丢弃请求",
+      "domain": "scrapy",
+      "task_family": "request_processing",
+      "method_family": "hook_implementation",
+      "stage": "request_phase",
+      "applicable_signals": [
+        "需要在下载前修改请求",
+        "需要按条件重定向或丢弃请求",
+        "需要提前短路请求、跳过下载"
+      ],
+      "contraindications": [
+        "只需处理已下载的响应",
+        "需要跨阶段编排整个中间件链"
+      ],
+      "intervention_moves": [
+        "返回 None 继续处理该请求",
+        "返回 Request 对象以停止后续 process_request 并重新调度",
+        "返回 Response 对象以提前短路、跳过下载",
+        "抛出 IgnoreRequest 以丢弃该请求"
+      ],
+      "triggers": [
+        "需要在下载前修改请求",
+        "需要按条件重定向或丢弃请求",
+        "需要提前短路请求、跳过下载"
+      ],
+      "workflow_steps": [
+        "在下载器中间件组件中定义 process_request(request) 方法",
+        "根据业务规则判断应继续、重调度、短路还是丢弃",
+        "返回 None 继续沿中间件链处理",
+        "返回 Request 对象以重新调度该请求",
+        "返回 Response 对象以提前短路",
+        "抛出 IgnoreRequest 以丢弃请求"
+      ],
+      "constraints": [
+        "process_request 只能返回 None、Response、Request 或抛出 IgnoreRequest",
+        "返回 Request 时会停止调用后续 process_request 方法并重新调度该请求",
+        "方法可定义为协程函数（async def）"
+      ],
+      "cautions": [
+        "返回 Request 会中断当前中间件链，需确认重调度不会造成循环",
+        "部分中间件可能需通过特定设置启用"
+      ],
+      "output_contract": [
+        "process_request 方法返回 None/Request/Response 或抛出 IgnoreRequest 的明确分支逻辑"
+      ],
+      "examples": [
+        {
+          "input": "请求需在下载前被改写后继续处理",
+          "output": "process_request 返回 None，Scrapy 继续执行其余中间件直至下载",
+          "notes": "继续处理路径"
+        },
+        {
+          "input": "请求需被重定向到新地址",
+          "output": "process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度",
+          "notes": "重调度路径"
+        },
+        {
+          "input": "请求应被过滤丢弃",
+          "output": "process_request 抛出 IgnoreRequest",
+          "notes": "丢弃路径"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "downloader-middleware",
+        "process_request",
+        "request_processing",
+        "hook_implementation"
+      ],
+      "support_ids": [
+        "371d95b2-6f91-5918-85c2-421e9090f962"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "89533969-1bf3-5e8d-9681-d667098e858c"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|micro_skill_node|在请求进入下载器前按规则改写、重调度、短路或丢弃请求|scrapy|request_processing|hook_implementation|request_phase|process_request 请求拦截与分流",
+        "change_action": "create",
+        "llm_reason": "候选技能是下载器中间件 process_request 钩子的返回值路由实现，与现有允许域名正则构建、请求hostname安全判定等技能在能力身份上不同；peer 候选分别属于配置、process_response、process_exception 等不同钩子或阶段，不构成同一能力的拆分或合并关系，故新建。",
+        "parent_skill_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+        "parent_candidate_ids": [
+          "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+          "0f70cd3f-8916-5100-949a-b17f1bc29338"
+        ],
+        "hierarchy_confidence": 0.62,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "b86b6fc2-bbd0-492a-abc1-0d9d391a1c40",
+      "entity_type": "skill",
+      "entity_id": "be9aee15-e037-5420-b34a-eb9af1223666",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:59+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是下载器中间件 process_request 钩子的返回值路由实现，与现有允许域名正则构建、请求hostname安全判定等技能在能力身份上不同；peer 候选分别属于配置、process_response、process_exception 等不同钩子或阶段，不构成同一能力的拆分或合并关系，故新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "be9aee15-e037-5420-b34a-eb9af1223666",
+        "doc_ids": [
+          "d973e9fc-1e86-5c28-9def-81308171521e"
+        ],
+        "support_added": [
+          "371d95b2-6f91-5918-85c2-421e9090f962"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

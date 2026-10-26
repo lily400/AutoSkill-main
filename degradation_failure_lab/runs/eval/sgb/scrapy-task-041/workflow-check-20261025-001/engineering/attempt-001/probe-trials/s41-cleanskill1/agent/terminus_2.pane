@@ -1,0 +1,6508 @@
+[?2004hroot@938d2ba331cc:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cat /harbor/skills/02c9f164-57a7-5df7-acd9-117c5b242abc/SKILL.md
+[?2004l---
+id: "02c9f164-57a7-5df7-acd9-117c5b242abc"
+name: "响应链接跟进生成请求"
+description: "使用 response.follow 从相对 URL、Link、Selector 或属性 Selector 构造并返回单个 Request 以跟进链接；适用于解析阶段需要跳转到下一页面时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "follow"
+  - "navigation"
+  - "parse"
+triggers:
+  - "需要跟进单个链接到下一页面"
+  - "链接为相对 URL 或 Selector 对象"
+  - "解析阶段需要构造后续请求"
+examples:
+  - input: "response.follow(response.css('a.my_link')[0])"
+    output: "返回一个指向该链接的 Request 实例"
+    notes: "传入 <a> 元素的 Selector"
+  - input: "response.follow(response.css('a::attr(href)')[0])"
+    output: "返回一个指向该 href 的 Request 实例"
+    notes: "传入属性 Selector"
+---
+
+# 响应链接跟进生成请求
+
+使用 response.follow 从相对 URL、Link、Selector 或属性 Selector 构造并返回单个 Request 以跟进链接；适用于解析阶段需要跳转到下一页面时。
+
+## Prompt
+
+在解析回调中，当需要从当前响应跟进单个链接到下一页面时，调用 response.follow(url, ...)。url 可为绝对 URL、相对 URL、Link 对象、指向 <link>/<a> 元素的 Selector，或属性 Selector（非 SelectorList）。其余参数与 Request.__init__() 相同。返回一个可调度的 Request 实例。若需批量跟进多个链接，改用 follow_all；若目标是提取数据而非生成请求，改用选择器方法。
+
+## Objective
+
+基于响应中的链接生成单个后续 Request
+## Applicable Signals
+
+- 当前响应中存在需要跳转的单个链接
+- 链接以相对 URL、Link 对象或 Selector 形式给出
+
+## Contraindications
+
+- 需要批量跟进多个链接（应使用 follow_all）
+- 目标不是生成请求而是提取数据
+
+## Intervention Moves
+
+- 调用 response.follow(url, ...) 并传入与 Request.__init__() 相同的参数
+- url 支持绝对 URL、相对 URL、Link 对象、<link>/<a> 的 Selector 或属性 Selector
+- 返回生成的 Request 实例供调度
+
+## Workflow Steps
+
+- 确认需要跟进的是单个链接
+- 确定 url 形式（绝对/相对 URL、Link、Selector 或属性 Selector）
+- 调用 response.follow(url, ...) 构造 Request
+- 返回该 Request 实例
+
+## Constraints
+
+- url 若为 Selector，须为单个 Selector 而非 SelectorList
+- 其余参数与 Request.__init__() 一致
+
+## Cautions
+
+- 批量跟进场景不应使用本技能，应改用 follow_all
+
+## Output Contract
+
+- 返回一个可调度的 Request 实例
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: response.follow(response.css('a.my_link')[0])
+- Therapist/Output: 返回一个指向该链接的 Request 实例
+- Notes: 传入 <a> 元素的 Selector
+
+### Example 2
+
+- Client/Input: response.follow(response.css('a::attr(href)')[0])
+- Therapist/Output: 返回一个指向该 href 的 Request 实例
+- Notes: 传入属性 Selector
+
+## Triggers
+
+- 需要跟进单个链接到下一页面
+- 链接为相对 URL 或 Selector 对象
+- 解析阶段需要构造后续请求
+
+## Examples
+
+### Example 1
+
+Input:
+
+  response.follow(response.css('a.my_link')[0])
+
+Output:
+
+  返回一个指向该链接的 Request 实例
+
+Notes:
+
+  传入 <a> 元素的 Selector
+
+### Example 2
+
+Input:
+
+  response.follow(response.css('a::attr(href)')[0])
+
+Output:
+
+  返回一个指向该 href 的 Request 实例
+
+Notes:
+
+  传入属性 Selector
+[?2004hp1$ cat /harbor/skills/0f70cd3f-8916-5100-949a-b17f1bc29338/SKILL.md
+[?2004l---
+id: "0f70cd3f-8916-5100-949a-b17f1bc29338"
+name: "Offsite请求域名过滤"
+description: "在请求被调度时，基于spider允许域名的正则判断请求是否属于站内；站外请求应被忽略，站内请求继续进入调度。用于控制爬虫只跟随允许域名范围内的链接。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "offsite"
+  - "域名过滤"
+  - "请求调度"
+  - "IgnoreRequest"
+triggers:
+  - "需要限制爬虫只抓取指定域名"
+  - "需要拦截站外链接请求"
+  - "请求进入request_scheduled阶段需要做域名归属判断"
+examples:
+  - input: "请求hostname不在允许域名正则范围内"
+    output: "该请求被忽略，不进入调度"
+    notes: "站外请求拦截"
+  - input: "请求hostname匹配允许域名正则"
+    output: "该请求继续进入调度"
+    notes: "站内请求放行"
+---
+
+# Offsite请求域名过滤
+
+在请求被调度时，基于spider允许域名的正则判断请求是否属于站内；站外请求应被忽略，站内请求继续进入调度。用于控制爬虫只跟随允许域名范围内的链接。
+
+## Prompt
+
+当请求进入调度阶段时，使用spider允许域名正则对请求hostname进行匹配：解析请求URL得到hostname（无法解析时视为空字符串），用host_regex.search(host)判断是否站内；站内请求放行继续调度，站外请求按忽略处理。
+
+## Objective
+
+在请求调度阶段过滤掉不属于允许域名的站外请求
+## Applicable Signals
+
+- spider已配置允许域名范围
+- 请求被调度时需判断是否站内
+- 存在站外链接需要被拦截
+
+## Contraindications
+
+- 需要跨域抓取且无域名白名单
+- 请求URL无法解析出hostname时不应直接放行
+
+## Intervention Moves
+
+- 在spider_opened时构建host_regex
+- 在request_scheduled中调用process_request处理请求
+- 用urlparse_cached获取hostname，None时置为空字符串
+- 用host_regex.search(host)判断是否站内并决定放行或忽略
+
+## Workflow Steps
+
+- spider_opened阶段通过get_host_regex(spider)构建host_regex
+- 请求被调度时触发request_scheduled，调用process_request
+- 解析请求得到hostname，无法解析时使用空字符串
+- 用host_regex.search(host)判断是否站内
+- 站内请求继续进入调度，站外请求被忽略
+
+## Constraints
+
+- 域名判断必须基于spider允许域名正则
+- hostname为None时不得直接放行，应按空字符串处理
+
+## Cautions
+
+- hostname可能为None（如javascript链接），需按空字符串处理以避免误判
+- 过滤发生在调度阶段，需确保host_regex在spider_opened时已构建
+
+## Output Contract
+
+- 站外请求被忽略，站内请求继续进入调度
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 请求hostname不在允许域名正则范围内
+- Therapist/Output: 该请求被忽略，不进入调度
+- Notes: 站外请求拦截
+
+### Example 2
+
+- Client/Input: 请求hostname匹配允许域名正则
+- Therapist/Output: 该请求继续进入调度
+- Notes: 站内请求放行
+
+## Triggers
+
+- 需要限制爬虫只抓取指定域名
+- 需要拦截站外链接请求
+- 请求进入request_scheduled阶段需要做域名归属判断
+
+## Examples
+
+### Example 1
+
+Input:
+
+  请求hostname不在允许域名正则范围内
+
+Output:
+
+  该请求被忽略，不进入调度
+
+Notes:
+
+  站外请求拦截
+
+### Example 2
+
+Input:
+
+  请求hostname匹配允许域名正则
+
+Output:
+
+  该请求继续进入调度
+
+Notes:
+
+  站内请求放行
+[?2004hp1$ cat /harbor/skills/10a65f13-3661-544b-8e28-ddfa920527b5/SKILL.md
+[?2004l---
+id: "10a65f13-3661-544b-8e28-ddfa920527b5"
+name: "Scrapy Request.meta 特殊键配置参考"
+description: "列举并说明 Scrapy Request.meta 中可用的特殊键（如 bindaddress、download_timeout、max_retry_times、proxy、dont_redirect 等），用于在构造请求时按需设置下载行为。适用于需要查阅或选择 meta 键来调整单个请求行为的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "meta"
+  - "reference"
+  - "request_configuration"
+triggers:
+  - "需要为单个请求设置超时、代理、重试或重定向行为"
+  - "不确定某个 meta 键的名称或用途"
+examples:
+  - input: "需要为某个请求设置下载超时"
+    output: "在 Request 的 meta 中设置 download_timeout 键"
+    notes: "download_timeout 为单请求级超时覆盖"
+  - input: "需要为某个请求指定代理"
+    output: "在 Request 的 meta 中设置 proxy 键"
+    notes: "proxy 为单请求级代理设置"
+---
+
+# Scrapy Request.meta 特殊键配置参考
+
+列举并说明 Scrapy Request.meta 中可用的特殊键（如 bindaddress、download_timeout、max_retry_times、proxy、dont_redirect 等），用于在构造请求时按需设置下载行为。适用于需要查阅或选择 meta 键来调整单个请求行为的场景。
+
+## Prompt
+
+当需要为单个 Scrapy 请求调整下载行为（超时、代理、重试、重定向、缓存、cookie 等）时，查阅本参考清单，确认目标 meta 键的名称与用途，再在构造 Request 时按需设置。仅用于键名与用途查阅，不涉及跨阶段流程编排或自定义中间件实现。
+
+## Objective
+
+提供 Request.meta 特殊键的权威清单与用途说明，供构造请求时查阅
+## Applicable Signals
+
+- 构造 Request 时需要覆盖默认下载行为
+- 需要确认 meta 键的准确名称以避免拼写错误
+- 需要按请求粒度而非全局设置调整行为
+
+## Contraindications
+
+- 需要跨阶段爬虫流程编排
+- 需要编写自定义中间件逻辑
+
+## Intervention Moves
+
+- 从清单中定位与目标行为对应的 meta 键
+- 确认该键的用途与作用范围（单请求级）
+- 在 Request 构造时将该键写入 meta 字典
+
+## Workflow Steps
+
+- 明确要调整的下载行为（超时、代理、重试、重定向、缓存、cookie、大小限制等）
+- 在 meta 特殊键清单中查找对应键名
+- 核对键名拼写与用途说明
+- 在构造 Request 时将该键写入 meta 字典
+
+## Constraints
+
+- 仅用于单请求级 meta 键查阅与设置
+- 不替代全局 Settings 配置
+- 不涉及中间件实现细节
+
+## Cautions
+
+- 部分键（如 download_latency、redirect_urls、redirect_reasons、is_start_request）由框架写入，通常不应由用户手动设置
+- 键名拼写错误不会报错但会静默失效
+
+## Output Contract
+
+- 选定并正确设置所需的 meta 键
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要为某个请求设置下载超时
+- Therapist/Output: 在 Request 的 meta 中设置 download_timeout 键
+- Notes: download_timeout 为单请求级超时覆盖
+
+### Example 2
+
+- Client/Input: 需要为某个请求指定代理
+- Therapist/Output: 在 Request 的 meta 中设置 proxy 键
+- Notes: proxy 为单请求级代理设置
+
+## Triggers
+
+- 需要为单个请求设置超时、代理、重试或重定向行为
+- 不确定某个 meta 键的名称或用途
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要为某个请求设置下载超时
+
+Output:
+
+  在 Request 的 meta 中设置 download_timeout 键
+
+Notes:
+
+  download_timeout 为单请求级超时覆盖
+
+### Example 2
+
+Input:
+
+  需要为某个请求指定代理
+
+Output:
+
+  在 Request 的 meta 中设置 proxy 键
+
+Notes:
+
+  proxy 为单请求级代理设置
+[?2004hp1$ cat /harbor/skills/1c413e32-798b-5a1d-b58b-85c84c4055ec/SKILL.md
+[?2004l---
+id: "1c413e32-798b-5a1d-b58b-85c84c4055ec"
+name: "通过 cb_kwargs 向回调传递附加数据"
+description: "在构造 scrapy.Request 时使用 cb_kwargs 将上下文数据传入后续回调函数，并在回调中读取这些参数，实现跨请求的状态传递。适用于需要在第二个回调中复用第一个回调的上下文数据，或回调函数需要额外参数而非仅 response 的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "callback"
+  - "cb_kwargs"
+  - "状态传递"
+triggers:
+  - "需要在第二个回调中复用第一个回调的上下文数据"
+  - "回调函数需要额外参数而非仅 response"
+examples:
+  - input: "def parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    request.cb_kwargs[\"foo\"] = \"bar\"\n    yield request"
+    output: "parse_page2 回调被调用时可读取 main_url 与 foo 参数"
+    notes: "在 yield 前可继续向 cb_kwargs 追加参数"
+---
+
+# 通过 cb_kwargs 向回调传递附加数据
+
+在构造 scrapy.Request 时使用 cb_kwargs 将上下文数据传入后续回调函数，并在回调中读取这些参数，实现跨请求的状态传递。适用于需要在第二个回调中复用第一个回调的上下文数据，或回调函数需要额外参数而非仅 response 的场景。
+
+## Prompt
+
+当需要在请求链的回调之间传递附加数据时：1) 在构造 scrapy.Request 时通过 cb_kwargs 传入字典参数；2) 可在 yield 前继续向 request.cb_kwargs 追加更多参数；3) 在目标回调函数签名中声明对应参数名以接收这些值。仅在数据无法从 response 本身获取时使用。
+
+## Objective
+
+在请求链的回调之间可靠传递附加参数
+## Applicable Signals
+
+- 回调函数需要接收 response 之外的上下文数据
+- 需要在后续回调中复用前一回调获得的信息
+
+## Contraindications
+
+- 无需跨回调传递数据时
+- 参数可通过 response 本身获取时
+
+## Intervention Moves
+
+- 在 scrapy.Request 构造时设置 cb_kwargs=dict(...)
+- 在 yield 前向 request.cb_kwargs 追加额外键值
+- 在目标回调函数签名中声明对应参数以接收数据
+
+## Workflow Steps
+
+- 确认目标回调需要 response 之外的附加数据
+- 在构造 Request 时通过 cb_kwargs 传入字典
+- 如需追加参数，在 yield 前修改 request.cb_kwargs
+- 在回调函数签名中声明对应参数名接收数据
+
+## Constraints
+
+- cb_kwargs 仅用于回调参数传递，不用于请求序列化或异常处理
+- 参数键名需与回调函数签名一致
+
+## Cautions
+
+- 避免将可通过 response 获取的数据重复放入 cb_kwargs
+
+## Output Contract
+
+- 回调函数成功接收到 cb_kwargs 中的参数
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: def parse(self, response):
+    request = scrapy.Request(
+        "http://www.example.com/index.html",
+        callback=self.parse_page2,
+        cb_kwargs=dict(main_url=response.url),
+    )
+    request.cb_kwargs["foo"] = "bar"
+    yield request
+- Therapist/Output: parse_page2 回调被调用时可读取 main_url 与 foo 参数
+- Notes: 在 yield 前可继续向 cb_kwargs 追加参数
+
+## Triggers
+
+- 需要在第二个回调中复用第一个回调的上下文数据
+- 回调函数需要额外参数而非仅 response
+
+## Examples
+
+### Example 1
+
+Input:
+
+  def parse(self, response):
+      request = scrapy.Request(
+          "http://www.example.com/index.html",
+          callback=self.parse_page2,
+          cb_kwargs=dict(main_url=response.url),
+      )
+      request.cb_kwargs["foo"] = "bar"
+      yield request
+
+Output:
+
+  parse_page2 回调被调用时可读取 main_url 与 foo 参数
+
+Notes:
+
+  在 yield 前可继续向 cb_kwargs 追加参数
+[?2004hp1$ cat /harbor/skills/206b95c3-ad84-55ae-acea-c8787d0858fb/SKILL.md
+[?2004l---
+id: "206b95c3-ad84-55ae-acea-c8787d0858fb"
+name: "启用并排序 Spider 中间件"
+description: "通过 SPIDER_MIDDLEWARES 设置注册自定义 Spider 中间件并指定执行顺序，可用 None 禁用内置中间件。适用于需要插入或替换 Spider 处理链中某个中间件时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider-middleware"
+  - "settings"
+  - "middleware-configuration"
+triggers:
+  - "需要启用自定义 Spider 中间件"
+  - "需要禁用或替换内置中间件"
+examples:
+  - input: "启用自定义 Spider 中间件"
+    output: "SPIDER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomSpiderMiddleware\": 543,\n}"
+  - input: "禁用内置 RefererMiddleware 并替换为自定义中间件"
+    output: "SPIDER_MIDDLEWARES = {\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": None,\n    \"myproject.middlewares.CustomRefererSpiderMiddleware\": 700,\n}"
+---
+
+# 启用并排序 Spider 中间件
+
+通过 SPIDER_MIDDLEWARES 设置注册自定义 Spider 中间件并指定执行顺序，可用 None 禁用内置中间件。适用于需要插入或替换 Spider 处理链中某个中间件时。
+
+## Prompt
+
+在 Scrapy 项目的设置中配置 SPIDER_MIDDLEWARES 字典：键为中间件类路径，值为中间件顺序（整数）。如需禁用内置中间件，将其值设为 None。如需替换内置中间件，先禁用原中间件再以新类路径注册并指定顺序。配置完成后确认该中间件是否还需要通过其他专用设置启用。
+
+## Objective
+
+正确注册并排序 Spider 中间件以控制处理链行为
+## Applicable Signals
+
+- 需要启用自定义 Spider 中间件
+- 需要禁用或替换内置中间件
+
+## Contraindications
+
+- 中间件还需额外专用设置才能生效而未确认
+
+## Intervention Moves
+
+- 在 SPIDER_MIDDLEWARES 字典中添加中间件类路径与顺序值
+- 将内置中间件值设为 None 以禁用
+- 以新类路径注册替换中间件并指定顺序
+
+## Workflow Steps
+
+- 确定要启用、禁用或替换的中间件类路径
+- 在 SPIDER_MIDDLEWARES 字典中为每个中间件指定类路径与顺序值
+- 如需禁用内置中间件，将其值设为 None
+- 如需替换内置中间件，先禁用原中间件再注册新中间件并指定顺序
+- 确认该中间件是否还需通过其他专用设置启用
+
+## Constraints
+
+- SPIDER_MIDDLEWARES 为字典，键为中间件类路径，值为中间件顺序
+- 禁用内置中间件须将值设为 None
+
+## Cautions
+
+- 部分中间件可能需要通过特定设置额外启用，需查阅对应中间件文档确认
+
+## Output Contract
+
+- SPIDER_MIDDLEWARES 配置字典，含类路径与顺序值
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 启用自定义 Spider 中间件
+- Therapist/Output: SPIDER_MIDDLEWARES = {
+    "myproject.middlewares.CustomSpiderMiddleware": 543,
+}
+
+### Example 2
+
+- Client/Input: 禁用内置 RefererMiddleware 并替换为自定义中间件
+- Therapist/Output: SPIDER_MIDDLEWARES = {
+    "scrapy.spidermiddlewares.referer.RefererMiddleware": None,
+    "myproject.middlewares.CustomRefererSpiderMiddleware": 700,
+}
+
+## Triggers
+
+- 需要启用自定义 Spider 中间件
+- 需要禁用或替换内置中间件
+
+## Examples
+
+### Example 1
+
+Input:
+
+  启用自定义 Spider 中间件
+
+Output:
+
+  SPIDER_MIDDLEWARES = {
+      "myproject.middlewares.CustomSpiderMiddleware": 543,
+  }
+
+### Example 2
+
+Input:
+
+  禁用内置 RefererMiddleware 并替换为自定义中间件
+
+Output:
+
+  SPIDER_MIDDLEWARES = {
+      "scrapy.spidermiddlewares.referer.RefererMiddleware": None,
+      "myproject.middlewares.CustomRefererSpiderMiddleware": 700,
+  }
+[?2004hp1$ cat /harbor/skills/20f141fe-1520-568d-a0ef-844224151e15/SKILL.md
+[?2004l---
+id: "20f141fe-1520-568d-a0ef-844224151e15"
+name: "Spider 中间件异常处理钩子实现"
+description: "实现 process_spider_exception 钩子，在 Spider 或上游 process_spider_output 抛异常时，决定返回 None 让异常继续传播，或返回 Request/item 可迭代对象接管输出管道。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider_middleware"
+  - "exception_handling"
+  - "process_spider_exception"
+triggers:
+  - "需要捕获并处理 Spider 或 process_spider_output 抛出的异常"
+  - "需要决定异常是否继续传播至引擎"
+  - "需要在中间件层集中接管爬虫阶段异常并恢复输出流"
+examples:
+  - input: "Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃"
+    output: "process_spider_exception 返回 None"
+    notes: "异常继续传播至引擎"
+  - input: "Spider 处理响应时抛出异常，本中间件希望恢复输出流"
+    output: "process_spider_exception 返回包含 Request 或 item 的可迭代对象"
+    notes: "process_spider_output 从下一个中间件开始执行"
+---
+
+# Spider 中间件异常处理钩子实现
+
+实现 process_spider_exception 钩子，在 Spider 或上游 process_spider_output 抛异常时，决定返回 None 让异常继续传播，或返回 Request/item 可迭代对象接管输出管道。
+
+## Prompt
+
+在自定义 Spider 中间件中实现 process_spider_exception(response, exception) 钩子。判断当前异常是否应由本中间件接管：若需继续传播，返回 None，Scrapy 会继续调用后续中间件的 process_spider_exception，直至异常到达引擎被记录并丢弃；若需接管，返回一个 Request 或 item 对象的可迭代对象，此时 process_spider_output 管道从下一个中间件开始执行，且不再调用其他 process_spider_exception。确保返回值类型符合契约，不要返回非可迭代的单个对象。
+
+## Objective
+
+在 Spider 阶段异常时选择继续传播或接管输出
+## Applicable Signals
+
+- Spider 或上游 process_spider_output 抛出异常
+- 需要自定义异常走向而非默认记录丢弃
+- 需要在异常后恢复 Request/item 输出流
+
+## Contraindications
+
+- 处理正常输出流而非异常时应使用 process_spider_output
+- 异常应直接交由引擎记录丢弃时无需实现该钩子
+
+## Intervention Moves
+
+- 实现 process_spider_exception(response, exception) 方法
+- 判断异常是否由本中间件接管
+- 返回 None 表示继续传播
+- 返回 Request/item 可迭代对象表示接管并进入 process_spider_output 管道
+
+## Workflow Steps
+
+- 定义 process_spider_exception(response, exception) 方法
+- 根据 response 与 exception 判断是否接管
+- 若继续传播则返回 None
+- 若接管则返回 Request 或 item 对象的可迭代对象
+- 确认接管后 process_spider_output 从下一个中间件开始执行且不再调用其他 process_spider_exception
+
+## Constraints
+
+- 返回值只能是 None 或 Request/item 的可迭代对象
+- 返回 None 时异常继续沿中间件链传播至引擎
+- 返回可迭代对象时不再调用其他 process_spider_exception
+
+## Cautions
+
+- 返回非可迭代的单个对象会违反返回契约
+- 接管异常会跳过后续中间件的异常处理钩子
+
+## Output Contract
+
+- 返回 None 或 Request/item 可迭代对象以明确异常走向
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃
+- Therapist/Output: process_spider_exception 返回 None
+- Notes: 异常继续传播至引擎
+
+### Example 2
+
+- Client/Input: Spider 处理响应时抛出异常，本中间件希望恢复输出流
+- Therapist/Output: process_spider_exception 返回包含 Request 或 item 的可迭代对象
+- Notes: process_spider_output 从下一个中间件开始执行
+
+## Triggers
+
+- 需要捕获并处理 Spider 或 process_spider_output 抛出的异常
+- 需要决定异常是否继续传播至引擎
+- 需要在中间件层集中接管爬虫阶段异常并恢复输出流
+
+## Examples
+
+### Example 1
+
+Input:
+
+  Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃
+
+Output:
+
+  process_spider_exception 返回 None
+
+Notes:
+
+  异常继续传播至引擎
+
+### Example 2
+
+Input:
+
+  Spider 处理响应时抛出异常，本中间件希望恢复输出流
+
+Output:
+
+  process_spider_exception 返回包含 Request 或 item 的可迭代对象
+
+Notes:
+
+  process_spider_output 从下一个中间件开始执行
+[?2004hp1$ cat /harbor/skills/239fecfd-293b-512a-b2a7-a4df9c9c077c/SKILL.md
+[?2004l---
+id: "239fecfd-293b-512a-b2a7-a4df9c9c077c"
+name: "FormRequest.from_response 表单预填充与提交"
+description: "从响应中的 HTML 表单预填充字段并构造 FormRequest，支持按 name/id/xpath/css/number 选择表单、覆盖字段、模拟点击控件或禁用点击。用于需要基于已有页面表单发起 POST 提交的爬取场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "FormRequest"
+  - "表单提交"
+  - "请求构造"
+triggers:
+  - "响应包含需要提交的 HTML 表单"
+  - "需要模拟用户登录或表单 POST 提交"
+---
+
+# FormRequest.from_response 表单预填充与提交
+
+从响应中的 HTML 表单预填充字段并构造 FormRequest，支持按 name/id/xpath/css/number 选择表单、覆盖字段、模拟点击控件或禁用点击。用于需要基于已有页面表单发起 POST 提交的爬取场景。
+
+## Prompt
+
+当响应包含需要提交的 HTML 表单时，使用 FormRequest.from_response() 基于该响应构造 FormRequest：先通过 formname/formid/formxpath/formcss/formnumber 定位目标表单（默认第一个），再用 formdata 覆盖或排除字段（值为 None 时排除该字段），用 clickdata 指定模拟点击的控件（或 dont_click=True 不点击任何元素），其余参数直接传给 FormRequest 构造函数。
+
+## Objective
+
+基于响应中的表单自动构造并提交 FormRequest
+## Applicable Signals
+
+- 响应包含需要提交的 HTML 表单
+- 需要模拟用户登录或表单 POST 提交
+
+## Contraindications
+
+- 目标页面无表单或表单由 JS 动态生成
+- 需要构造非表单类请求
+
+## Intervention Moves
+
+- 用 formname/formid/formxpath/formcss/formnumber 定位目标表单
+- 用 formdata 覆盖或排除表单字段
+- 用 clickdata 指定模拟点击的控件，或用 dont_click 禁用点击
+- 将其余参数直接传给 FormRequest 构造函数
+
+## Workflow Steps
+
+- 确认响应中包含可解析的 HTML 表单
+- 选择表单定位方式：formname、formid、formxpath、formcss 或 formnumber（默认 0）
+- 用 formdata 覆盖已有字段；将某字段值设为 None 以从请求中排除该字段
+- 用 clickdata 指定要模拟点击的控件（可用 nr 属性按零基索引定位），或设 dont_click=True 不点击任何元素
+- 将其余参数直接传给 FormRequest 构造函数以完成请求构造
+
+## Constraints
+
+- formnumber 默认使用第一个表单（索引 0）
+- formdata 中值为 None 的字段不会包含在请求中，即使响应表单中存在该字段
+- 未提供 clickdata 时默认模拟点击第一个可点击元素
+
+## Cautions
+
+- 表单由 JS 动态生成时 from_response 无法预填充，需改用其他方式构造请求
+
+## Output Contract
+
+- 一个已预填充表单字段的 FormRequest 对象
+
+## Triggers
+
+- 响应包含需要提交的 HTML 表单
+- 需要模拟用户登录或表单 POST 提交
+[?2004hp1$ cat /harbor/skills/248800e8-c919-5bb2-98b0-92a341972f97/SKILL.md
+[?2004l---
+id: "248800e8-c919-5bb2-98b0-92a341972f97"
+name: "Scrapy 请求 errback 失败处理"
+description: "为 Scrapy 请求设置 errback 回调，在请求处理失败时接收 Failure 对象并执行降级、重试或记录；适用于需要容错处理的抓取请求。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+  - "异常处理"
+  - "请求失败"
+triggers:
+  - "请求可能失败需要容错"
+  - "需要在失败时读取请求附加数据"
+  - "需要为请求指定失败处理回调"
+examples:
+  - input: "构造一个可能失败的请求并需要失败时记录"
+    output: "在 Request 中设置 errback 指向处理函数，函数接收 Failure 并记录失败信息"
+    notes: "errback 默认 None，需显式指定"
+---
+
+# Scrapy 请求 errback 失败处理
+
+为 Scrapy 请求设置 errback 回调，在请求处理失败时接收 Failure 对象并执行降级、重试或记录；适用于需要容错处理的抓取请求。
+
+## Prompt
+
+当请求可能失败且需要容错时，在构造 Request 时通过 errback 参数指定回调函数。errback 接收 Failure 对象，可在其中读取请求附加数据（如 cb_kwargs 或 meta）以完成降级、重试或记录。仅处理失败路径，不替代成功回调。
+
+## Objective
+
+在请求失败时通过 errback 捕获并处理异常
+## Applicable Signals
+
+- 请求可能失败需要容错
+- 需要在失败时读取请求附加数据
+
+## Contraindications
+
+- 请求无需失败处理
+- 仅处理成功响应
+
+## Intervention Moves
+
+- 在 Request 构造时设置 errback 参数指向处理函数
+- errback 函数接收 Failure 对象并据此执行降级或记录
+- 在 errback 中访问请求附加数据（cb_kwargs 或 meta）
+
+## Workflow Steps
+
+- 判断该请求是否需要失败容错处理
+- 构造 Request 时通过 errback 参数指定失败处理函数
+- 在 errback 函数中接收 Failure 对象
+- 根据 Failure 与请求附加数据执行降级、重试或记录
+
+## Constraints
+
+- errback 默认值为 None，需显式设置才会触发失败处理
+- errback 仅处理失败路径，成功响应仍由 callback 处理
+
+## Cautions
+
+- 通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 识别，如需设置 cookie 应使用 Request.cookies 参数
+
+## Output Contract
+
+- errback 函数接收 Failure 并完成降级或记录
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 构造一个可能失败的请求并需要失败时记录
+- Therapist/Output: 在 Request 中设置 errback 指向处理函数，函数接收 Failure 并记录失败信息
+- Notes: errback 默认 None，需显式指定
+
+## Triggers
+
+- 请求可能失败需要容错
+- 需要在失败时读取请求附加数据
+- 需要为请求指定失败处理回调
+
+## Examples
+
+### Example 1
+
+Input:
+
+  构造一个可能失败的请求并需要失败时记录
+
+Output:
+
+  在 Request 中设置 errback 指向处理函数，函数接收 Failure 并记录失败信息
+
+Notes:
+
+  errback 默认 None，需显式指定
+[?2004hp1$ cat /harbor/skills/2ed70ab0-4c0d-550c-b289-5766cd0acea3/SKILL.md
+[?2004l---
+id: "2ed70ab0-4c0d-550c-b289-5766cd0acea3"
+name: "自定义Spider中间件基类实现"
+description: "使用BaseSpiderMiddleware基类简化异步process_spider_output()和process_start()方法的实现，通过get_processed_item/get_processed_request逐项处理spider输出，减少样板代码。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider-middleware"
+  - "base-class"
+  - "async"
+triggers:
+  - "需要编写异步process_spider_output或process_start的spider中间件"
+  - "希望减少中间件样板代码"
+examples:
+  - input: "需要编写异步process_spider_output的中间件"
+    output: "继承BaseSpiderMiddleware并实现get_processed_item，对每个item返回处理后对象或None"
+    notes: "response在start seeds时为None"
+---
+
+# 自定义Spider中间件基类实现
+
+使用BaseSpiderMiddleware基类简化异步process_spider_output()和process_start()方法的实现，通过get_processed_item/get_processed_request逐项处理spider输出，减少样板代码。
+
+## Prompt
+
+当需要编写包含异步process_spider_output()或process_start()方法的spider中间件时，继承scrapy.spidermiddlewares.base.BaseSpiderMiddleware，并实现get_processed_item(item, response)与/或get_processed_request(request, response)辅助方法。对每个来自start seeds或spider输出的item/request逐项处理：返回相同或不同的对象，或返回None以忽略该项。response参数在start seeds场景下为None。若中间件不包含这两个方法，则无需使用该基类。
+
+## Objective
+
+用基类辅助方法减少自定义spider中间件的样板代码并正确逐项处理item/request
+## Applicable Signals
+
+- 中间件需实现异步process_spider_output或process_start
+- 存在大量重复的逐项处理样板代码
+
+## Contraindications
+
+- 中间件不包含process_spider_output或process_start方法
+- 仅需同步简单钩子
+
+## Intervention Moves
+
+- 继承BaseSpiderMiddleware基类
+- 实现get_processed_item逐项处理item
+- 实现get_processed_request逐项处理request
+- 对需忽略的项返回None
+
+## Workflow Steps
+
+- 确认中间件包含process_spider_output或process_start方法
+- 继承scrapy.spidermiddlewares.base.BaseSpiderMiddleware
+- 实现get_processed_item(item, response)返回处理后item或None
+- 实现get_processed_request(request, response)返回处理后request或None
+- 在start seeds场景下将response视为None
+
+## Constraints
+
+- 仅当中间件包含process_spider_output或process_start时才使用该基类
+- 辅助方法必须逐项处理并返回相同/不同对象或None
+
+## Cautions
+
+- start seeds场景下response为None，需处理该情况
+
+## Output Contract
+
+- 可运行的spider中间件类，正确返回处理后的item/request或None以忽略
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要编写异步process_spider_output的中间件
+- Therapist/Output: 继承BaseSpiderMiddleware并实现get_processed_item，对每个item返回处理后对象或None
+- Notes: response在start seeds时为None
+
+## Triggers
+
+- 需要编写异步process_spider_output或process_start的spider中间件
+- 希望减少中间件样板代码
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要编写异步process_spider_output的中间件
+
+Output:
+
+  继承BaseSpiderMiddleware并实现get_processed_item，对每个item返回处理后对象或None
+
+Notes:
+
+  response在start seeds时为None
+[?2004hp1$ cat /harbor/skills/43affaf4-7057-57e5-9e23-916199739db6/SKILL.md
+[?2004l---
+id: "43affaf4-7057-57e5-9e23-916199739db6"
+name: "WeakKeyDictionary 指纹缓存"
+description: "在自行实现请求指纹算法（未使用 scrapy.utils.request.fingerprint()）时，使用 WeakKeyDictionary 缓存指纹，确保每个请求只计算一次，同时避免请求对象因缓存引用而无法释放。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "fingerprint"
+  - "cache"
+  - "WeakKeyDictionary"
+  - "memory"
+triggers:
+  - "自行编写指纹算法而未使用 scrapy.utils.request.fingerprint()"
+  - "实现自定义 RequestFingerprinter 的 fingerprint 方法"
+examples:
+  - input: "自定义 RequestFingerprinter，仅按 URL 计算指纹"
+    output: "class RequestFingerprinter:\n    cache = WeakKeyDictionary()\n    def fingerprint(self, request):\n        if request not in self.cache:\n            fp = sha1()\n            fp.update(to_bytes(request.url))\n            self.cache[request] = fp.digest()\n        return self.cache[request]"
+    notes: "缓存避免重复计算，弱引用避免内存泄漏"
+---
+
+# WeakKeyDictionary 指纹缓存
+
+在自行实现请求指纹算法（未使用 scrapy.utils.request.fingerprint()）时，使用 WeakKeyDictionary 缓存指纹，确保每个请求只计算一次，同时避免请求对象因缓存引用而无法释放。
+
+## Prompt
+
+当你在自定义 RequestFingerprinter 中从零编写指纹逻辑、且未调用 scrapy.utils.request.fingerprint() 时，使用 WeakKeyDictionary 作为指纹缓存：先检查 request 是否已在缓存中，未命中则计算指纹并写入缓存，命中则直接返回缓存值。不要使用普通 dict 缓存，以免请求对象被永久持有。
+
+## Objective
+
+以 WeakKeyDictionary 缓存指纹，兼顾 CPU 与内存效率
+## Applicable Signals
+
+- 自定义指纹逻辑未复用内置 fingerprint() 工具函数
+- 需要保证每个请求的指纹只计算一次
+
+## Contraindications
+
+- 直接使用内置 fingerprint() 工具函数时无需自行实现缓存
+
+## Intervention Moves
+
+- 声明类级 cache = WeakKeyDictionary()
+- 在 fingerprint 方法中先查缓存，未命中再计算并写入
+- 命中缓存时直接返回已存指纹
+
+## Workflow Steps
+
+- 确认未使用 scrapy.utils.request.fingerprint()，需要自行实现指纹逻辑
+- 在指纹器类中定义 cache = WeakKeyDictionary()
+- 在 fingerprint(request) 中判断 request 是否在 cache 中
+- 未命中时计算指纹并写入 cache，命中时返回缓存值
+
+## Constraints
+
+- 必须使用 WeakKeyDictionary 而非普通 dict 作为缓存容器
+- 缓存键为 request 对象本身
+
+## Cautions
+
+- 使用普通 dict 会导致请求对象无法释放，造成内存泄漏
+
+## Output Contract
+
+- 带 WeakKeyDictionary 缓存的指纹方法，每个请求的指纹仅计算一次且不阻止请求对象被回收
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 自定义 RequestFingerprinter，仅按 URL 计算指纹
+- Therapist/Output: class RequestFingerprinter:
+    cache = WeakKeyDictionary()
+    def fingerprint(self, request):
+        if request not in self.cache:
+            fp = sha1()
+            fp.update(to_bytes(request.url))
+            self.cache[request] = fp.digest()
+        return self.cache[request]
+- Notes: 缓存避免重复计算，弱引用避免内存泄漏
+
+## Triggers
+
+- 自行编写指纹算法而未使用 scrapy.utils.request.fingerprint()
+- 实现自定义 RequestFingerprinter 的 fingerprint 方法
+
+## Examples
+
+### Example 1
+
+Input:
+
+  自定义 RequestFingerprinter，仅按 URL 计算指纹
+
+Output:
+
+  class RequestFingerprinter:
+      cache = WeakKeyDictionary()
+      def fingerprint(self, request):
+          if request not in self.cache:
+              fp = sha1()
+              fp.update(to_bytes(request.url))
+              self.cache[request] = fp.digest()
+          return self.cache[request]
+
+Notes:
+
+  缓存避免重复计算，弱引用避免内存泄漏
+[?2004hp1$ cat /harbor/skills/447019bb-4d06-58fd-92a7-55b05d0d4e9b/SKILL.md
+[?2004l---
+id: "447019bb-4d06-58fd-92a7-55b05d0d4e9b"
+name: "下载器中间件 process_response 返回值路由"
+description: "在下载器中间件的 process_response 钩子中，根据返回值类型决定后续链路走向：返回 Response 继续交给下一个中间件处理，返回 Request 中止链路并重新调度下载，抛出 IgnoreRequest 触发请求的 errback。用于编写或调试响应处理中间件时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "downloader_middleware"
+  - "process_response"
+  - "返回值分派"
+triggers:
+  - "编写或修改 process_response 方法"
+  - "需要根据响应结果决定继续、重调度或触发 errback"
+  - "调试下载器中间件响应阶段的路由行为"
+examples:
+  - input: "希望响应继续被后续中间件处理"
+    output: "返回 Response（原响应或新响应）"
+    notes: "链路交给下一个中间件的 process_response"
+  - input: "希望中止当前链路并重新下载"
+    output: "返回 Request"
+    notes: "该请求被重新调度下载"
+  - input: "希望放弃该请求"
+    output: "抛出 IgnoreRequest"
+    notes: "调用 Request.errback；无处理则被忽略且不记录日志"
+---
+
+# 下载器中间件 process_response 返回值路由
+
+在下载器中间件的 process_response 钩子中，根据返回值类型决定后续链路走向：返回 Response 继续交给下一个中间件处理，返回 Request 中止链路并重新调度下载，抛出 IgnoreRequest 触发请求的 errback。用于编写或调试响应处理中间件时。
+
+## Prompt
+
+实现或调试 process_response(request, response) 时，先明确本次要达成的路由目标，再选择返回值类型：
+1) 若需继续处理响应，返回 Response（可为原响应或全新响应），链路将交给下一个中间件的 process_response。
+2) 若需中止当前链路并重新下载，返回 Request，行为等同于 process_request 返回 Request，该请求被重新调度。
+3) 若需放弃该请求，抛出 IgnoreRequest，将调用 Request.errback；若无代码处理该异常，则被忽略且不记录日志（与其他异常不同）。
+确保返回值类型与预期链路行为一致，避免返回非法类型。
+
+## Objective
+
+按返回值类型正确路由 process_response 的后续处理
+## Applicable Signals
+
+- 正在实现 process_response 钩子
+- 需要根据响应结果决定继续、重调度或触发 errback
+
+## Contraindications
+
+- 处理请求阶段逻辑（应使用 process_request）
+- 处理异常阶段逻辑（应使用 process_exception）
+
+## Intervention Moves
+
+- 返回 Response 以继续交给下一个中间件
+- 返回 Request 以中止链路并重新调度下载
+- 抛出 IgnoreRequest 以触发请求的 errback
+
+## Workflow Steps
+
+- 确认本次 process_response 的路由目标（继续、重调度或放弃）
+- 按目标选择返回值：Response 继续、Request 重调度、IgnoreRequest 触发 errback
+- 核对返回值类型与预期链路行为一致
+
+## Constraints
+
+- process_response 只能返回 Response、返回 Request 或抛出 IgnoreRequest
+- 返回 Request 会中止中间件链并重新调度下载
+- 抛出 IgnoreRequest 时若无代码处理则被忽略且不记录日志
+
+## Cautions
+
+- 返回 Request 的行为等同于 process_request 返回 Request，需注意重调度影响
+- IgnoreRequest 未被处理时静默忽略，可能掩盖问题
+
+## Output Contract
+
+- process_response 返回 Response/Request 或抛出 IgnoreRequest，且链路行为符合预期
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 希望响应继续被后续中间件处理
+- Therapist/Output: 返回 Response（原响应或新响应）
+- Notes: 链路交给下一个中间件的 process_response
+
+### Example 2
+
+- Client/Input: 希望中止当前链路并重新下载
+- Therapist/Output: 返回 Request
+- Notes: 该请求被重新调度下载
+
+### Example 3
+
+- Client/Input: 希望放弃该请求
+- Therapist/Output: 抛出 IgnoreRequest
+- Notes: 调用 Request.errback；无处理则被忽略且不记录日志
+
+## Triggers
+
+- 编写或修改 process_response 方法
+- 需要根据响应结果决定继续、重调度或触发 errback
+- 调试下载器中间件响应阶段的路由行为
+
+## Examples
+
+### Example 1
+
+Input:
+
+  希望响应继续被后续中间件处理
+
+Output:
+
+  返回 Response（原响应或新响应）
+
+Notes:
+
+  链路交给下一个中间件的 process_response
+
+### Example 2
+
+Input:
+
+  希望中止当前链路并重新下载
+
+Output:
+
+  返回 Request
+
+Notes:
+
+  该请求被重新调度下载
+
+### Example 3
+
+Input:
+
+  希望放弃该请求
+
+Output:
+
+  抛出 IgnoreRequest
+
+Notes:
+
+  调用 Request.errback；无处理则被忽略且不记录日志
+[?2004hp1$ cat /harbor/skills/46e2a1dd-9c6d-5a57-8b18-94b38f95cc65/SKILL.md
+[?2004l---
+id: "46e2a1dd-9c6d-5a57-8b18-94b38f95cc65"
+name: "Response 选择器快捷提取"
+description: "在已获得的 TextResponse 对象上直接调用 css/xpath/jmespath 快捷方法执行选择器查询，返回匹配的 SelectorList（或空结果）供后续解析使用。适用于已持有响应、需要按 CSS/XPath/JMESPath 语法定位或提取页面元素的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "response_parsing"
+  - "selector_query"
+  - "css"
+  - "xpath"
+  - "jmespath"
+triggers:
+  - "已持有 TextResponse 对象需要提取页面元素"
+  - "需要按 CSS/XPath/JMESPath 语法定位节点"
+  - "解析阶段需要从响应中获取 SelectorList"
+examples:
+  - input: "response.css('p')"
+    output: "匹配所有 <p> 元素的 SelectorList"
+    notes: "等价于 TextResponse.selector.css(query)"
+  - input: "response.xpath('//p')"
+    output: "匹配所有 <p> 元素的 SelectorList"
+    notes: "等价于 TextResponse.selector.xpath(query)"
+  - input: "response.jmespath('object.[*]')"
+    output: "按 JMESPath 查询返回的匹配结果"
+    notes: "等价于 TextResponse.selector.jmespath(query)"
+---
+
+# Response 选择器快捷提取
+
+在已获得的 TextResponse 对象上直接调用 css/xpath/jmespath 快捷方法执行选择器查询，返回匹配的 SelectorList（或空结果）供后续解析使用。适用于已持有响应、需要按 CSS/XPath/JMESPath 语法定位或提取页面元素的场景。
+
+## Prompt
+
+确认当前对象为 TextResponse（或子类）且已成功获取响应内容。根据目标元素选择合适的选择器语法：CSS 用 response.css(query)，XPath 用 response.xpath(query)，JMESPath 用 response.jmespath(query)。这些方法等价于对 TextResponse.selector 调用对应查询。执行后检查返回的 SelectorList：若为空，说明选择器未匹配，应调整选择器而非继续解析；若需提取属性值，使用 ::attr(...) 或 @attr 语法。仅做单次提取，不在此步骤构造或跟进请求。
+
+## Objective
+
+在响应对象上快速执行选择器查询并返回匹配结果
+## Applicable Signals
+
+- 已持有 TextResponse 对象需要提取元素
+- 需要按 CSS/XPath/JMESPath 语法定位节点
+
+## Contraindications
+
+- 响应非文本类型或选择器语法不适用
+- 需要跨请求调度而非单次提取
+
+## Intervention Moves
+
+- 调用 response.css(query) 执行 CSS 查询
+- 调用 response.xpath(query) 执行 XPath 查询
+- 调用 response.jmespath(query) 执行 JMESPath 查询
+- 检查返回的 SelectorList 是否为空并据此调整选择器
+
+## Workflow Steps
+
+- 确认响应对象为 TextResponse 或其子类
+- 按目标元素选择 CSS、XPath 或 JMESPath 语法
+- 调用对应的快捷方法执行查询
+- 检查返回的 SelectorList，必要时调整选择器或提取属性
+
+## Constraints
+
+- 仅在已获得的响应对象上执行单次提取
+- 不在此步骤构造或跟进请求
+- 选择器语法须与响应内容类型匹配
+
+## Cautions
+
+- 空 SelectorList 表示未匹配，应调整选择器而非继续解析
+- 提取属性需使用 ::attr(...) 或 @attr 语法
+
+## Output Contract
+
+- 返回匹配的 SelectorList 或空结果
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: response.css('p')
+- Therapist/Output: 匹配所有 <p> 元素的 SelectorList
+- Notes: 等价于 TextResponse.selector.css(query)
+
+### Example 2
+
+- Client/Input: response.xpath('//p')
+- Therapist/Output: 匹配所有 <p> 元素的 SelectorList
+- Notes: 等价于 TextResponse.selector.xpath(query)
+
+### Example 3
+
+- Client/Input: response.jmespath('object.[*]')
+- Therapist/Output: 按 JMESPath 查询返回的匹配结果
+- Notes: 等价于 TextResponse.selector.jmespath(query)
+
+## Triggers
+
+- 已持有 TextResponse 对象需要提取页面元素
+- 需要按 CSS/XPath/JMESPath 语法定位节点
+- 解析阶段需要从响应中获取 SelectorList
+
+## Examples
+
+### Example 1
+
+Input:
+
+  response.css('p')
+
+Output:
+
+  匹配所有 <p> 元素的 SelectorList
+
+Notes:
+
+  等价于 TextResponse.selector.css(query)
+
+### Example 2
+
+Input:
+
+  response.xpath('//p')
+
+Output:
+
+  匹配所有 <p> 元素的 SelectorList
+
+Notes:
+
+  等价于 TextResponse.selector.xpath(query)
+
+### Example 3
+
+Input:
+
+  response.jmespath('object.[*]')
+
+Output:
+
+  按 JMESPath 查询返回的匹配结果
+
+Notes:
+
+  等价于 TextResponse.selector.jmespath(query)
+[?2004hp1$ cat /harbor/skills/476dd988-1326-59c4-be91-32595e7d8692/SKILL.md
+[?2004l---
+id: "476dd988-1326-59c4-be91-32595e7d8692"
+name: "Request errback 异常捕获处理"
+description: "为 Scrapy Request 配置 errback 回调以捕获请求处理过程中的异常，并在 errback 中访问 meta 附加数据进行失败分支处理。适用于需要逐请求容错与失败分支处理的爬取流程。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+  - "异常处理"
+  - "request"
+  - "meta"
+triggers:
+  - "请求可能失败需要失败分支处理"
+  - "需要在异常时读取 meta 附加数据"
+  - "需要为单个 Request 定制错误处理逻辑"
+examples:
+  - input: "某请求可能失败，且需要在失败时读取 meta 中的分类信息"
+    output: "构造 Request 时传入 errback，errback 中读取 request.meta 的分类信息并记录或重试"
+    notes: "附加数据需在发起请求时通过 meta 传入"
+---
+
+# Request errback 异常捕获处理
+
+为 Scrapy Request 配置 errback 回调以捕获请求处理过程中的异常，并在 errback 中访问 meta 附加数据进行失败分支处理。适用于需要逐请求容错与失败分支处理的爬取流程。
+
+## Prompt
+
+当某个 Request 可能失败且需要独立的失败分支处理时，为其绑定 errback 回调。在 errback 中接收 failure 对象，读取 request.meta 中的附加数据以区分上下文，并执行相应的错误处理逻辑（记录、重试或降级）。仅在需要逐请求失败处理时使用；若异常已由中间件统一处理或仅需成功回调，则不要额外配置 errback。
+
+## Objective
+
+通过 errback 捕获并处理请求异常
+## Applicable Signals
+
+- 请求可能失败需要失败分支处理
+- 需要在异常时读取 meta 附加数据
+
+## Contraindications
+
+- 仅需正常成功回调处理
+- 异常由中间件统一处理无需逐请求配置
+
+## Intervention Moves
+
+- 在构造 Request 时传入 errback 参数绑定异常处理函数
+- 在 errback 函数中接收 failure 对象并读取 request.meta 附加数据
+- 根据 meta 上下文执行记录、重试或降级等错误处理
+
+## Workflow Steps
+
+- 判断该请求是否需要独立的失败分支处理
+- 构造 Request 时通过 errback 参数绑定异常处理函数
+- 在 errback 中接收 failure 对象并访问 request.meta 中的附加数据
+- 依据附加数据执行相应的错误处理逻辑
+
+## Constraints
+
+- errback 仅处理该 Request 的失败分支，不替代正常 callback 流程
+- 附加数据需在发起请求时通过 meta 传入，errback 中方可读取
+
+## Cautions
+
+- 若异常已由中间件统一处理，逐请求配置 errback 可能造成重复处理
+- errback 中应避免吞掉异常而不做任何记录或降级
+
+## Output Contract
+
+- 绑定 errback 的 Request 及对应的异常处理逻辑，失败时可读取 meta 附加数据并执行错误处理
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 某请求可能失败，且需要在失败时读取 meta 中的分类信息
+- Therapist/Output: 构造 Request 时传入 errback，errback 中读取 request.meta 的分类信息并记录或重试
+- Notes: 附加数据需在发起请求时通过 meta 传入
+
+## Triggers
+
+- 请求可能失败需要失败分支处理
+- 需要在异常时读取 meta 附加数据
+- 需要为单个 Request 定制错误处理逻辑
+
+## Examples
+
+### Example 1
+
+Input:
+
+  某请求可能失败，且需要在失败时读取 meta 中的分类信息
+
+Output:
+
+  构造 Request 时传入 errback，errback 中读取 request.meta 的分类信息并记录或重试
+
+Notes:
+
+  附加数据需在发起请求时通过 meta 传入
+[?2004hp1$ cat /harbor/skills/501dbb09-bc4f-50e2-8eeb-0f83cbff1968/SKILL.md
+[?2004l---
+id: "501dbb09-bc4f-50e2-8eeb-0f83cbff1968"
+name: "Scrapy 回调附加数据传递"
+description: "通过 Request 的 cb_kwargs 向回调函数传递额外上下文数据（如 main_url、foo），使回调能访问请求构造阶段产生的数据。适用于回调需要复用请求阶段上下文信息的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "callback"
+  - "cb_kwargs"
+  - "上下文传递"
+triggers:
+  - "回调需要访问请求阶段产生的额外数据"
+  - "需要在多个回调之间传递上下文信息"
+examples:
+  - input: "构造请求时传入 cb_kwargs={'main_url': main_url, 'foo': foo}"
+    output: "def parse_page2(self, response, main_url, foo): yield dict(main_url=main_url, other_url=response.url, foo=foo)"
+    notes: "回调参数名与 cb_kwargs 键一一对应"
+---
+
+# Scrapy 回调附加数据传递
+
+通过 Request 的 cb_kwargs 向回调函数传递额外上下文数据（如 main_url、foo），使回调能访问请求构造阶段产生的数据。适用于回调需要复用请求阶段上下文信息的场景。
+
+## Prompt
+
+在构造 Request 时，将回调所需的额外上下文数据放入 cb_kwargs 字典；回调函数签名中声明对应参数，Scrapy 会在调用回调时把 cb_kwargs 中的键值作为关键字参数传入。确保回调参数名与 cb_kwargs 键名一致，并在回调中正确使用这些数据。
+
+## Objective
+
+在请求与回调之间传递额外上下文数据
+## Applicable Signals
+
+- 回调函数需要接收请求构造阶段已知的额外数据
+- 需要在回调中复用请求阶段的上下文变量
+
+## Contraindications
+
+- 回调无需额外上下文数据
+- 数据可通过 response 本身直接获取
+
+## Intervention Moves
+
+- 在 Request 中设置 cb_kwargs 字典携带额外数据
+- 在回调函数签名中声明与 cb_kwargs 键对应的参数
+- 在回调中使用传入的附加数据构造输出
+
+## Workflow Steps
+
+- 确定回调所需的额外上下文数据
+- 构造 Request 时将数据放入 cb_kwargs
+- 在回调函数签名中声明对应参数
+- 在回调中读取并使用这些参数
+
+## Constraints
+
+- cb_kwargs 的键必须与回调函数参数名一致
+
+## Cautions
+
+- 参数名不匹配会导致回调调用失败
+
+## Output Contract
+
+- 回调函数接收到 cb_kwargs 中的附加数据并正确使用
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 构造请求时传入 cb_kwargs={'main_url': main_url, 'foo': foo}
+- Therapist/Output: def parse_page2(self, response, main_url, foo): yield dict(main_url=main_url, other_url=response.url, foo=foo)
+- Notes: 回调参数名与 cb_kwargs 键一一对应
+
+## Triggers
+
+- 回调需要访问请求阶段产生的额外数据
+- 需要在多个回调之间传递上下文信息
+
+## Examples
+
+### Example 1
+
+Input:
+
+  构造请求时传入 cb_kwargs={'main_url': main_url, 'foo': foo}
+
+Output:
+
+  def parse_page2(self, response, main_url, foo): yield dict(main_url=main_url, other_url=response.url, foo=foo)
+
+Notes:
+
+  回调参数名与 cb_kwargs 键一一对应
+[?2004hp1$ cat /harbor/skills/508a30a5-6330-5c7e-a9a0-583ed481e86d/SKILL.md
+[?2004l---
+id: "508a30a5-6330-5c7e-a9a0-583ed481e86d"
+name: "Scrapy 自定义请求指纹器配置"
+description: "当默认请求去重指纹不满足需求时，通过 REQUEST_FINGERPRINTER_CLASS 选择或实现自定义请求指纹器，以控制请求去重行为。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+  - "请求指纹"
+  - "REQUEST_FINGERPRINTER_CLASS"
+triggers:
+  - "默认去重指纹不满足需求"
+  - "需要自定义请求唯一性判定"
+  - "需要调整请求去重逻辑"
+---
+
+# Scrapy 自定义请求指纹器配置
+
+当默认请求去重指纹不满足需求时，通过 REQUEST_FINGERPRINTER_CLASS 选择或实现自定义请求指纹器，以控制请求去重行为。
+
+## Prompt
+
+当默认请求指纹无法满足去重需求时，按以下步骤定制请求指纹：先确认默认指纹为何不适用，再决定是配置 REQUEST_FINGERPRINTER_CLASS 还是编写自定义 fingerprinter，实现后验证去重行为符合预期，并遵守指纹限制。
+
+## Objective
+
+定制请求指纹以控制去重行为
+## Applicable Signals
+
+- 默认去重指纹不满足需求
+- 需要自定义请求唯一性判定
+
+## Contraindications
+
+- 默认指纹已满足去重需求
+
+## Intervention Moves
+
+- 确认默认指纹不适用的具体原因
+- 通过 REQUEST_FINGERPRINTER_CLASS 选择指纹器
+- 编写自定义 request fingerprinter
+- 验证去重行为符合预期
+
+## Workflow Steps
+
+- 确认默认去重指纹为何不满足需求
+- 决定使用 REQUEST_FINGERPRINTER_CLASS 配置现有指纹器，或编写自定义 request fingerprinter
+- 实现或配置指纹器，遵守请求指纹限制
+- 验证去重行为符合预期
+
+## Constraints
+
+- 遵守请求指纹限制
+- 仅在默认指纹不满足需求时定制
+
+## Cautions
+
+- 自定义指纹可能改变去重结果，需验证后再上线
+
+## Output Contract
+
+- 已配置或实现的自定义请求指纹器，去重行为符合预期
+
+## Triggers
+
+- 默认去重指纹不满足需求
+- 需要自定义请求唯一性判定
+- 需要调整请求去重逻辑
+[?2004hp1$ cat /harbor/skills/55a14cc4-a8f7-564e-b68a-bd3c5bd396ff/SKILL.md
+[?2004l---
+id: "55a14cc4-a8f7-564e-b68a-bd3c5bd396ff"
+name: "回调参数透传至 errback"
+description: "通过 cb_kwargs 向回调传递上下文参数，并在 errback 中经 Failure.request.cb_kwargs 取回，用于失败时仍能基于原始上下文处理。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+  - "cb_kwargs"
+  - "上下文传递"
+  - "请求调度"
+triggers:
+  - "失败后仍需基于原始请求上下文产出数据或做后续处理"
+  - "需要在 errback 中访问 callback 的参数"
+examples:
+  - input: "发起请求时传入 cb_kwargs=dict(main_url=response.url)，并设置 errback"
+    output: "errback 中通过 failure.request.cb_kwargs[\"main_url\"] 取回 main_url 并产出结果"
+    notes: "callback 与 errback 共享同一上下文参数"
+---
+
+# 回调参数透传至 errback
+
+通过 cb_kwargs 向回调传递上下文参数，并在 errback 中经 Failure.request.cb_kwargs 取回，用于失败时仍能基于原始上下文处理。
+
+## Prompt
+
+当请求失败后仍需基于原始回调参数继续处理时，使用本技能：在发起 scrapy.Request 时通过 cb_kwargs 传入所需上下文参数，并在 errback 中通过 failure.request.cb_kwargs 取回这些参数，据此产出数据或做后续处理。
+
+## Objective
+
+在失败回调中访问原始回调参数以继续处理
+## Applicable Signals
+
+- 失败后仍需基于原始请求上下文产出数据或做后续处理
+
+## Contraindications
+
+- 失败处理不需要原始回调参数时
+
+## Intervention Moves
+
+- 在 scrapy.Request 中通过 cb_kwargs 传入上下文参数
+- 在 errback 中通过 failure.request.cb_kwargs 取回参数
+- 基于取回的参数产出结果或做后续处理
+
+## Workflow Steps
+
+- 确定失败后仍需使用的上下文参数
+- 在发起请求时通过 cb_kwargs 传入这些参数
+- 在 errback 中通过 failure.request.cb_kwargs 取回参数
+- 基于取回的参数产出结果或继续处理
+
+## Constraints
+
+- cb_kwargs 中的参数需与 callback 签名匹配
+- errback 中通过 failure.request.cb_kwargs 访问参数
+
+## Cautions
+
+- 仅在失败处理确实需要原始上下文时才使用，避免无谓透传
+
+## Output Contract
+
+- errback 中通过 failure.request.cb_kwargs 取回参数并产出结果
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 发起请求时传入 cb_kwargs=dict(main_url=response.url)，并设置 errback
+- Therapist/Output: errback 中通过 failure.request.cb_kwargs["main_url"] 取回 main_url 并产出结果
+- Notes: callback 与 errback 共享同一上下文参数
+
+## Triggers
+
+- 失败后仍需基于原始请求上下文产出数据或做后续处理
+- 需要在 errback 中访问 callback 的参数
+
+## Examples
+
+### Example 1
+
+Input:
+
+  发起请求时传入 cb_kwargs=dict(main_url=response.url)，并设置 errback
+
+Output:
+
+  errback 中通过 failure.request.cb_kwargs["main_url"] 取回 main_url 并产出结果
+
+Notes:
+
+  callback 与 errback 共享同一上下文参数
+[?2004hp1$ cat /harbor/skills/65e1a9ed-69fb-5e8d-87f3-1bf759519ddd/SKILL.md
+[?2004l---
+id: "65e1a9ed-69fb-5e8d-87f3-1bf759519ddd"
+name: "Scrapy Request 回调与错误回调路由配置"
+description: "为 Scrapy Request 指定 callback 或 errback，并处理 None/NO_CALLBACK 默认行为，使响应或异常被路由到正确的处理函数。适用于需要自定义响应处理或捕获请求处理异常的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "callback"
+  - "errback"
+  - "路由"
+triggers:
+  - "需要自定义响应处理函数"
+  - "需要捕获请求处理异常"
+  - "需要显式声明不回调"
+examples:
+  - input: "需要自定义响应处理函数"
+    output: "Request(url, callback=self.custom_parse)"
+  - input: "需要捕获请求处理异常"
+    output: "Request(url, callback=self.parse, errback=self.handle_error)"
+---
+
+# Scrapy Request 回调与错误回调路由配置
+
+为 Scrapy Request 指定 callback 或 errback，并处理 None/NO_CALLBACK 默认行为，使响应或异常被路由到正确的处理函数。适用于需要自定义响应处理或捕获请求处理异常的场景。
+
+## Prompt
+
+在构造 Scrapy Request 时，明确指定 callback 用于处理正常响应、errback 用于处理异常。若 callback 为 None（默认），则响应交由 spider 的 parse() 方法处理；若使用 NO_CALLBACK()，则显式声明不回调。注意 HttpErrorMiddleware 默认对非 2xx 响应抛出异常并转交 errback，因此需要捕获 HTTP 错误时应配置 errback。
+
+## Objective
+
+正确配置请求的回调与错误回调路由
+## Applicable Signals
+
+- 需要自定义响应处理函数
+- 需要捕获请求处理异常
+- 需要显式声明不回调
+
+## Contraindications
+
+- 使用默认 parse 即可满足需求
+
+## Intervention Moves
+
+- 为 Request 指定 callback 处理正常响应
+- 为 Request 指定 errback 处理异常
+- 使用 None 默认交由 parse() 处理
+- 使用 NO_CALLBACK() 显式声明不回调
+
+## Workflow Steps
+
+- 判断是否需要自定义响应处理：若默认 parse() 足够，则 callback 保持 None。
+- 若需自定义处理，指定 callback 为对应处理函数。
+- 若需捕获请求处理异常，指定 errback 为异常处理函数。
+- 若需显式声明不回调，使用 NO_CALLBACK()。
+- 注意 HttpErrorMiddleware 默认对非 2xx 响应抛出异常并转交 errback，据此配置错误处理。
+
+## Constraints
+
+- callback 为 None 时响应交由 spider 的 parse() 方法处理
+- NO_CALLBACK() 用于显式声明不回调
+
+## Cautions
+
+- HttpErrorMiddleware 默认对非 2xx 响应抛出异常并发送到 errback，未配置 errback 时异常可能未被捕获
+
+## Output Contract
+
+- Request 携带正确的 callback/errback 配置
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要自定义响应处理函数
+- Therapist/Output: Request(url, callback=self.custom_parse)
+
+### Example 2
+
+- Client/Input: 需要捕获请求处理异常
+- Therapist/Output: Request(url, callback=self.parse, errback=self.handle_error)
+
+## Triggers
+
+- 需要自定义响应处理函数
+- 需要捕获请求处理异常
+- 需要显式声明不回调
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要自定义响应处理函数
+
+Output:
+
+  Request(url, callback=self.custom_parse)
+
+### Example 2
+
+Input:
+
+  需要捕获请求处理异常
+
+Output:
+
+  Request(url, callback=self.parse, errback=self.handle_error)
+[?2004hp1$ cat /harbor/skills/6ea881fb-07e2-5ee9-8311-f419990e543a/SKILL.md
+[?2004l---
+id: "6ea881fb-07e2-5ee9-8311-f419990e543a"
+name: "自定义请求指纹器实现"
+description: "实现一个 RequestFingerprinter 类，通过 fingerprint(request) 方法为 Scrapy 请求生成去重指纹，可优先读取 request.meta 中的预置指纹；适用于需要覆盖默认请求指纹算法或自定义去重/缓存键逻辑的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "fingerprint"
+  - "去重"
+  - "缓存键"
+triggers:
+  - "需要覆盖默认请求指纹算法"
+  - "需要基于 request.meta 提供预置指纹"
+  - "需要自定义请求去重或缓存键逻辑"
+examples:
+  - input: "需要在 request.meta 中提供预置指纹"
+    output: "class RequestFingerprinter:\n    def fingerprint(self, request):\n        if \"fingerprint\" in request.meta:\n            return request.meta[\"fingerprint\"]\n        return fingerprint(request)"
+    notes: "优先读取 meta 中的预置指纹，否则回退到默认算法"
+---
+
+# 自定义请求指纹器实现
+
+实现一个 RequestFingerprinter 类，通过 fingerprint(request) 方法为 Scrapy 请求生成去重指纹，可优先读取 request.meta 中的预置指纹；适用于需要覆盖默认请求指纹算法或自定义去重/缓存键逻辑的场景。
+
+## Prompt
+
+实现一个 RequestFingerprinter 类，提供 fingerprint(self, request) 方法。若 request.meta 中已存在预置指纹则直接返回该值，否则调用默认 fingerprint(request) 生成指纹。确保生成的指纹满足下游组件（如文件系统缓存存储）对指纹格式的限制。
+
+## Objective
+
+为 Scrapy 请求生成可复用的自定义指纹
+## Applicable Signals
+
+- 需要覆盖默认请求指纹算法
+- 需要基于 request.meta 提供预置指纹
+
+## Contraindications
+
+- 仅需默认指纹行为时
+- 指纹格式不满足下游组件限制时
+
+## Intervention Moves
+
+- 定义 RequestFingerprinter 类并实现 fingerprint(self, request) 方法
+- 在方法内优先检查 request.meta 中的预置指纹并返回
+- 否则调用默认 fingerprint(request) 生成指纹
+
+## Workflow Steps
+
+- 定义 RequestFingerprinter 类
+- 实现 fingerprint(self, request) 方法
+- 若 request.meta 中存在预置指纹则返回该值
+- 否则调用默认 fingerprint(request) 生成并返回指纹
+- 确认指纹满足下游组件（如文件系统缓存存储）的格式限制
+
+## Constraints
+
+- 指纹必须满足使用它的 Scrapy 组件所施加的格式限制
+- 文件系统缓存存储要求指纹至少 1 字节长
+
+## Cautions
+
+- 自定义指纹算法变更可能影响去重与缓存命中行为
+- 若需复现旧版本指纹算法，应显式实现对应算法
+
+## Output Contract
+
+- 一个可被 REQUEST_FINGERPRINTER_CLASS 使用的 RequestFingerprinter 类
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要在 request.meta 中提供预置指纹
+- Therapist/Output: class RequestFingerprinter:
+    def fingerprint(self, request):
+        if "fingerprint" in request.meta:
+            return request.meta["fingerprint"]
+        return fingerprint(request)
+- Notes: 优先读取 meta 中的预置指纹，否则回退到默认算法
+
+## Triggers
+
+- 需要覆盖默认请求指纹算法
+- 需要基于 request.meta 提供预置指纹
+- 需要自定义请求去重或缓存键逻辑
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要在 request.meta 中提供预置指纹
+
+Output:
+
+  class RequestFingerprinter:
+      def fingerprint(self, request):
+          if "fingerprint" in request.meta:
+              return request.meta["fingerprint"]
+          return fingerprint(request)
+
+Notes:
+
+  优先读取 meta 中的预置指纹，否则回退到默认算法
+[?2004hp1$ cat /harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md
+[?2004l---
+id: "75b3516a-ed35-54d1-96aa-35292b1ac49f"
+name: "允许域名正则构建"
+description: "在 spider_opened 阶段根据 spider 配置构建用于匹配允许域名的 host_regex 正则对象，供后续请求过滤逻辑复用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "offsite"
+  - "域名规则"
+  - "正则构建"
+  - "spider_opened"
+triggers:
+  - "spider启动时需要初始化域名匹配规则"
+  - "需要在请求过滤前准备站内域名判定规则"
+---
+
+# 允许域名正则构建
+
+在 spider_opened 阶段根据 spider 配置构建用于匹配允许域名的 host_regex 正则对象，供后续请求过滤逻辑复用。
+
+## Prompt
+
+在 spider_opened 阶段调用 get_host_regex(spider) 构建 host_regex 正则对象并保存为实例属性，供后续 should_follow 等请求过滤逻辑复用。仅做规则初始化，不在此步骤过滤请求。
+
+## Objective
+
+在spider_opened阶段构建host_regex
+## Applicable Signals
+
+- spider启动时需要初始化域名匹配规则
+
+## Contraindications
+
+- spider尚未打开或未配置允许域名
+
+## Intervention Moves
+
+- 在spider_opened中调用get_host_regex(spider)
+- 将返回的正则对象保存为self.host_regex供后续复用
+
+## Workflow Steps
+
+- 在spider_opened(self, spider)中调用self.get_host_regex(spider)
+- 将结果赋值给self.host_regex
+- 后续请求过滤逻辑直接复用该正则对象
+
+## Constraints
+
+- 仅在spider_opened阶段执行初始化
+- 本步骤不执行请求过滤，只构建规则
+
+## Cautions
+
+- hostname可能为None（如javascript链接），匹配时需容错处理
+
+## Output Contract
+
+- 生成可复用的host_regex正则对象
+
+## Triggers
+
+- spider启动时需要初始化域名匹配规则
+- 需要在请求过滤前准备站内域名判定规则
+[?2004hp1$ cat /harbor/skills/75b3b50e-8659-5572-9a05-b5b329f0f460/SKILL.md
+[?2004l---
+id: "75b3b50e-8659-5572-9a05-b5b329f0f460"
+name: "Scrapy 响应类型选择与解析"
+description: "根据响应的 Content-Type 与内容特征选择合适的 Scrapy Response 子类（TextResponse/HtmlResponse/XmlResponse/JsonResponse），并调用其解析方法（json、urljoin 等）提取数据或构造绝对 URL。适用于处理已获取的响应对象，而非发起请求。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "response"
+  - "parsing"
+  - "json"
+  - "urljoin"
+triggers:
+  - "需要从响应中解析 JSON 或构造绝对 URL"
+  - "响应带有 JSON MIME 类型或 HTML/XML 编码声明"
+examples:
+  - input: "响应 Content-Type 为 JSON MIME 类型"
+    output: "使用 JsonResponse 并调用 json() 得到 Python 对象"
+    notes: "结果在首次调用后缓存"
+  - input: "响应含相对 URL 且页面有 <base> 标签"
+    output: "调用 urljoin() 返回基于 <base> 的绝对 URL"
+---
+
+# Scrapy 响应类型选择与解析
+
+根据响应的 Content-Type 与内容特征选择合适的 Scrapy Response 子类（TextResponse/HtmlResponse/XmlResponse/JsonResponse），并调用其解析方法（json、urljoin 等）提取数据或构造绝对 URL。适用于处理已获取的响应对象，而非发起请求。
+
+## Prompt
+
+当需要处理一个已获取的 Scrapy 响应时：1) 检查响应的 Content-Type 与内容特征；2) 若为 JSON MIME 类型，使用 JsonResponse 并调用 json() 反序列化为 Python 对象（结果在首次调用后缓存）；3) 若为 HTML 且需依据 meta http-equiv 自动发现编码，使用 HtmlResponse；4) 若为 XML 且需依据 XML 声明行自动发现编码，使用 XmlResponse；5) 其他文本响应使用 TextResponse；6) 需要绝对 URL 时调用 urljoin()，其基址取自 <base> 标签，若无则取 Response.url。
+
+## Objective
+
+为给定响应选择正确的 Response 子类并正确解析其内容
+## Applicable Signals
+
+- 响应 Content-Type 为 JSON MIME 类型
+- HTML 响应含 meta http-equiv 编码声明
+- XML 响应含 XML 声明行
+- 需要将相对 URL 转为绝对 URL
+
+## Contraindications
+
+- 响应内容类型未知且无法判定子类
+- 需要发起请求而非处理响应
+
+## Intervention Moves
+
+- 依据 Content-Type 判定 JSON 响应并选用 JsonResponse
+- 对 HTML 响应选用 HtmlResponse 以自动发现编码
+- 对 XML 响应选用 XmlResponse 以自动发现编码
+- 调用 json() 反序列化并利用缓存
+- 调用 urljoin() 结合 <base> 标签或 Response.url 构造绝对 URL
+
+## Workflow Steps
+
+- 检查响应 Content-Type 与内容特征
+- 选择匹配的 Response 子类
+- 调用相应解析方法（json、urljoin 等）
+- 返回解析后的 Python 对象或绝对 URL
+
+## Constraints
+
+- 仅在处理已获取的响应时使用，不用于构造请求
+- 子类选择须与响应实际内容类型一致
+
+## Cautions
+
+- json() 结果在首次调用后缓存，后续调用返回同一对象
+- urljoin 的基址优先取 <base> 标签，缺失时回退到 Response.url
+
+## Output Contract
+
+- 选定 Response 子类并产出解析后的 Python 对象或绝对 URL
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 响应 Content-Type 为 JSON MIME 类型
+- Therapist/Output: 使用 JsonResponse 并调用 json() 得到 Python 对象
+- Notes: 结果在首次调用后缓存
+
+### Example 2
+
+- Client/Input: 响应含相对 URL 且页面有 <base> 标签
+- Therapist/Output: 调用 urljoin() 返回基于 <base> 的绝对 URL
+
+## Triggers
+
+- 需要从响应中解析 JSON 或构造绝对 URL
+- 响应带有 JSON MIME 类型或 HTML/XML 编码声明
+
+## Examples
+
+### Example 1
+
+Input:
+
+  响应 Content-Type 为 JSON MIME 类型
+
+Output:
+
+  使用 JsonResponse 并调用 json() 得到 Python 对象
+
+Notes:
+
+  结果在首次调用后缓存
+
+### Example 2
+
+Input:
+
+  响应含相对 URL 且页面有 <base> 标签
+
+Output:
+
+  调用 urljoin() 返回基于 <base> 的绝对 URL
+[?2004hp1$ cat /harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md
+[?2004l---
+id: "76394f52-1f81-5c91-8ae3-fd51b942c5e1"
+name: "下载器中间件激活与排序配置"
+description: "当默认去重逻辑无法满足需求时，通过配置 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类，或编写自定义请求指纹器类来控制 Scrapy 的请求去重判断逻辑。适用于默认指纹不满足去重需求、需要按自定义字段组合判定请求唯一性时。"
+version: "0.1.1"
+tags:
+  - "scrapy"
+  - "去重"
+  - "fingerprinter"
+  - "请求指纹"
+  - "配置"
+triggers:
+  - "需要启用自定义下载器中间件"
+  - "需要调整或禁用内置中间件顺序"
+examples:
+  - input: "需要启用自定义下载器中间件"
+    output: "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}"
+  - input: "需要禁用内置 UserAgentMiddleware"
+    output: "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}"
+---
+
+# 下载器中间件激活与排序配置
+
+当默认去重逻辑无法满足需求时，通过配置 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类，或编写自定义请求指纹器类来控制 Scrapy 的请求去重判断逻辑。适用于默认指纹不满足去重需求、需要按自定义字段组合判定请求唯一性时。
+
+## Prompt
+
+当默认请求指纹无法满足去重需求时，按以下步骤定制：1) 确认现有默认去重行为确实不满足需求；2) 决定是仅替换 REQUEST_FINGERPRINTER_CLASS 指向自定义类，还是编写完整 fingerprinter 实现；3) 编写 fingerprinter 类，使其基于请求属性生成稳定指纹；4) 遵守指纹计算限制（如不得依赖不可用或易变数据）；5) 在配置中接入该类并验证请求按新规则生成指纹。
+
+## Objective
+
+为请求定义并接入自定义去重指纹
+## Applicable Signals
+
+- 默认指纹不满足去重需求
+- 需要按自定义字段组合判定请求唯一性
+
+## Contraindications
+
+- 默认去重行为已满足需求
+- 无法遵守指纹计算限制的场景
+
+## Intervention Moves
+
+- 确认默认指纹不适用的具体原因
+- 通过 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类
+- 编写自定义请求指纹器类，基于请求属性生成稳定指纹
+- 遵守请求指纹限制
+- 验证去重行为符合预期
+
+## Workflow Steps
+
+- 判断默认去重是否满足需求，若不满足则进入自定义指纹流程
+- 选择配置 REQUEST_FINGERPRINTER_CLASS 或编写自定义请求指纹器类
+- 实现或指定指纹器类，基于请求属性生成稳定指纹，并遵守请求指纹限制
+- 确认指纹器类可被正确加载并生效
+- 验证去重行为符合预期
+
+## Constraints
+
+- 自定义指纹器须遵守请求指纹限制
+- 仅在默认去重不满足需求时定制指纹
+
+## Cautions
+
+- 仅在默认去重不满足需求时定制指纹，避免不必要的复杂度
+- 避免依赖易变或不可用数据生成指纹，以免去重不稳定
+- 自定义指纹可能改变去重结果，需验证后再上线
+
+## Output Contract
+
+- 配置生效的自定义 fingerprinter 类，请求按新规则生成指纹
+
+## Triggers
+
+- 需要启用自定义下载器中间件
+- 需要调整或禁用内置中间件顺序
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要启用自定义下载器中间件
+
+Output:
+
+  DOWNLOADER_MIDDLEWARES = {
+      "myproject.middlewares.CustomDownloaderMiddleware": 543,
+  }
+
+### Example 2
+
+Input:
+
+  需要禁用内置 UserAgentMiddleware
+
+Output:
+
+  DOWNLOADER_MIDDLEWARES = {
+      "myproject.middlewares.CustomDownloaderMiddleware": 543,
+      "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
+  }
+[?2004hp1$ cat /harbor/skills/784f9ca3-1275-5212-8362-163ca94dec83/SKILL.md
+[?2004l---
+id: "784f9ca3-1275-5212-8362-163ca94dec83"
+name: "Scrapy 请求去重过滤控制"
+description: "通过设置 Request 的 dont_filter 属性，控制支持过滤的组件是否跳过对该请求的去重过滤。适用于需要重复抓取同一 URL，或确保起始 URL 不被过滤的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "dont_filter"
+  - "去重"
+  - "请求构造"
+triggers:
+  - "需要重复请求同一 URL 而不被过滤"
+  - "start_urls 场景需确保起始请求不被去重"
+  - "构造 Request 时需显式控制去重行为"
+examples:
+  - input: "需要重复请求同一 URL 而不被过滤"
+    output: "构造 Request 时设置 dont_filter=True"
+    notes: "阻止支持过滤的组件过滤该请求"
+  - input: "无重复抓取需求"
+    output: "保持 dont_filter 默认 False"
+    notes: "允许默认去重"
+---
+
+# Scrapy 请求去重过滤控制
+
+通过设置 Request 的 dont_filter 属性，控制支持过滤的组件是否跳过对该请求的去重过滤。适用于需要重复抓取同一 URL，或确保起始 URL 不被过滤的场景。
+
+## Prompt
+
+在构造 Request 时，根据是否需要重复抓取同一 URL 来决定 dont_filter 的取值：默认 False 表示允许被支持过滤的组件过滤掉；设为 True 表示这些组件不应过滤该请求。仅在确有重复抓取需求时设为 True，避免无谓地绕过默认去重。
+
+## Objective
+
+按需关闭或开启请求的去重过滤
+## Applicable Signals
+
+- 同一 URL 需要被重复抓取
+- 起始 URL 请求需避免被去重过滤
+- 需要显式覆盖默认去重行为
+
+## Contraindications
+
+- 希望依赖默认去重以避免重复抓取时不应设为 True
+- 无明确重复抓取需求时不应关闭过滤
+
+## Intervention Moves
+
+- 在 Request 构造参数中设置 dont_filter=True 以阻止支持过滤的组件过滤该请求
+- 保持默认 False 以允许默认去重
+- 通过 start_urls 定义起始 URL 时注意该属性默认启用
+
+## Workflow Steps
+
+- 判断当前请求是否需要重复抓取同一 URL 或作为起始请求不被过滤
+- 若需要，则在 Request 构造时设置 dont_filter=True；否则保持默认 False
+- 确认调度组件据此决定是否过滤该请求
+
+## Constraints
+
+- dont_filter 为布尔属性，默认 False
+- 仅在确有重复抓取需求时设为 True
+
+## Cautions
+
+- 滥用 dont_filter=True 会绕过默认去重，可能导致重复抓取
+
+## Output Contract
+
+- 请求携带正确的 dont_filter 取值，调度组件据此决定是否过滤
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要重复请求同一 URL 而不被过滤
+- Therapist/Output: 构造 Request 时设置 dont_filter=True
+- Notes: 阻止支持过滤的组件过滤该请求
+
+### Example 2
+
+- Client/Input: 无重复抓取需求
+- Therapist/Output: 保持 dont_filter 默认 False
+- Notes: 允许默认去重
+
+## Triggers
+
+- 需要重复请求同一 URL 而不被过滤
+- start_urls 场景需确保起始请求不被去重
+- 构造 Request 时需显式控制去重行为
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要重复请求同一 URL 而不被过滤
+
+Output:
+
+  构造 Request 时设置 dont_filter=True
+
+Notes:
+
+  阻止支持过滤的组件过滤该请求
+
+### Example 2
+
+Input:
+
+  无重复抓取需求
+
+Output:
+
+  保持 dont_filter 默认 False
+
+Notes:
+
+  允许默认去重
+[?2004hp1$ cat /harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md
+[?2004l---
+id: "7ce0ae55-8c21-5690-a09e-d2e8d99adb28"
+name: "Scrapy 响应编码解析优先级"
+description: "按固定优先级解析 Scrapy 响应文本的编码来源：先取 __init__ 传入的 encoding，再取 Content-Type 头声明，再取响应体声明（HtmlResponse/XmlResponse 支持），最后回退到从响应体推断。用于需要确定响应文本编码或排查乱码时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "response_handling"
+  - "encoding_resolution"
+  - "response_parsing"
+triggers:
+  - "需要确定响应文本编码"
+  - "响应出现乱码需排查编码来源"
+  - "需要判断编码来自参数、头部还是响应体"
+---
+
+# Scrapy 响应编码解析优先级
+
+按固定优先级解析 Scrapy 响应文本的编码来源：先取 __init__ 传入的 encoding，再取 Content-Type 头声明，再取响应体声明（HtmlResponse/XmlResponse 支持），最后回退到从响应体推断。用于需要确定响应文本编码或排查乱码时。
+
+## Prompt
+
+当需要确定 Scrapy 响应文本的编码来源或排查乱码时，按以下顺序逐级尝试解析编码：1) __init__() 方法传入的 encoding 参数；2) Content-Type HTTP 头中声明的编码（若无效/未知则忽略并继续）；3) 响应体中声明的编码（仅 HtmlResponse 与 XmlResponse 提供此功能，TextResponse 不提供）；4) 从响应体推断编码（最脆弱，最后尝试）。输出最终采用的编码及其来源层级。
+
+## Objective
+
+确定响应文本的正确编码来源顺序
+## Applicable Signals
+
+- 需要确定响应文本编码
+- 响应出现乱码需排查编码来源
+
+## Contraindications
+
+- 处理非文本二进制响应
+- 编码已由调用方明确指定且无需回退
+
+## Intervention Moves
+
+- 检查 __init__ 传入的 encoding 参数
+- 检查 Content-Type 头声明的编码，无效则忽略
+- 检查响应体声明的编码（HtmlResponse/XmlResponse）
+- 回退到从响应体推断编码
+
+## Workflow Steps
+
+- 优先采用 __init__() 传入的 encoding 参数
+- 若无，则读取 Content-Type HTTP 头声明的编码；若该编码无效（未知）则忽略并继续
+- 若无，则读取响应体声明的编码（HtmlResponse 与 XmlResponse 支持，TextResponse 不提供）
+- 若仍无，则从响应体推断编码（最脆弱，最后尝试）
+- 记录最终采用的编码及其来源层级
+
+## Constraints
+
+- 必须按固定优先级顺序解析
+- Content-Type 头中无效编码应被忽略并继续下一机制
+- 响应体声明编码仅 HtmlResponse/XmlResponse 支持
+
+## Cautions
+
+- 从响应体推断编码是最脆弱的方法，应作为最后手段
+
+## Output Contract
+
+- 确定最终采用的编码及其来源层级
+
+## Triggers
+
+- 需要确定响应文本编码
+- 响应出现乱码需排查编码来源
+- 需要判断编码来自参数、头部还是响应体
+[?2004hp1$ cat /harbor/skills/8229ccc7-e91d-5a88-8085-5887e69febd6/SKILL.md
+[?2004l---
+id: "8229ccc7-e91d-5a88-8085-5887e69febd6"
+name: "下载器中间件 process_exception 异常处理分派"
+description: "在下载器中间件的 process_exception 钩子中，按返回值类型分派下载处理器或 process_request 抛出的异常：返回 None 继续传递异常，返回 Response 启动 process_response 链，返回 Request 重新调度。用于实现异常恢复、重试或降级中间件。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "downloader_middleware"
+  - "process_exception"
+  - "exception_handling"
+  - "hook_return_dispatch"
+triggers:
+  - "编写或修改 process_exception 方法"
+  - "需要捕获下载异常并决定恢复、重试或继续抛出"
+examples:
+  - input: "下载处理器抛出异常，中间件希望继续传递该异常"
+    output: "process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception"
+    notes: "直至无中间件剩余时进入默认异常处理"
+  - input: "下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应"
+    output: "process_exception 返回一个 Response 对象，启动 process_response 链"
+    notes: "不再调用其他中间件的 process_exception"
+---
+
+# 下载器中间件 process_exception 异常处理分派
+
+在下载器中间件的 process_exception 钩子中，按返回值类型分派下载处理器或 process_request 抛出的异常：返回 None 继续传递异常，返回 Response 启动 process_response 链，返回 Request 重新调度。用于实现异常恢复、重试或降级中间件。
+
+## Prompt
+
+当编写或修改下载器中间件的 process_exception 方法时，依据返回值类型决定异常处理走向：
+1. 明确当前异常来源（下载处理器或 process_request 抛出的异常，含 IgnoreRequest）。
+2. 若希望继续传递异常，返回 None，Scrapy 会继续执行其他中间件的 process_exception，直至默认异常处理。
+3. 若希望从异常中恢复并继续处理响应，返回一个 Response 对象，Scrapy 将启动已安装中间件的 process_response 方法链，且不再调用其他中间件的 process_exception。
+4. 若希望重新调度请求，返回一个 Request 对象。
+5. 确保返回值类型与预期行为一致，避免返回不支持的类型。
+
+## Objective
+
+按返回值类型正确分派 process_exception 的异常处理
+## Applicable Signals
+
+- process_exception 方法需要处理下载处理器或 process_request 抛出的异常
+- 需要在异常发生时选择恢复、重试或继续抛出
+
+## Contraindications
+
+- 处理正常响应阶段逻辑（应使用 process_response）
+- 处理请求发起阶段逻辑（应使用 process_request）
+
+## Intervention Moves
+
+- 返回 None 以继续传递异常并执行其他中间件的 process_exception
+- 返回 Response 以启动 process_response 链并跳过其他 process_exception
+- 返回 Request 以重新调度请求
+
+## Workflow Steps
+
+- 确认异常来源为下载处理器或 process_request 抛出（含 IgnoreRequest）
+- 根据期望行为选择返回值：None 继续传递、Response 恢复并进入 process_response 链、Request 重新调度
+- 返回所选对象并验证异常处理链行为符合预期
+
+## Constraints
+
+- process_exception 只能返回 None、Response 对象或 Request 对象
+- 返回 Response 时不再调用其他中间件的 process_exception
+
+## Cautions
+
+- 返回 None 时异常会继续传递直至默认异常处理
+- 返回 Response 会跳过其余 process_exception 方法
+
+## Output Contract
+
+- process_exception 返回 None/Response/Request，异常处理链行为符合预期
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 下载处理器抛出异常，中间件希望继续传递该异常
+- Therapist/Output: process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception
+- Notes: 直至无中间件剩余时进入默认异常处理
+
+### Example 2
+
+- Client/Input: 下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应
+- Therapist/Output: process_exception 返回一个 Response 对象，启动 process_response 链
+- Notes: 不再调用其他中间件的 process_exception
+
+## Triggers
+
+- 编写或修改 process_exception 方法
+- 需要捕获下载异常并决定恢复、重试或继续抛出
+
+## Examples
+
+### Example 1
+
+Input:
+
+  下载处理器抛出异常，中间件希望继续传递该异常
+
+Output:
+
+  process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception
+
+Notes:
+
+  直至无中间件剩余时进入默认异常处理
+
+### Example 2
+
+Input:
+
+  下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应
+
+Output:
+
+  process_exception 返回一个 Response 对象，启动 process_response 链
+
+Notes:
+
+  不再调用其他中间件的 process_exception
+[?2004hp1$ cat /harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md
+[?2004l---
+id: "84be0366-caaf-5091-b9c2-99289be1395a"
+name: "请求指纹格式约束校验"
+description: "在把请求指纹交给依赖指纹的内置组件（如 FilesystemCacheStorage）之前，校验指纹满足该组件要求的格式限制（至少 1 字节长），避免缓存或去重组件报错。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request-fingerprint"
+  - "constraint-check"
+  - "httpcache"
+triggers:
+  - "自定义指纹器接入 HTTP 缓存等组件前"
+  - "指纹可能为空或过短时"
+---
+
+# 请求指纹格式约束校验
+
+在把请求指纹交给依赖指纹的内置组件（如 FilesystemCacheStorage）之前，校验指纹满足该组件要求的格式限制（至少 1 字节长），避免缓存或去重组件报错。
+
+## Prompt
+
+在将请求指纹交给依赖指纹的内置组件（如 HTTP 缓存存储）之前，先确认指纹满足该组件要求的格式限制。当前已知限制：指纹长度至少为 1 字节。若指纹为空或过短，应先修正指纹生成逻辑再继续，不要直接交给下游组件。
+
+## Objective
+
+确保生成的请求指纹满足内置组件格式限制
+## Applicable Signals
+
+- 准备启用或已启用依赖请求指纹的内置组件
+- 自定义 RequestFingerprinter 返回的指纹可能为空或过短
+
+## Contraindications
+
+- 不使用任何依赖指纹的内置组件时
+
+## Intervention Moves
+
+- 识别下游组件对指纹格式的附加限制
+- 校验指纹长度是否满足至少 1 字节的要求
+- 不满足时阻止指纹进入下游组件并修正生成逻辑
+
+## Workflow Steps
+
+- 确认当前流程中哪些内置组件会使用请求指纹（如 FilesystemCacheStorage）
+- 查阅该组件对指纹格式的附加限制
+- 对生成的指纹执行格式校验，至少检查长度是否不少于 1 字节
+- 校验通过后再交给下游组件；未通过则修正指纹生成逻辑并重新校验
+
+## Constraints
+
+- 指纹必须满足使用它的组件所施加的格式限制
+- 内置 FilesystemCacheStorage 要求指纹至少 1 字节长
+
+## Cautions
+
+- 不同组件可能施加额外限制，需按实际使用的组件逐一确认
+- 本规则只做约束校验，不负责指纹生成算法实现
+
+## Output Contract
+
+- 通过格式校验的指纹（至少 1 字节），可安全交给依赖指纹的下游组件使用
+
+## Triggers
+
+- 自定义指纹器接入 HTTP 缓存等组件前
+- 指纹可能为空或过短时
+[?2004hp1$ cat /harbor/skills/89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c/SKILL.md
+[?2004l---
+id: "89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c"
+name: "编写自定义 Spider 中间件钩子方法"
+description: "实现 SpiderMiddleware 子类的钩子方法（process_start、process_start_requests、process_spider_input），用于定制 Spider 启动输出、进入 Spider 的响应以及 Spider 产出的请求与 item 的处理逻辑。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider-middleware"
+  - "hook-method"
+  - "middleware_implementation"
+triggers:
+  - "需要拦截并处理发往 Spider 的响应"
+  - "需要处理 Spider 生成的请求或 item"
+  - "需要定制 Spider 启动输出"
+examples:
+  - input: "需要处理 Spider 启动输出"
+    output: "async def process_start(self, start):\n    async for item_or_request in start:\n        yield item_or_request"
+    notes: "兼容旧版本可另加同步 process_start_requests"
+  - input: "需要处理进入 Spider 的响应"
+    output: "实现 process_spider_input(response)，返回 None 继续处理或抛出异常中断"
+---
+
+# 编写自定义 Spider 中间件钩子方法
+
+实现 SpiderMiddleware 子类的钩子方法（process_start、process_start_requests、process_spider_input），用于定制 Spider 启动输出、进入 Spider 的响应以及 Spider 产出的请求与 item 的处理逻辑。
+
+## Prompt
+
+实现一个 SpiderMiddleware 子类，按需覆盖一个或多个钩子方法：
+1. 继承 scrapy.spidermiddlewares.SpiderMiddleware。
+2. 若需处理 Spider 启动输出，实现 async process_start(start)，遍历 start 并 yield 与 start 相同类型的对象；如需兼容 2.13 以下版本，另实现同步 process_start_requests(start, spider) 并 yield from start。
+3. 若需处理进入 Spider 的响应，实现 process_spider_input(response)，返回 None 表示继续处理，或抛出异常中断。
+4. 仅实现当前需求所需的钩子，保持方法职责单一。
+5. 完成后交由注册配置环节将类路径写入 SPIDER_MIDDLEWARES。
+
+## Objective
+
+实现一个或多个 Spider 中间件钩子方法以定制处理流程
+## Applicable Signals
+
+- 需要拦截并处理发往 Spider 的响应
+- 需要处理 Spider 生成的请求或 item
+- 需要定制 Spider 启动输出
+
+## Contraindications
+
+- 仅需调整已有中间件顺序而无需新逻辑
+
+## Intervention Moves
+
+- 继承 SpiderMiddleware 基类
+- 实现 async process_start 遍历并 yield 启动输出
+- 为旧版本补充同步 process_start_requests
+- 实现 process_spider_input 返回 None 或抛出异常
+
+## Workflow Steps
+
+- 确认需要定制的处理点（启动输出、进入响应、产出请求/item）
+- 创建继承 SpiderMiddleware 的子类
+- 按需实现对应钩子方法
+- 确保 process_spider_input 返回 None 或抛出异常
+- 将类路径交由注册配置环节写入 SPIDER_MIDDLEWARES
+
+## Constraints
+
+- process_spider_input 只能返回 None 或抛出异常
+- process_start 需为 async 并 yield 与 start 相同类型的对象
+- 兼容旧版本时需额外提供同步 process_start_requests
+
+## Cautions
+
+- 部分中间件可能还需通过特定设置启用，需查阅对应中间件文档
+
+## Output Contract
+
+- 可注册的 SpiderMiddleware 子类，含已实现的钩子方法
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要处理 Spider 启动输出
+- Therapist/Output: async def process_start(self, start):
+    async for item_or_request in start:
+        yield item_or_request
+- Notes: 兼容旧版本可另加同步 process_start_requests
+
+### Example 2
+
+- Client/Input: 需要处理进入 Spider 的响应
+- Therapist/Output: 实现 process_spider_input(response)，返回 None 继续处理或抛出异常中断
+
+## Triggers
+
+- 需要拦截并处理发往 Spider 的响应
+- 需要处理 Spider 生成的请求或 item
+- 需要定制 Spider 启动输出
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要处理 Spider 启动输出
+
+Output:
+
+  async def process_start(self, start):
+      async for item_or_request in start:
+          yield item_or_request
+
+Notes:
+
+  兼容旧版本可另加同步 process_start_requests
+
+### Example 2
+
+Input:
+
+  需要处理进入 Spider 的响应
+
+Output:
+
+  实现 process_spider_input(response)，返回 None 继续处理或抛出异常中断
+[?2004hp1$ cat /harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md
+[?2004l---
+id: "8a26e484-1c30-5f08-a668-ce5b4b7e99df"
+name: "自定义 Request 指纹器实现"
+description: "通过 REQUEST_FINGERPRINTER_CLASS 配置或编写自定义请求指纹器，为请求生成去重指纹，并遵守指纹限制（如不得依赖响应数据）。用于默认指纹不满足去重需求的爬取场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+  - "request-fingerprinter"
+  - "去重配置"
+triggers:
+  - "默认指纹不满足去重需求"
+  - "需要按特定字段组合生成请求指纹"
+  - "需要定制请求去重逻辑"
+---
+
+# 自定义 Request 指纹器实现
+
+通过 REQUEST_FINGERPRINTER_CLASS 配置或编写自定义请求指纹器，为请求生成去重指纹，并遵守指纹限制（如不得依赖响应数据）。用于默认指纹不满足去重需求的爬取场景。
+
+## Prompt
+
+当默认请求指纹无法满足去重需求时，实现一个自定义请求指纹器：先确认去重目标与所需字段组合，再编写指纹器类（基于请求本身的数据生成稳定指纹），通过 REQUEST_FINGERPRINTER_CLASS 配置启用，并校验其不依赖响应数据等限制。
+
+## Objective
+
+实现符合限制的自定义请求指纹生成
+## Applicable Signals
+
+- 默认指纹不满足去重需求
+- 需要按特定字段组合生成请求指纹
+
+## Contraindications
+
+- 默认指纹已满足去重需求
+- 指纹需依赖响应内容（受限制）
+
+## Intervention Moves
+
+- 确认去重目标与所需字段组合
+- 编写自定义指纹器类
+- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用
+- 校验指纹器遵守限制
+
+## Workflow Steps
+
+- 确认默认指纹为何不满足去重需求，明确期望的去重粒度与字段组合
+- 编写自定义请求指纹器类，仅基于请求自身数据生成稳定指纹
+- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用该指纹器
+- 校验指纹器不依赖响应数据等限制，并验证去重效果
+
+## Constraints
+
+- 指纹必须仅基于请求数据生成
+- 不得依赖响应内容生成指纹
+- 仅在默认指纹不满足需求时使用
+
+## Cautions
+
+- 依赖响应数据的指纹违反限制，不可采用
+
+## Output Contract
+
+- 可用的自定义指纹器类配置（含指纹器类与 REQUEST_FINGERPRINTER_CLASS 设置）
+
+## Triggers
+
+- 默认指纹不满足去重需求
+- 需要按特定字段组合生成请求指纹
+- 需要定制请求去重逻辑
+[?2004hp1$ cat /harbor/skills/8efb2db6-37e9-5869-8b32-ec06a4206585/SKILL.md
+[?2004l---
+id: "8efb2db6-37e9-5869-8b32-ec06a4206585"
+name: "FormRequest 表单提交构造"
+description: "使用 FormRequest 构造带 formdata 的 POST 请求，并绑定 callback 处理响应，用于向表单 action 端点提交结构化字段数据。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "FormRequest"
+  - "POST"
+  - "表单提交"
+  - "请求构造"
+triggers:
+  - "需要向表单 action 端点提交字段数据"
+  - "需要以 POST 方式发送结构化表单"
+examples:
+  - input: "需要向表单 action 端点提交 name 与 age 字段"
+    output: "return [FormRequest(url=\"http://www.example.com/post/action\", formdata={\"name\": \"John Doe\", \"age\": \"27\"}, callback=self.after_post)]"
+    notes: "以列表形式返回带 formdata 与 callback 的 FormRequest"
+---
+
+# FormRequest 表单提交构造
+
+使用 FormRequest 构造带 formdata 的 POST 请求，并绑定 callback 处理响应，用于向表单 action 端点提交结构化字段数据。
+
+## Prompt
+
+当需要向表单 action 端点以 POST 方式提交结构化字段时，构造 FormRequest 对象：设置 url 为目标表单端点，formdata 为字段字典，callback 为处理响应的回调方法，并以列表形式返回该请求对象。
+
+## Objective
+
+构造并发送携带表单数据的 POST 请求
+## Applicable Signals
+
+- 目标端点接受表单编码提交
+- 需要以 POST 方式发送结构化字段
+- 需要为提交后的响应绑定回调处理
+
+## Contraindications
+
+- 目标端点不接受表单编码
+- 仅需 GET 抓取静态页面
+
+## Intervention Moves
+
+- 指定表单 action 端点为 url
+- 以字典形式提供 formdata 字段
+- 绑定 callback 处理响应
+- 以列表形式返回请求对象
+
+## Workflow Steps
+
+- 确认目标表单 action 端点及需提交的字段
+- 构造 FormRequest，设置 url、formdata 与 callback
+- 以列表形式返回该 FormRequest 对象
+
+## Constraints
+
+- formdata 应为字段名到值的映射
+- callback 应指向可处理该响应的回调方法
+
+## Cautions
+
+- 若端点不接受表单编码，应改用其他请求类型
+- 仅需 GET 抓取静态页面时不应使用本技能
+
+## Output Contract
+
+- 返回一个带 formdata 与 callback 的 FormRequest 对象列表
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要向表单 action 端点提交 name 与 age 字段
+- Therapist/Output: return [FormRequest(url="http://www.example.com/post/action", formdata={"name": "John Doe", "age": "27"}, callback=self.after_post)]
+- Notes: 以列表形式返回带 formdata 与 callback 的 FormRequest
+
+## Triggers
+
+- 需要向表单 action 端点提交字段数据
+- 需要以 POST 方式发送结构化表单
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要向表单 action 端点提交 name 与 age 字段
+
+Output:
+
+  return [FormRequest(url="http://www.example.com/post/action", formdata={"name": "John Doe", "age": "27"}, callback=self.after_post)]
+
+Notes:
+
+  以列表形式返回带 formdata 与 callback 的 FormRequest
+[?2004hp1$ cat /harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md
+[?2004l---
+id: "9719683e-0a4a-5d7e-8169-5d7d854d94d9"
+name: "请求错误回调处理（errback）"
+description: "为 Scrapy 请求配置 errback，并按失败类型（HttpError、DNSLookupError、TimeoutError/TCPTimedOutError）分支记录与处理异常。适用于需要区分不同下载失败并做针对性处理的爬虫。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+  - "错误处理"
+  - "请求调度"
+triggers:
+  - "需要区分 HTTP 错误、DNS 错误、超时等不同失败类型"
+  - "希望在请求失败时记录日志或产出诊断数据"
+examples:
+  - input: "请求失败并触发 errback，failure 为 HttpError"
+    output: "记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 \"HttpError on <url>\""
+    notes: "HttpError 分支可访问响应对象"
+  - input: "请求失败并触发 errback，failure 为 DNSLookupError"
+    output: "记录 repr(failure)，并从 failure.request 取原始请求，记录 \"DNSLookupError on <url>\""
+    notes: "DNS 分支只能访问原始请求"
+  - input: "请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError"
+    output: "记录 repr(failure)，并从 failure.request 取原始请求，记录 \"TimeoutError on <url>\""
+    notes: "超时分支只能访问原始请求"
+---
+
+# 请求错误回调处理（errback）
+
+为 Scrapy 请求配置 errback，并按失败类型（HttpError、DNSLookupError、TimeoutError/TCPTimedOutError）分支记录与处理异常。适用于需要区分不同下载失败并做针对性处理的爬虫。
+
+## Prompt
+
+在发起请求时为其指定 errback 回调；在 errback 中接收 failure 对象，先用 failure.check() 判断异常类型，再按类型分支处理：HttpError 时从 failure.value.response 取非 200 响应并记录其 URL；DNSLookupError 时从 failure.request 取原始请求并记录其 URL；TimeoutError/TCPTimedOutError 时同样从 failure.request 取请求并记录。始终先记录 failure 的 repr 作为兜底日志。
+
+## Objective
+
+在请求失败时按异常类型分流处理并记录日志
+## Applicable Signals
+
+- 请求需要自定义失败处理而非默认日志
+- 需要针对不同下载异常类型做差异化响应
+
+## Contraindications
+
+- 仅需默认失败日志、无需分类处理时
+- 失败原因与请求处理无关（如解析逻辑错误）
+
+## Intervention Moves
+
+- 在 scrapy.Request 中设置 errback 指向处理函数
+- 在 errback 中先记录 repr(failure) 作为通用日志
+- 使用 failure.check(HttpError) 分支，从 failure.value.response 获取非 200 响应
+- 使用 failure.check(DNSLookupError) 分支，从 failure.request 获取原始请求
+- 使用 failure.check(TimeoutError, TCPTimedOutError) 分支，从 failure.request 获取原始请求
+
+## Workflow Steps
+
+- 在构造 scrapy.Request 时传入 errback 参数指向错误处理函数
+- 在 errback 函数中接收 failure 参数并记录 repr(failure)
+- 按 failure.check() 判断异常类型并进入对应分支
+- 在 HttpError 分支读取 failure.value.response 并记录其 URL
+- 在 DNSLookupError 与 TimeoutError/TCPTimedOutError 分支读取 failure.request 并记录其 URL
+
+## Constraints
+
+- errback 必须与请求一同配置，否则失败不会进入自定义处理
+- 分支判断应使用 failure.check() 而非直接比较异常类型
+
+## Cautions
+
+- 不同异常类型可获取的对象不同：HttpError 提供 response，DNS/超时提供 request
+- 未覆盖的异常类型应保留通用日志以便排查
+
+## Output Contract
+
+- 按失败类型分支处理的 errback 函数及对应日志输出
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 请求失败并触发 errback，failure 为 HttpError
+- Therapist/Output: 记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 "HttpError on <url>"
+- Notes: HttpError 分支可访问响应对象
+
+### Example 2
+
+- Client/Input: 请求失败并触发 errback，failure 为 DNSLookupError
+- Therapist/Output: 记录 repr(failure)，并从 failure.request 取原始请求，记录 "DNSLookupError on <url>"
+- Notes: DNS 分支只能访问原始请求
+
+### Example 3
+
+- Client/Input: 请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError
+- Therapist/Output: 记录 repr(failure)，并从 failure.request 取原始请求，记录 "TimeoutError on <url>"
+- Notes: 超时分支只能访问原始请求
+
+## Triggers
+
+- 需要区分 HTTP 错误、DNS 错误、超时等不同失败类型
+- 希望在请求失败时记录日志或产出诊断数据
+
+## Examples
+
+### Example 1
+
+Input:
+
+  请求失败并触发 errback，failure 为 HttpError
+
+Output:
+
+  记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 "HttpError on <url>"
+
+Notes:
+
+  HttpError 分支可访问响应对象
+
+### Example 2
+
+Input:
+
+  请求失败并触发 errback，failure 为 DNSLookupError
+
+Output:
+
+  记录 repr(failure)，并从 failure.request 取原始请求，记录 "DNSLookupError on <url>"
+
+Notes:
+
+  DNS 分支只能访问原始请求
+
+### Example 3
+
+Input:
+
+  请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError
+
+Output:
+
+  记录 repr(failure)，并从 failure.request 取原始请求，记录 "TimeoutError on <url>"
+
+Notes:
+
+  超时分支只能访问原始请求
+[?2004hp1$ cat /harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md
+[?2004l---
+id: "a465f31a-2043-56a4-8ead-67fa083ba31a"
+name: "使用 errback 捕获请求处理异常"
+description: "为 Request 指定 errback 回调，在下载或处理失败时接收 Failure 对象并访问其中的附加数据，实现自定义异常处理。当请求可能失败且需要自定义错误处理，或需要在失败时访问请求附加数据时使用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+  - "异常处理"
+  - "Request"
+  - "Failure"
+triggers:
+  - "请求可能失败需要自定义错误处理"
+  - "需要在失败时访问请求附加数据"
+  - "需要区分正常回调与失败回调路径"
+examples:
+  - input: "Request(\"https://example.com\", callback=self.parse_page2, errback=self.errback_handler)"
+    output: "请求失败时 errback_handler 被调用并接收 Failure 对象"
+    notes: "errback 专注失败路径处理"
+---
+
+# 使用 errback 捕获请求处理异常
+
+为 Request 指定 errback 回调，在下载或处理失败时接收 Failure 对象并访问其中的附加数据，实现自定义异常处理。当请求可能失败且需要自定义错误处理，或需要在失败时访问请求附加数据时使用。
+
+## Prompt
+
+当需要为某个 Request 定制失败处理时，在构造 Request 时传入 errback 参数指向处理函数。errback 会在请求下载或处理失败时被调用，接收一个 Failure 对象作为参数。可通过 Failure 访问异常信息，并结合请求附加数据（如 cb_kwargs 或 meta）进行后续处理。确保 errback 函数签名正确并能处理 Failure 对象。
+
+## Objective
+
+在请求失败时通过 errback 捕获并处理异常
+## Applicable Signals
+
+- 请求可能失败需要自定义错误处理
+- 需要在失败时访问请求附加数据
+
+## Contraindications
+
+- 请求无失败风险或使用默认错误处理即可时
+
+## Intervention Moves
+
+- 在 Request 构造时指定 errback 参数
+- 在 errback 函数中接收并处理 Failure 对象
+- 通过附加数据在 errback 中获取请求上下文
+
+## Workflow Steps
+
+- 识别需要自定义失败处理的请求
+- 编写 errback 处理函数，接收 Failure 对象
+- 在构造 Request 时传入 errback 参数
+- 在 errback 中访问 Failure 及请求附加数据进行处理
+
+## Constraints
+
+- errback 函数需正确接收 Failure 对象作为参数
+- 附加数据需在请求构造时通过 cb_kwargs 或 meta 传入
+
+## Cautions
+
+- errback 仅处理失败路径，正常响应仍由 callback 处理
+- 未指定 errback 时失败将走默认错误处理
+
+## Output Contract
+
+- errback 被调用并处理 Failure 对象
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: Request("https://example.com", callback=self.parse_page2, errback=self.errback_handler)
+- Therapist/Output: 请求失败时 errback_handler 被调用并接收 Failure 对象
+- Notes: errback 专注失败路径处理
+
+## Triggers
+
+- 请求可能失败需要自定义错误处理
+- 需要在失败时访问请求附加数据
+- 需要区分正常回调与失败回调路径
+
+## Examples
+
+### Example 1
+
+Input:
+
+  Request("https://example.com", callback=self.parse_page2, errback=self.errback_handler)
+
+Output:
+
+  请求失败时 errback_handler 被调用并接收 Failure 对象
+
+Notes:
+
+  errback 专注失败路径处理
+[?2004hp1$ cat /harbor/skills/a7333646-4afb-53a8-9656-89a6a47489cc/SKILL.md
+[?2004l---
+id: "a7333646-4afb-53a8-9656-89a6a47489cc"
+name: "Spider输出处理钩子实现"
+description: "实现 process_spider_output(response, result) 钩子，对 Spider 处理响应后返回的 Request/item 可迭代结果进行拦截与改写，并返回新的可迭代对象。适用于需要在爬虫输出进入后续中间件前统一过滤或转换结果的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider_middleware"
+  - "process_spider_output"
+  - "hook"
+triggers:
+  - "需要过滤或改写 Spider 产出的 Request/item"
+  - "需要在输出进入下游中间件前统一处理结果"
+---
+
+# Spider输出处理钩子实现
+
+实现 process_spider_output(response, result) 钩子，对 Spider 处理响应后返回的 Request/item 可迭代结果进行拦截与改写，并返回新的可迭代对象。适用于需要在爬虫输出进入后续中间件前统一过滤或转换结果的场景。
+
+## Prompt
+
+实现 process_spider_output(response, result) 钩子：接收当前 response 与 Spider 返回的 result（Request 与 item 对象的可迭代对象），对结果流进行过滤或改写，并返回一个由 Request 对象和 item 对象组成的可迭代对象。确保返回值符合契约，供后续 Spider 中间件继续处理。
+
+## Objective
+
+在 Spider 输出阶段拦截并改写 Request/item 结果流
+## Applicable Signals
+
+- Spider 已处理响应并返回结果流
+- 需要在结果流进入后续中间件前介入
+
+## Contraindications
+
+- 处理的是下载器请求/响应阶段而非 Spider 输出
+- 仅需记录日志而无需改变结果流
+
+## Intervention Moves
+
+- 定义 process_spider_output(response, result) 方法
+- 遍历 result 中的 Request 与 item 对象
+- 按需过滤或转换结果
+- 返回新的 Request/item 可迭代对象
+
+## Workflow Steps
+
+- 实现 process_spider_output(response, result) 方法，接收 response 与 Spider 返回的 result
+- 对 result 中的 Request 对象和 item 对象进行过滤或改写
+- 返回由 Request 对象和 item 对象组成的可迭代对象
+
+## Constraints
+
+- process_spider_output 必须返回 Request 对象和 item 对象的可迭代对象
+- response 为生成该输出的响应对象
+- result 为 Spider 返回的可迭代结果
+
+## Cautions
+
+- 若 result 为异步可迭代对象，需改用 process_spider_output_async 异步生成器变体
+- 异常处理应使用 process_spider_exception，而非在输出钩子中吞掉异常
+
+## Output Contract
+
+- 返回符合契约的 Request/item 可迭代对象
+
+## Triggers
+
+- 需要过滤或改写 Spider 产出的 Request/item
+- 需要在输出进入下游中间件前统一处理结果
+[?2004hp1$ cat /harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md
+[?2004l---
+id: "a8682864-3e99-50f8-a466-765f0de8b334"
+name: "响应批量链接跟进生成器"
+description: "使用 response.follow_all 通过 urls、css 或 xpath 参数批量生成跟进 Request 的生成器，自动跳过无法获取链接的选择器。适用于需要遍历页面所有链接的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "follow_all"
+  - "request_construction"
+  - "crawl_navigation"
+  - "parse"
+triggers:
+  - "需要一次性跟进页面中多个链接"
+  - "使用 css/xpath 参数批量提取链接"
+  - "解析回调中需生成多个 Request"
+examples:
+  - input: "response.follow_all(css='a.my_link', callback=self.parse_item)"
+    output: "yield 生成器，逐个产出指向各链接的 Request"
+    notes: "css 参数批量提取链接"
+  - input: "response.follow_all(xpath='//img/@src')"
+    output: "yield 生成器，逐个产出指向各图片 URL 的 Request"
+    notes: "xpath 属性选择器批量提取"
+---
+
+# 响应批量链接跟进生成器
+
+使用 response.follow_all 通过 urls、css 或 xpath 参数批量生成跟进 Request 的生成器，自动跳过无法获取链接的选择器。适用于需要遍历页面所有链接的场景。
+
+## Prompt
+
+在解析回调中需要一次性跟进页面多个链接时，调用 response.follow_all 生成 Request 生成器。
+
+执行要点：
+1. 选择一种链接来源参数：urls（列表）、css 或 xpath，三者互斥，只能传其一。
+2. urls 元素可为相对 URL、Link 对象、指向 <link>/<a> 的 Selector，或属性 Selector（非 SelectorList）。
+3. 其余参数与 Request.__init__() 相同，可传 callback、meta 等。
+4. 将生成器 yield 出去（或迭代 yield 每个 Request），交由引擎调度。
+5. 注意：当传入 SelectorList 或使用 css/xpath 参数时，无法获取链接的选择器（如无 href 的 <a>）不会产生 Request，无需额外过滤。
+
+## Objective
+
+批量生成跟进多个链接的 Request 生成器
+## Applicable Signals
+
+- 页面包含多个待跟进链接
+- 希望用 css 或 xpath 一次性提取并跟进链接
+- 需要以生成器方式产出多个 Request
+
+## Contraindications
+
+- 仅需跟进单个链接（应使用 response.follow）
+- 同时传入 urls、css、xpath 中的多个参数
+
+## Intervention Moves
+
+- 调用 response.follow_all 并仅传入 urls、css、xpath 之一
+- 将生成器 yield 给引擎
+- 依赖内置逻辑自动跳过无法获取链接的选择器
+
+## Workflow Steps
+
+- 确定链接来源：urls 列表、css 选择器或 xpath 选择器，三选一
+- 调用 response.follow_all(urls=... 或 css=... 或 xpath=...)，按需附加 callback、meta 等 Request 参数
+- 在解析回调中 yield 该生成器（或迭代 yield 每个 Request）
+- 确认无 href 等无法获取链接的选择器已被自动跳过
+
+## Constraints
+
+- urls、css、xpath 三者互斥，仅允许传入其一
+- urls 元素可为相对 URL、Link 对象、Selector 或属性 Selector（非 SelectorList）
+- 其余参数与 Request.__init__() 一致
+
+## Cautions
+
+- 传入 SelectorList 或使用 css/xpath 时，无法获取链接的选择器不会产生 Request，属预期行为
+- 不要与单链接 follow 混用同一批链接来源
+
+## Output Contract
+
+- 产出多个 Request 实例的生成器，交由引擎调度跟进
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: response.follow_all(css='a.my_link', callback=self.parse_item)
+- Therapist/Output: yield 生成器，逐个产出指向各链接的 Request
+- Notes: css 参数批量提取链接
+
+### Example 2
+
+- Client/Input: response.follow_all(xpath='//img/@src')
+- Therapist/Output: yield 生成器，逐个产出指向各图片 URL 的 Request
+- Notes: xpath 属性选择器批量提取
+
+## Triggers
+
+- 需要一次性跟进页面中多个链接
+- 使用 css/xpath 参数批量提取链接
+- 解析回调中需生成多个 Request
+
+## Examples
+
+### Example 1
+
+Input:
+
+  response.follow_all(css='a.my_link', callback=self.parse_item)
+
+Output:
+
+  yield 生成器，逐个产出指向各链接的 Request
+
+Notes:
+
+  css 参数批量提取链接
+
+### Example 2
+
+Input:
+
+  response.follow_all(xpath='//img/@src')
+
+Output:
+
+  yield 生成器，逐个产出指向各图片 URL 的 Request
+
+Notes:
+
+  xpath 属性选择器批量提取
+[?2004hp1$ cat /harbor/skills/bbb2cc51-443c-5e23-a285-3b443df42cb5/SKILL.md
+[?2004l---
+id: "bbb2cc51-443c-5e23-a285-3b443df42cb5"
+name: "请求指纹规范化计算"
+description: "在自定义 RequestFingerprinter 的 fingerprint() 方法内复用标准指纹逻辑：对 request.url 做 canonicalize_url 规范化，结合 method 与 body 生成 SHA1 哈希，从而忽略参数顺序、会话 cookie 等随机成分，得到唯一标识请求资源的指纹。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+  - "指纹"
+  - "URL规范化"
+  - "SHA1"
+triggers:
+  - "需要在 fingerprint() 方法内复用标准指纹算法"
+  - "URL 参数顺序不同但指向同一资源"
+  - "请求仅因会话 cookie 等随机成分不同而应视为同一资源"
+examples:
+  - input: "两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111"
+    output: "两者经 canonicalize_url 规范化后得到相同指纹"
+    notes: "参数顺序不同但指向同一资源"
+  - input: "仅会话 cookie 不同的同一页面请求"
+    output: "指纹忽略 cookie 随机成分，得到相同指纹"
+    notes: "会话 id 等随机成分不应影响指纹"
+---
+
+# 请求指纹规范化计算
+
+在自定义 RequestFingerprinter 的 fingerprint() 方法内复用标准指纹逻辑：对 request.url 做 canonicalize_url 规范化，结合 method 与 body 生成 SHA1 哈希，从而忽略参数顺序、会话 cookie 等随机成分，得到唯一标识请求资源的指纹。
+
+## Prompt
+
+当需要在自定义 RequestFingerprinter 的 fingerprint() 方法中复用标准指纹算法时，调用 scrapy.utils.request.fingerprint()（默认参数）。该函数对 request.url 取 canonicalize_url 规范化版本，并结合 request.method 与 request.body 计算 SHA1 哈希，返回 bytes。确保返回值为 bytes 且能唯一标识请求指向的资源；对参数顺序不同但等价的 URL 应得到相同指纹，对仅因会话 cookie 等随机成分不同的请求应忽略这些成分。
+
+## Objective
+
+对单个请求计算规范化指纹哈希
+## Applicable Signals
+
+- 自定义指纹器需要复用标准指纹逻辑
+- 存在等价但字面不同的 URL（如参数顺序不同）
+- 请求含会话 cookie 等应被忽略的随机成分
+
+## Contraindications
+
+- 需要完全自定义非哈希指纹策略时不应使用本微技能
+
+## Intervention Moves
+
+- 在 fingerprint() 中调用 scrapy.utils.request.fingerprint() 并传入 request
+- 依赖 canonicalize_url 规范化 request.url
+- 结合 request.method 与 request.body 计算 SHA1 哈希
+- 返回 bytes 类型的指纹
+
+## Workflow Steps
+
+- 确认当前处于自定义 RequestFingerprinter 的 fingerprint() 实现中
+- 调用 scrapy.utils.request.fingerprint()（默认参数）并传入 request
+- 确认返回值是唯一标识该请求资源的 bytes 对象
+- 验证等价 URL（参数顺序不同）得到相同指纹，含会话 cookie 的请求指纹不受随机成分影响
+
+## Constraints
+
+- fingerprint() 必须返回 bytes 对象
+- 指纹应唯一标识请求指向的资源
+- 默认实现基于 canonicalize_url 规范化 URL 并结合 method、body 生成 SHA1
+
+## Cautions
+
+- 若需非哈希或完全自定义策略，应自行实现 fingerprint() 而非复用标准函数
+
+## Output Contract
+
+- 基于规范化 URL、method、body 的 SHA1 指纹（bytes），可唯一标识请求资源。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111
+- Therapist/Output: 两者经 canonicalize_url 规范化后得到相同指纹
+- Notes: 参数顺序不同但指向同一资源
+
+### Example 2
+
+- Client/Input: 仅会话 cookie 不同的同一页面请求
+- Therapist/Output: 指纹忽略 cookie 随机成分，得到相同指纹
+- Notes: 会话 id 等随机成分不应影响指纹
+
+## Triggers
+
+- 需要在 fingerprint() 方法内复用标准指纹算法
+- URL 参数顺序不同但指向同一资源
+- 请求仅因会话 cookie 等随机成分不同而应视为同一资源
+
+## Examples
+
+### Example 1
+
+Input:
+
+  两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111
+
+Output:
+
+  两者经 canonicalize_url 规范化后得到相同指纹
+
+Notes:
+
+  参数顺序不同但指向同一资源
+
+### Example 2
+
+Input:
+
+  仅会话 cookie 不同的同一页面请求
+
+Output:
+
+  指纹忽略 cookie 随机成分，得到相同指纹
+
+Notes:
+
+  会话 id 等随机成分不应影响指纹
+[?2004hp1$ cat /harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md
+[?2004l---
+id: "be9aee15-e037-5420-b34a-eb9af1223666"
+name: "process_request 请求拦截与分流"
+description: "实现下载器中间件的 process_request 钩子，在请求进入下载器前按规则改写、重调度、短路或丢弃请求。适用于需要在下载前修改请求或按条件重定向、过滤请求的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "downloader-middleware"
+  - "process_request"
+  - "request_processing"
+  - "hook_implementation"
+triggers:
+  - "需要在下载前修改请求"
+  - "需要按条件重定向或丢弃请求"
+  - "需要提前短路请求、跳过下载"
+examples:
+  - input: "请求需在下载前被改写后继续处理"
+    output: "process_request 返回 None，Scrapy 继续执行其余中间件直至下载"
+    notes: "继续处理路径"
+  - input: "请求需被重定向到新地址"
+    output: "process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度"
+    notes: "重调度路径"
+  - input: "请求应被过滤丢弃"
+    output: "process_request 抛出 IgnoreRequest"
+    notes: "丢弃路径"
+---
+
+# process_request 请求拦截与分流
+
+实现下载器中间件的 process_request 钩子，在请求进入下载器前按规则改写、重调度、短路或丢弃请求。适用于需要在下载前修改请求或按条件重定向、过滤请求的场景。
+
+## Prompt
+
+实现 process_request(request) 方法，根据业务规则选择四种返回值之一：返回 None 表示继续沿中间件链处理该请求；返回 Request 对象表示停止调用后续 process_request 并重新调度该请求；返回 Response 对象表示提前短路、跳过下载；抛出 IgnoreRequest 表示丢弃该请求。方法可定义为协程函数（async def）。确保每个分支逻辑明确、互斥且可预测。
+
+## Objective
+
+在请求进入下载器前按规则改写、重调度、短路或丢弃请求
+## Applicable Signals
+
+- 需要在下载前修改请求
+- 需要按条件重定向或丢弃请求
+- 需要提前短路请求、跳过下载
+
+## Contraindications
+
+- 只需处理已下载的响应
+- 需要跨阶段编排整个中间件链
+
+## Intervention Moves
+
+- 返回 None 继续处理该请求
+- 返回 Request 对象以停止后续 process_request 并重新调度
+- 返回 Response 对象以提前短路、跳过下载
+- 抛出 IgnoreRequest 以丢弃该请求
+
+## Workflow Steps
+
+- 在下载器中间件组件中定义 process_request(request) 方法
+- 根据业务规则判断应继续、重调度、短路还是丢弃
+- 返回 None 继续沿中间件链处理
+- 返回 Request 对象以重新调度该请求
+- 返回 Response 对象以提前短路
+- 抛出 IgnoreRequest 以丢弃请求
+
+## Constraints
+
+- process_request 只能返回 None、Response、Request 或抛出 IgnoreRequest
+- 返回 Request 时会停止调用后续 process_request 方法并重新调度该请求
+- 方法可定义为协程函数（async def）
+
+## Cautions
+
+- 返回 Request 会中断当前中间件链，需确认重调度不会造成循环
+- 部分中间件可能需通过特定设置启用
+
+## Output Contract
+
+- process_request 方法返回 None/Request/Response 或抛出 IgnoreRequest 的明确分支逻辑
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 请求需在下载前被改写后继续处理
+- Therapist/Output: process_request 返回 None，Scrapy 继续执行其余中间件直至下载
+- Notes: 继续处理路径
+
+### Example 2
+
+- Client/Input: 请求需被重定向到新地址
+- Therapist/Output: process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度
+- Notes: 重调度路径
+
+### Example 3
+
+- Client/Input: 请求应被过滤丢弃
+- Therapist/Output: process_request 抛出 IgnoreRequest
+- Notes: 丢弃路径
+
+## Triggers
+
+- 需要在下载前修改请求
+- 需要按条件重定向或丢弃请求
+- 需要提前短路请求、跳过下载
+
+## Examples
+
+### Example 1
+
+Input:
+
+  请求需在下载前被改写后继续处理
+
+Output:
+
+  process_request 返回 None，Scrapy 继续执行其余中间件直至下载
+
+Notes:
+
+  继续处理路径
+
+### Example 2
+
+Input:
+
+  请求需被重定向到新地址
+
+Output:
+
+  process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度
+
+Notes:
+
+  重调度路径
+
+### Example 3
+
+Input:
+
+  请求应被过滤丢弃
+
+Output:
+
+  process_request 抛出 IgnoreRequest
+
+Notes:
+
+  丢弃路径
+[?2004hp1$ cat /harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md
+[?2004l---
+id: "bfdf8b93-b24f-554c-938a-3cbb450e6e08"
+name: "Spider输出逐项过滤与改写"
+description: "对spider输出或start seeds中的单个item/request进行逐项处理：保留原样、改写为不同对象，或返回None丢弃，从而实现输出过滤与转换。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider-middleware"
+  - "output-filtering"
+  - "item"
+  - "request"
+triggers:
+  - "需要过滤或改写spider产出的item"
+  - "需要拦截或替换spider输出中的request"
+  - "需要对start seeds中的item/request做逐项处理"
+examples:
+  - input: "spider输出中的单个item与对应response"
+    output: "返回同一item（保留）、改写后的item，或None（丢弃）"
+    notes: "response为None表示来自start seeds"
+  - input: "spider输出中的单个request与对应response"
+    output: "返回同一request（保留）、改写后的request，或None（丢弃）"
+---
+
+# Spider输出逐项过滤与改写
+
+对spider输出或start seeds中的单个item/request进行逐项处理：保留原样、改写为不同对象，或返回None丢弃，从而实现输出过滤与转换。
+
+## Prompt
+
+当需要过滤或改写spider产出的item，或需要拦截/替换request时，使用本技能。对每个item或request单独做决策：返回同一对象表示保留，返回不同对象表示改写，返回None表示忽略该项。处理item时调用get_processed_item(item, response)，处理request时调用对应的request处理方法；response为None表示该项来自start seeds。
+
+## Objective
+
+逐项决定item/request的保留、改写或丢弃
+## Applicable Signals
+
+- spider输出中存在需要过滤的item
+- spider输出中存在需要拦截或替换的request
+- start seeds中的item/request需要逐项处理
+
+## Contraindications
+
+- 无需对spider输出做任何变更时不应使用
+
+## Intervention Moves
+
+- 对单个item调用get_processed_item(item, response)
+- 对单个request调用对应的request处理方法
+- 返回同一对象以保留
+- 返回不同对象以改写
+- 返回None以忽略该项
+
+## Workflow Steps
+
+- 接收来自spider输出或start seeds的单个item/request
+- 判断该项应保留、改写还是丢弃
+- 保留时返回原对象，改写时返回新对象，丢弃时返回None
+- 对每个item/request重复上述逐项决策
+
+## Constraints
+
+- 每次只处理单个item或request
+- response为None表示该项来自start seeds
+- 返回值必须是item/request对象或None
+
+## Cautions
+
+- 改写时应返回新的有效对象，避免返回无效类型
+- 返回None会静默丢弃该项，需确认丢弃符合预期
+
+## Output Contract
+
+- 返回相同或不同的item/request，或返回None表示忽略该项
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: spider输出中的单个item与对应response
+- Therapist/Output: 返回同一item（保留）、改写后的item，或None（丢弃）
+- Notes: response为None表示来自start seeds
+
+### Example 2
+
+- Client/Input: spider输出中的单个request与对应response
+- Therapist/Output: 返回同一request（保留）、改写后的request，或None（丢弃）
+
+## Triggers
+
+- 需要过滤或改写spider产出的item
+- 需要拦截或替换spider输出中的request
+- 需要对start seeds中的item/request做逐项处理
+
+## Examples
+
+### Example 1
+
+Input:
+
+  spider输出中的单个item与对应response
+
+Output:
+
+  返回同一item（保留）、改写后的item，或None（丢弃）
+
+Notes:
+
+  response为None表示来自start seeds
+
+### Example 2
+
+Input:
+
+  spider输出中的单个request与对应response
+
+Output:
+
+  返回同一request（保留）、改写后的request，或None（丢弃）
+[?2004hp1$ cat /harbor/skills/c8444e68-02ba-56bd-91b5-83d547d251d1/SKILL.md
+[?2004l---
+id: "c8444e68-02ba-56bd-91b5-83d547d251d1"
+name: "Scrapy Request 复制与替换"
+description: "使用 Request.copy() 或 Request.replace() 基于现有请求派生新请求，仅覆盖指定字段，并默认浅拷贝 cb_kwargs 与 meta。适用于需要在保留原请求上下文的前提下修改 URL、回调、优先级等字段时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "copy"
+  - "replace"
+  - "对象派生"
+triggers:
+  - "需要基于已有请求修改少量字段"
+  - "需要复用原请求的 meta 或 cb_kwargs 上下文"
+  - "需要复制一个请求对象"
+examples:
+  - input: "已有 Request 对象，需要将其 priority 提高并更换 callback"
+    output: "request.replace(priority=10, callback=new_callback)"
+    notes: "其余字段及 meta、cb_kwargs 默认浅拷贝保留"
+  - input: "需要原样复制一个 Request 对象"
+    output: "request.copy()"
+    notes: "返回该请求的副本"
+---
+
+# Scrapy Request 复制与替换
+
+使用 Request.copy() 或 Request.replace() 基于现有请求派生新请求，仅覆盖指定字段，并默认浅拷贝 cb_kwargs 与 meta。适用于需要在保留原请求上下文的前提下修改 URL、回调、优先级等字段时。
+
+## Prompt
+
+当需要基于已有 Request 派生新请求时：1) 若只需原样复制，调用 copy()；2) 若需修改部分字段，调用 replace() 并仅传入要覆盖的关键字参数（如 url、callback、priority、dont_filter 等）；3) 注意 cb_kwargs 与 meta 默认被浅拷贝，若需修改嵌套结构须显式传入新值或自行深拷贝；4) 确认返回的新 Request 除指定字段外其余属性与原请求一致。
+
+## Objective
+
+在保留原请求属性的基础上安全派生修改后的请求对象
+## Applicable Signals
+
+- 已有 Request 对象可作为派生基础
+- 仅需覆盖 url、callback、priority、dont_filter 等少量字段
+- 需要保留原请求的 meta 或 cb_kwargs 上下文
+
+## Contraindications
+
+- 需要完全新建无关请求
+- 需要深拷贝嵌套 meta 结构时未显式处理
+
+## Intervention Moves
+
+- 调用 Request.copy() 获得原样副本
+- 调用 Request.replace() 并仅传入需覆盖的关键字参数
+- 对需要修改的嵌套 meta 或 cb_kwargs 显式传入新值或自行深拷贝
+
+## Workflow Steps
+
+- 确认存在可作为基础的现有 Request 对象
+- 判断是原样复制（copy）还是字段覆盖（replace）
+- 使用 replace() 时仅传入需修改的字段，其余保持默认
+- 检查 cb_kwargs 与 meta 的浅拷贝语义，必要时显式处理嵌套结构
+- 验证返回的新 Request 除指定字段外与原请求一致
+
+## Constraints
+
+- replace() 的 cb_kwargs 与 meta 默认浅拷贝，除非显式传入新值
+- 仅覆盖明确指定的字段，不应意外改变其它属性
+
+## Cautions
+
+- 浅拷贝可能导致嵌套结构共享引用，修改嵌套内容时需谨慎
+
+## Output Contract
+
+- 返回一个仅指定字段被覆盖、其余属性与原请求一致的新 Request 对象
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 已有 Request 对象，需要将其 priority 提高并更换 callback
+- Therapist/Output: request.replace(priority=10, callback=new_callback)
+- Notes: 其余字段及 meta、cb_kwargs 默认浅拷贝保留
+
+### Example 2
+
+- Client/Input: 需要原样复制一个 Request 对象
+- Therapist/Output: request.copy()
+- Notes: 返回该请求的副本
+
+## Triggers
+
+- 需要基于已有请求修改少量字段
+- 需要复用原请求的 meta 或 cb_kwargs 上下文
+- 需要复制一个请求对象
+
+## Examples
+
+### Example 1
+
+Input:
+
+  已有 Request 对象，需要将其 priority 提高并更换 callback
+
+Output:
+
+  request.replace(priority=10, callback=new_callback)
+
+Notes:
+
+  其余字段及 meta、cb_kwargs 默认浅拷贝保留
+
+### Example 2
+
+Input:
+
+  需要原样复制一个 Request 对象
+
+Output:
+
+  request.copy()
+
+Notes:
+
+  返回该请求的副本
+[?2004hp1$ cat /harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md
+[?2004l---
+id: "d019dfc8-693e-5c16-a087-b34f745060b8"
+name: "Spider中间件异步输出钩子实现"
+description: "实现 process_spider_output_async 异步生成器方法，在 Spider 输出结果为异步可迭代对象时替代同步 process_spider_output 被调用，用于异步爬虫管道中处理异步结果流。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider_middleware"
+  - "async"
+  - "process_spider_output_async"
+triggers:
+  - "Spider 输出结果为异步可迭代对象"
+  - "需要异步生成器形式的输出处理"
+  - "异步爬虫管道中需处理异步结果流"
+examples:
+  - input: "Spider 返回异步可迭代的 result"
+    output: "process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item"
+    notes: "仅在 result 为异步可迭代时触发"
+---
+
+# Spider中间件异步输出钩子实现
+
+实现 process_spider_output_async 异步生成器方法，在 Spider 输出结果为异步可迭代对象时替代同步 process_spider_output 被调用，用于异步爬虫管道中处理异步结果流。
+
+## Prompt
+
+在 Spider 中间件中定义 async 生成器方法 process_spider_output_async(response, result)。当 Spider 返回的 result 为异步可迭代对象时，Scrapy 会调用该方法而非 process_spider_output。方法需以异步生成器形式产出 Request 对象与 item 对象，保持与同步输出钩子一致的输出语义。
+
+## Objective
+
+在异步结果流场景下提供异步输出处理
+## Applicable Signals
+
+- Spider 输出结果为异步可迭代对象
+- 需要异步生成器形式的输出处理
+
+## Contraindications
+
+- 结果为同步可迭代对象
+- 未启用异步爬虫管道
+
+## Intervention Moves
+
+- 定义 async 生成器方法 process_spider_output_async(response, result)
+- 在方法内异步产出 Request 对象与 item 对象
+- 确保仅在 result 为异步可迭代时依赖该钩子
+
+## Workflow Steps
+
+- 确认 Spider 输出 result 为异步可迭代对象
+- 在中间件中定义 async 生成器方法 process_spider_output_async(response, result)
+- 在生成器中产出 Request 对象与 item 对象
+- 验证异步结果流被正确传递至后续中间件
+
+## Constraints
+
+- 方法必须为异步生成器
+- 仅在 result 为异步可迭代对象时被调用，替代 process_spider_output
+
+## Cautions
+
+- 同步结果流仍走 process_spider_output，不应依赖异步钩子处理
+
+## Output Contract
+
+- 定义可被调用的异步生成器方法 process_spider_output_async，产出 Request 与 item 对象
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: Spider 返回异步可迭代的 result
+- Therapist/Output: process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item
+- Notes: 仅在 result 为异步可迭代时触发
+
+## Triggers
+
+- Spider 输出结果为异步可迭代对象
+- 需要异步生成器形式的输出处理
+- 异步爬虫管道中需处理异步结果流
+
+## Examples
+
+### Example 1
+
+Input:
+
+  Spider 返回异步可迭代的 result
+
+Output:
+
+  process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item
+
+Notes:
+
+  仅在 result 为异步可迭代时触发
+[?2004hp1$ cat /harbor/skills/d18ce1e0-736d-55d1-8960-8bee27f14091/SKILL.md
+[?2004l---
+id: "d18ce1e0-736d-55d1-8960-8bee27f14091"
+name: "请求hostname安全判定"
+description: "对单个请求解析其URL的hostname，并用已初始化的允许域名正则判断该请求是否应被跟随；hostname为空（如javascript链接等错误URL）时按不匹配处理。用于单请求的站内/站外判定。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "offsite"
+  - "should_follow"
+  - "hostname"
+  - "正则匹配"
+triggers:
+  - "需要对单个请求做站内/站外判定"
+  - "已有host_regex并需判断某请求是否应跟随"
+---
+
+# 请求hostname安全判定
+
+对单个请求解析其URL的hostname，并用已初始化的允许域名正则判断该请求是否应被跟随；hostname为空（如javascript链接等错误URL）时按不匹配处理。用于单请求的站内/站外判定。
+
+## Prompt
+
+输入一个请求对象与已初始化的host_regex。先通过缓存的URL解析取得请求的hostname；若hostname为None或空字符串，则视为不匹配。否则用host_regex对hostname执行search，返回布尔结果表示是否应跟随该请求。不要在此步骤构建或修改正则，也不要执行调度阶段的过滤逻辑。
+
+## Objective
+
+判断单个请求是否属于允许域名
+## Applicable Signals
+
+- 需要对单个请求做站内/站外判定
+- host_regex已初始化可用
+
+## Contraindications
+
+- host_regex尚未初始化
+- 需要构建或修改允许域名正则
+- 需要执行调度阶段的批量过滤
+
+## Intervention Moves
+
+- 用缓存URL解析获取请求hostname
+- hostname为空时按不匹配处理
+- 用host_regex对hostname执行search并返回布尔结果
+
+## Workflow Steps
+
+- 取得已初始化的host_regex
+- 通过urlparse_cached解析请求，取hostname，空值置为空字符串
+- 用host_regex.search(host)判断是否匹配
+- 返回布尔值表示是否应跟随该请求
+
+## Constraints
+
+- hostname可能为None（如javascript链接），须按不匹配处理
+- 仅做单请求判定，不构建正则、不做调度过滤
+
+## Cautions
+
+- host_regex未初始化时不应调用本判定
+
+## Output Contract
+
+- 返回布尔值表示是否应跟随该请求
+
+## Triggers
+
+- 需要对单个请求做站内/站外判定
+- 已有host_regex并需判断某请求是否应跟随
+[?2004hp1$ cat /harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md
+[?2004l---
+id: "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76"
+name: "自定义请求指纹器"
+description: "当默认请求指纹不满足去重需求时，实现自定义 REQUEST_FINGERPRINTER_CLASS，按业务比较规则规范化 URL（大小写、片段、查询参数、请求头等）生成请求唯一标识，从而控制去重行为。适用于需要定制去重比较规则的 Scrapy 爬虫。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+  - "指纹器"
+  - "REQUEST_FINGERPRINTER_CLASS"
+triggers:
+  - "默认指纹导致误去重或漏去重"
+  - "需要按大小写、片段、查询参数或请求头定制比较规则"
+  - "需要为请求生成符合业务比较规则的唯一标识"
+examples:
+  - input: "默认指纹无法区分大小写不同的 URL，导致误去重"
+    output: "实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期"
+    notes: "比较规则需与业务语义一致"
+---
+
+# 自定义请求指纹器
+
+当默认请求指纹不满足去重需求时，实现自定义 REQUEST_FINGERPRINTER_CLASS，按业务比较规则规范化 URL（大小写、片段、查询参数、请求头等）生成请求唯一标识，从而控制去重行为。适用于需要定制去重比较规则的 Scrapy 爬虫。
+
+## Prompt
+
+在确认默认指纹无法满足去重需求后，实现一个自定义请求指纹器类，按业务需要的比较规则（如大小写不敏感、包含/排除 URL 片段、包含/排除查询参数、包含部分或全部请求头）规范化请求并生成唯一标识，然后通过 REQUEST_FINGERPRINTER_CLASS 配置启用，并验证去重行为符合预期。
+
+## Objective
+
+按业务比较规则生成请求唯一指纹以控制去重
+## Applicable Signals
+
+- 默认请求指纹器无法区分或错误合并本应不同/相同的请求
+- 业务要求对 URL 大小写、片段、查询参数或请求头采用特定比较方式
+
+## Contraindications
+
+- 默认指纹已满足去重需求时
+- 去重问题源于调度器配置而非指纹规则时
+
+## Intervention Moves
+
+- 明确业务去重比较规则（大小写、片段、查询参数、请求头）
+- 实现自定义请求指纹器类，规范化请求并生成唯一标识
+- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用自定义指纹器
+- 验证去重行为符合预期
+
+## Workflow Steps
+
+- 确认默认请求指纹器无法满足当前去重需求，并明确差异点
+- 定义业务比较规则：是否大小写敏感、是否包含 URL 片段、包含或排除哪些查询参数、是否纳入请求头
+- 编写自定义请求指纹器类，按上述规则规范化请求并生成唯一标识
+- 在项目配置中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类
+- 运行爬虫并验证去重行为符合预期
+
+## Constraints
+
+- 仅在默认指纹不满足需求时启用自定义指纹器
+- 指纹生成规则需与业务去重语义一致
+- 去重问题若源于调度器配置，应先修正调度器配置而非改指纹规则
+
+## Cautions
+
+- 不存在通用的请求唯一标识生成方式，需按具体场景确定比较规则
+- 修改指纹规则会改变去重结果，需验证不会引入误去重或漏去重
+
+## Output Contract
+
+- 配置生效的自定义请求指纹器类及去重行为验证结果
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 默认指纹无法区分大小写不同的 URL，导致误去重
+- Therapist/Output: 实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期
+- Notes: 比较规则需与业务语义一致
+
+## Triggers
+
+- 默认指纹导致误去重或漏去重
+- 需要按大小写、片段、查询参数或请求头定制比较规则
+- 需要为请求生成符合业务比较规则的唯一标识
+
+## Examples
+
+### Example 1
+
+Input:
+
+  默认指纹无法区分大小写不同的 URL，导致误去重
+
+Output:
+
+  实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期
+
+Notes:
+
+  比较规则需与业务语义一致
+[?2004hp1$ cat /harbor/skills/d4fd663d-e1d2-5ea4-8be4-d7c525bc68d3/SKILL.md
+[?2004l---
+id: "d4fd663d-e1d2-5ea4-8be4-d7c525bc68d3"
+name: "Scrapy 请求错误回调处理"
+description: "为 Request 配置 errback 回调，捕获并分类处理请求处理过程中的异常（连接超时、DNS 错误、HTTP 错误等），并记录或转交错误。适用于需要稳健处理下载失败的爬虫。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+  - "异常处理"
+  - "请求处理"
+triggers:
+  - "需要捕获连接超时或 DNS 错误"
+  - "需要记录并分类请求处理异常"
+  - "请求处理可能抛出异常且需避免爬虫中断"
+examples:
+  - input: "请求可能因 DNS 解析失败或连接超时而失败"
+    output: "为该 Request 注册 errback，在回调中捕获 DNSLookupError 与 TimeoutError 并记录"
+    notes: "errback 接收 Failure 作为第一个参数"
+---
+
+# Scrapy 请求错误回调处理
+
+为 Request 配置 errback 回调，捕获并分类处理请求处理过程中的异常（连接超时、DNS 错误、HTTP 错误等），并记录或转交错误。适用于需要稳健处理下载失败的爬虫。
+
+## Prompt
+
+当某个 Request 存在下载失败风险（连接超时、DNS 解析失败、HTTP 错误等）时，为该 Request 注册 errback 回调。errback 接收 Twisted Failure 作为第一个参数，在回调中判断异常类型（如 HttpError、DNSLookupError、TimeoutError、TCPTimedOutError），记录错误并按需分类处理或转交，避免爬虫因单个请求失败而中断。
+
+## Objective
+
+在请求失败时通过 errback 捕获并分类处理异常，避免爬虫中断
+## Applicable Signals
+
+- 请求可能因连接超时、DNS 错误或 HTTP 错误失败
+- 需要记录并分类请求处理异常
+
+## Contraindications
+
+- 仅需正常响应处理且无失败风险
+
+## Intervention Moves
+
+- 为 Request 指定 errback 回调函数
+- 在 errback 中接收 Failure 参数并判断异常类型
+- 记录错误并按需分类处理或转交
+
+## Workflow Steps
+
+- 识别存在下载失败风险的 Request
+- 为该 Request 注册 errback 回调
+- 在 errback 中接收 Failure 作为第一个参数
+- 判断异常类型（如 HttpError、DNSLookupError、TimeoutError、TCPTimedOutError）
+- 记录错误并按需分类处理或转交
+
+## Constraints
+
+- errback 的第一个参数为 Twisted Failure
+- 异常分类需依据具体异常类型判断
+
+## Cautions
+
+- errback 仅处理请求处理过程中的异常，不替代正常响应回调
+
+## Output Contract
+
+- 已注册 errback 的 Request，异常被捕获并记录或转交
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 请求可能因 DNS 解析失败或连接超时而失败
+- Therapist/Output: 为该 Request 注册 errback，在回调中捕获 DNSLookupError 与 TimeoutError 并记录
+- Notes: errback 接收 Failure 作为第一个参数
+
+## Triggers
+
+- 需要捕获连接超时或 DNS 错误
+- 需要记录并分类请求处理异常
+- 请求处理可能抛出异常且需避免爬虫中断
+
+## Examples
+
+### Example 1
+
+Input:
+
+  请求可能因 DNS 解析失败或连接超时而失败
+
+Output:
+
+  为该 Request 注册 errback，在回调中捕获 DNSLookupError 与 TimeoutError 并记录
+
+Notes:
+
+  errback 接收 Failure 作为第一个参数
+[?2004hp1$ cat /harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md
+[?2004l---
+id: "d9545371-1c8c-5f0e-aa54-f9568fa3fffd"
+name: "process_spider_input 返回值契约"
+description: "确保自定义 Spider 中间件的 process_spider_input 钩子符合 Scrapy 框架契约：对每个进入 Spider 的响应调用，必须返回 None 或抛出异常；返回 None 时处理链继续执行后续中间件直至交给 Spider。用于实现该钩子时校验返回值行为。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider-middleware"
+  - "process_spider_input"
+  - "return-contract"
+triggers:
+  - "实现 process_spider_input 方法"
+  - "审查 Spider 中间件钩子返回值"
+  - "响应进入 Spider 前需要放行或中断"
+examples:
+  - input: "实现 process_spider_input 以放行响应"
+    output: "def process_spider_input(self, response):\n    return None"
+    notes: "返回 None 表示继续处理链"
+---
+
+# process_spider_input 返回值契约
+
+确保自定义 Spider 中间件的 process_spider_input 钩子符合 Scrapy 框架契约：对每个进入 Spider 的响应调用，必须返回 None 或抛出异常；返回 None 时处理链继续执行后续中间件直至交给 Spider。用于实现该钩子时校验返回值行为。
+
+## Prompt
+
+实现或审查 process_spider_input 方法时，确认其返回值符合契约：正常放行时返回 None，让 Scrapy 继续执行后续中间件直至响应交给 Spider；需要中断或报错时抛出异常。不要返回其他值，也不要在该方法内直接处理响应内容。
+
+## Objective
+
+保证 process_spider_input 返回值符合框架约定
+## Applicable Signals
+
+- 正在编写 process_spider_input 方法
+- 需要确认响应是否继续沿中间件链传递
+
+## Contraindications
+
+- 实现其他不涉及该返回契约的钩子
+
+## Intervention Moves
+
+- 正常放行时返回 None
+- 需要中断时抛出异常
+- 避免返回其他值
+
+## Workflow Steps
+
+- 确认当前实现的是 process_spider_input 钩子
+- 在正常路径返回 None 以继续处理链
+- 在需要中断或报错时抛出异常
+- 检查方法中不存在返回非 None 值的分支
+
+## Constraints
+
+- 返回值只能是 None 或抛出异常
+- 返回 None 后由 Scrapy 继续执行后续中间件直至交给 Spider
+
+## Cautions
+
+- 不要在该钩子中返回响应对象或其他值来替代框架的继续处理逻辑
+
+## Output Contract
+
+- 返回 None 或抛出异常的实现，处理链可继续
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 实现 process_spider_input 以放行响应
+- Therapist/Output: def process_spider_input(self, response):
+    return None
+- Notes: 返回 None 表示继续处理链
+
+## Triggers
+
+- 实现 process_spider_input 方法
+- 审查 Spider 中间件钩子返回值
+- 响应进入 Spider 前需要放行或中断
+
+## Examples
+
+### Example 1
+
+Input:
+
+  实现 process_spider_input 以放行响应
+
+Output:
+
+  def process_spider_input(self, response):
+      return None
+
+Notes:
+
+  返回 None 表示继续处理链
+[?2004hp1$ cat /harbor/skills/dc522835-58a3-552c-bd8b-30ad389282ea/SKILL.md
+[?2004l---
+id: "dc522835-58a3-552c-bd8b-30ad389282ea"
+name: "Scrapy 请求构造与回调数据传递"
+description: "构造 scrapy.Request 时正确设置 url、callback、errback、cb_kwargs、cookies、priority、dont_filter 等参数，并把附加数据通过 cb_kwargs 传给回调。适用于需要发起请求并向下游回调传递上下文数据的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "callback"
+  - "cb_kwargs"
+  - "cookies"
+triggers:
+  - "需要发起新的抓取请求"
+  - "需要向回调函数传递额外上下文数据"
+---
+
+# Scrapy 请求构造与回调数据传递
+
+构造 scrapy.Request 时正确设置 url、callback、errback、cb_kwargs、cookies、priority、dont_filter 等参数，并把附加数据通过 cb_kwargs 传给回调。适用于需要发起请求并向下游回调传递上下文数据的场景。
+
+## Prompt
+
+在需要发起新的抓取请求时，构造 scrapy.Request 对象：明确设置 url；按需绑定 callback 与 errback；将需要传给回调的上下文数据放入 cb_kwargs（dict，会作为关键字参数传给 callback）；如需设置 cookie，使用 Request 的 cookies 参数而非 Cookie 头；按需设置 priority、dont_filter、encoding、flags 等参数。构造完成后确认回调与 cb_kwargs 已正确绑定。
+
+## Objective
+
+构造可正确路由回调并携带附加数据的 Scrapy 请求
+## Applicable Signals
+
+- 需要发起新的抓取请求
+- 需要向回调函数传递额外上下文数据
+
+## Contraindications
+
+- 仅需解析已有响应
+- 需要设置 Cookie 头而非 cookies 参数
+
+## Intervention Moves
+
+- 设置 url 参数
+- 绑定 callback 与 errback
+- 通过 cb_kwargs 传递附加数据给回调
+- 使用 cookies 参数设置请求 cookie
+- 按需设置 priority、dont_filter、encoding、flags
+
+## Workflow Steps
+
+- 确定请求目标 url
+- 按需绑定 callback 与 errback
+- 将需要传给回调的上下文数据放入 cb_kwargs
+- 如需 cookie，使用 Request 的 cookies 参数而非 Cookie 头
+- 按需设置 priority、dont_filter、encoding、flags 等参数
+- 确认回调与 cb_kwargs 已正确绑定
+
+## Constraints
+
+- cb_kwargs 必须是 dict，会作为关键字参数传给 callback
+- 设置 cookie 应使用 Request.cookies 参数，通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 处理
+
+## Cautions
+
+- 通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 考虑，这是已知限制
+
+## Output Contract
+
+- 一个配置完整、回调与 cb_kwargs 正确绑定的 Request 对象
+
+## Triggers
+
+- 需要发起新的抓取请求
+- 需要向回调函数传递额外上下文数据
+[?2004hp1$ cat /harbor/skills/f41fcf7a-591a-589d-8a77-8abaa0960bf8/SKILL.md
+[?2004l---
+id: "f41fcf7a-591a-589d-8a77-8abaa0960bf8"
+name: "从 cURL 命令构造 Scrapy Request"
+description: "使用 Request.from_curl 从 cURL 命令字符串创建 Scrapy Request，自动填充 HTTP 方法、URL、头、cookie 和 body；当已有 cURL 命令（如从浏览器复制）需要转为 Scrapy 请求时使用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request"
+  - "curl"
+  - "请求构造"
+triggers:
+  - "已有 cURL 命令需转为 Scrapy 请求"
+  - "需复用从浏览器复制的请求"
+---
+
+# 从 cURL 命令构造 Scrapy Request
+
+使用 Request.from_curl 从 cURL 命令字符串创建 Scrapy Request，自动填充 HTTP 方法、URL、头、cookie 和 body；当已有 cURL 命令（如从浏览器复制）需要转为 Scrapy 请求时使用。
+
+## Prompt
+
+当调用方提供 cURL 命令字符串并希望得到可用的 Scrapy Request 时：调用 Request.from_curl 解析该命令，自动填充方法、URL、头、cookie 和 body；如需覆盖命令中的同名参数，可传入与 Request 类相同的参数（优先于 cURL 中的值）；默认忽略无法识别的选项，若希望遇到未知选项时报错，显式传入 ignore_unknown_options=False。返回构造好的 Request 对象。
+
+## Objective
+
+将 cURL 命令转换为可用的 Scrapy Request 对象
+## Applicable Signals
+
+- 输入为 cURL 命令字符串
+- 需要复用浏览器复制的请求
+
+## Contraindications
+
+- 请求参数需完全手工构造时
+- cURL 含无法识别选项且不希望报错时需显式设置 ignore_unknown_options
+
+## Intervention Moves
+
+- 调用 Request.from_curl 解析 cURL 命令
+- 按需传入与 Request 相同的参数以覆盖 cURL 中的值
+- 按需设置 ignore_unknown_options=False 使未知选项报错
+
+## Workflow Steps
+
+- 获取 cURL 命令字符串
+- 调用 Request.from_curl 构造 Request，自动填充方法、URL、头、cookie、body
+- 如需覆盖命令中的同名参数，传入对应 Request 参数
+- 如需对未知选项报错，传入 ignore_unknown_options=False
+- 返回构造好的 Request 对象
+
+## Constraints
+
+- 传入的 Request 参数优先并覆盖 cURL 命令中的同名参数
+- 默认忽略无法识别的选项
+
+## Cautions
+
+- 未知选项默认被忽略，若需严格校验须显式设置 ignore_unknown_options=False
+
+## Output Contract
+
+- 生成包含正确方法、URL、头、cookie、body 的 Request 对象
+
+## Triggers
+
+- 已有 cURL 命令需转为 Scrapy 请求
+- 需复用从浏览器复制的请求
+[?2004hp1$ cat /harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md
+[?2004l---
+id: "fd94eb98-3273-588e-bd85-64c78e5d016e"
+name: "FormRequest.from_response 登录模拟"
+description: "用 FormRequest.from_response() 基于已有响应中的表单自动预填隐藏字段（如会话数据、认证令牌），仅覆盖用户名密码等少数字段以模拟登录提交。适用于登录页含隐藏令牌字段、需要保留预填值只覆盖关键字段的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "FormRequest"
+  - "from_response"
+  - "登录模拟"
+  - "会话建立"
+triggers:
+  - "登录页含 input type=hidden 的令牌或会话字段"
+  - "需要保留预填字段仅覆盖用户名密码"
+  - "需要基于已有响应表单模拟用户登录"
+examples:
+  - input: "登录页响应含隐藏的会话/认证令牌字段，需以用户名密码登录"
+    output: "FormRequest.from_response(response, formdata={\"username\": \"...\", \"password\": \"...\"}, callback=self.after_login)"
+    notes: "保留隐藏字段，仅覆盖用户名密码"
+---
+
+# FormRequest.from_response 登录模拟
+
+用 FormRequest.from_response() 基于已有响应中的表单自动预填隐藏字段（如会话数据、认证令牌），仅覆盖用户名密码等少数字段以模拟登录提交。适用于登录页含隐藏令牌字段、需要保留预填值只覆盖关键字段的场景。
+
+## Prompt
+
+当目标登录页包含预填充表单字段（如 <input type="hidden"> 的会话数据或认证令牌）时，使用 FormRequest.from_response() 从已有响应构造登录请求：保留表单中自动预填的隐藏字段，仅覆盖用户名、密码等少数字段，并指定 callback 处理登录后响应。不要用于无表单或无需认证的页面，也不要用于需要完全手工构造全部字段的场景。
+
+## Objective
+
+基于已有响应表单自动预填并覆盖关键字段完成登录提交
+## Applicable Signals
+
+- 登录页含 input type=hidden 的令牌或会话字段
+- 需要保留预填字段仅覆盖用户名密码
+
+## Contraindications
+
+- 目标页面无表单或无需认证
+- 需要完全手工构造全部字段
+
+## Intervention Moves
+
+- 从已有响应调用 FormRequest.from_response()
+- 保留自动预填的隐藏字段
+- 仅覆盖用户名、密码等少数字段
+- 指定 callback 处理登录后响应
+
+## Workflow Steps
+
+- 确认登录页表单含需保留的隐藏字段（会话数据、认证令牌等）
+- 在解析登录页的响应回调中调用 FormRequest.from_response()
+- 通过 formdata 仅覆盖用户名、密码等少数字段
+- 指定 callback 处理登录后的响应
+
+## Constraints
+
+- 必须基于已有响应表单构造，而非从零构造全部 formdata
+- 仅覆盖少数字段，保留其余预填字段
+
+## Cautions
+
+- 若页面无表单或无需认证，不应使用此方法
+
+## Output Contract
+
+- 生成一个继承隐藏字段并覆盖指定字段的登录 FormRequest
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 登录页响应含隐藏的会话/认证令牌字段，需以用户名密码登录
+- Therapist/Output: FormRequest.from_response(response, formdata={"username": "...", "password": "..."}, callback=self.after_login)
+- Notes: 保留隐藏字段，仅覆盖用户名密码
+
+## Triggers
+
+- 登录页含 input type=hidden 的令牌或会话字段
+- 需要保留预填字段仅覆盖用户名密码
+- 需要基于已有响应表单模拟用户登录
+
+## Examples
+
+### Example 1
+
+Input:
+
+  登录页响应含隐藏的会话/认证令牌字段，需以用户名密码登录
+
+Output:
+
+  FormRequest.from_response(response, formdata={"username": "...", "password": "..."}, callback=self.after_login)
+
+Notes:
+
+  保留隐藏字段，仅覆盖用户名密码
+[?2004hp1$ cat /harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md
+[?2004l---
+id: "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+name: "自定义请求指纹器实现"
+description: "实现并配置自定义 RequestFingerprinter，用于按需纳入特定请求头或 URL 片段计算请求指纹，或完全自定义指纹逻辑，从而改变 Scrapy 默认去重指纹行为。适用于需要定制请求去重指纹的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+  - "指纹定制"
+  - "REQUEST_FINGERPRINTER_CLASS"
+  - "WeakKeyDictionary"
+  - "指纹计算"
+triggers:
+  - "需要将特定请求头纳入指纹计算"
+  - "需要保留 URL 片段参与指纹"
+  - "需要完全自定义指纹算法"
+  - "默认指纹导致去重不符合预期"
+  - "默认指纹无法区分或误合并资源"
+  - "需要忽略随机 cookie 或参数顺序差异"
+  - "需要改变默认指纹逻辑"
+examples:
+  - input: "需要将名为 X-ID 的请求头纳入指纹计算"
+    output: "定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=[\"X-ID\"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = \"my_project.utils.RequestFingerprinter\""
+    notes: "复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存"
+  - input: "仅按请求 URL 计算指纹，忽略方法、请求体及规范化"
+    output: "从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果"
+    notes: "从零实现时必须使用 WeakKeyDictionary 缓存"
+---
+
+# 自定义请求指纹器实现
+
+实现并配置自定义 RequestFingerprinter，用于按需纳入特定请求头或 URL 片段计算请求指纹，或完全自定义指纹逻辑，从而改变 Scrapy 默认去重指纹行为。适用于需要定制请求去重指纹的场景。
+
+## Prompt
+
+当默认指纹无法满足去重需求时，按以下步骤实现自定义请求指纹器：
+1. 明确定制目标：是纳入特定请求头、保留 URL 片段，还是完全自定义算法。
+2. 若仅需纳入特定请求头，优先复用 scrapy.utils.request.fingerprint()，通过 include_headers 参数传入需纳入的请求头列表。
+3. 若需保留 URL 片段，将 keep_fragments 设为 True（例如处理无头浏览器请求时）。
+4. 若完全自定义指纹逻辑，实现一个带 fingerprint(self, request) 方法的类；若不使用 scrapy.utils.request.fingerprint()，必须用 WeakKeyDictionary 缓存指纹，确保每个请求只计算一次并避免请求对象长期驻留内存。
+5. 在 settings 中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义类（如 "my_project.utils.RequestFingerprinter"）。
+6. 如需在 spider 回调中按请求覆盖指纹，可让指纹器优先读取 request.meta 中的指纹，缺失时回退到 scrapy.utils.request.fingerprint()。
+
+## Objective
+
+按业务需求定制请求指纹计算逻辑并正确接入 Scrapy 去重流程
+## Applicable Signals
+
+- 默认指纹忽略请求头导致不同请求被误判为重复
+- 需要 URL 片段参与去重判断
+- 业务要求自定义指纹算法
+- 默认指纹无法区分或误合并资源
+- 需要忽略随机 cookie 或参数顺序差异
+
+## Contraindications
+
+- 默认指纹已满足去重需求
+- 仅需调整下载中间件行为
+- 仅需默认 URL+method+body 的 SHA1 指纹
+
+## Intervention Moves
+
+- 复用 fingerprint() 并传入 include_headers
+- 设置 keep_fragments=True 保留片段
+- 从零实现 fingerprint 方法并用 WeakKeyDictionary 缓存
+- 通过 REQUEST_FINGERPRINTER_CLASS 注册自定义类
+- 在指纹器中读取 request.meta 支持按请求覆盖
+- 设置 REQUEST_FINGERPRINTER_CLASS 为自定义指纹器类或导入路径
+- 实现 fingerprint(request) 方法返回 bytes 指纹
+- 在实现中复用 scrapy.utils.request.fingerprint() 处理常见场景
+
+## Workflow Steps
+
+- 确定指纹定制目标（请求头、片段或完全自定义）
+- 选择实现方式：复用 fingerprint() 或从零实现
+- 若从零实现，使用 WeakKeyDictionary 缓存指纹
+- 在 settings 中配置 REQUEST_FINGERPRINTER_CLASS
+- 如需按请求覆盖，实现从 request.meta 读取指纹并回退到默认逻辑
+- 确认默认指纹无法满足去重需求（如误合并或无法区分资源）
+- 编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes
+- 如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()
+- 通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径
+
+## Constraints
+
+- 不使用 scrapy.utils.request.fingerprint() 时必须用 WeakKeyDictionary 缓存指纹
+- 缓存需保证每个请求只计算一次指纹
+- REQUEST_FINGERPRINTER_CLASS 需指向可导入的类路径
+- fingerprint() 必须返回 bytes 对象
+- 自定义指纹器须遵循请求指纹限制
+
+## Cautions
+
+- 请求头默认被忽略，需显式通过 include_headers 纳入
+- URL 片段默认被忽略，需显式设置 keep_fragments=True
+- 缓存若使用普通字典会导致请求对象无法释放内存
+- 默认指纹器基于规范化 URL、method 和 body 生成 SHA1，忽略会话 cookie 等随机成分需自定义实现
+
+## Output Contract
+
+- 可用的 RequestFingerprinter 类及 settings 中 REQUEST_FINGERPRINTER_CLASS 配置
+- 返回唯一标识请求的 bytes 指纹
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要将名为 X-ID 的请求头纳入指纹计算
+- Therapist/Output: 定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=["X-ID"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = "my_project.utils.RequestFingerprinter"
+- Notes: 复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存
+
+### Example 2
+
+- Client/Input: 仅按请求 URL 计算指纹，忽略方法、请求体及规范化
+- Therapist/Output: 从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果
+- Notes: 从零实现时必须使用 WeakKeyDictionary 缓存
+
+## Triggers
+
+- 需要将特定请求头纳入指纹计算
+- 需要保留 URL 片段参与指纹
+- 需要完全自定义指纹算法
+- 默认指纹导致去重不符合预期
+- 默认指纹无法区分或误合并资源
+- 需要忽略随机 cookie 或参数顺序差异
+- 需要改变默认指纹逻辑
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要将名为 X-ID 的请求头纳入指纹计算
+
+Output:
+
+  定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=["X-ID"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = "my_project.utils.RequestFingerprinter"
+
+Notes:
+
+  复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存
+
+### Example 2
+
+Input:
+
+  仅按请求 URL 计算指纹，忽略方法、请求体及规范化
+
+Output:
+
+  从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果
+
+Notes:
+
+  从零实现时必须使用 WeakKeyDictionary 缓存
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[0:200],end='')"
+[?2004l---
+id: "75b3516a-ed35-54d1-96aa-35292b1ac49f"
+name: "允许域名正则构建"
+description: "在 spider_opened 阶段根据 spider 配置构建用于匹配允许域名的 host_regex 正则对象，供后续请求过滤逻辑复用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "offsite"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[200:309],end='')"
+[?2004l  - "域名规则"
+  - "正则构建"
+  - "spider_opened"
+triggers:
+  - "spider启动时需要初始化域名匹配规则"
+  - "需要在请求过滤前准备站内域名判定规则"
+---
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[309:523],end='')"
+[?2004l# 允许域名正则构建
+
+在 spider_opened 阶段根据 spider 配置构建用于匹配允许域名的 host_regex 正则对象，供后续请求过滤逻辑复用。
+
+## Prompt
+
+在 spider_opened 阶段调用 get_host_regex(spider) 构建 host_regex 正则对象并保存为实例属性，供后续 should_follow 等请求过滤逻辑复用。仅做规则初始化，不在此步骤过滤请求。
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[523:634],end='')"
+[?2004l## Objective
+
+在spider_opened阶段构建host_regex
+## Applicable Signals
+
+- spider启动时需要初始化域名匹配规则
+
+## Contraindications
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[634:757],end='')"
+[?2004l
+- spider尚未打开或未配置允许域名
+
+## Intervention Moves
+
+- 在spider_opened中调用get_host_regex(spider)
+- 将返回的正则对象保存为self.host_regex供后续复用
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[757:898],end='')"
+[?2004l## Workflow Steps
+
+- 在spider_opened(self, spider)中调用self.get_host_regex(spider)
+- 将结果赋值给self.host_regex
+- 后续请求过滤逻辑直接复用该正则对象
+
+## Constraints
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[898:1018],end='')"
+[?2004l- 仅在spider_opened阶段执行初始化
+- 本步骤不执行请求过滤，只构建规则
+
+## Cautions
+
+- hostname可能为None（如javascript链接），匹配时需容错处理
+
+## Output Contract
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/75b3516a-ed35-54d1-96aa-35292b1ac49f/SKILL.md').read_text()[1018:1100],end='')"
+[?2004l
+- 生成可复用的host_regex正则对象
+
+## Triggers
+
+- spider启动时需要初始化域名匹配规则
+- 需要在请求过滤前准备站内域名判定规则
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[0:254],end='')"
+[?2004l---
+id: "76394f52-1f81-5c91-8ae3-fd51b942c5e1"
+name: "下载器中间件激活与排序配置"
+description: "当默认去重逻辑无法满足需求时，通过配置 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类，或编写自定义请求指纹器类来控制 Scrapy 的请求去重判断逻辑。适用于默认指纹不满足去重需求、需要按自定义字段组合判定请求唯一性时。"
+version: "0.1.1"
+tags:
+  - "scrapy"
+  - "去重"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[254:382],end='')"
+[?2004l  - "fingerprinter"
+  - "请求指纹"
+  - "配置"
+triggers:
+  - "需要启用自定义下载器中间件"
+  - "需要调整或禁用内置中间件顺序"
+examples:
+  - input: "需要启用自定义下载器中间件"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[382:860],end='')"
+[?2004l    output: "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}"
+  - input: "需要禁用内置 UserAgentMiddleware"
+    output: "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}"
+---
+
+# 下载器中间件激活与排序配置
+
+当默认去重逻辑无法满足需求时，通过配置 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类，或编写自定义请求指纹器类来控制 Scrapy 的请求去重判断逻辑。适用于默认指纹不满足去重需求、需要按自定义字段组合判定请求唯一性时。
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[860:1108],end='')"
+[?2004l
+## Prompt
+
+当默认请求指纹无法满足去重需求时，按以下步骤定制：1) 确认现有默认去重行为确实不满足需求；2) 决定是仅替换 REQUEST_FINGERPRINTER_CLASS 指向自定义类，还是编写完整 fingerprinter 实现；3) 编写 fingerprinter 类，使其基于请求属性生成稳定指纹；4) 遵守指纹计算限制（如不得依赖不可用或易变数据）；5) 在配置中接入该类并验证请求按新规则生成指纹。
+
+## Objective
+
+为请求定义并接入自定义去重指纹
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1108:1202],end='')"
+[?2004l## Applicable Signals
+
+- 默认指纹不满足去重需求
+- 需要按自定义字段组合判定请求唯一性
+
+## Contraindications
+
+- 默认去重行为已满足需求
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1202:1339],end='')"
+[?2004l- 无法遵守指纹计算限制的场景
+
+## Intervention Moves
+
+- 确认默认指纹不适用的具体原因
+- 通过 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类
+- 编写自定义请求指纹器类，基于请求属性生成稳定指纹
+- 遵守请求指纹限制
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1339:1503],end='')"
+[?2004l- 验证去重行为符合预期
+
+## Workflow Steps
+
+- 判断默认去重是否满足需求，若不满足则进入自定义指纹流程
+- 选择配置 REQUEST_FINGERPRINTER_CLASS 或编写自定义请求指纹器类
+- 实现或指定指纹器类，基于请求属性生成稳定指纹，并遵守请求指纹限制
+- 确认指纹器类可被正确加载并生效
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1503:1583],end='')"
+[?2004l- 验证去重行为符合预期
+
+## Constraints
+
+- 自定义指纹器须遵守请求指纹限制
+- 仅在默认去重不满足需求时定制指纹
+
+## Cautions
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1583:1723],end='')"
+[?2004l
+- 仅在默认去重不满足需求时定制指纹，避免不必要的复杂度
+- 避免依赖易变或不可用数据生成指纹，以免去重不稳定
+- 自定义指纹可能改变去重结果，需验证后再上线
+
+## Output Contract
+
+- 配置生效的自定义 fingerprinter 类，请求按新规则生成指纹
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1723:1784],end='')"
+[?2004l
+## Triggers
+
+- 需要启用自定义下载器中间件
+- 需要调整或禁用内置中间件顺序
+
+## Examples
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1784:1833],end='')"
+[?2004l### Example 1
+
+Input:
+
+  需要启用自定义下载器中间件
+
+Output:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1833:1953],end='')"
+[?2004l  DOWNLOADER_MIDDLEWARES = {
+      "myproject.middlewares.CustomDownloaderMiddleware": 543,
+  }
+
+### Example 2
+
+Input:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/76394f52-1f81-5c91-8ae3-fd51b942c5e1/SKILL.md').read_text()[1953:2162],end='')"
+[?2004l  需要禁用内置 UserAgentMiddleware
+
+Output:
+
+  DOWNLOADER_MIDDLEWARES = {
+      "myproject.middlewares.CustomDownloaderMiddleware": 543,
+      "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
+  }
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[0:287],end='')"
+[?2004l---
+id: "7ce0ae55-8c21-5690-a09e-d2e8d99adb28"
+name: "Scrapy 响应编码解析优先级"
+description: "按固定优先级解析 Scrapy 响应文本的编码来源：先取 __init__ 传入的 encoding，再取 Content-Type 头声明，再取响应体声明（HtmlResponse/XmlResponse 支持），最后回退到从响应体推断。用于需要确定响应文本编码或排查乱码时。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "response_handling"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[287:413],end='')"
+[?2004l  - "encoding_resolution"
+  - "response_parsing"
+triggers:
+  - "需要确定响应文本编码"
+  - "响应出现乱码需排查编码来源"
+  - "需要判断编码来自参数、头部还是响应体"
+---
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[413:809],end='')"
+[?2004l# Scrapy 响应编码解析优先级
+
+按固定优先级解析 Scrapy 响应文本的编码来源：先取 __init__ 传入的 encoding，再取 Content-Type 头声明，再取响应体声明（HtmlResponse/XmlResponse 支持），最后回退到从响应体推断。用于需要确定响应文本编码或排查乱码时。
+
+## Prompt
+
+当需要确定 Scrapy 响应文本的编码来源或排查乱码时，按以下顺序逐级尝试解析编码：1) __init__() 方法传入的 encoding 参数；2) Content-Type HTTP 头中声明的编码（若无效/未知则忽略并继续）；3) 响应体中声明的编码（仅 HtmlResponse 与 XmlResponse 提供此功能，TextResponse 不提供）；4) 从响应体推断编码（最脆弱，最后尝试）。输出最终采用的编码及其来源层级。
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[809:892],end='')"
+[?2004l## Objective
+
+确定响应文本的正确编码来源顺序
+## Applicable Signals
+
+- 需要确定响应文本编码
+- 响应出现乱码需排查编码来源
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[892:1000],end='')"
+[?2004l## Contraindications
+
+- 处理非文本二进制响应
+- 编码已由调用方明确指定且无需回退
+
+## Intervention Moves
+
+- 检查 __init__ 传入的 encoding 参数
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[1000:1189],end='')"
+[?2004l- 检查 Content-Type 头声明的编码，无效则忽略
+- 检查响应体声明的编码（HtmlResponse/XmlResponse）
+- 回退到从响应体推断编码
+
+## Workflow Steps
+
+- 优先采用 __init__() 传入的 encoding 参数
+- 若无，则读取 Content-Type HTTP 头声明的编码；若该编码无效（未知）则忽略并继续
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[1189:1363],end='')"
+[?2004l- 若无，则读取响应体声明的编码（HtmlResponse 与 XmlResponse 支持，TextResponse 不提供）
+- 若仍无，则从响应体推断编码（最脆弱，最后尝试）
+- 记录最终采用的编码及其来源层级
+
+## Constraints
+
+- 必须按固定优先级顺序解析
+- Content-Type 头中无效编码应被忽略并继续下一机制
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[1363:1463],end='')"
+[?2004l- 响应体声明编码仅 HtmlResponse/XmlResponse 支持
+
+## Cautions
+
+- 从响应体推断编码是最脆弱的方法，应作为最后手段
+
+## Output Contract
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/7ce0ae55-8c21-5690-a09e-d2e8d99adb28/SKILL.md').read_text()[1463:1545],end='')"
+[?2004l- 确定最终采用的编码及其来源层级
+
+## Triggers
+
+- 需要确定响应文本编码
+- 响应出现乱码需排查编码来源
+- 需要判断编码来自参数、头部还是响应体
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[0:229],end='')"
+[?2004l---
+id: "84be0366-caaf-5091-b9c2-99289be1395a"
+name: "请求指纹格式约束校验"
+description: "在把请求指纹交给依赖指纹的内置组件（如 FilesystemCacheStorage）之前，校验指纹满足该组件要求的格式限制（至少 1 字节长），避免缓存或去重组件报错。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "request-fingerprint"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[229:340],end='')"
+[?2004l  - "constraint-check"
+  - "httpcache"
+triggers:
+  - "自定义指纹器接入 HTTP 缓存等组件前"
+  - "指纹可能为空或过短时"
+---
+
+# 请求指纹格式约束校验
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[340:559],end='')"
+[?2004l
+在把请求指纹交给依赖指纹的内置组件（如 FilesystemCacheStorage）之前，校验指纹满足该组件要求的格式限制（至少 1 字节长），避免缓存或去重组件报错。
+
+## Prompt
+
+在将请求指纹交给依赖指纹的内置组件（如 HTTP 缓存存储）之前，先确认指纹满足该组件要求的格式限制。当前已知限制：指纹长度至少为 1 字节。若指纹为空或过短，应先修正指纹生成逻辑再继续，不要直接交给下游组件。
+
+## Objective
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[559:687],end='')"
+[?2004l
+确保生成的请求指纹满足内置组件格式限制
+## Applicable Signals
+
+- 准备启用或已启用依赖请求指纹的内置组件
+- 自定义 RequestFingerprinter 返回的指纹可能为空或过短
+
+## Contraindications
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[687:796],end='')"
+[?2004l
+- 不使用任何依赖指纹的内置组件时
+
+## Intervention Moves
+
+- 识别下游组件对指纹格式的附加限制
+- 校验指纹长度是否满足至少 1 字节的要求
+- 不满足时阻止指纹进入下游组件并修正生成逻辑
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[796:949],end='')"
+[?2004l
+## Workflow Steps
+
+- 确认当前流程中哪些内置组件会使用请求指纹（如 FilesystemCacheStorage）
+- 查阅该组件对指纹格式的附加限制
+- 对生成的指纹执行格式校验，至少检查长度是否不少于 1 字节
+- 校验通过后再交给下游组件；未通过则修正指纹生成逻辑并重新校验
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[949:1072],end='')"
+[?2004l## Constraints
+
+- 指纹必须满足使用它的组件所施加的格式限制
+- 内置 FilesystemCacheStorage 要求指纹至少 1 字节长
+
+## Cautions
+
+- 不同组件可能施加额外限制，需按实际使用的组件逐一确认
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[1072:1169],end='')"
+[?2004l- 本规则只做约束校验，不负责指纹生成算法实现
+
+## Output Contract
+
+- 通过格式校验的指纹（至少 1 字节），可安全交给依赖指纹的下游组件使用
+
+## Triggers
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/84be0366-caaf-5091-b9c2-99289be1395a/SKILL.md').read_text()[1169:1205],end='')"
+[?2004l- 自定义指纹器接入 HTTP 缓存等组件前
+- 指纹可能为空或过短时
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[0:229],end='')"
+[?2004l---
+id: "8a26e484-1c30-5f08-a668-ce5b4b7e99df"
+name: "自定义 Request 指纹器实现"
+description: "通过 REQUEST_FINGERPRINTER_CLASS 配置或编写自定义请求指纹器，为请求生成去重指纹，并遵守指纹限制（如不得依赖响应数据）。用于默认指纹不满足去重需求的爬取场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[229:340],end='')"
+[?2004l  - "request-fingerprinter"
+  - "去重配置"
+triggers:
+  - "默认指纹不满足去重需求"
+  - "需要按特定字段组合生成请求指纹"
+  - "需要定制请求去重逻辑"
+---
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[340:590],end='')"
+[?2004l# 自定义 Request 指纹器实现
+
+通过 REQUEST_FINGERPRINTER_CLASS 配置或编写自定义请求指纹器，为请求生成去重指纹，并遵守指纹限制（如不得依赖响应数据）。用于默认指纹不满足去重需求的爬取场景。
+
+## Prompt
+
+当默认请求指纹无法满足去重需求时，实现一个自定义请求指纹器：先确认去重目标与所需字段组合，再编写指纹器类（基于请求本身的数据生成稳定指纹），通过 REQUEST_FINGERPRINTER_CLASS 配置启用，并校验其不依赖响应数据等限制。
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[590:677],end='')"
+[?2004l## Objective
+
+实现符合限制的自定义请求指纹生成
+## Applicable Signals
+
+- 默认指纹不满足去重需求
+- 需要按特定字段组合生成请求指纹
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[677:770],end='')"
+[?2004l## Contraindications
+
+- 默认指纹已满足去重需求
+- 指纹需依赖响应内容（受限制）
+
+## Intervention Moves
+
+- 确认去重目标与所需字段组合
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[770:915],end='')"
+[?2004l- 编写自定义指纹器类
+- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用
+- 校验指纹器遵守限制
+
+## Workflow Steps
+
+- 确认默认指纹为何不满足去重需求，明确期望的去重粒度与字段组合
+- 编写自定义请求指纹器类，仅基于请求自身数据生成稳定指纹
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[915:1048],end='')"
+[?2004l- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用该指纹器
+- 校验指纹器不依赖响应数据等限制，并验证去重效果
+
+## Constraints
+
+- 指纹必须仅基于请求数据生成
+- 不得依赖响应内容生成指纹
+- 仅在默认指纹不满足需求时使用
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[1048:1158],end='')"
+[?2004l
+## Cautions
+
+- 依赖响应数据的指纹违反限制，不可采用
+
+## Output Contract
+
+- 可用的自定义指纹器类配置（含指纹器类与 REQUEST_FINGERPRINTER_CLASS 设置）
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/8a26e484-1c30-5f08-a668-ce5b4b7e99df/SKILL.md').read_text()[1158:1217],end='')"
+[?2004l
+## Triggers
+
+- 默认指纹不满足去重需求
+- 需要按特定字段组合生成请求指纹
+- 需要定制请求去重逻辑
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[0:257],end='')"
+[?2004l---
+id: "9719683e-0a4a-5d7e-8169-5d7d854d94d9"
+name: "请求错误回调处理（errback）"
+description: "为 Scrapy 请求配置 errback，并按失败类型（HttpError、DNSLookupError、TimeoutError/TCPTimedOutError）分支记录与处理异常。适用于需要区分不同下载失败并做针对性处理的爬虫。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[257:503],end='')"
+[?2004l  - "错误处理"
+  - "请求调度"
+triggers:
+  - "需要区分 HTTP 错误、DNS 错误、超时等不同失败类型"
+  - "希望在请求失败时记录日志或产出诊断数据"
+examples:
+  - input: "请求失败并触发 errback，failure 为 HttpError"
+    output: "记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 \"HttpError on <url>\""
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[503:891],end='')"
+[?2004l    notes: "HttpError 分支可访问响应对象"
+  - input: "请求失败并触发 errback，failure 为 DNSLookupError"
+    output: "记录 repr(failure)，并从 failure.request 取原始请求，记录 \"DNSLookupError on <url>\""
+    notes: "DNS 分支只能访问原始请求"
+  - input: "请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError"
+    output: "记录 repr(failure)，并从 failure.request 取原始请求，记录 \"TimeoutError on <url>\""
+    notes: "超时分支只能访问原始请求"
+---
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[891:1315],end='')"
+[?2004l
+# 请求错误回调处理（errback）
+
+为 Scrapy 请求配置 errback，并按失败类型（HttpError、DNSLookupError、TimeoutError/TCPTimedOutError）分支记录与处理异常。适用于需要区分不同下载失败并做针对性处理的爬虫。
+
+## Prompt
+
+在发起请求时为其指定 errback 回调；在 errback 中接收 failure 对象，先用 failure.check() 判断异常类型，再按类型分支处理：HttpError 时从 failure.value.response 取非 200 响应并记录其 URL；DNSLookupError 时从 failure.request 取原始请求并记录其 URL；TimeoutError/TCPTimedOutError 时同样从 failure.request 取请求并记录。始终先记录 failure 的 repr 作为兜底日志。
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[1315:1415],end='')"
+[?2004l
+## Objective
+
+在请求失败时按异常类型分流处理并记录日志
+## Applicable Signals
+
+- 请求需要自定义失败处理而非默认日志
+- 需要针对不同下载异常类型做差异化响应
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[1415:1504],end='')"
+[?2004l
+## Contraindications
+
+- 仅需默认失败日志、无需分类处理时
+- 失败原因与请求处理无关（如解析逻辑错误）
+
+## Intervention Moves
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[1504:1811],end='')"
+[?2004l- 在 scrapy.Request 中设置 errback 指向处理函数
+- 在 errback 中先记录 repr(failure) 作为通用日志
+- 使用 failure.check(HttpError) 分支，从 failure.value.response 获取非 200 响应
+- 使用 failure.check(DNSLookupError) 分支，从 failure.request 获取原始请求
+- 使用 failure.check(TimeoutError, TCPTimedOutError) 分支，从 failure.request 获取原始请求
+
+## Workflow Steps
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[1811:2084],end='')"
+[?2004l- 在构造 scrapy.Request 时传入 errback 参数指向错误处理函数
+- 在 errback 函数中接收 failure 参数并记录 repr(failure)
+- 按 failure.check() 判断异常类型并进入对应分支
+- 在 HttpError 分支读取 failure.value.response 并记录其 URL
+- 在 DNSLookupError 与 TimeoutError/TCPTimedOutError 分支读取 failure.request 并记录其 URL
+
+## Constraints
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[2084:2248],end='')"
+[?2004l- errback 必须与请求一同配置，否则失败不会进入自定义处理
+- 分支判断应使用 failure.check() 而非直接比较异常类型
+
+## Cautions
+
+- 不同异常类型可获取的对象不同：HttpError 提供 response，DNS/超时提供 request
+- 未覆盖的异常类型应保留通用日志以便排查
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[2248:2347],end='')"
+[?2004l## Output Contract
+
+- 按失败类型分支处理的 errback 函数及对应日志输出
+
+## Example Therapist Responses
+
+### Example 1
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[2347:2689],end='')"
+[?2004l- Client/Input: 请求失败并触发 errback，failure 为 HttpError
+- Therapist/Output: 记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 "HttpError on <url>"
+- Notes: HttpError 分支可访问响应对象
+
+### Example 2
+
+- Client/Input: 请求失败并触发 errback，failure 为 DNSLookupError
+- Therapist/Output: 记录 repr(failure)，并从 failure.request 取原始请求，记录 "DNSLookupError on <url>"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[2689:2915],end='')"
+[?2004l- Notes: DNS 分支只能访问原始请求
+
+### Example 3
+
+- Client/Input: 请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError
+- Therapist/Output: 记录 repr(failure)，并从 failure.request 取原始请求，记录 "TimeoutError on <url>"
+- Notes: 超时分支只能访问原始请求
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[2915:3010],end='')"
+[?2004l## Triggers
+
+- 需要区分 HTTP 错误、DNS 错误、超时等不同失败类型
+- 希望在请求失败时记录日志或产出诊断数据
+
+## Examples
+
+### Example 1
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[3010:3146],end='')"
+[?2004l
+Input:
+
+  请求失败并触发 errback，failure 为 HttpError
+
+Output:
+
+  记录 repr(failure)，并从 failure.value.response 取非 200 响应，记录 "HttpError on <url>"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[3146:3200],end='')"
+[?2004l
+Notes:
+
+  HttpError 分支可访问响应对象
+
+### Example 2
+
+Input:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[3200:3335],end='')"
+[?2004l
+  请求失败并触发 errback，failure 为 DNSLookupError
+
+Output:
+
+  记录 repr(failure)，并从 failure.request 取原始请求，记录 "DNSLookupError on <url>"
+
+Notes:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[3335:3437],end='')"
+[?2004l
+  DNS 分支只能访问原始请求
+
+### Example 3
+
+Input:
+
+  请求失败并触发 errback，failure 为 TimeoutError 或 TCPTimedOutError
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/9719683e-0a4a-5d7e-8169-5d7d854d94d9/SKILL.md').read_text()[3437:3542],end='')"
+[?2004l
+Output:
+
+  记录 repr(failure)，并从 failure.request 取原始请求，记录 "TimeoutError on <url>"
+
+Notes:
+
+  超时分支只能访问原始请求
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[0:245],end='')"
+[?2004l---
+id: "a465f31a-2043-56a4-8ead-67fa083ba31a"
+name: "使用 errback 捕获请求处理异常"
+description: "为 Request 指定 errback 回调，在下载或处理失败时接收 Failure 对象并访问其中的附加数据，实现自定义异常处理。当请求可能失败且需要自定义错误处理，或需要在失败时访问请求附加数据时使用。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "errback"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[245:369],end='')"
+[?2004l  - "异常处理"
+  - "Request"
+  - "Failure"
+triggers:
+  - "请求可能失败需要自定义错误处理"
+  - "需要在失败时访问请求附加数据"
+  - "需要区分正常回调与失败回调路径"
+examples:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[369:689],end='')"
+[?2004l  - input: "Request(\"https://example.com\", callback=self.parse_page2, errback=self.errback_handler)"
+    output: "请求失败时 errback_handler 被调用并接收 Failure 对象"
+    notes: "errback 专注失败路径处理"
+---
+
+# 使用 errback 捕获请求处理异常
+
+为 Request 指定 errback 回调，在下载或处理失败时接收 Failure 对象并访问其中的附加数据，实现自定义异常处理。当请求可能失败且需要自定义错误处理，或需要在失败时访问请求附加数据时使用。
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[689:930],end='')"
+[?2004l
+## Prompt
+
+当需要为某个 Request 定制失败处理时，在构造 Request 时传入 errback 参数指向处理函数。errback 会在请求下载或处理失败时被调用，接收一个 Failure 对象作为参数。可通过 Failure 访问异常信息，并结合请求附加数据（如 cb_kwargs 或 meta）进行后续处理。确保 errback 函数签名正确并能处理 Failure 对象。
+
+## Objective
+
+在请求失败时通过 errback 捕获并处理异常
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[930:1033],end='')"
+[?2004l## Applicable Signals
+
+- 请求可能失败需要自定义错误处理
+- 需要在失败时访问请求附加数据
+
+## Contraindications
+
+- 请求无失败风险或使用默认错误处理即可时
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1033:1164],end='')"
+[?2004l
+## Intervention Moves
+
+- 在 Request 构造时指定 errback 参数
+- 在 errback 函数中接收并处理 Failure 对象
+- 通过附加数据在 errback 中获取请求上下文
+
+## Workflow Steps
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1164:1296],end='')"
+[?2004l
+- 识别需要自定义失败处理的请求
+- 编写 errback 处理函数，接收 Failure 对象
+- 在构造 Request 时传入 errback 参数
+- 在 errback 中访问 Failure 及请求附加数据进行处理
+
+## Constraints
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1296:1443],end='')"
+[?2004l- errback 函数需正确接收 Failure 对象作为参数
+- 附加数据需在请求构造时通过 cb_kwargs 或 meta 传入
+
+## Cautions
+
+- errback 仅处理失败路径，正常响应仍由 callback 处理
+- 未指定 errback 时失败将走默认错误处理
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1443:1539],end='')"
+[?2004l## Output Contract
+
+- errback 被调用并处理 Failure 对象
+
+## Example Therapist Responses
+
+### Example 1
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1539:1778],end='')"
+[?2004l- Client/Input: Request("https://example.com", callback=self.parse_page2, errback=self.errback_handler)
+- Therapist/Output: 请求失败时 errback_handler 被调用并接收 Failure 对象
+- Notes: errback 专注失败路径处理
+
+## Triggers
+
+- 请求可能失败需要自定义错误处理
+- 需要在失败时访问请求附加数据
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1778:1833],end='')"
+[?2004l- 需要区分正常回调与失败回调路径
+
+## Examples
+
+### Example 1
+
+Input:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1833:1984],end='')"
+[?2004l  Request("https://example.com", callback=self.parse_page2, errback=self.errback_handler)
+
+Output:
+
+  请求失败时 errback_handler 被调用并接收 Failure 对象
+
+Notes:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a465f31a-2043-56a4-8ead-67fa083ba31a/SKILL.md').read_text()[1984:2003],end='')"
+[?2004l  errback 专注失败路径处理
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[0:233],end='')"
+[?2004l---
+id: "a8682864-3e99-50f8-a466-765f0de8b334"
+name: "响应批量链接跟进生成器"
+description: "使用 response.follow_all 通过 urls、css 或 xpath 参数批量生成跟进 Request 的生成器，自动跳过无法获取链接的选择器。适用于需要遍历页面所有链接的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "follow_all"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[233:389],end='')"
+[?2004l  - "request_construction"
+  - "crawl_navigation"
+  - "parse"
+triggers:
+  - "需要一次性跟进页面中多个链接"
+  - "使用 css/xpath 参数批量提取链接"
+  - "解析回调中需生成多个 Request"
+examples:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[389:669],end='')"
+[?2004l  - input: "response.follow_all(css='a.my_link', callback=self.parse_item)"
+    output: "yield 生成器，逐个产出指向各链接的 Request"
+    notes: "css 参数批量提取链接"
+  - input: "response.follow_all(xpath='//img/@src')"
+    output: "yield 生成器，逐个产出指向各图片 URL 的 Request"
+    notes: "xpath 属性选择器批量提取"
+---
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[669:855],end='')"
+[?2004l# 响应批量链接跟进生成器
+
+使用 response.follow_all 通过 urls、css 或 xpath 参数批量生成跟进 Request 的生成器，自动跳过无法获取链接的选择器。适用于需要遍历页面所有链接的场景。
+
+## Prompt
+
+在解析回调中需要一次性跟进页面多个链接时，调用 response.follow_all 生成 Request 生成器。
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[855:1189],end='')"
+[?2004l执行要点：
+1. 选择一种链接来源参数：urls（列表）、css 或 xpath，三者互斥，只能传其一。
+2. urls 元素可为相对 URL、Link 对象、指向 <link>/<a> 的 Selector，或属性 Selector（非 SelectorList）。
+3. 其余参数与 Request.__init__() 相同，可传 callback、meta 等。
+4. 将生成器 yield 出去（或迭代 yield 每个 Request），交由引擎调度。
+5. 注意：当传入 SelectorList 或使用 css/xpath 参数时，无法获取链接的选择器（如无 href 的 <a>）不会产生 Request，无需额外过滤。
+
+## Objective
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[1189:1304],end='')"
+[?2004l
+批量生成跟进多个链接的 Request 生成器
+## Applicable Signals
+
+- 页面包含多个待跟进链接
+- 希望用 css 或 xpath 一次性提取并跟进链接
+- 需要以生成器方式产出多个 Request
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[1304:1459],end='')"
+[?2004l## Contraindications
+
+- 仅需跟进单个链接（应使用 response.follow）
+- 同时传入 urls、css、xpath 中的多个参数
+
+## Intervention Moves
+
+- 调用 response.follow_all 并仅传入 urls、css、xpath 之一
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[1459:1690],end='')"
+[?2004l- 将生成器 yield 给引擎
+- 依赖内置逻辑自动跳过无法获取链接的选择器
+
+## Workflow Steps
+
+- 确定链接来源：urls 列表、css 选择器或 xpath 选择器，三选一
+- 调用 response.follow_all(urls=... 或 css=... 或 xpath=...)，按需附加 callback、meta 等 Request 参数
+- 在解析回调中 yield 该生成器（或迭代 yield 每个 Request）
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[1690:1861],end='')"
+[?2004l- 确认无 href 等无法获取链接的选择器已被自动跳过
+
+## Constraints
+
+- urls、css、xpath 三者互斥，仅允许传入其一
+- urls 元素可为相对 URL、Link 对象、Selector 或属性 Selector（非 SelectorList）
+- 其余参数与 Request.__init__() 一致
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[1861:2015],end='')"
+[?2004l## Cautions
+
+- 传入 SelectorList 或使用 css/xpath 时，无法获取链接的选择器不会产生 Request，属预期行为
+- 不要与单链接 follow 混用同一批链接来源
+
+## Output Contract
+
+- 产出多个 Request 实例的生成器，交由引擎调度跟进
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[2015:2213],end='')"
+[?2004l
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: response.follow_all(css='a.my_link', callback=self.parse_item)
+- Therapist/Output: yield 生成器，逐个产出指向各链接的 Request
+- Notes: css 参数批量提取链接
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[2213:2377],end='')"
+[?2004l
+### Example 2
+
+- Client/Input: response.follow_all(xpath='//img/@src')
+- Therapist/Output: yield 生成器，逐个产出指向各图片 URL 的 Request
+- Notes: xpath 属性选择器批量提取
+
+## Triggers
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[2377:2468],end='')"
+[?2004l
+- 需要一次性跟进页面中多个链接
+- 使用 css/xpath 参数批量提取链接
+- 解析回调中需生成多个 Request
+
+## Examples
+
+### Example 1
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[2468:2583],end='')"
+[?2004l
+Input:
+
+  response.follow_all(css='a.my_link', callback=self.parse_item)
+
+Output:
+
+  yield 生成器，逐个产出指向各链接的 Request
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[2583:2630],end='')"
+[?2004l
+Notes:
+
+  css 参数批量提取链接
+
+### Example 2
+
+Input:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[2630:2727],end='')"
+[?2004l
+  response.follow_all(xpath='//img/@src')
+
+Output:
+
+  yield 生成器，逐个产出指向各图片 URL 的 Request
+
+Notes:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/a8682864-3e99-50f8-a466-765f0de8b334/SKILL.md').read_text()[2727:2746],end='')"
+[?2004l
+  xpath 属性选择器批量提取
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[0:244],end='')"
+[?2004l---
+id: "be9aee15-e037-5420-b34a-eb9af1223666"
+name: "process_request 请求拦截与分流"
+description: "实现下载器中间件的 process_request 钩子，在请求进入下载器前按规则改写、重调度、短路或丢弃请求。适用于需要在下载前修改请求或按条件重定向、过滤请求的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "downloader-middleware"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[244:394],end='')"
+[?2004l  - "process_request"
+  - "request_processing"
+  - "hook_implementation"
+triggers:
+  - "需要在下载前修改请求"
+  - "需要按条件重定向或丢弃请求"
+  - "需要提前短路请求、跳过下载"
+examples:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[394:697],end='')"
+[?2004l  - input: "请求需在下载前被改写后继续处理"
+    output: "process_request 返回 None，Scrapy 继续执行其余中间件直至下载"
+    notes: "继续处理路径"
+  - input: "请求需被重定向到新地址"
+    output: "process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度"
+    notes: "重调度路径"
+  - input: "请求应被过滤丢弃"
+    output: "process_request 抛出 IgnoreRequest"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[697:844],end='')"
+[?2004l    notes: "丢弃路径"
+---
+
+# process_request 请求拦截与分流
+
+实现下载器中间件的 process_request 钩子，在请求进入下载器前按规则改写、重调度、短路或丢弃请求。适用于需要在下载前修改请求或按条件重定向、过滤请求的场景。
+
+## Prompt
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[844:1119],end='')"
+[?2004l
+实现 process_request(request) 方法，根据业务规则选择四种返回值之一：返回 None 表示继续沿中间件链处理该请求；返回 Request 对象表示停止调用后续 process_request 并重新调度该请求；返回 Response 对象表示提前短路、跳过下载；抛出 IgnoreRequest 表示丢弃该请求。方法可定义为协程函数（async def）。确保每个分支逻辑明确、互斥且可预测。
+
+## Objective
+
+在请求进入下载器前按规则改写、重调度、短路或丢弃请求
+## Applicable Signals
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[1119:1216],end='')"
+[?2004l- 需要在下载前修改请求
+- 需要按条件重定向或丢弃请求
+- 需要提前短路请求、跳过下载
+
+## Contraindications
+
+- 只需处理已下载的响应
+- 需要跨阶段编排整个中间件链
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[1216:1355],end='')"
+[?2004l
+## Intervention Moves
+
+- 返回 None 继续处理该请求
+- 返回 Request 对象以停止后续 process_request 并重新调度
+- 返回 Response 对象以提前短路、跳过下载
+- 抛出 IgnoreRequest 以丢弃该请求
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[1355:1533],end='')"
+[?2004l## Workflow Steps
+
+- 在下载器中间件组件中定义 process_request(request) 方法
+- 根据业务规则判断应继续、重调度、短路还是丢弃
+- 返回 None 继续沿中间件链处理
+- 返回 Request 对象以重新调度该请求
+- 返回 Response 对象以提前短路
+- 抛出 IgnoreRequest 以丢弃请求
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[1533:1699],end='')"
+[?2004l
+## Constraints
+
+- process_request 只能返回 None、Response、Request 或抛出 IgnoreRequest
+- 返回 Request 时会停止调用后续 process_request 方法并重新调度该请求
+- 方法可定义为协程函数（async def）
+
+## Cautions
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[1699:1848],end='')"
+[?2004l
+- 返回 Request 会中断当前中间件链，需确认重调度不会造成循环
+- 部分中间件可能需通过特定设置启用
+
+## Output Contract
+
+- process_request 方法返回 None/Request/Response 或抛出 IgnoreRequest 的明确分支逻辑
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[1848:2009],end='')"
+[?2004l## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 请求需在下载前被改写后继续处理
+- Therapist/Output: process_request 返回 None，Scrapy 继续执行其余中间件直至下载
+- Notes: 继续处理路径
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2009:2171],end='')"
+[?2004l### Example 2
+
+- Client/Input: 请求需被重定向到新地址
+- Therapist/Output: process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度
+- Notes: 重调度路径
+
+### Example 3
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2171:2306],end='')"
+[?2004l- Client/Input: 请求应被过滤丢弃
+- Therapist/Output: process_request 抛出 IgnoreRequest
+- Notes: 丢弃路径
+
+## Triggers
+
+- 需要在下载前修改请求
+- 需要按条件重定向或丢弃请求
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2306:2359],end='')"
+[?2004l- 需要提前短路请求、跳过下载
+
+## Examples
+
+### Example 1
+
+Input:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2359:2443],end='')"
+[?2004l  请求需在下载前被改写后继续处理
+
+Output:
+
+  process_request 返回 None，Scrapy 继续执行其余中间件直至下载
+
+Notes:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2443:2491],end='')"
+[?2004l  继续处理路径
+
+### Example 2
+
+Input:
+
+  请求需被重定向到新地址
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2491:2588],end='')"
+[?2004lOutput:
+
+  process_request 返回新的 Request 对象，Scrapy 停止调用后续 process_request 并重新调度
+
+Notes:
+
+  重调度路径
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2588:2632],end='')"
+[?2004l### Example 3
+
+Input:
+
+  请求应被过滤丢弃
+
+Output:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/be9aee15-e037-5420-b34a-eb9af1223666/SKILL.md').read_text()[2632:2683],end='')"
+[?2004l  process_request 抛出 IgnoreRequest
+
+Notes:
+
+  丢弃路径
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[0:226],end='')"
+[?2004l---
+id: "bfdf8b93-b24f-554c-938a-3cbb450e6e08"
+name: "Spider输出逐项过滤与改写"
+description: "对spider输出或start seeds中的单个item/request进行逐项处理：保留原样、改写为不同对象，或返回None丢弃，从而实现输出过滤与转换。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider-middleware"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[226:392],end='')"
+[?2004l  - "output-filtering"
+  - "item"
+  - "request"
+triggers:
+  - "需要过滤或改写spider产出的item"
+  - "需要拦截或替换spider输出中的request"
+  - "需要对start seeds中的item/request做逐项处理"
+examples:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[392:640],end='')"
+[?2004l  - input: "spider输出中的单个item与对应response"
+    output: "返回同一item（保留）、改写后的item，或None（丢弃）"
+    notes: "response为None表示来自start seeds"
+  - input: "spider输出中的单个request与对应response"
+    output: "返回同一request（保留）、改写后的request，或None（丢弃）"
+---
+
+# Spider输出逐项过滤与改写
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[640:951],end='')"
+[?2004l
+对spider输出或start seeds中的单个item/request进行逐项处理：保留原样、改写为不同对象，或返回None丢弃，从而实现输出过滤与转换。
+
+## Prompt
+
+当需要过滤或改写spider产出的item，或需要拦截/替换request时，使用本技能。对每个item或request单独做决策：返回同一对象表示保留，返回不同对象表示改写，返回None表示忽略该项。处理item时调用get_processed_item(item, response)，处理request时调用对应的request处理方法；response为None表示该项来自start seeds。
+
+## Objective
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[951:1088],end='')"
+[?2004l
+逐项决定item/request的保留、改写或丢弃
+## Applicable Signals
+
+- spider输出中存在需要过滤的item
+- spider输出中存在需要拦截或替换的request
+- start seeds中的item/request需要逐项处理
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[1088:1233],end='')"
+[?2004l## Contraindications
+
+- 无需对spider输出做任何变更时不应使用
+
+## Intervention Moves
+
+- 对单个item调用get_processed_item(item, response)
+- 对单个request调用对应的request处理方法
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[1233:1350],end='')"
+[?2004l- 返回同一对象以保留
+- 返回不同对象以改写
+- 返回None以忽略该项
+
+## Workflow Steps
+
+- 接收来自spider输出或start seeds的单个item/request
+- 判断该项应保留、改写还是丢弃
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[1350:1506],end='')"
+[?2004l- 保留时返回原对象，改写时返回新对象，丢弃时返回None
+- 对每个item/request重复上述逐项决策
+
+## Constraints
+
+- 每次只处理单个item或request
+- response为None表示该项来自start seeds
+- 返回值必须是item/request对象或None
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[1506:1591],end='')"
+[?2004l
+## Cautions
+
+- 改写时应返回新的有效对象，避免返回无效类型
+- 返回None会静默丢弃该项，需确认丢弃符合预期
+
+## Output Contract
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[1591:1772],end='')"
+[?2004l- 返回相同或不同的item/request，或返回None表示忽略该项
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: spider输出中的单个item与对应response
+- Therapist/Output: 返回同一item（保留）、改写后的item，或None（丢弃）
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[1772:1944],end='')"
+[?2004l- Notes: response为None表示来自start seeds
+
+### Example 2
+
+- Client/Input: spider输出中的单个request与对应response
+- Therapist/Output: 返回同一request（保留）、改写后的request，或None（丢弃）
+
+## Triggers
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[1944:2059],end='')"
+[?2004l
+- 需要过滤或改写spider产出的item
+- 需要拦截或替换spider输出中的request
+- 需要对start seeds中的item/request做逐项处理
+
+## Examples
+
+### Example 1
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[2059:2142],end='')"
+[?2004l
+Input:
+
+  spider输出中的单个item与对应response
+
+Output:
+
+  返回同一item（保留）、改写后的item，或None（丢弃）
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[2142:2205],end='')"
+[?2004l
+Notes:
+
+  response为None表示来自start seeds
+
+### Example 2
+
+Input:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/bfdf8b93-b24f-554c-938a-3cbb450e6e08/SKILL.md').read_text()[2205:2289],end='')"
+[?2004l
+  spider输出中的单个request与对应response
+
+Output:
+
+  返回同一request（保留）、改写后的request，或None（丢弃）
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[0:258],end='')"
+[?2004l---
+id: "d019dfc8-693e-5c16-a087-b34f745060b8"
+name: "Spider中间件异步输出钩子实现"
+description: "实现 process_spider_output_async 异步生成器方法，在 Spider 输出结果为异步可迭代对象时替代同步 process_spider_output 被调用，用于异步爬虫管道中处理异步结果流。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider_middleware"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[258:429],end='')"
+[?2004l  - "async"
+  - "process_spider_output_async"
+triggers:
+  - "Spider 输出结果为异步可迭代对象"
+  - "需要异步生成器形式的输出处理"
+  - "异步爬虫管道中需处理异步结果流"
+examples:
+  - input: "Spider 返回异步可迭代的 result"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[429:688],end='')"
+[?2004l    output: "process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item"
+    notes: "仅在 result 为异步可迭代时触发"
+---
+
+# Spider中间件异步输出钩子实现
+
+实现 process_spider_output_async 异步生成器方法，在 Spider 输出结果为异步可迭代对象时替代同步 process_spider_output 被调用，用于异步爬虫管道中处理异步结果流。
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[688:948],end='')"
+[?2004l## Prompt
+
+在 Spider 中间件中定义 async 生成器方法 process_spider_output_async(response, result)。当 Spider 返回的 result 为异步可迭代对象时，Scrapy 会调用该方法而非 process_spider_output。方法需以异步生成器形式产出 Request 对象与 item 对象，保持与同步输出钩子一致的输出语义。
+
+## Objective
+
+在异步结果流场景下提供异步输出处理
+## Applicable Signals
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[948:1036],end='')"
+[?2004l
+- Spider 输出结果为异步可迭代对象
+- 需要异步生成器形式的输出处理
+
+## Contraindications
+
+- 结果为同步可迭代对象
+- 未启用异步爬虫管道
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[1036:1200],end='')"
+[?2004l
+## Intervention Moves
+
+- 定义 async 生成器方法 process_spider_output_async(response, result)
+- 在方法内异步产出 Request 对象与 item 对象
+- 确保仅在 result 为异步可迭代时依赖该钩子
+
+## Workflow Steps
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[1200:1368],end='')"
+[?2004l
+- 确认 Spider 输出 result 为异步可迭代对象
+- 在中间件中定义 async 生成器方法 process_spider_output_async(response, result)
+- 在生成器中产出 Request 对象与 item 对象
+- 验证异步结果流被正确传递至后续中间件
+
+## Constraints
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[1368:1508],end='')"
+[?2004l- 方法必须为异步生成器
+- 仅在 result 为异步可迭代对象时被调用，替代 process_spider_output
+
+## Cautions
+
+- 同步结果流仍走 process_spider_output，不应依赖异步钩子处理
+
+## Output Contract
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[1508:1662],end='')"
+[?2004l
+- 定义可被调用的异步生成器方法 process_spider_output_async，产出 Request 与 item 对象
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: Spider 返回异步可迭代的 result
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[1662:1857],end='')"
+[?2004l- Therapist/Output: process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item
+- Notes: 仅在 result 为异步可迭代时触发
+
+## Triggers
+
+- Spider 输出结果为异步可迭代对象
+- 需要异步生成器形式的输出处理
+- 异步爬虫管道中需处理异步结果流
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[1857:1919],end='')"
+[?2004l
+## Examples
+
+### Example 1
+
+Input:
+
+  Spider 返回异步可迭代的 result
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d019dfc8-693e-5c16-a087-b34f745060b8/SKILL.md').read_text()[1919:2037],end='')"
+[?2004l
+Output:
+
+  process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item
+
+Notes:
+
+  仅在 result 为异步可迭代时触发
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[0:252],end='')"
+[?2004l---
+id: "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76"
+name: "自定义请求指纹器"
+description: "当默认请求指纹不满足去重需求时，实现自定义 REQUEST_FINGERPRINTER_CLASS，按业务比较规则规范化 URL（大小写、片段、查询参数、请求头等）生成请求唯一标识，从而控制去重行为。适用于需要定制去重比较规则的 Scrapy 爬虫。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[252:432],end='')"
+[?2004l  - "指纹器"
+  - "REQUEST_FINGERPRINTER_CLASS"
+triggers:
+  - "默认指纹导致误去重或漏去重"
+  - "需要按大小写、片段、查询参数或请求头定制比较规则"
+  - "需要为请求生成符合业务比较规则的唯一标识"
+examples:
+  - input: "默认指纹无法区分大小写不同的 URL，导致误去重"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[432:680],end='')"
+[?2004l    output: "实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期"
+    notes: "比较规则需与业务语义一致"
+---
+
+# 自定义请求指纹器
+
+当默认请求指纹不满足去重需求时，实现自定义 REQUEST_FINGERPRINTER_CLASS，按业务比较规则规范化 URL（大小写、片段、查询参数、请求头等）生成请求唯一标识，从而控制去重行为。适用于需要定制去重比较规则的 Scrapy 爬虫。
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[680:897],end='')"
+[?2004l## Prompt
+
+在确认默认指纹无法满足去重需求后，实现一个自定义请求指纹器类，按业务需要的比较规则（如大小写不敏感、包含/排除 URL 片段、包含/排除查询参数、包含部分或全部请求头）规范化请求并生成唯一标识，然后通过 REQUEST_FINGERPRINTER_CLASS 配置启用，并验证去重行为符合预期。
+
+## Objective
+
+按业务比较规则生成请求唯一指纹以控制去重
+## Applicable Signals
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[897:1022],end='')"
+[?2004l
+- 默认请求指纹器无法区分或错误合并本应不同/相同的请求
+- 业务要求对 URL 大小写、片段、查询参数或请求头采用特定比较方式
+
+## Contraindications
+
+- 默认指纹已满足去重需求时
+- 去重问题源于调度器配置而非指纹规则时
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1022:1161],end='')"
+[?2004l
+## Intervention Moves
+
+- 明确业务去重比较规则（大小写、片段、查询参数、请求头）
+- 实现自定义请求指纹器类，规范化请求并生成唯一标识
+- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用自定义指纹器
+- 验证去重行为符合预期
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1161:1360],end='')"
+[?2004l## Workflow Steps
+
+- 确认默认请求指纹器无法满足当前去重需求，并明确差异点
+- 定义业务比较规则：是否大小写敏感、是否包含 URL 片段、包含或排除哪些查询参数、是否纳入请求头
+- 编写自定义请求指纹器类，按上述规则规范化请求并生成唯一标识
+- 在项目配置中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类
+- 运行爬虫并验证去重行为符合预期
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1360:1464],end='')"
+[?2004l## Constraints
+
+- 仅在默认指纹不满足需求时启用自定义指纹器
+- 指纹生成规则需与业务去重语义一致
+- 去重问题若源于调度器配置，应先修正调度器配置而非改指纹规则
+
+## Cautions
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1464:1606],end='')"
+[?2004l- 不存在通用的请求唯一标识生成方式，需按具体场景确定比较规则
+- 修改指纹规则会改变去重结果，需验证不会引入误去重或漏去重
+
+## Output Contract
+
+- 配置生效的自定义请求指纹器类及去重行为验证结果
+
+## Example Therapist Responses
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1606:1782],end='')"
+[?2004l
+### Example 1
+
+- Client/Input: 默认指纹无法区分大小写不同的 URL，导致误去重
+- Therapist/Output: 实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期
+- Notes: 比较规则需与业务语义一致
+
+## Triggers
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1782:1877],end='')"
+[?2004l
+- 默认指纹导致误去重或漏去重
+- 需要按大小写、片段、查询参数或请求头定制比较规则
+- 需要为请求生成符合业务比较规则的唯一标识
+
+## Examples
+
+### Example 1
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1877:1989],end='')"
+[?2004l
+Input:
+
+  默认指纹无法区分大小写不同的 URL，导致误去重
+
+Output:
+
+  实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76/SKILL.md').read_text()[1989:2013],end='')"
+[?2004l
+Notes:
+
+  比较规则需与业务语义一致
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[0:298],end='')"
+[?2004l---
+id: "d9545371-1c8c-5f0e-aa54-f9568fa3fffd"
+name: "process_spider_input 返回值契约"
+description: "确保自定义 Spider 中间件的 process_spider_input 钩子符合 Scrapy 框架契约：对每个进入 Spider 的响应调用，必须返回 None 或抛出异常；返回 None 时处理链继续执行后续中间件直至交给 Spider。用于实现该钩子时校验返回值行为。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "spider-middleware"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[298:495],end='')"
+[?2004l  - "process_spider_input"
+  - "return-contract"
+triggers:
+  - "实现 process_spider_input 方法"
+  - "审查 Spider 中间件钩子返回值"
+  - "响应进入 Spider 前需要放行或中断"
+examples:
+  - input: "实现 process_spider_input 以放行响应"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[495:774],end='')"
+[?2004l    output: "def process_spider_input(self, response):\n    return None"
+    notes: "返回 None 表示继续处理链"
+---
+
+# process_spider_input 返回值契约
+
+确保自定义 Spider 中间件的 process_spider_input 钩子符合 Scrapy 框架契约：对每个进入 Spider 的响应调用，必须返回 None 或抛出异常；返回 None 时处理链继续执行后续中间件直至交给 Spider。用于实现该钩子时校验返回值行为。
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[774:982],end='')"
+[?2004l## Prompt
+
+实现或审查 process_spider_input 方法时，确认其返回值符合契约：正常放行时返回 None，让 Scrapy 继续执行后续中间件直至响应交给 Spider；需要中断或报错时抛出异常。不要返回其他值，也不要在该方法内直接处理响应内容。
+
+## Objective
+
+保证 process_spider_input 返回值符合框架约定
+## Applicable Signals
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[982:1076],end='')"
+[?2004l
+- 正在编写 process_spider_input 方法
+- 需要确认响应是否继续沿中间件链传递
+
+## Contraindications
+
+- 实现其他不涉及该返回契约的钩子
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1076:1156],end='')"
+[?2004l## Intervention Moves
+
+- 正常放行时返回 None
+- 需要中断时抛出异常
+- 避免返回其他值
+
+## Workflow Steps
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1156:1290],end='')"
+[?2004l- 确认当前实现的是 process_spider_input 钩子
+- 在正常路径返回 None 以继续处理链
+- 在需要中断或报错时抛出异常
+- 检查方法中不存在返回非 None 值的分支
+
+## Constraints
+
+- 返回值只能是 None 或抛出异常
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1290:1398],end='')"
+[?2004l- 返回 None 后由 Scrapy 继续执行后续中间件直至交给 Spider
+
+## Cautions
+
+- 不要在该钩子中返回响应对象或其他值来替代框架的继续处理逻辑
+
+## Output Contract
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1398:1580],end='')"
+[?2004l- 返回 None 或抛出异常的实现，处理链可继续
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 实现 process_spider_input 以放行响应
+- Therapist/Output: def process_spider_input(self, response):
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1580:1708],end='')"
+[?2004l    return None
+- Notes: 返回 None 表示继续处理链
+
+## Triggers
+
+- 实现 process_spider_input 方法
+- 审查 Spider 中间件钩子返回值
+- 响应进入 Spider 前需要放行或中断
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1708:1777],end='')"
+[?2004l
+## Examples
+
+### Example 1
+
+Input:
+
+  实现 process_spider_input 以放行响应
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1777:1858],end='')"
+[?2004l
+Output:
+
+  def process_spider_input(self, response):
+      return None
+
+Notes:
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/d9545371-1c8c-5f0e-aa54-f9568fa3fffd/SKILL.md').read_text()[1858:1876],end='')"
+[?2004l  返回 None 表示继续处理链
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[0:270],end='')"
+[?2004l---
+id: "fd94eb98-3273-588e-bd85-64c78e5d016e"
+name: "FormRequest.from_response 登录模拟"
+description: "用 FormRequest.from_response() 基于已有响应中的表单自动预填隐藏字段（如会话数据、认证令牌），仅覆盖用户名密码等少数字段以模拟登录提交。适用于登录页含隐藏令牌字段、需要保留预填值只覆盖关键字段的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "FormRequest"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[270:416],end='')"
+[?2004l  - "from_response"
+  - "登录模拟"
+  - "会话建立"
+triggers:
+  - "登录页含 input type=hidden 的令牌或会话字段"
+  - "需要保留预填字段仅覆盖用户名密码"
+  - "需要基于已有响应表单模拟用户登录"
+examples:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[416:775],end='')"
+[?2004l  - input: "登录页响应含隐藏的会话/认证令牌字段，需以用户名密码登录"
+    output: "FormRequest.from_response(response, formdata={\"username\": \"...\", \"password\": \"...\"}, callback=self.after_login)"
+    notes: "保留隐藏字段，仅覆盖用户名密码"
+---
+
+# FormRequest.from_response 登录模拟
+
+用 FormRequest.from_response() 基于已有响应中的表单自动预填隐藏字段（如会话数据、认证令牌），仅覆盖用户名密码等少数字段以模拟登录提交。适用于登录页含隐藏令牌字段、需要保留预填值只覆盖关键字段的场景。
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[775:1013],end='')"
+[?2004l
+## Prompt
+
+当目标登录页包含预填充表单字段（如 <input type="hidden"> 的会话数据或认证令牌）时，使用 FormRequest.from_response() 从已有响应构造登录请求：保留表单中自动预填的隐藏字段，仅覆盖用户名、密码等少数字段，并指定 callback 处理登录后响应。不要用于无表单或无需认证的页面，也不要用于需要完全手工构造全部字段的场景。
+
+## Objective
+
+基于已有响应表单自动预填并覆盖关键字段完成登录提交
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1013:1127],end='')"
+[?2004l## Applicable Signals
+
+- 登录页含 input type=hidden 的令牌或会话字段
+- 需要保留预填字段仅覆盖用户名密码
+
+## Contraindications
+
+- 目标页面无表单或无需认证
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1127:1257],end='')"
+[?2004l- 需要完全手工构造全部字段
+
+## Intervention Moves
+
+- 从已有响应调用 FormRequest.from_response()
+- 保留自动预填的隐藏字段
+- 仅覆盖用户名、密码等少数字段
+- 指定 callback 处理登录后响应
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1257:1406],end='')"
+[?2004l
+## Workflow Steps
+
+- 确认登录页表单含需保留的隐藏字段（会话数据、认证令牌等）
+- 在解析登录页的响应回调中调用 FormRequest.from_response()
+- 通过 formdata 仅覆盖用户名、密码等少数字段
+- 指定 callback 处理登录后的响应
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1406:1510],end='')"
+[?2004l## Constraints
+
+- 必须基于已有响应表单构造，而非从零构造全部 formdata
+- 仅覆盖少数字段，保留其余预填字段
+
+## Cautions
+
+- 若页面无表单或无需认证，不应使用此方法
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1510:1613],end='')"
+[?2004l
+## Output Contract
+
+- 生成一个继承隐藏字段并覆盖指定字段的登录 FormRequest
+
+## Example Therapist Responses
+
+### Example 1
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1613:1864],end='')"
+[?2004l
+- Client/Input: 登录页响应含隐藏的会话/认证令牌字段，需以用户名密码登录
+- Therapist/Output: FormRequest.from_response(response, formdata={"username": "...", "password": "..."}, callback=self.after_login)
+- Notes: 保留隐藏字段，仅覆盖用户名密码
+
+## Triggers
+
+- 登录页含 input type=hidden 的令牌或会话字段
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1864:1938],end='')"
+[?2004l- 需要保留预填字段仅覆盖用户名密码
+- 需要基于已有响应表单模拟用户登录
+
+## Examples
+
+### Example 1
+
+Input:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[1938:2102],end='')"
+[?2004l
+  登录页响应含隐藏的会话/认证令牌字段，需以用户名密码登录
+
+Output:
+
+  FormRequest.from_response(response, formdata={"username": "...", "password": "..."}, callback=self.after_login)
+
+Notes:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/fd94eb98-3273-588e-bd85-64c78e5d016e/SKILL.md').read_text()[2102:2121],end='')"
+[?2004l
+  保留隐藏字段，仅覆盖用户名密码
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[0:234],end='')"
+[?2004l---
+id: "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+name: "自定义请求指纹器实现"
+description: "实现并配置自定义 RequestFingerprinter，用于按需纳入特定请求头或 URL 片段计算请求指纹，或完全自定义指纹逻辑，从而改变 Scrapy 默认去重指纹行为。适用于需要定制请求去重指纹的场景。"
+version: "0.1.0"
+tags:
+  - "scrapy"
+  - "请求去重"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[234:385],end='')"
+[?2004l  - "指纹定制"
+  - "REQUEST_FINGERPRINTER_CLASS"
+  - "WeakKeyDictionary"
+  - "指纹计算"
+triggers:
+  - "需要将特定请求头纳入指纹计算"
+  - "需要保留 URL 片段参与指纹"
+  - "需要完全自定义指纹算法"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[385:773],end='')"
+[?2004l  - "默认指纹导致去重不符合预期"
+  - "默认指纹无法区分或误合并资源"
+  - "需要忽略随机 cookie 或参数顺序差异"
+  - "需要改变默认指纹逻辑"
+examples:
+  - input: "需要将名为 X-ID 的请求头纳入指纹计算"
+    output: "定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=[\"X-ID\"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = \"my_project.utils.RequestFingerprinter\""
+    notes: "复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存"
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[773:1077],end='')"
+[?2004l  - input: "仅按请求 URL 计算指纹，忽略方法、请求体及规范化"
+    output: "从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果"
+    notes: "从零实现时必须使用 WeakKeyDictionary 缓存"
+---
+
+# 自定义请求指纹器实现
+
+实现并配置自定义 RequestFingerprinter，用于按需纳入特定请求头或 URL 片段计算请求指纹，或完全自定义指纹逻辑，从而改变 Scrapy 默认去重指纹行为。适用于需要定制请求去重指纹的场景。
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[1077:1449],end='')"
+[?2004l
+## Prompt
+
+当默认指纹无法满足去重需求时，按以下步骤实现自定义请求指纹器：
+1. 明确定制目标：是纳入特定请求头、保留 URL 片段，还是完全自定义算法。
+2. 若仅需纳入特定请求头，优先复用 scrapy.utils.request.fingerprint()，通过 include_headers 参数传入需纳入的请求头列表。
+3. 若需保留 URL 片段，将 keep_fragments 设为 True（例如处理无头浏览器请求时）。
+4. 若完全自定义指纹逻辑，实现一个带 fingerprint(self, request) 方法的类；若不使用 scrapy.utils.request.fingerprint()，必须用 WeakKeyDictionary 缓存指纹，确保每个请求只计算一次并避免请求对象长期驻留内存。
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[1449:1713],end='')"
+[?2004l5. 在 settings 中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义类（如 "my_project.utils.RequestFingerprinter"）。
+6. 如需在 spider 回调中按请求覆盖指纹，可让指纹器优先读取 request.meta 中的指纹，缺失时回退到 scrapy.utils.request.fingerprint()。
+
+## Objective
+
+按业务需求定制请求指纹计算逻辑并正确接入 Scrapy 去重流程
+## Applicable Signals
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[1713:1833],end='')"
+[?2004l- 默认指纹忽略请求头导致不同请求被误判为重复
+- 需要 URL 片段参与去重判断
+- 业务要求自定义指纹算法
+- 默认指纹无法区分或误合并资源
+- 需要忽略随机 cookie 或参数顺序差异
+
+## Contraindications
+
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[1833:1987],end='')"
+[?2004l- 默认指纹已满足去重需求
+- 仅需调整下载中间件行为
+- 仅需默认 URL+method+body 的 SHA1 指纹
+
+## Intervention Moves
+
+- 复用 fingerprint() 并传入 include_headers
+- 设置 keep_fragments=True 保留片段
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[1987:2260],end='')"
+[?2004l- 从零实现 fingerprint 方法并用 WeakKeyDictionary 缓存
+- 通过 REQUEST_FINGERPRINTER_CLASS 注册自定义类
+- 在指纹器中读取 request.meta 支持按请求覆盖
+- 设置 REQUEST_FINGERPRINTER_CLASS 为自定义指纹器类或导入路径
+- 实现 fingerprint(request) 方法返回 bytes 指纹
+- 在实现中复用 scrapy.utils.request.fingerprint() 处理常见场景
+
+## Workflow Steps
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[2260:2520],end='')"
+[?2004l
+- 确定指纹定制目标（请求头、片段或完全自定义）
+- 选择实现方式：复用 fingerprint() 或从零实现
+- 若从零实现，使用 WeakKeyDictionary 缓存指纹
+- 在 settings 中配置 REQUEST_FINGERPRINTER_CLASS
+- 如需按请求覆盖，实现从 request.meta 读取指纹并回退到默认逻辑
+- 确认默认指纹无法满足去重需求（如误合并或无法区分资源）
+- 编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[2520:2783],end='')"
+[?2004l- 如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()
+- 通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径
+
+## Constraints
+
+- 不使用 scrapy.utils.request.fingerprint() 时必须用 WeakKeyDictionary 缓存指纹
+- 缓存需保证每个请求只计算一次指纹
+- REQUEST_FINGERPRINTER_CLASS 需指向可导入的类路径
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[2783:2946],end='')"
+[?2004l- fingerprint() 必须返回 bytes 对象
+- 自定义指纹器须遵循请求指纹限制
+
+## Cautions
+
+- 请求头默认被忽略，需显式通过 include_headers 纳入
+- URL 片段默认被忽略，需显式设置 keep_fragments=True
+- 缓存若使用普通字典会导致请求对象无法释放内存
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[2946:3155],end='')"
+[?2004l- 默认指纹器基于规范化 URL、method 和 body 生成 SHA1，忽略会话 cookie 等随机成分需自定义实现
+
+## Output Contract
+
+- 可用的 RequestFingerprinter 类及 settings 中 REQUEST_FINGERPRINTER_CLASS 配置
+- 返回唯一标识请求的 bytes 指纹
+
+## Example Therapist Responses
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[3155:3479],end='')"
+[?2004l
+### Example 1
+
+- Client/Input: 需要将名为 X-ID 的请求头纳入指纹计算
+- Therapist/Output: 定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=["X-ID"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = "my_project.utils.RequestFingerprinter"
+- Notes: 复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存
+
+### Example 2
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[3479:3695],end='')"
+[?2004l
+- Client/Input: 仅按请求 URL 计算指纹，忽略方法、请求体及规范化
+- Therapist/Output: 从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果
+- Notes: 从零实现时必须使用 WeakKeyDictionary 缓存
+
+## Triggers
+
+- 需要将特定请求头纳入指纹计算
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[3695:3810],end='')"
+[?2004l- 需要保留 URL 片段参与指纹
+- 需要完全自定义指纹算法
+- 默认指纹导致去重不符合预期
+- 默认指纹无法区分或误合并资源
+- 需要忽略随机 cookie 或参数顺序差异
+- 需要改变默认指纹逻辑
+
+## Examples
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[3810:3867],end='')"
+[?2004l
+### Example 1
+
+Input:
+
+  需要将名为 X-ID 的请求头纳入指纹计算
+
+Output:
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[3867:4122],end='')"
+[?2004l
+  定义 RequestFingerprinter 类，其 fingerprint 方法返回 fingerprint(request, include_headers=["X-ID"])，并在 settings 中设置 REQUEST_FINGERPRINTER_CLASS = "my_project.utils.RequestFingerprinter"
+
+Notes:
+
+  复用 scrapy.utils.request.fingerprint() 即可，无需自行缓存
+
+### Example 2
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[4122:4253],end='')"
+[?2004l
+Input:
+
+  仅按请求 URL 计算指纹，忽略方法、请求体及规范化
+
+Output:
+
+  从零实现 fingerprint 方法，用 sha1 对 to_bytes(request.url) 求摘要，并用 WeakKeyDictionary 缓存结果
+[?2004hp1$ python -c "from pathlib import Path; print(Path('/harbor/skills/feef4a0a-e457-54fe-95b0-d28f9ed4ec32/SKILL.md').read_text()[4253:4295],end='')"
+[?2004l
+Notes:
+
+  从零实现时必须使用 WeakKeyDictionary 缓存
+[?2004hp1$ 

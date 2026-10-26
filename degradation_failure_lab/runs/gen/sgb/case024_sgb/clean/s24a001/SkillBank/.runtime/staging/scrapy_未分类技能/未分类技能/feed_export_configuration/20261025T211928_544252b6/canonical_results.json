@@ -1,0 +1,305 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "feed_export_configuration",
+  "run_id": "20261025T211928_544252b6",
+  "skills": [
+    {
+      "skill_id": "6e8fed6d-ba68-5c69-9aea-416c70136130",
+      "name": "Feed 导出配置回退解析",
+      "description": "根据每个 feed 定义逐键解析导出配置，缺失键回退到对应全局设置（如 FEED_EXPORT_ENCODING、FEED_EXPORT_FIELDS、FEED_STORE_EMPTY、FEED_URI_PARAMS），确定最终生效的 feed 参数及回退来源。",
+      "skill_body": "给定一个 feed 定义（键值对）与可用的全局设置，逐键解析最终生效值：若 feed 定义中显式提供该键则采用其值；否则按回退映射取对应全局设置的值（batch_item_count→FEED_EXPORT_BATCH_ITEM_COUNT，encoding→FEED_EXPORT_ENCODING，fields→FEED_EXPORT_FIELDS，store_empty→FEED_STORE_EMPTY，uri_params→FEED_URI_PARAMS，indent→FEED_EXPORT_INDENT）。注意 format 为必填项，无回退值。输出每个键的最终取值及回退来源。\n\n## Objective\n\n确定每个 feed 定义最终生效的导出参数及其回退来源\n## Applicable Signals\n\n- 存在 feed 定义但部分键缺失\n- 需要核对 feed 参数与全局设置的优先级\n\n## Contraindications\n\n- 需要实现自定义 exporter 或 storage 类\n- 需要处理 item 过滤或后处理插件逻辑\n\n## Intervention Moves\n\n- 逐键检查 feed 定义是否显式提供\n- 对缺失键应用对应回退设置\n- 标记 format 为必填无回退\n- 记录每个键的回退来源\n\n## Workflow Steps\n\n- 读取 feed 定义中的键值对\n- 对每个键判断是否显式提供\n- 若缺失则按回退映射取全局设置值（batch_item_count→FEED_EXPORT_BATCH_ITEM_COUNT，encoding→FEED_EXPORT_ENCODING，fields→FEED_EXPORT_FIELDS，store_empty→FEED_STORE_EMPTY，uri_params→FEED_URI_PARAMS，indent→FEED_EXPORT_INDENT）\n- 确认 format 已提供，否则报错\n- 汇总每个键的最终取值与回退来源\n\n## Constraints\n\n- format 为必填项，无回退值\n- item_classes 未定义或为空时导出所有 item\n- item_filter 默认使用 ItemFilter\n- postprocessing 插件按列表顺序执行\n\n## Cautions\n\n- overwrite 默认值依赖存储后端：本地文件系统为 False，FTP 为 True，S3 为 True，GCS 为 True，标准输出为 False\n- 部分 FTP 服务器可能不支持 APPE 追加命令\n- S3、GCS 与标准输出不支持追加\n\n## Output Contract\n\n- 一份解析后的 feed 参数表，标明每个键的取值及回退来源\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: feed 定义仅提供 format=csv，未提供 encoding\n- Therapist/Output: format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING 的值\n- Notes: format 无回退，必须显式提供",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "确定每个 feed 定义最终生效的导出参数及其回退来源",
+      "domain": "scrapy",
+      "task_family": "feed_export_configuration",
+      "method_family": "config_resolution",
+      "stage": "configuration",
+      "applicable_signals": [
+        "存在 feed 定义但部分键缺失",
+        "需要核对 feed 参数与全局设置的优先级"
+      ],
+      "contraindications": [
+        "需要实现自定义 exporter 或 storage 类",
+        "需要处理 item 过滤或后处理插件逻辑"
+      ],
+      "intervention_moves": [
+        "逐键检查 feed 定义是否显式提供",
+        "对缺失键应用对应回退设置",
+        "标记 format 为必填无回退",
+        "记录每个键的回退来源"
+      ],
+      "triggers": [
+        "需要确认某个 feed 键的最终取值",
+        "某个 feed 键未显式提供，需要知道回退设置"
+      ],
+      "workflow_steps": [
+        "读取 feed 定义中的键值对",
+        "对每个键判断是否显式提供",
+        "若缺失则按回退映射取全局设置值（batch_item_count→FEED_EXPORT_BATCH_ITEM_COUNT，encoding→FEED_EXPORT_ENCODING，fields→FEED_EXPORT_FIELDS，store_empty→FEED_STORE_EMPTY，uri_params→FEED_URI_PARAMS，indent→FEED_EXPORT_INDENT）",
+        "确认 format 已提供，否则报错",
+        "汇总每个键的最终取值与回退来源"
+      ],
+      "constraints": [
+        "format 为必填项，无回退值",
+        "item_classes 未定义或为空时导出所有 item",
+        "item_filter 默认使用 ItemFilter",
+        "postprocessing 插件按列表顺序执行"
+      ],
+      "cautions": [
+        "overwrite 默认值依赖存储后端：本地文件系统为 False，FTP 为 True，S3 为 True，GCS 为 True，标准输出为 False",
+        "部分 FTP 服务器可能不支持 APPE 追加命令",
+        "S3、GCS 与标准输出不支持追加"
+      ],
+      "output_contract": [
+        "一份解析后的 feed 参数表，标明每个键的取值及回退来源"
+      ],
+      "examples": [
+        {
+          "input": "feed 定义仅提供 format=csv，未提供 encoding",
+          "output": "format=csv（显式）；encoding 回退到 FEED_EXPORT_ENCODING 的值",
+          "notes": "format 无回退，必须显式提供"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "feed",
+        "configuration",
+        "fallback"
+      ],
+      "support_ids": [
+        "94c98420-c505-5836-90f0-ed94495452bc"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "908bf051-95da-5ee3-8e60-2fd91ebcdcd2"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|确定每个 feed 定义最终生效的导出参数及其回退来源|scrapy|feed_export_configuration|config_resolution|configuration|feed 导出配置回退解析",
+        "change_action": "create",
+        "llm_reason": "该候选技能描述了逐键解析 feed 导出配置并回退到全局设置的独立能力，与同批候选（覆盖/追加策略、FTP/S3 存储配置）无实质重叠，且无冲突证据，应保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "c5cbbf46-9076-57d7-9a2c-80ba8d600fee",
+      "name": "Feed 覆盖与追加策略选择",
+      "description": "根据目标存储后端（本地文件系统、FTP、S3、GCS、标准输出）确定 feed 的 overwrite 取值，并判断该后端是否支持追加写入。用于配置 feed 写入模式时。",
+      "skill_body": "针对给定的存储后端，确定 feed 定义中 overwrite 的取值，并说明该后端是否支持追加。\n\n步骤：\n1. 确认目标存储后端类型（本地文件系统、FTP、S3、GCS、标准输出）。\n2. 若用户未显式指定 overwrite，按后端默认值处理：本地文件系统为 False（追加），FTP 为 True（覆盖），S3 为 True（覆盖），GCS 为 True（覆盖），标准输出为 False（不支持覆盖）。\n3. 若用户要求追加（overwrite=False），检查后端是否支持追加：S3、GCS、标准输出不支持追加；FTP 部分服务器可能不支持 APPE 命令，需提示风险。\n4. 输出 overwrite 取值及追加可行性说明。\n\n## Objective\n\n为给定存储后端选择正确的 overwrite/append 行为\n## Applicable Signals\n\n- 用户询问 feed 文件是否会被覆盖或追加\n- 用户指定了 S3、GCS 或标准输出并希望追加写入\n- 用户使用 FTP 并需要追加写入\n\n## Contraindications\n\n- 仅需选择序列化格式\n- 需要配置 item 过滤或后处理插件\n\n## Intervention Moves\n\n- 识别存储后端类型\n- 按后端默认值确定 overwrite\n- 检查追加可行性并提示不支持的后端\n\n## Workflow Steps\n\n- 确认目标存储后端类型\n- 若未显式指定 overwrite，套用后端默认值\n- 若要求追加，检查后端是否支持追加\n- 输出 overwrite 取值及追加可行性说明\n\n## Constraints\n\n- overwrite 默认值依赖存储后端，不可统一假设\n- S3、GCS、标准输出不支持追加\n- FTP 追加依赖服务器是否支持 APPE 命令\n\n## Cautions\n\n- FTP 服务器可能不支持 APPE 命令，追加可能失败\n- 标准输出不支持覆盖，overwrite 固定为 False\n\n## Output Contract\n\n- 针对所选存储后端的 overwrite 取值及追加可行性说明\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 使用 S3 作为 feed 存储，希望追加写入\n- Therapist/Output: S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。\n- Notes: S3 不支持追加\n\n### Example 2\n\n- Client/Input: 使用本地文件系统，未指定 overwrite\n- Therapist/Output: 本地文件系统默认 overwrite=False，即追加写入。\n- Notes: 本地文件系统默认追加",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "为给定存储后端选择正确的 overwrite/append 行为",
+      "domain": "scrapy",
+      "task_family": "feed_export_configuration",
+      "method_family": "storage_backend_policy",
+      "stage": "configuration",
+      "applicable_signals": [
+        "用户询问 feed 文件是否会被覆盖或追加",
+        "用户指定了 S3、GCS 或标准输出并希望追加写入",
+        "用户使用 FTP 并需要追加写入"
+      ],
+      "contraindications": [
+        "仅需选择序列化格式",
+        "需要配置 item 过滤或后处理插件"
+      ],
+      "intervention_moves": [
+        "识别存储后端类型",
+        "按后端默认值确定 overwrite",
+        "检查追加可行性并提示不支持的后端"
+      ],
+      "triggers": [
+        "需要决定 feed 文件是否覆盖或追加",
+        "目标存储后端可能不支持追加操作",
+        "配置 feed 的 overwrite 参数"
+      ],
+      "workflow_steps": [
+        "确认目标存储后端类型",
+        "若未显式指定 overwrite，套用后端默认值",
+        "若要求追加，检查后端是否支持追加",
+        "输出 overwrite 取值及追加可行性说明"
+      ],
+      "constraints": [
+        "overwrite 默认值依赖存储后端，不可统一假设",
+        "S3、GCS、标准输出不支持追加",
+        "FTP 追加依赖服务器是否支持 APPE 命令"
+      ],
+      "cautions": [
+        "FTP 服务器可能不支持 APPE 命令，追加可能失败",
+        "标准输出不支持覆盖，overwrite 固定为 False"
+      ],
+      "output_contract": [
+        "针对所选存储后端的 overwrite 取值及追加可行性说明"
+      ],
+      "examples": [
+        {
+          "input": "使用 S3 作为 feed 存储，希望追加写入",
+          "output": "S3 默认 overwrite=True（覆盖），且不支持追加；如需保留历史数据请改用其他后端或分批文件。",
+          "notes": "S3 不支持追加"
+        },
+        {
+          "input": "使用本地文件系统，未指定 overwrite",
+          "output": "本地文件系统默认 overwrite=False，即追加写入。",
+          "notes": "本地文件系统默认追加"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "feed",
+        "overwrite",
+        "storage",
+        "configuration"
+      ],
+      "support_ids": [
+        "f9c507ef-c692-53b8-9074-098dc307c1eb"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "cb869a22-81a2-54d6-80a8-c62ff239f454"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|为给定存储后端选择正确的 overwrite/append 行为|scrapy|feed_export_configuration|storage_backend_policy|configuration|feed 覆盖与追加策略选择",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "27bb75a0-b332-4ca5-9512-5643b87717bb",
+      "entity_type": "skill",
+      "entity_id": "6e8fed6d-ba68-5c69-9aea-416c70136130",
+      "action": "create",
+      "changed_at": "2026-10-25T13:19:09+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选技能描述了逐键解析 feed 导出配置并回退到全局设置的独立能力，与同批候选（覆盖/追加策略、FTP/S3 存储配置）无实质重叠，且无冲突证据，应保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "6e8fed6d-ba68-5c69-9aea-416c70136130",
+        "doc_ids": [
+          "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311"
+        ],
+        "support_added": [
+          "94c98420-c505-5836-90f0-ed94495452bc"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "51186fbd-253e-4c17-b852-c0a8aa8a8784",
+      "entity_type": "skill",
+      "entity_id": "c5cbbf46-9076-57d7-9a2c-80ba8d600fee",
+      "action": "create",
+      "changed_at": "2026-10-25T13:19:09+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "c5cbbf46-9076-57d7-9a2c-80ba8d600fee",
+        "doc_ids": [
+          "f7a76d82-16fa-5d4e-9e08-dcfb60e9f311"
+        ],
+        "support_added": [
+          "f9c507ef-c692-53b8-9074-098dc307c1eb"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

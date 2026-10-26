@@ -182,7 +182,7 @@ python -B scripts/lab.py sgb audit
 python scripts/lab.py list
 python scripts/lab.py validate
 python -m unittest discover -s tests -v
-python scripts/lab.py plan --case case001_qsv_select --condition clean --repeat 1
+python scripts/lab.py plan --case case041_scrapy --condition clean --repeat 1
 ```
 
 重点检查 `validate` 的 `status`、`upstream_path`，以及 `plan` 的 `case_id`、`condition_id`、`input_count`、`model`、`output_pattern`。Windows 下运行前还有已知深层路径长度预检。
@@ -190,7 +190,7 @@ python scripts/lab.py plan --case case001_qsv_select --condition clean --repeat 
 ### Step 2 — 真实生成（付费；只在确认配置后执行）
 
 ```powershell
-python scripts/lab.py run --case case001_qsv_select --condition clean --repeat 1
+python scripts/lab.py run --case case041_scrapy --condition clean --repeat 1
 ```
 
 预期过程：**Ingest（读文档）→ Extract（证据与技能草稿）→ Compile（技能规范）→ Register（正式注册并写入 SkillBank）**。
@@ -413,3 +413,84 @@ python scripts/lab.py aggregate --case case001_qsv_select --out results/aggregat
 经授权的命令：`& .\scripts\Invoke-ProjectCredential.ps1 -Action { <运行已验收的命令> }`。入口在内存中设置子进程所需环境变量，结束后恢复；不会自行调用API。生成器与Agent仍受各自验收门和预算约束。
 
 本轮固定试跑入口：`& .\scripts\Invoke-GitChameleonPilot.ps1`；`-CheckOnly`只验证凭证。入口自动加载凭证并保留单次锁，已运行的批次不会被默默重发。
+
+
+## 公共 Skill 实验入口（配置一次，重复使用）
+
+下游代码按职责分层：
+
+| 位置 | 职责 |
+|---|---|
+| scripts/sgb/pilot.py、Invoke-Pilot.ps1 | 命令解析、Windows凭据加载、进入配置的Harbor运行时 |
+| downstream_eval/sgb/pilot.py | 读取任务绑定，编排计划、准备、运行、状态和分析 |
+| downstream_eval/integration/skill_freeze.py | 冻结最终活动技能、来源、版本与哈希 |
+| downstream_eval/integration/skill_probe.py | 零模型安装及分页正文可读性检查 |
+| downstream_eval/integration/skill_usage.py | 确认安装、索引提供、文件访问与正文上下文 |
+| downstream_eval/sgb/runner.py | 公共执行循环、预算和结果；新运行自动保存skill_usage.json |
+| downstream_eval/sgb/task_adapters/<task>/ | 任务特有提交、依赖边界和独立Oracle |
+| configs/tasks/sgb/<task>.json | 任务、case、适配器、运行时、profile及正负例映射 |
+| configs/downstream_runtime.json | 共用控制容器、项目挂载路径、Python入口 |
+
+新任务须先接入官方任务资产、必要适配器、固定镜像及零模型验收。已有相同协议可复用适配器；不再重写冻结、预算、安装、监控和分析脚本。脚本不推测Oracle或依赖版本。task_contract.py原有的离线夹具证明范围保持不变。
+
+当前已注册并验证scrapy-task-041。041旧脚本保留为兼容入口，工作流逻辑转到公共模块。命令使用Python 3.12以上；本机默认3.13.9，上游Anything2Skill继续使用其原有环境。
+
+### 常用命令
+
+以下用新的实验ID s41d002 作示例，不重用已开始的实验ID。
+
+~~~powershell
+# 只读计划：检查生成运行、任务映射、镜像、模型与预算。
+python scripts/sgb/pilot.py plan --task scrapy-task-041 --generator-run s41r003 --experiment s41d002
+
+# 可选：单独导出新冻结包，目标目录必须为空。
+python scripts/sgb/pilot.py freeze --task scrapy-task-041 --generator-run s41r003 --output results/sgb/freezes/s41r003-review
+
+# 创建运行包、真实容器零模型验收；不会发送模型请求。
+python scripts/sgb/pilot.py prepare --task scrapy-task-041 --generator-run s41r003 --experiment s41d002
+
+# 正式运行：仅在准备通过、预算和外部数据传输已获授权后使用。
+# 复用DPAPI加载器，不在命令或文件写密钥。
+.\scripts\sgb\Invoke-Pilot.ps1 -Phase run -Task scrapy-task-041 -Experiment s41d002
+
+# 只读监控。Ctrl+C结束监控，不代表后台试验已停止。
+python scripts/sgb/pilot.py status --task scrapy-task-041 --experiment s41d002 --watch
+
+# 结果及技能证据汇总；写到独立分析目录。
+python scripts/sgb/pilot.py analyze --task scrapy-task-041 --experiment s41d002
+~~~
+
+prepare自动冻结Skill，生成两组staging、profile、原生配置、readiness、执行哈希清单及独立预算账本。run拒绝同ID重启或重置账本。当前付费传输保持已审计的模型/接口参数；更换供应商或协议需要额外验证。
+
+新任务配置完成后注册一次：
+
+~~~powershell
+python scripts/sgb/pilot.py register --task scrapy-task-041 --config configs/tasks/sgb/scrapy-task-041.json
+~~~
+
+register只绑定已有SGB任务并更新哈希，不代表环境已验收。适配器协议为verify_assets、execution_config、configure、native_trial、grade_export、paid_batch。固定镜像由runtime.lock.json提供，容器由既有Harbor根据task.toml创建。公共环境不再逐次设计，但任务依赖和Oracle差异仍须明确适配。
+
+### 如何判断Skill是否“加载/使用”
+
+新运行在outcomes/<条件>/skill_usage.json自动记录：
+
+- installed / discovered：包已安装、框架已发现，不等于模型读正文。
+- index_in_successful_model_request：名称、描述、路径进入成功模型请求。
+- model_file_access_observed：正式模型执行期间观察到正文文件访问。
+- full_body_in_successful_model_request：匹配冻结正文的完整内容进入成功模型请求。
+- behavioral_use：默认UNKNOWN。读取、任务通过或代码相似都不能证明依据某条规则执行。
+- controlled_probe_file_access_observed：零模型控制读取，不计为模型主动读取。
+
+缺失日志标为未知；counts只统计已确认的项，不把未知当作实际0次。完整正文未确认不等于没有收到正文片段；当前不把分段覆盖自动推断为整份正文已提供。是否按规则执行需对照轨迹、动作和Oracle另行判断。
+
+### Scrapy041已有冻结技能在哪里
+
+- 实际使用的45份正文：runs/eval/sgb/scrapy-task-041/s41d001/skills/<技能UUID>/SKILL.md。
+- 版本、来源和原文件路径：该运行目录的skills_manifest.json。
+- 文件哈希：skill_freeze.json。
+- 实际注入CleanSkill的字节副本：staged/CleanSkill，与skills一致。
+- 可浏览的技能目录：results/sgb/analyses/s41d001/skills.md。
+- 每条件使用报告：results/sgb/analyses/s41d001/*-skill-usage.json。
+- 上游生成库：runs/gen/sgb/case041_scrapy/clean/s41r003/SkillBank。
+
+历史s41d001产物、分数及账本不改写。新代码回填报告写到独立分析目录。后续公共代码修改不会改写历史冻结清单；新实验必须采用新ID并重新准备。

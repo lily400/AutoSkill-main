@@ -1,0 +1,119 @@
+{
+  "skill_id": "75b3b50e-8659-5572-9a05-b5b329f0f460",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "75b3b50e-8659-5572-9a05-b5b329f0f460",
+    "name": "Scrapy 响应类型选择与解析",
+    "description": "根据响应的 Content-Type 与内容特征选择合适的 Scrapy Response 子类（TextResponse/HtmlResponse/XmlResponse/JsonResponse），并调用其解析方法（json、urljoin 等）提取数据或构造绝对 URL。适用于处理已获取的响应对象，而非发起请求。",
+    "skill_body": "当需要处理一个已获取的 Scrapy 响应时：1) 检查响应的 Content-Type 与内容特征；2) 若为 JSON MIME 类型，使用 JsonResponse 并调用 json() 反序列化为 Python 对象（结果在首次调用后缓存）；3) 若为 HTML 且需依据 meta http-equiv 自动发现编码，使用 HtmlResponse；4) 若为 XML 且需依据 XML 声明行自动发现编码，使用 XmlResponse；5) 其他文本响应使用 TextResponse；6) 需要绝对 URL 时调用 urljoin()，其基址取自 <base> 标签，若无则取 Response.url。\n\n## Objective\n\n为给定响应选择正确的 Response 子类并正确解析其内容\n## Applicable Signals\n\n- 响应 Content-Type 为 JSON MIME 类型\n- HTML 响应含 meta http-equiv 编码声明\n- XML 响应含 XML 声明行\n- 需要将相对 URL 转为绝对 URL\n\n## Contraindications\n\n- 响应内容类型未知且无法判定子类\n- 需要发起请求而非处理响应\n\n## Intervention Moves\n\n- 依据 Content-Type 判定 JSON 响应并选用 JsonResponse\n- 对 HTML 响应选用 HtmlResponse 以自动发现编码\n- 对 XML 响应选用 XmlResponse 以自动发现编码\n- 调用 json() 反序列化并利用缓存\n- 调用 urljoin() 结合 <base> 标签或 Response.url 构造绝对 URL\n\n## Workflow Steps\n\n- 检查响应 Content-Type 与内容特征\n- 选择匹配的 Response 子类\n- 调用相应解析方法（json、urljoin 等）\n- 返回解析后的 Python 对象或绝对 URL\n\n## Constraints\n\n- 仅在处理已获取的响应时使用，不用于构造请求\n- 子类选择须与响应实际内容类型一致\n\n## Cautions\n\n- json() 结果在首次调用后缓存，后续调用返回同一对象\n- urljoin 的基址优先取 <base> 标签，缺失时回退到 Response.url\n\n## Output Contract\n\n- 选定 Response 子类并产出解析后的 Python 对象或绝对 URL\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 响应 Content-Type 为 JSON MIME 类型\n- Therapist/Output: 使用 JsonResponse 并调用 json() 得到 Python 对象\n- Notes: 结果在首次调用后缓存\n\n### Example 2\n\n- Client/Input: 响应含相对 URL 且页面有 <base> 标签\n- Therapist/Output: 调用 urljoin() 返回基于 <base> 的绝对 URL",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为给定响应选择正确的 Response 子类并正确解析其内容",
+    "domain": "scrapy",
+    "task_family": "response_handling",
+    "method_family": "response_subclass_selection",
+    "stage": "parsing",
+    "applicable_signals": [
+      "响应 Content-Type 为 JSON MIME 类型",
+      "HTML 响应含 meta http-equiv 编码声明",
+      "XML 响应含 XML 声明行",
+      "需要将相对 URL 转为绝对 URL"
+    ],
+    "contraindications": [
+      "响应内容类型未知且无法判定子类",
+      "需要发起请求而非处理响应"
+    ],
+    "intervention_moves": [
+      "依据 Content-Type 判定 JSON 响应并选用 JsonResponse",
+      "对 HTML 响应选用 HtmlResponse 以自动发现编码",
+      "对 XML 响应选用 XmlResponse 以自动发现编码",
+      "调用 json() 反序列化并利用缓存",
+      "调用 urljoin() 结合 <base> 标签或 Response.url 构造绝对 URL"
+    ],
+    "triggers": [
+      "需要从响应中解析 JSON 或构造绝对 URL",
+      "响应带有 JSON MIME 类型或 HTML/XML 编码声明"
+    ],
+    "workflow_steps": [
+      "检查响应 Content-Type 与内容特征",
+      "选择匹配的 Response 子类",
+      "调用相应解析方法（json、urljoin 等）",
+      "返回解析后的 Python 对象或绝对 URL"
+    ],
+    "constraints": [
+      "仅在处理已获取的响应时使用，不用于构造请求",
+      "子类选择须与响应实际内容类型一致"
+    ],
+    "cautions": [
+      "json() 结果在首次调用后缓存，后续调用返回同一对象",
+      "urljoin 的基址优先取 <base> 标签，缺失时回退到 Response.url"
+    ],
+    "output_contract": [
+      "选定 Response 子类并产出解析后的 Python 对象或绝对 URL"
+    ],
+    "examples": [
+      {
+        "input": "响应 Content-Type 为 JSON MIME 类型",
+        "output": "使用 JsonResponse 并调用 json() 得到 Python 对象",
+        "notes": "结果在首次调用后缓存"
+      },
+      {
+        "input": "响应含相对 URL 且页面有 <base> 标签",
+        "output": "调用 urljoin() 返回基于 <base> 的绝对 URL",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "response",
+      "parsing",
+      "json",
+      "urljoin"
+    ],
+    "support_ids": [
+      "ffda67fc-a75b-50d0-af88-b586ad8a3ce5"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "9e85d7b9-06e6-5360-a286-f4169c372b33"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|为给定响应选择正确的 response 子类并正确解析其内容|scrapy|response_handling|response_subclass_selection|parsing|scrapy 响应类型选择与解析"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

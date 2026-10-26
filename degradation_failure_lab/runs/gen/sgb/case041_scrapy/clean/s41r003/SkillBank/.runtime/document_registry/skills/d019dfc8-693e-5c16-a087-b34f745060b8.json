@@ -1,0 +1,115 @@
+{
+  "skill_id": "d019dfc8-693e-5c16-a087-b34f745060b8",
+  "name": "Spider中间件异步输出钩子实现",
+  "description": "实现 process_spider_output_async 异步生成器方法，在 Spider 输出结果为异步可迭代对象时替代同步 process_spider_output 被调用，用于异步爬虫管道中处理异步结果流。",
+  "skill_body": "在 Spider 中间件中定义 async 生成器方法 process_spider_output_async(response, result)。当 Spider 返回的 result 为异步可迭代对象时，Scrapy 会调用该方法而非 process_spider_output。方法需以异步生成器形式产出 Request 对象与 item 对象，保持与同步输出钩子一致的输出语义。\n\n## Objective\n\n在异步结果流场景下提供异步输出处理\n## Applicable Signals\n\n- Spider 输出结果为异步可迭代对象\n- 需要异步生成器形式的输出处理\n\n## Contraindications\n\n- 结果为同步可迭代对象\n- 未启用异步爬虫管道\n\n## Intervention Moves\n\n- 定义 async 生成器方法 process_spider_output_async(response, result)\n- 在方法内异步产出 Request 对象与 item 对象\n- 确保仅在 result 为异步可迭代时依赖该钩子\n\n## Workflow Steps\n\n- 确认 Spider 输出 result 为异步可迭代对象\n- 在中间件中定义 async 生成器方法 process_spider_output_async(response, result)\n- 在生成器中产出 Request 对象与 item 对象\n- 验证异步结果流被正确传递至后续中间件\n\n## Constraints\n\n- 方法必须为异步生成器\n- 仅在 result 为异步可迭代对象时被调用，替代 process_spider_output\n\n## Cautions\n\n- 同步结果流仍走 process_spider_output，不应依赖异步钩子处理\n\n## Output Contract\n\n- 定义可被调用的异步生成器方法 process_spider_output_async，产出 Request 与 item 对象\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Spider 返回异步可迭代的 result\n- Therapist/Output: process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item\n- Notes: 仅在 result 为异步可迭代时触发",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "在异步结果流场景下提供异步输出处理",
+  "domain": "scrapy",
+  "task_family": "spider_middleware",
+  "method_family": "async_hook_implementation",
+  "stage": "spider_output_processing",
+  "applicable_signals": [
+    "Spider 输出结果为异步可迭代对象",
+    "需要异步生成器形式的输出处理"
+  ],
+  "contraindications": [
+    "结果为同步可迭代对象",
+    "未启用异步爬虫管道"
+  ],
+  "intervention_moves": [
+    "定义 async 生成器方法 process_spider_output_async(response, result)",
+    "在方法内异步产出 Request 对象与 item 对象",
+    "确保仅在 result 为异步可迭代时依赖该钩子"
+  ],
+  "triggers": [
+    "Spider 输出结果为异步可迭代对象",
+    "需要异步生成器形式的输出处理",
+    "异步爬虫管道中需处理异步结果流"
+  ],
+  "workflow_steps": [
+    "确认 Spider 输出 result 为异步可迭代对象",
+    "在中间件中定义 async 生成器方法 process_spider_output_async(response, result)",
+    "在生成器中产出 Request 对象与 item 对象",
+    "验证异步结果流被正确传递至后续中间件"
+  ],
+  "constraints": [
+    "方法必须为异步生成器",
+    "仅在 result 为异步可迭代对象时被调用，替代 process_spider_output"
+  ],
+  "cautions": [
+    "同步结果流仍走 process_spider_output，不应依赖异步钩子处理"
+  ],
+  "output_contract": [
+    "定义可被调用的异步生成器方法 process_spider_output_async，产出 Request 与 item 对象"
+  ],
+  "examples": [
+    {
+      "input": "Spider 返回异步可迭代的 result",
+      "output": "process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item",
+      "notes": "仅在 result 为异步可迭代时触发"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "spider_middleware",
+    "async",
+    "process_spider_output_async"
+  ],
+  "support_ids": [
+    "f246147f-5108-51fa-aed5-5bcdda50058f"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "c11e3178-c5d6-5ed3-8d1c-7db3b10ad4f7"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在异步结果流场景下提供异步输出处理|scrapy|spider_middleware|async_hook_implementation|spider_output_processing|spider中间件异步输出钩子实现",
+    "change_action": "create",
+    "llm_reason": "候选技能实现 process_spider_output_async 异步生成器钩子，与现有同步输出钩子（peer 中）在方法族与调用条件上不同，属于新的独立微技能能力，现有注册表中无对应技能。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

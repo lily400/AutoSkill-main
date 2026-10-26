@@ -181,6 +181,9 @@ def execute_batch(root, output, config, *, run_trial, grade, exposure, task_succ
             score = grade(trial, output / 'outcomes' / label / 'oracle')
             stage = 'body_exposure_analysis'
             observed = exposure(trial, output, label)
+            from downstream_eval.integration.skill_usage import save_skill_usage
+            usage_report = save_skill_usage(output, label, trial.paths.trial_dir,
+                output / 'outcomes' / label / 'skill_usage.json')
             infra = not native.get('exception_info') and score.get('failure_category') not in config.unscorable_categories
             success = task_success(score)
             attempts = [a for a in ledger.snapshot()['attempts'] if a['arm'] == label]
@@ -191,6 +194,8 @@ def execute_batch(root, output, config, *, run_trial, grade, exposure, task_succ
                       'elapsed_seconds':time.monotonic() - start, 'model_api_results':True,
                       'failure_category':score.get('failure_category') if not native.get('exception_info') else 'agent_environment_or_execution',
                       'native_exception':native.get('exception_info'), 'tool_calls':tool_calls,
+                      'skill_usage':{'status':usage_report['status'], 'counts':usage_report['counts'],
+                                     'behavioral_use':usage_report['behavioral_use']},
                       'http_attempts':len(attempts),
                       'token_usage':{k:sum(a.get(k) or 0 for a in attempts) for k in ['input_tokens','cached_tokens','output_tokens']},
                       'unknown_usage_attempts':sum(a['input_tokens'] is None for a in attempts)}

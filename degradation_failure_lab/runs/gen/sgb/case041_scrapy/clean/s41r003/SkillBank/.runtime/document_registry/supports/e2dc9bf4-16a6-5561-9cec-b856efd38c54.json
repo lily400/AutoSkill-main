@@ -1,0 +1,82 @@
+{
+  "support_id": "e2dc9bf4-16a6-5561-9cec-b856efd38c54",
+  "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+  "skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+  "section": "Requests and Responses",
+  "span": {
+    "start": 21472,
+    "end": 24214
+  },
+  "excerpt": "To change how request fingerprints are built for your requests, use the\n`REQUEST_FINGERPRINTER_CLASS` setting.\n\nREQUEST_FINGERPRINTER_CLASS\nDefault: `scrapy.utils.request.RequestFingerprinter`\n\nA request fingerprinter class or its\nimport path.\n\n***class*scrapy.utils.request.RequestFingerprinter(*crawler: [Crawler](api.html#scrapy.crawler.Crawler) | [None](https://docs.python.org/3/library/constants.html#None) = None*)[[source]](../_modules/scrapy/utils/request.html#RequestFingerprinter)**\n\nDefault fingerprinter.\n\nIt takes into account a canonical version\n([`w3lib.url.canonicalize_url()`](https://w3lib.readthedocs.io/en/latest/w3lib.html#w3lib.url.canonicalize_url)) of `request.url` and the values of `request.method` and `request.body`. It then generates an [SHA1](https://en.wikipedia.org/wiki/SHA-1) hash.\n\nWriting your own request fingerprinter\nA request fingerprinter is a [component](components.html#topics-components) that must\nimplement the following method:\n\n**fingerprint(*self*, *request: scrapy.Request*)**\n\nReturn a [`bytes`](https://docs.python.org/3/library/stdtypes.html#bytes) object that uniquely identifies *request*.\n\nSee also Request fingerprint restrictions.\n\nThe `fingerprint()` method of the default request fingerprinter,\n`scrapy.utils.request.RequestFingerprinter`, uses\n`scrapy.utils.request.fingerprint()` with its default parameters. For some\ncommon use cases you can use `scrapy.utils.request.fingerprint()` as well\nin your `fingerprint()` method implementation:\n\nReturn the request fingerprint.\n\nThe request fingerprint is a hash that uniquely identifies the resource the\nrequest points to. For example, take the following two urls:\n`http://www.example.com/query?id=111&cat=222`,\n`http://www.example.com/query?cat=222&id=111`.\n\nEven though those are two different URLs both point to the same resource\nand are equivalent (i.e. they should return the same response).\n\nAnother example are cookies used to store session ids. Suppose the\nfollowing page is only accessible to authenticated users:\n`http://www.example.com/members/offers.html`.\n\nLots of sites use a cookie to store the session id, which adds a random\ncomponent to the HTTP Request and thus should be ignored when calculating\nthe fingerprint.",
+  "relation_type": "support",
+  "confidence": 0.8,
+  "metadata": {
+    "document_title": "input003\\request-response.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "自定义请求指纹器实现",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "visible_role": "parent",
+    "objective": "为请求生成稳定且唯一的指纹以支持去重",
+    "task_family": "请求去重",
+    "method_family": "指纹计算",
+    "stage": "请求处理",
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "candidate_slot": 1,
+    "window_id": "d8b63e84-e49c-5db4-bca0-37bbbc36791b",
+    "window_strategy": "strict",
+    "anchor_hits": [
+      "session"
+    ],
+    "paragraph_start": 15,
+    "paragraph_end": 31,
+    "heading_path": [
+      "Requests and Responses"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input003\\request-response.md"
+    ],
+    "subsection_headings": [
+      "Request objects",
+      "Other functions related to requests",
+      "Passing additional data to callback functions",
+      "Using errbacks to catch exceptions in request processing",
+      "Accessing additional data in errback functions",
+      "Request fingerprints",
+      "REQUEST_FINGERPRINTER_CLASS",
+      "Writing your own request fingerprinter",
+      "Request fingerprint restrictions",
+      "Request.meta special keys",
+      "bindaddress",
+      "download_timeout",
+      "download_latency",
+      "download_fail_on_dataloss",
+      "max_retry_times",
+      "Stopping the download of a Response",
+      "Request subclasses",
+      "FormRequest objects",
+      "Using FormRequest to send data via HTTP POST",
+      "Using FormRequest.from_response() to simulate a user login",
+      "JsonRequest",
+      "JsonRequest usage example",
+      "Response objects",
+      "Response subclasses",
+      "TextResponse objects",
+      "HtmlResponse objects",
+      "XmlResponse objects",
+      "JsonResponse objects"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+  },
+  "created_at": "2026-10-25T08:23:23+00:00"
+}

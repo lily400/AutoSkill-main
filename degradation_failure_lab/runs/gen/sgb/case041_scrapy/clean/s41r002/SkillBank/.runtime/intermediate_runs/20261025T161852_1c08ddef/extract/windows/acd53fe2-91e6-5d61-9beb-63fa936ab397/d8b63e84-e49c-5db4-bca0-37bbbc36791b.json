@@ -1,0 +1,456 @@
+{
+  "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+  "title": "input003\\request-response.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+  "window_id": "d8b63e84-e49c-5db4-bca0-37bbbc36791b",
+  "section_heading": "Requests and Responses",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "e2dc9bf4-16a6-5561-9cec-b856efd38c54",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+      "section": "Requests and Responses",
+      "span": {
+        "start": 21472,
+        "end": 24214
+      },
+      "excerpt": "To change how request fingerprints are built for your requests, use the\n`REQUEST_FINGERPRINTER_CLASS` setting.\n\nREQUEST_FINGERPRINTER_CLASS\nDefault: `scrapy.utils.request.RequestFingerprinter`\n\nA request fingerprinter class or its\nimport path.\n\n***class*scrapy.utils.request.RequestFingerprinter(*crawler: [Crawler](api.html#scrapy.crawler.Crawler) | [None](https://docs.python.org/3/library/constants.html#None) = None*)[[source]](../_modules/scrapy/utils/request.html#RequestFingerprinter)**\n\nDefault fingerprinter.\n\nIt takes into account a canonical version\n([`w3lib.url.canonicalize_url()`](https://w3lib.readthedocs.io/en/latest/w3lib.html#w3lib.url.canonicalize_url)) of `request.url` and the values of `request.method` and `request.body`. It then generates an [SHA1](https://en.wikipedia.org/wiki/SHA-1) hash.\n\nWriting your own request fingerprinter\nA request fingerprinter is a [component](components.html#topics-components) that must\nimplement the following method:\n\n**fingerprint(*self*, *request: scrapy.Request*)**\n\nReturn a [`bytes`](https://docs.python.org/3/library/stdtypes.html#bytes) object that uniquely identifies *request*.\n\nSee also Request fingerprint restrictions.\n\nThe `fingerprint()` method of the default request fingerprinter,\n`scrapy.utils.request.RequestFingerprinter`, uses\n`scrapy.utils.request.fingerprint()` with its default parameters. For some\ncommon use cases you can use `scrapy.utils.request.fingerprint()` as well\nin your `fingerprint()` method implementation:\n\nReturn the request fingerprint.\n\nThe request fingerprint is a hash that uniquely identifies the resource the\nrequest points to. For example, take the following two urls:\n`http://www.example.com/query?id=111&cat=222`,\n`http://www.example.com/query?cat=222&id=111`.\n\nEven though those are two different URLs both point to the same resource\nand are equivalent (i.e. they should return the same response).\n\nAnother example are cookies used to store session ids. Suppose the\nfollowing page is only accessible to authenticated users:\n`http://www.example.com/members/offers.html`.\n\nLots of sites use a cookie to store the session id, which adds a random\ncomponent to the HTTP Request and thus should be ignored when calculating\nthe fingerprint.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input003\\request-response.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "自定义请求指纹器实现",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "为请求生成稳定且唯一的指纹以支持去重",
+        "task_family": "请求去重",
+        "method_family": "指纹计算",
+        "stage": "请求处理",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "d8b63e84-e49c-5db4-bca0-37bbbc36791b",
+        "window_strategy": "strict",
+        "anchor_hits": [
+          "session"
+        ],
+        "paragraph_start": 15,
+        "paragraph_end": 31,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      },
+      "created_at": "2026-10-25T08:23:23+00:00"
+    },
+    {
+      "support_id": "dc44d88e-0494-5b0c-bc90-ad37742213b0",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+      "section": "Requests and Responses",
+      "span": {
+        "start": 21472,
+        "end": 24214
+      },
+      "excerpt": "To change how request fingerprints are built for your requests, use the\n`REQUEST_FINGERPRINTER_CLASS` setting.\n\nREQUEST_FINGERPRINTER_CLASS\nDefault: `scrapy.utils.request.RequestFingerprinter`\n\nA request fingerprinter class or its\nimport path.\n\n***class*scrapy.utils.request.RequestFingerprinter(*crawler: [Crawler](api.html#scrapy.crawler.Crawler) | [None](https://docs.python.org/3/library/constants.html#None) = None*)[[source]](../_modules/scrapy/utils/request.html#RequestFingerprinter)**\n\nDefault fingerprinter.\n\nIt takes into account a canonical version\n([`w3lib.url.canonicalize_url()`](https://w3lib.readthedocs.io/en/latest/w3lib.html#w3lib.url.canonicalize_url)) of `request.url` and the values of `request.method` and `request.body`. It then generates an [SHA1](https://en.wikipedia.org/wiki/SHA-1) hash.\n\nWriting your own request fingerprinter\nA request fingerprinter is a [component](components.html#topics-components) that must\nimplement the following method:\n\n**fingerprint(*self*, *request: scrapy.Request*)**\n\nReturn a [`bytes`](https://docs.python.org/3/library/stdtypes.html#bytes) object that uniquely identifies *request*.\n\nSee also Request fingerprint restrictions.\n\nThe `fingerprint()` method of the default request fingerprinter,\n`scrapy.utils.request.RequestFingerprinter`, uses\n`scrapy.utils.request.fingerprint()` with its default parameters. For some\ncommon use cases you can use `scrapy.utils.request.fingerprint()` as well\nin your `fingerprint()` method implementation:\n\nReturn the request fingerprint.\n\nThe request fingerprint is a hash that uniquely identifies the resource the\nrequest points to. For example, take the following two urls:\n`http://www.example.com/query?id=111&cat=222`,\n`http://www.example.com/query?cat=222&id=111`.\n\nEven though those are two different URLs both point to the same resource\nand are equivalent (i.e. they should return the same response).\n\nAnother example are cookies used to store session ids. Suppose the\nfollowing page is only accessible to authenticated users:\n`http://www.example.com/members/offers.html`.\n\nLots of sites use a cookie to store the session id, which adds a random\ncomponent to the HTTP Request and thus should be ignored when calculating\nthe fingerprint.",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input003\\request-response.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "请求指纹规范化计算",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "对单个请求计算规范化指纹哈希",
+        "task_family": "请求去重",
+        "method_family": "URL规范化与哈希",
+        "stage": "请求处理",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "d8b63e84-e49c-5db4-bca0-37bbbc36791b",
+        "window_strategy": "strict",
+        "anchor_hits": [
+          "session"
+        ],
+        "paragraph_start": 15,
+        "paragraph_end": 31,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      },
+      "created_at": "2026-10-25T08:23:23+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "d9a06189-229a-5ec6-96d7-63806ea26d15",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "name": "自定义请求指纹器实现",
+      "description": "通过 REQUEST_FINGERPRINTER_CLASS 配置或编写实现 fingerprint(request) 方法的组件，为请求生成唯一标识字节串，用于去重。适用于需要改变默认指纹逻辑（如忽略会话 cookie、规范化 URL 参数顺序）的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为请求生成稳定且唯一的指纹以支持去重",
+      "domain": "scrapy",
+      "task_family": "请求去重",
+      "method_family": "指纹计算",
+      "stage": "请求处理",
+      "applicable_signals": [
+        "默认指纹无法区分或误合并资源",
+        "需要忽略随机 cookie 或参数顺序差异"
+      ],
+      "contraindications": [
+        "仅需默认 URL+method+body 的 SHA1 指纹"
+      ],
+      "intervention_moves": [
+        "设置 REQUEST_FINGERPRINTER_CLASS 为自定义指纹器类或导入路径",
+        "实现 fingerprint(request) 方法返回 bytes 指纹",
+        "在实现中复用 scrapy.utils.request.fingerprint() 处理常见场景"
+      ],
+      "workflow_steps": [
+        "确认默认指纹无法满足去重需求（如误合并或无法区分资源）",
+        "编写实现 fingerprint(request) 方法的指纹器组件，返回唯一标识请求的 bytes",
+        "如需处理常见场景，在 fingerprint() 中复用 scrapy.utils.request.fingerprint()",
+        "通过 REQUEST_FINGERPRINTER_CLASS 设置指向自定义指纹器类或其导入路径"
+      ],
+      "triggers": [
+        "默认指纹无法区分或误合并资源",
+        "需要忽略随机 cookie 或参数顺序差异",
+        "需要改变默认指纹逻辑"
+      ],
+      "constraints": [
+        "fingerprint() 必须返回 bytes 对象",
+        "自定义指纹器须遵循请求指纹限制"
+      ],
+      "cautions": [
+        "默认指纹器基于规范化 URL、method 和 body 生成 SHA1，忽略会话 cookie 等随机成分需自定义实现"
+      ],
+      "output_contract": [
+        "返回唯一标识请求的 bytes 指纹"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "e2dc9bf4-16a6-5561-9cec-b856efd38c54"
+      ],
+      "metadata": {
+        "prompt": "当默认指纹无法满足去重需求时，配置 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类或其导入路径，或编写实现 fingerprint(request) 方法的组件，返回唯一标识请求的 bytes 指纹。可复用 scrapy.utils.request.fingerprint() 处理常见场景。",
+        "tags": [
+          "scrapy",
+          "请求去重",
+          "指纹计算",
+          "REQUEST_FINGERPRINTER_CLASS"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Requests and Responses"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "d8b63e84-e49c-5db4-bca0-37bbbc36791b",
+        "window_strategy": "strict",
+        "anchor_hits": [
+          "session"
+        ],
+        "paragraph_start": 15,
+        "paragraph_end": 31,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      }
+    },
+    {
+      "draft_id": "4bffa34f-1c1f-50d1-a311-889527f3304f",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "name": "请求指纹规范化计算",
+      "description": "在自定义请求指纹器的 fingerprint() 方法内复用标准指纹逻辑：对 request.url 做 canonicalize_url 规范化，结合 method 与 body 生成 SHA1 哈希，从而忽略参数顺序、会话 cookie 等随机成分，得到唯一标识请求资源的指纹。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "对单个请求计算规范化指纹哈希",
+      "domain": "scrapy",
+      "task_family": "请求去重",
+      "method_family": "URL规范化与哈希",
+      "stage": "请求处理",
+      "applicable_signals": [
+        "自定义指纹器需要复用标准指纹逻辑",
+        "存在等价但字面不同的 URL（如参数顺序不同）",
+        "请求含会话 cookie 等应被忽略的随机成分"
+      ],
+      "contraindications": [
+        "需要完全自定义非哈希指纹策略时不应使用本微技能"
+      ],
+      "intervention_moves": [
+        "在 fingerprint() 中调用 scrapy.utils.request.fingerprint() 并传入 request",
+        "依赖 canonicalize_url 规范化 request.url",
+        "结合 request.method 与 request.body 计算 SHA1 哈希",
+        "返回 bytes 类型的指纹"
+      ],
+      "workflow_steps": [
+        "确认当前处于自定义 RequestFingerprinter 的 fingerprint() 实现中",
+        "调用 scrapy.utils.request.fingerprint()（默认参数）并传入 request",
+        "确认返回值是唯一标识该请求资源的 bytes 对象",
+        "验证等价 URL（参数顺序不同）得到相同指纹，含会话 cookie 的请求指纹不受随机成分影响"
+      ],
+      "triggers": [
+        "需要在 fingerprint() 方法内复用标准指纹算法",
+        "URL 参数顺序不同但指向同一资源",
+        "请求仅因会话 cookie 等随机成分不同而应视为同一资源"
+      ],
+      "constraints": [
+        "fingerprint() 必须返回 bytes 对象",
+        "指纹应唯一标识请求指向的资源",
+        "默认实现基于 canonicalize_url 规范化 URL 并结合 method、body 生成 SHA1"
+      ],
+      "cautions": [
+        "若需非哈希或完全自定义策略，应自行实现 fingerprint() 而非复用标准函数"
+      ],
+      "output_contract": [
+        "基于规范化 URL、method、body 的 SHA1 指纹（bytes），可唯一标识请求资源。"
+      ],
+      "examples": [
+        {
+          "input": "两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111",
+          "output": "两者经 canonicalize_url 规范化后得到相同指纹",
+          "notes": "参数顺序不同但指向同一资源"
+        },
+        {
+          "input": "仅会话 cookie 不同的同一页面请求",
+          "output": "指纹忽略 cookie 随机成分，得到相同指纹",
+          "notes": "会话 id 等随机成分不应影响指纹"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.75,
+      "support_ids": [
+        "dc44d88e-0494-5b0c-bc90-ad37742213b0"
+      ],
+      "metadata": {
+        "prompt": "当需要在自定义 RequestFingerprinter 的 fingerprint() 方法中复用标准指纹算法时，调用 scrapy.utils.request.fingerprint()（默认参数）。该函数对 request.url 取 canonicalize_url 规范化版本，并结合 request.method 与 request.body 计算 SHA1 哈希，返回 bytes。确保返回值为 bytes 且能唯一标识请求指向的资源；对参数顺序不同但等价的 URL 应得到相同指纹，对仅因会话 cookie 等随机成分不同的请求应忽略这些成分。",
+        "tags": [
+          "scrapy",
+          "请求去重",
+          "指纹",
+          "URL规范化",
+          "SHA1"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "Requests and Responses"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "d8b63e84-e49c-5db4-bca0-37bbbc36791b",
+        "window_strategy": "strict",
+        "anchor_hits": [
+          "session"
+        ],
+        "paragraph_start": 15,
+        "paragraph_end": 31,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

@@ -119,7 +119,7 @@ class ExperimentRunner:
         write(target/'status.json', {'state':'PREPARED', 'real_generation':False, 'updated_at':utc()})
         return target
 
-    def run(self, case_id, condition_id, run_id=None, resume_from=None):
+    def run(self, case_id, condition_id, run_id=None, resume_from=None, resume_budget=None):
         if resume_from:
             from .artifacts import resolve_run
             identity, parent = resolve_run(self.root, resume_from)
@@ -136,7 +136,7 @@ class ExperimentRunner:
             raise RuntimeError('BLOCKED: set environment variable ' + config['credential_env'])
         if resume_from:
             from .resume import prepare_resume
-            target = prepare_resume(self.root, resume_from, run_id)
+            target = prepare_resume(self.root, resume_from, run_id, budget_overrides=resume_budget)
         else:
             target = self.prepare(case_id, condition_id, run_id)
         from .adapter import execute

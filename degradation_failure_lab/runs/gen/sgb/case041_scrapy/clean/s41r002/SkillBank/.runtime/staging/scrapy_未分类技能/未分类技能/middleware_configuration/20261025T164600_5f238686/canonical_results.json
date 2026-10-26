@@ -1,0 +1,160 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "middleware_configuration",
+  "run_id": "20261025T164600_5f238686",
+  "skills": [
+    {
+      "skill_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+      "name": "下载器中间件激活与排序配置",
+      "description": "通过 DOWNLOADER_MIDDLEWARES 设置注册自定义下载器中间件并指定执行顺序，可用 None 禁用内置中间件。适用于需要全局改变请求/响应处理链的场景。",
+      "skill_body": "在 Scrapy 项目的 settings 中配置 DOWNLOADER_MIDDLEWARES 字典：键为中间件类路径，值为中间件顺序（整数）。如需禁用某个内置中间件，将其类路径的值设为 None。配置完成后确认中间件依赖的专属设置是否已启用。\n\n## Objective\n\n正确注册并排序下载器中间件，使请求/响应处理链按预期生效\n## Applicable Signals\n\n- 需要启用自定义下载器中间件\n- 需要调整或禁用内置中间件顺序\n\n## Contraindications\n\n- 仅需修改爬虫解析逻辑而非请求/响应链\n- 中间件依赖的专属设置尚未确认\n\n## Intervention Moves\n\n- 在 DOWNLOADER_MIDDLEWARES 中添加中间件类路径与顺序值\n- 将需禁用的内置中间件类路径值设为 None\n- 确认中间件依赖的专属设置已启用\n\n## Workflow Steps\n\n- 确定要启用的自定义下载器中间件类路径\n- 在 DOWNLOADER_MIDDLEWARES 字典中为每个中间件指定顺序值\n- 如需禁用内置中间件，将其类路径值设为 None\n- 检查中间件是否依赖特定设置并确认已启用\n\n## Constraints\n\n- DOWNLOADER_MIDDLEWARES 为字典，键为中间件类路径，值为中间件顺序\n- 禁用内置中间件时使用 None 作为值\n\n## Cautions\n\n- 部分中间件可能需要通过特定设置启用，需查阅各中间件文档\n\n## Output Contract\n\n- DOWNLOADER_MIDDLEWARES 配置字典，含类路径与顺序值\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要启用自定义下载器中间件\n- Therapist/Output: DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}\n\n### Example 2\n\n- Client/Input: 需要禁用内置 UserAgentMiddleware\n- Therapist/Output: DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "be9aee15-e037-5420-b34a-eb9af1223666"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "正确注册并排序下载器中间件，使请求/响应处理链按预期生效",
+      "domain": "scrapy",
+      "task_family": "middleware_configuration",
+      "method_family": "settings_registration",
+      "stage": "setup",
+      "applicable_signals": [
+        "需要启用自定义下载器中间件",
+        "需要调整或禁用内置中间件顺序"
+      ],
+      "contraindications": [
+        "仅需修改爬虫解析逻辑而非请求/响应链",
+        "中间件依赖的专属设置尚未确认"
+      ],
+      "intervention_moves": [
+        "在 DOWNLOADER_MIDDLEWARES 中添加中间件类路径与顺序值",
+        "将需禁用的内置中间件类路径值设为 None",
+        "确认中间件依赖的专属设置已启用"
+      ],
+      "triggers": [
+        "需要启用自定义下载器中间件",
+        "需要调整或禁用内置中间件顺序"
+      ],
+      "workflow_steps": [
+        "确定要启用的自定义下载器中间件类路径",
+        "在 DOWNLOADER_MIDDLEWARES 字典中为每个中间件指定顺序值",
+        "如需禁用内置中间件，将其类路径值设为 None",
+        "检查中间件是否依赖特定设置并确认已启用"
+      ],
+      "constraints": [
+        "DOWNLOADER_MIDDLEWARES 为字典，键为中间件类路径，值为中间件顺序",
+        "禁用内置中间件时使用 None 作为值"
+      ],
+      "cautions": [
+        "部分中间件可能需要通过特定设置启用，需查阅各中间件文档"
+      ],
+      "output_contract": [
+        "DOWNLOADER_MIDDLEWARES 配置字典，含类路径与顺序值"
+      ],
+      "examples": [
+        {
+          "input": "需要启用自定义下载器中间件",
+          "output": "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}",
+          "notes": null
+        },
+        {
+          "input": "需要禁用内置 UserAgentMiddleware",
+          "output": "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "downloader-middleware",
+        "settings",
+        "middleware-configuration"
+      ],
+      "support_ids": [
+        "e3ff6f02-f2ea-5a8d-81b1-f3e2467a1637"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "4dfc43a3-38c0-52d0-a1b8-281174c8c12f"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|正确注册并排序下载器中间件，使请求/响应处理链按预期生效|scrapy|middleware_configuration|settings_registration|setup|下载器中间件激活与排序配置",
+        "llm_reason": "候选技能是下载器中间件的注册与排序配置（settings 层），与现有 Offsite 请求域名过滤技能能力不同；peer 候选均为 micro_skill 钩子实现，粒度与资产节点不同，不能合并或拆分。",
+        "change_action": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "be9aee15-e037-5420-b34a-eb9af1223666"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "257e9aab-3d7a-46a3-81c3-860368690a52",
+      "entity_type": "skill",
+      "entity_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:59+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是下载器中间件的注册与排序配置（settings 层），与现有 Offsite 请求域名过滤技能能力不同；peer 候选均为 micro_skill 钩子实现，粒度与资产节点不同，不能合并或拆分。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+        "doc_ids": [
+          "d973e9fc-1e86-5c28-9def-81308171521e"
+        ],
+        "support_added": [
+          "e3ff6f02-f2ea-5a8d-81b1-f3e2467a1637"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "skill_id": "248800e8-c919-5bb2-98b0-92a341972f97",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能是 Scrapy errback 失败处理的独立微技能，与现有 process_response 路由、hostname 判定等技能能力不同；peer_candidates 为同层同类候选，不构成对现有技能的 split/merge 关系，故新建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "248800e8-c919-5bb2-98b0-92a341972f97",
+    "name": "Scrapy 请求 errback 失败处理",
+    "description": "为 Scrapy 请求设置 errback 回调，在请求处理失败时接收 Failure 对象并执行降级、重试或记录；适用于需要容错处理的抓取请求。",
+    "skill_body": "当请求可能失败且需要容错时，在构造 Request 时通过 errback 参数指定回调函数。errback 接收 Failure 对象，可在其中读取请求附加数据（如 cb_kwargs 或 meta）以完成降级、重试或记录。仅处理失败路径，不替代成功回调。\n\n## Objective\n\n在请求失败时通过 errback 捕获并处理异常\n## Applicable Signals\n\n- 请求可能失败需要容错\n- 需要在失败时读取请求附加数据\n\n## Contraindications\n\n- 请求无需失败处理\n- 仅处理成功响应\n\n## Intervention Moves\n\n- 在 Request 构造时设置 errback 参数指向处理函数\n- errback 函数接收 Failure 对象并据此执行降级或记录\n- 在 errback 中访问请求附加数据（cb_kwargs 或 meta）\n\n## Workflow Steps\n\n- 判断该请求是否需要失败容错处理\n- 构造 Request 时通过 errback 参数指定失败处理函数\n- 在 errback 函数中接收 Failure 对象\n- 根据 Failure 与请求附加数据执行降级、重试或记录\n\n## Constraints\n\n- errback 默认值为 None，需显式设置才会触发失败处理\n- errback 仅处理失败路径，成功响应仍由 callback 处理\n\n## Cautions\n\n- 通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 识别，如需设置 cookie 应使用 Request.cookies 参数\n\n## Output Contract\n\n- errback 函数接收 Failure 并完成降级或记录\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 构造一个可能失败的请求并需要失败时记录\n- Therapist/Output: 在 Request 中设置 errback 指向处理函数，函数接收 Failure 并记录失败信息\n- Notes: errback 默认 None，需显式指定",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在请求失败时通过 errback 捕获并处理异常",
+    "domain": "scrapy",
+    "task_family": "异常处理",
+    "method_family": "errback 回调",
+    "stage": "请求失败处理",
+    "applicable_signals": [
+      "请求可能失败需要容错",
+      "需要在失败时读取请求附加数据"
+    ],
+    "contraindications": [
+      "请求无需失败处理",
+      "仅处理成功响应"
+    ],
+    "intervention_moves": [
+      "在 Request 构造时设置 errback 参数指向处理函数",
+      "errback 函数接收 Failure 对象并据此执行降级或记录",
+      "在 errback 中访问请求附加数据（cb_kwargs 或 meta）"
+    ],
+    "triggers": [
+      "请求可能失败需要容错",
+      "需要在失败时读取请求附加数据",
+      "需要为请求指定失败处理回调"
+    ],
+    "workflow_steps": [
+      "判断该请求是否需要失败容错处理",
+      "构造 Request 时通过 errback 参数指定失败处理函数",
+      "在 errback 函数中接收 Failure 对象",
+      "根据 Failure 与请求附加数据执行降级、重试或记录"
+    ],
+    "constraints": [
+      "errback 默认值为 None，需显式设置才会触发失败处理",
+      "errback 仅处理失败路径，成功响应仍由 callback 处理"
+    ],
+    "cautions": [
+      "通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 识别，如需设置 cookie 应使用 Request.cookies 参数"
+    ],
+    "output_contract": [
+      "errback 函数接收 Failure 并完成降级或记录"
+    ],
+    "examples": [
+      {
+        "input": "构造一个可能失败的请求并需要失败时记录",
+        "output": "在 Request 中设置 errback 指向处理函数，函数接收 Failure 并记录失败信息",
+        "notes": "errback 默认 None，需显式指定"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "errback",
+      "异常处理",
+      "请求失败"
+    ],
+    "support_ids": [
+      "0d74a580-14d3-572b-826a-4f4d9cc39025"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "7e36b6e8-ebaf-5bfa-b406-f903398fd570"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在请求失败时通过 errback 捕获并处理异常|scrapy|异常处理|errback 回调|请求失败处理|scrapy 请求 errback 失败处理"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "上下文传递",
+  "run_id": "20261025T165852_0dfebd54",
+  "skills": [
+    {
+      "skill_id": "55a14cc4-a8f7-564e-b68a-bd3c5bd396ff",
+      "name": "回调参数透传至 errback",
+      "description": "通过 cb_kwargs 向回调传递上下文参数，并在 errback 中经 Failure.request.cb_kwargs 取回，用于失败时仍能基于原始上下文处理。",
+      "skill_body": "当请求失败后仍需基于原始回调参数继续处理时，使用本技能：在发起 scrapy.Request 时通过 cb_kwargs 传入所需上下文参数，并在 errback 中通过 failure.request.cb_kwargs 取回这些参数，据此产出数据或做后续处理。\n\n## Objective\n\n在失败回调中访问原始回调参数以继续处理\n## Applicable Signals\n\n- 失败后仍需基于原始请求上下文产出数据或做后续处理\n\n## Contraindications\n\n- 失败处理不需要原始回调参数时\n\n## Intervention Moves\n\n- 在 scrapy.Request 中通过 cb_kwargs 传入上下文参数\n- 在 errback 中通过 failure.request.cb_kwargs 取回参数\n- 基于取回的参数产出结果或做后续处理\n\n## Workflow Steps\n\n- 确定失败后仍需使用的上下文参数\n- 在发起请求时通过 cb_kwargs 传入这些参数\n- 在 errback 中通过 failure.request.cb_kwargs 取回参数\n- 基于取回的参数产出结果或继续处理\n\n## Constraints\n\n- cb_kwargs 中的参数需与 callback 签名匹配\n- errback 中通过 failure.request.cb_kwargs 访问参数\n\n## Cautions\n\n- 仅在失败处理确实需要原始上下文时才使用，避免无谓透传\n\n## Output Contract\n\n- errback 中通过 failure.request.cb_kwargs 取回参数并产出结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 发起请求时传入 cb_kwargs=dict(main_url=response.url)，并设置 errback\n- Therapist/Output: errback 中通过 failure.request.cb_kwargs[\"main_url\"] 取回 main_url 并产出结果\n- Notes: callback 与 errback 共享同一上下文参数",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "508a30a5-6330-5c7e-a9a0-583ed481e86d",
+      "parent_candidate_ids": [
+        "508a30a5-6330-5c7e-a9a0-583ed481e86d"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.6,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在失败回调中访问原始回调参数以继续处理",
+      "domain": "scrapy",
+      "task_family": "上下文传递",
+      "method_family": "cb_kwargs 透传",
+      "stage": "请求调度",
+      "applicable_signals": [
+        "失败后仍需基于原始请求上下文产出数据或做后续处理"
+      ],
+      "contraindications": [
+        "失败处理不需要原始回调参数时"
+      ],
+      "intervention_moves": [
+        "在 scrapy.Request 中通过 cb_kwargs 传入上下文参数",
+        "在 errback 中通过 failure.request.cb_kwargs 取回参数",
+        "基于取回的参数产出结果或做后续处理"
+      ],
+      "triggers": [
+        "失败后仍需基于原始请求上下文产出数据或做后续处理",
+        "需要在 errback 中访问 callback 的参数"
+      ],
+      "workflow_steps": [
+        "确定失败后仍需使用的上下文参数",
+        "在发起请求时通过 cb_kwargs 传入这些参数",
+        "在 errback 中通过 failure.request.cb_kwargs 取回参数",
+        "基于取回的参数产出结果或继续处理"
+      ],
+      "constraints": [
+        "cb_kwargs 中的参数需与 callback 签名匹配",
+        "errback 中通过 failure.request.cb_kwargs 访问参数"
+      ],
+      "cautions": [
+        "仅在失败处理确实需要原始上下文时才使用，避免无谓透传"
+      ],
+      "output_contract": [
+        "errback 中通过 failure.request.cb_kwargs 取回参数并产出结果"
+      ],
+      "examples": [
+        {
+          "input": "发起请求时传入 cb_kwargs=dict(main_url=response.url)，并设置 errback",
+          "output": "errback 中通过 failure.request.cb_kwargs[\"main_url\"] 取回 main_url 并产出结果",
+          "notes": "callback 与 errback 共享同一上下文参数"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "errback",
+        "cb_kwargs",
+        "上下文传递",
+        "请求调度"
+      ],
+      "support_ids": [
+        "041df2cf-825b-54f0-81b6-b6165a3356aa"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "7c2ef75e-1ccd-5857-b3fa-0c0e066ed160"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在失败回调中访问原始回调参数以继续处理|scrapy|上下文传递|cb_kwargs 透传|请求调度|回调参数透传至 errback",
+        "change_action": "create",
+        "llm_reason": "候选技能聚焦于通过 cb_kwargs 透传上下文并在 errback 中经 Failure.request.cb_kwargs 取回，属于独立的上下文传递能力；现有技能均不涉及该能力，peer 候选虽同属 errback 但方法族与目标不同，故新建。",
+        "parent_skill_id": "508a30a5-6330-5c7e-a9a0-583ed481e86d",
+        "parent_candidate_ids": [
+          "508a30a5-6330-5c7e-a9a0-583ed481e86d"
+        ],
+        "hierarchy_confidence": 0.6,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "9d98e3f4-445c-4f86-8b32-3d3c3573fb5a",
+      "entity_type": "skill",
+      "entity_id": "55a14cc4-a8f7-564e-b68a-bd3c5bd396ff",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能聚焦于通过 cb_kwargs 透传上下文并在 errback 中经 Failure.request.cb_kwargs 取回，属于独立的上下文传递能力；现有技能均不涉及该能力，peer 候选虽同属 errback 但方法族与目标不同，故新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "55a14cc4-a8f7-564e-b68a-bd3c5bd396ff",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "041df2cf-825b-54f0-81b6-b6165a3356aa"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

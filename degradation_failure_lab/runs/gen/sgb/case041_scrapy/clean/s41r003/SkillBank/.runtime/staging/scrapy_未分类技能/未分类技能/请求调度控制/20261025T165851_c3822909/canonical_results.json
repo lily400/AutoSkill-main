@@ -1,0 +1,157 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "请求调度控制",
+  "run_id": "20261025T165851_c3822909",
+  "skills": [
+    {
+      "skill_id": "784f9ca3-1275-5212-8362-163ca94dec83",
+      "name": "Scrapy 请求去重过滤控制",
+      "description": "通过设置 Request 的 dont_filter 属性，控制支持过滤的组件是否跳过对该请求的去重过滤。适用于需要重复抓取同一 URL，或确保起始 URL 不被过滤的场景。",
+      "skill_body": "在构造 Request 时，根据是否需要重复抓取同一 URL 来决定 dont_filter 的取值：默认 False 表示允许被支持过滤的组件过滤掉；设为 True 表示这些组件不应过滤该请求。仅在确有重复抓取需求时设为 True，避免无谓地绕过默认去重。\n\n## Objective\n\n按需关闭或开启请求的去重过滤\n## Applicable Signals\n\n- 同一 URL 需要被重复抓取\n- 起始 URL 请求需避免被去重过滤\n- 需要显式覆盖默认去重行为\n\n## Contraindications\n\n- 希望依赖默认去重以避免重复抓取时不应设为 True\n- 无明确重复抓取需求时不应关闭过滤\n\n## Intervention Moves\n\n- 在 Request 构造参数中设置 dont_filter=True 以阻止支持过滤的组件过滤该请求\n- 保持默认 False 以允许默认去重\n- 通过 start_urls 定义起始 URL 时注意该属性默认启用\n\n## Workflow Steps\n\n- 判断当前请求是否需要重复抓取同一 URL 或作为起始请求不被过滤\n- 若需要，则在 Request 构造时设置 dont_filter=True；否则保持默认 False\n- 确认调度组件据此决定是否过滤该请求\n\n## Constraints\n\n- dont_filter 为布尔属性，默认 False\n- 仅在确有重复抓取需求时设为 True\n\n## Cautions\n\n- 滥用 dont_filter=True 会绕过默认去重，可能导致重复抓取\n\n## Output Contract\n\n- 请求携带正确的 dont_filter 取值，调度组件据此决定是否过滤\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要重复请求同一 URL 而不被过滤\n- Therapist/Output: 构造 Request 时设置 dont_filter=True\n- Notes: 阻止支持过滤的组件过滤该请求\n\n### Example 2\n\n- Client/Input: 无重复抓取需求\n- Therapist/Output: 保持 dont_filter 默认 False\n- Notes: 允许默认去重",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按需关闭或开启请求的去重过滤",
+      "domain": "scrapy",
+      "task_family": "请求调度控制",
+      "method_family": "属性配置",
+      "stage": "请求构造",
+      "applicable_signals": [
+        "同一 URL 需要被重复抓取",
+        "起始 URL 请求需避免被去重过滤",
+        "需要显式覆盖默认去重行为"
+      ],
+      "contraindications": [
+        "希望依赖默认去重以避免重复抓取时不应设为 True",
+        "无明确重复抓取需求时不应关闭过滤"
+      ],
+      "intervention_moves": [
+        "在 Request 构造参数中设置 dont_filter=True 以阻止支持过滤的组件过滤该请求",
+        "保持默认 False 以允许默认去重",
+        "通过 start_urls 定义起始 URL 时注意该属性默认启用"
+      ],
+      "triggers": [
+        "需要重复请求同一 URL 而不被过滤",
+        "start_urls 场景需确保起始请求不被去重",
+        "构造 Request 时需显式控制去重行为"
+      ],
+      "workflow_steps": [
+        "判断当前请求是否需要重复抓取同一 URL 或作为起始请求不被过滤",
+        "若需要，则在 Request 构造时设置 dont_filter=True；否则保持默认 False",
+        "确认调度组件据此决定是否过滤该请求"
+      ],
+      "constraints": [
+        "dont_filter 为布尔属性，默认 False",
+        "仅在确有重复抓取需求时设为 True"
+      ],
+      "cautions": [
+        "滥用 dont_filter=True 会绕过默认去重，可能导致重复抓取"
+      ],
+      "output_contract": [
+        "请求携带正确的 dont_filter 取值，调度组件据此决定是否过滤"
+      ],
+      "examples": [
+        {
+          "input": "需要重复请求同一 URL 而不被过滤",
+          "output": "构造 Request 时设置 dont_filter=True",
+          "notes": "阻止支持过滤的组件过滤该请求"
+        },
+        {
+          "input": "无重复抓取需求",
+          "output": "保持 dont_filter 默认 False",
+          "notes": "允许默认去重"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "request",
+        "dont_filter",
+        "去重",
+        "请求构造"
+      ],
+      "support_ids": [
+        "322c350b-0225-53cb-a081-06635887d69c"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "f52e36c0-d147-55e0-af3f-2d63db65381f"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|按需关闭或开启请求的去重过滤|scrapy|请求调度控制|属性配置|请求构造|scrapy 请求去重过滤控制",
+        "llm_reason": "候选技能是 Scrapy Request 的 dont_filter 去重过滤控制，属于请求构造阶段的独立微技能；现有技能均为域名判定/正则构建，能力身份不同，无可合并或归属的现有技能。",
+        "change_action": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "af6d5bdc-b4d1-4620-9d25-fd51f0d4dc4c",
+      "entity_type": "skill",
+      "entity_id": "784f9ca3-1275-5212-8362-163ca94dec83",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是 Scrapy Request 的 dont_filter 去重过滤控制，属于请求构造阶段的独立微技能；现有技能均为域名判定/正则构建，能力身份不同，无可合并或归属的现有技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "784f9ca3-1275-5212-8362-163ca94dec83",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "322c350b-0225-53cb-a081-06635887d69c"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

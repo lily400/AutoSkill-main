@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"248800e8-c919-5bb2-98b0-92a341972f97\", \"name\": \"Scrapy 请求 errback 失败处理\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在请求失败时通过 errback 捕获并处理异常\", \"applicable_signals\": [\"请求可能失败需要容错\", \"需要在失败时读取请求附加数据\"], \"contraindications\": [\"请求无需失败处理\", \"仅处理成功响应\"], \"workflow_steps\": [\"判断该请求是否需要失败容错处理\", \"构造 Request 时通过 errback 参数指定失败处理函数\", \"在 errback 函数中接收 Failure 对象\", \"根据 Failure 与请求附加数据执行降级、重试或记录\"], \"constraints\": [\"errback 默认值为 None，需显式设置才会触发失败处理\", \"errback 仅处理失败路径，成功响应仍由 callback 处理\"], \"triggers\": [\"请求可能失败需要容错\", \"需要在失败时读取请求附加数据\", \"需要为请求指定失败处理回调\"], \"output_contract\": [\"errback 函数接收 Failure 并完成降级或记录\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"dc522835-58a3-552c-bd8b-30ad389282ea\", \"name\": \"Scrapy 请求构造与回调数据传递\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"构造可正确路由回调并携带附加数据的 Scrapy 请求\", \"applicable_signals\": [\"需要发起新的抓取请求\", \"需要向回调函数传递额外上下文数据\"], \"workflow_steps\": [\"确定请求目标 url\", \"按需绑定 callback 与 errback\", \"将需要传给回调的上下文数据放入 cb_kwargs\", \"如需 cookie，使用 Request 的 cookies 参数而非 Cookie 头\", \"按需设置 priority、dont_filter、encoding、flags 等参数\", \"确认回调与 cb_kwargs 已正确绑定\"], \"output_contract\": [\"一个配置完整、回调与 cb_kwargs 正确绑定的 Request 对象\"], \"score\": 0.608600448828742}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

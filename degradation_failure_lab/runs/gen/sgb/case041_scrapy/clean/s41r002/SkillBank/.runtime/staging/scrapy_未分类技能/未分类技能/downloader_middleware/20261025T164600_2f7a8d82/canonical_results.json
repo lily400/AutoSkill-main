@@ -1,0 +1,307 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "downloader_middleware",
+  "run_id": "20261025T164600_2f7a8d82",
+  "skills": [
+    {
+      "skill_id": "447019bb-4d06-58fd-92a7-55b05d0d4e9b",
+      "name": "下载器中间件 process_response 返回值路由",
+      "description": "在下载器中间件的 process_response 钩子中，根据返回值类型决定后续链路走向：返回 Response 继续交给下一个中间件处理，返回 Request 中止链路并重新调度下载，抛出 IgnoreRequest 触发请求的 errback。用于编写或调试响应处理中间件时。",
+      "skill_body": "实现或调试 process_response(request, response) 时，先明确本次要达成的路由目标，再选择返回值类型：\n1) 若需继续处理响应，返回 Response（可为原响应或全新响应），链路将交给下一个中间件的 process_response。\n2) 若需中止当前链路并重新下载，返回 Request，行为等同于 process_request 返回 Request，该请求被重新调度。\n3) 若需放弃该请求，抛出 IgnoreRequest，将调用 Request.errback；若无代码处理该异常，则被忽略且不记录日志（与其他异常不同）。\n确保返回值类型与预期链路行为一致，避免返回非法类型。\n\n## Objective\n\n按返回值类型正确路由 process_response 的后续处理\n## Applicable Signals\n\n- 正在实现 process_response 钩子\n- 需要根据响应结果决定继续、重调度或触发 errback\n\n## Contraindications\n\n- 处理请求阶段逻辑（应使用 process_request）\n- 处理异常阶段逻辑（应使用 process_exception）\n\n## Intervention Moves\n\n- 返回 Response 以继续交给下一个中间件\n- 返回 Request 以中止链路并重新调度下载\n- 抛出 IgnoreRequest 以触发请求的 errback\n\n## Workflow Steps\n\n- 确认本次 process_response 的路由目标（继续、重调度或放弃）\n- 按目标选择返回值：Response 继续、Request 重调度、IgnoreRequest 触发 errback\n- 核对返回值类型与预期链路行为一致\n\n## Constraints\n\n- process_response 只能返回 Response、返回 Request 或抛出 IgnoreRequest\n- 返回 Request 会中止中间件链并重新调度下载\n- 抛出 IgnoreRequest 时若无代码处理则被忽略且不记录日志\n\n## Cautions\n\n- 返回 Request 的行为等同于 process_request 返回 Request，需注意重调度影响\n- IgnoreRequest 未被处理时静默忽略，可能掩盖问题\n\n## Output Contract\n\n- process_response 返回 Response/Request 或抛出 IgnoreRequest，且链路行为符合预期\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 希望响应继续被后续中间件处理\n- Therapist/Output: 返回 Response（原响应或新响应）\n- Notes: 链路交给下一个中间件的 process_response\n\n### Example 2\n\n- Client/Input: 希望中止当前链路并重新下载\n- Therapist/Output: 返回 Request\n- Notes: 该请求被重新调度下载\n\n### Example 3\n\n- Client/Input: 希望放弃该请求\n- Therapist/Output: 抛出 IgnoreRequest\n- Notes: 调用 Request.errback；无处理则被忽略且不记录日志",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按返回值类型正确路由 process_response 的后续处理",
+      "domain": "scrapy",
+      "task_family": "downloader_middleware",
+      "method_family": "hook_return_dispatch",
+      "stage": "response_processing",
+      "applicable_signals": [
+        "正在实现 process_response 钩子",
+        "需要根据响应结果决定继续、重调度或触发 errback"
+      ],
+      "contraindications": [
+        "处理请求阶段逻辑（应使用 process_request）",
+        "处理异常阶段逻辑（应使用 process_exception）"
+      ],
+      "intervention_moves": [
+        "返回 Response 以继续交给下一个中间件",
+        "返回 Request 以中止链路并重新调度下载",
+        "抛出 IgnoreRequest 以触发请求的 errback"
+      ],
+      "triggers": [
+        "编写或修改 process_response 方法",
+        "需要根据响应结果决定继续、重调度或触发 errback",
+        "调试下载器中间件响应阶段的路由行为"
+      ],
+      "workflow_steps": [
+        "确认本次 process_response 的路由目标（继续、重调度或放弃）",
+        "按目标选择返回值：Response 继续、Request 重调度、IgnoreRequest 触发 errback",
+        "核对返回值类型与预期链路行为一致"
+      ],
+      "constraints": [
+        "process_response 只能返回 Response、返回 Request 或抛出 IgnoreRequest",
+        "返回 Request 会中止中间件链并重新调度下载",
+        "抛出 IgnoreRequest 时若无代码处理则被忽略且不记录日志"
+      ],
+      "cautions": [
+        "返回 Request 的行为等同于 process_request 返回 Request，需注意重调度影响",
+        "IgnoreRequest 未被处理时静默忽略，可能掩盖问题"
+      ],
+      "output_contract": [
+        "process_response 返回 Response/Request 或抛出 IgnoreRequest，且链路行为符合预期"
+      ],
+      "examples": [
+        {
+          "input": "希望响应继续被后续中间件处理",
+          "output": "返回 Response（原响应或新响应）",
+          "notes": "链路交给下一个中间件的 process_response"
+        },
+        {
+          "input": "希望中止当前链路并重新下载",
+          "output": "返回 Request",
+          "notes": "该请求被重新调度下载"
+        },
+        {
+          "input": "希望放弃该请求",
+          "output": "抛出 IgnoreRequest",
+          "notes": "调用 Request.errback；无处理则被忽略且不记录日志"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "downloader_middleware",
+        "process_response",
+        "返回值分派"
+      ],
+      "support_ids": [
+        "25002d4e-a406-57f4-9f34-bab5fc52d602"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "a99efd07-b321-5a6c-9492-4065311d2137"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|按返回值类型正确路由 process_response 的后续处理|scrapy|downloader_middleware|hook_return_dispatch|response_processing|下载器中间件 process_response 返回值路由",
+        "change_action": "create",
+        "llm_reason": "候选技能描述下载器中间件 process_response 的返回值路由，与现有技能（hostname 安全判定、允许域名正则构建）在能力身份上完全不同，属于新的微技能，应创建。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "8229ccc7-e91d-5a88-8085-5887e69febd6",
+      "name": "下载器中间件 process_exception 异常处理分派",
+      "description": "在下载器中间件的 process_exception 钩子中，按返回值类型分派下载处理器或 process_request 抛出的异常：返回 None 继续传递异常，返回 Response 启动 process_response 链，返回 Request 重新调度。用于实现异常恢复、重试或降级中间件。",
+      "skill_body": "当编写或修改下载器中间件的 process_exception 方法时，依据返回值类型决定异常处理走向：\n1. 明确当前异常来源（下载处理器或 process_request 抛出的异常，含 IgnoreRequest）。\n2. 若希望继续传递异常，返回 None，Scrapy 会继续执行其他中间件的 process_exception，直至默认异常处理。\n3. 若希望从异常中恢复并继续处理响应，返回一个 Response 对象，Scrapy 将启动已安装中间件的 process_response 方法链，且不再调用其他中间件的 process_exception。\n4. 若希望重新调度请求，返回一个 Request 对象。\n5. 确保返回值类型与预期行为一致，避免返回不支持的类型。\n\n## Objective\n\n按返回值类型正确分派 process_exception 的异常处理\n## Applicable Signals\n\n- process_exception 方法需要处理下载处理器或 process_request 抛出的异常\n- 需要在异常发生时选择恢复、重试或继续抛出\n\n## Contraindications\n\n- 处理正常响应阶段逻辑（应使用 process_response）\n- 处理请求发起阶段逻辑（应使用 process_request）\n\n## Intervention Moves\n\n- 返回 None 以继续传递异常并执行其他中间件的 process_exception\n- 返回 Response 以启动 process_response 链并跳过其他 process_exception\n- 返回 Request 以重新调度请求\n\n## Workflow Steps\n\n- 确认异常来源为下载处理器或 process_request 抛出（含 IgnoreRequest）\n- 根据期望行为选择返回值：None 继续传递、Response 恢复并进入 process_response 链、Request 重新调度\n- 返回所选对象并验证异常处理链行为符合预期\n\n## Constraints\n\n- process_exception 只能返回 None、Response 对象或 Request 对象\n- 返回 Response 时不再调用其他中间件的 process_exception\n\n## Cautions\n\n- 返回 None 时异常会继续传递直至默认异常处理\n- 返回 Response 会跳过其余 process_exception 方法\n\n## Output Contract\n\n- process_exception 返回 None/Response/Request，异常处理链行为符合预期\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 下载处理器抛出异常，中间件希望继续传递该异常\n- Therapist/Output: process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception\n- Notes: 直至无中间件剩余时进入默认异常处理\n\n### Example 2\n\n- Client/Input: 下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应\n- Therapist/Output: process_exception 返回一个 Response 对象，启动 process_response 链\n- Notes: 不再调用其他中间件的 process_exception",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按返回值类型正确分派 process_exception 的异常处理",
+      "domain": "scrapy",
+      "task_family": "downloader_middleware",
+      "method_family": "hook_return_dispatch",
+      "stage": "exception_handling",
+      "applicable_signals": [
+        "process_exception 方法需要处理下载处理器或 process_request 抛出的异常",
+        "需要在异常发生时选择恢复、重试或继续抛出"
+      ],
+      "contraindications": [
+        "处理正常响应阶段逻辑（应使用 process_response）",
+        "处理请求发起阶段逻辑（应使用 process_request）"
+      ],
+      "intervention_moves": [
+        "返回 None 以继续传递异常并执行其他中间件的 process_exception",
+        "返回 Response 以启动 process_response 链并跳过其他 process_exception",
+        "返回 Request 以重新调度请求"
+      ],
+      "triggers": [
+        "编写或修改 process_exception 方法",
+        "需要捕获下载异常并决定恢复、重试或继续抛出"
+      ],
+      "workflow_steps": [
+        "确认异常来源为下载处理器或 process_request 抛出（含 IgnoreRequest）",
+        "根据期望行为选择返回值：None 继续传递、Response 恢复并进入 process_response 链、Request 重新调度",
+        "返回所选对象并验证异常处理链行为符合预期"
+      ],
+      "constraints": [
+        "process_exception 只能返回 None、Response 对象或 Request 对象",
+        "返回 Response 时不再调用其他中间件的 process_exception"
+      ],
+      "cautions": [
+        "返回 None 时异常会继续传递直至默认异常处理",
+        "返回 Response 会跳过其余 process_exception 方法"
+      ],
+      "output_contract": [
+        "process_exception 返回 None/Response/Request，异常处理链行为符合预期"
+      ],
+      "examples": [
+        {
+          "input": "下载处理器抛出异常，中间件希望继续传递该异常",
+          "output": "process_exception 返回 None，Scrapy 继续执行其他中间件的 process_exception",
+          "notes": "直至无中间件剩余时进入默认异常处理"
+        },
+        {
+          "input": "下载处理器抛出异常，中间件希望从异常中恢复并继续处理响应",
+          "output": "process_exception 返回一个 Response 对象，启动 process_response 链",
+          "notes": "不再调用其他中间件的 process_exception"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "downloader_middleware",
+        "process_exception",
+        "exception_handling",
+        "hook_return_dispatch"
+      ],
+      "support_ids": [
+        "6744790f-99b3-50f4-8236-80c1fbd34b3a"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "088fcce1-da7d-5aa2-89c0-b2b7f01184f6"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|按返回值类型正确分派 process_exception 的异常处理|scrapy|downloader_middleware|hook_return_dispatch|exception_handling|下载器中间件 process_exception 异常处理分派",
+        "llm_reason": "候选技能描述的是下载器中间件 process_exception 钩子的异常分派能力，与现有技能（hostname 判定、允许域名正则构建）在 task_family、method_family、stage 上均不同，属于新的独立微技能；peer_candidates 中的 process_response/process_request 技能虽同属 hook_return_dispatch，但 stage 与钩子不同，不构成 split 或 merge 关系。",
+        "change_action": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "ea549f41-7597-4c94-8d43-6255546677aa",
+      "entity_type": "skill",
+      "entity_id": "447019bb-4d06-58fd-92a7-55b05d0d4e9b",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:59+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能描述下载器中间件 process_response 的返回值路由，与现有技能（hostname 安全判定、允许域名正则构建）在能力身份上完全不同，属于新的微技能，应创建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "447019bb-4d06-58fd-92a7-55b05d0d4e9b",
+        "doc_ids": [
+          "d973e9fc-1e86-5c28-9def-81308171521e"
+        ],
+        "support_added": [
+          "25002d4e-a406-57f4-9f34-bab5fc52d602"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "ab2cdac4-32bd-4f65-96f2-9e21b4f83032",
+      "entity_type": "skill",
+      "entity_id": "8229ccc7-e91d-5a88-8085-5887e69febd6",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:59+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能描述的是下载器中间件 process_exception 钩子的异常分派能力，与现有技能（hostname 判定、允许域名正则构建）在 task_family、method_family、stage 上均不同，属于新的独立微技能；peer_candidates 中的 process_response/process_request 技能虽同属 hook_return_dispatch，但 stage 与钩子不同，不构成 split 或 merge 关系。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "8229ccc7-e91d-5a88-8085-5887e69febd6",
+        "doc_ids": [
+          "d973e9fc-1e86-5c28-9def-81308171521e"
+        ],
+        "support_added": [
+          "6744790f-99b3-50f4-8236-80c1fbd34b3a"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

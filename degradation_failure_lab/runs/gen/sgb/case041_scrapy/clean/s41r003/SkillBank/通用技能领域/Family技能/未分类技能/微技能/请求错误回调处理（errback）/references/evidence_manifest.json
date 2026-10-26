@@ -1,0 +1,89 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-25T08:59:47+00:00",
+  "family_name": "未分类技能",
+  "skill_id": "9719683e-0a4a-5d7e-8169-5d7d854d94d9",
+  "skill_name": "请求错误回调处理（errback）",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "1d48009e-8ac2-5a3d-be19-6fffbcf003ee",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "document_title": "input003\\request-response.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+      "section": "Requests and Responses",
+      "span": {
+        "start": 18654,
+        "end": 21470
+      },
+      "relation_type": "support",
+      "confidence": 0.85,
+      "quote": "async def start(self):\n        for u in self.start_urls:\n            yield scrapy.Request(\n                u,\n                callback=self.parse_httpbin,\n                errback=self.errback_httpbin,\n                dont_filter=True,\n            )\n\ndef parse_httpbin(self, response):\n        self.logger.info(\"Got successful response from {}\".format(response.url))\n        # do something useful here...\n\ndef errback_httpbin(self, failure):\n        # log all failures\n        self.logger.error(repr(failure))\n\n# in case you want to do something special for some errors,\n        # you may need the failure's type:\n\nif failure.check(HttpError):\n            # these exceptions come from HttpError spider middleware\n            # you can get the non-200 response\n            response = failure.value.response\n            self.logger.error(\"HttpError on %s\", response.url)\n\nelif failure.check(DNSLookupError):\n            # this is the original request\n            request = failure.request\n            self.logger.error(\"DNSLookupError on %s\", request.url)\n\nelif failure.check(TimeoutError, TCPTimedOutError):\n            request = failure.request\n            self.logger.error(\"TimeoutError on %s\", request.url)\n```\n\nAccessing additional data in errback functions\nIn case of a failure to process the request, you may be interested in\naccessing arguments to the callback functions so you can process further\nbased on the arguments in the errback. The following example shows how to\nachieve this by using `Failure.request.cb_kwargs`:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        errback=self.errback_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    yield request\n\ndef parse_page2(self, response, main_url):\n    pass\n\ndef errback_page2(self, failure):\n    yield dict(\n        main_url=failure.request.cb_kwargs[\"main_url\"],\n    )\n```\n\nYou often do not need to worry about request fingerprints, the default request\nfingerprinter works for most projects.\n\nHowever, there is no universal way to generate a unique identifier from a\nrequest, because different situations require comparing requests differently.\nFor example, sometimes you may need to compare URLs case-insensitively, include\nURL fragments, exclude certain URL query parameters, include some or all\nheaders, etc.",
+      "metadata": {
+        "document_title": "input003\\request-response.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "请求错误回调处理（errback）",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在请求失败时按异常类型分流处理并记录日志",
+        "task_family": "错误处理",
+        "method_family": "errback 分支处理",
+        "stage": "请求调度",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "a861ec31-4347-5fae-b8a1-6287ead2153d",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 14,
+        "heading_path": [
+          "Requests and Responses"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input003\\request-response.md"
+        ],
+        "subsection_headings": [
+          "Request objects",
+          "Other functions related to requests",
+          "Passing additional data to callback functions",
+          "Using errbacks to catch exceptions in request processing",
+          "Accessing additional data in errback functions",
+          "Request fingerprints",
+          "REQUEST_FINGERPRINTER_CLASS",
+          "Writing your own request fingerprinter",
+          "Request fingerprint restrictions",
+          "Request.meta special keys",
+          "bindaddress",
+          "download_timeout",
+          "download_latency",
+          "download_fail_on_dataloss",
+          "max_retry_times",
+          "Stopping the download of a Response",
+          "Request subclasses",
+          "FormRequest objects",
+          "Using FormRequest to send data via HTTP POST",
+          "Using FormRequest.from_response() to simulate a user login",
+          "JsonRequest",
+          "JsonRequest usage example",
+          "Response objects",
+          "Response subclasses",
+          "TextResponse objects",
+          "HtmlResponse objects",
+          "XmlResponse objects",
+          "JsonResponse objects"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web"
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "PREPARED_FOR_AUTHORIZED_PILOT",
+  "dataset_revision": "5a8bd61d8191e34fa1bbbffbff7f70db1d2a027d",
+  "task_id": "scrapy-task-041",
+  "task_keys": [
+    "t-8d3bed6236cf"
+  ],
+  "source_bundle_id": "b-083578378ffb0792",
+  "generation_case_id": "case041_scrapy",
+  "generation_config": "configs/generation/deepseek_flash.json",
+  "generator_run_id": "s41r003",
+  "planned_generation_run_id": "s41r001",
+  "planned_downstream_experiment_id": "s41d001",
+  "generation_repeats": 1,
+  "agent_repeats": 1,
+  "conditions": [
+    "NoSkill",
+    "CleanSkill"
+  ],
+  "document_processing": "one directory; distinct documents; document-local compile; shared run-local registry",
+  "document_order": [
+    "sgb-bc70867938051bc4",
+    "sgb-db8ff4e788d28693",
+    "sgb-819d117ddb8328d1",
+    "sgb-ac10205061a5d910"
+  ],
+  "generation_budget_proposal": {
+    "model": "deepseek-flash",
+    "provider_service": "DeepSeek",
+    "max_http_calls": 150,
+    "observed_total_token_stop_threshold": 450000,
+    "token_limit_semantics": "Checked before the next request; not a hard billed-token cap. Missing usage can undercount. No completion guarantee.",
+    "max_output_tokens_request_config": 16384,
+    "authorization": "HISTORICAL_AUTHORIZATIONS_IN_RUN_LINEAGE"
+  },
+  "downstream_budget_proposal": {
+    "model": {
+      "name": "openai/gpt-5.4-mini-2026-03-17",
+      "base_url": "https://api.zhizengzeng.com/v1",
+      "api_format": "openai_chat_completions",
+      "api_key_environment_variable": "ZHIZENGZENG_API_KEY",
+      "reasoning_effort": "none",
+      "temperature": 0
+    },
+    "budget": {
+      "max_requests": 6,
+      "max_input_tokens_per_request": 20000,
+      "max_input_tokens_total": 100000,
+      "max_completion_tokens_per_request": 2048,
+      "request_timeout_sec": 45,
+      "agent_timeout_sec": 300,
+      "setup_timeout_sec": 90,
+      "verifier_timeout_sec": 60,
+      "num_retries": 0
+    },
+    "total_agent_trials": 2,
+    "max_http_calls_total": 12,
+    "max_http_calls_per_trial": 6,
+    "authorization": "AUTHORIZED_BY_USER_20261025"
+  },
+  "skill_selection": "all final deployable registered packages; verify final live registry state after cross-document updates",
+  "runtime_lock": "downstream_eval/tasks/sgb/code_doc/scrapy-task-041/runtime.lock.json",
+  "stop_policy": "No model or Agent run without explicit budget authorization; no automatic retries of an exhausted run.",
+  "report": "results/sgb/audits/scrapy041-clean-preflight-20261025-001/report.md",
+  "downstream_experiment_id": "s41d001",
+  "prepared_output": "runs/eval/sgb/scrapy-task-041/s41d001"
+}

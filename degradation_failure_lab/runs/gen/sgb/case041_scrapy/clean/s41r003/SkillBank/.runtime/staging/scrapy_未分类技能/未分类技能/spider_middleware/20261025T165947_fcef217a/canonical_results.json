@@ -1,0 +1,436 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "spider_middleware",
+  "run_id": "20261025T165947_fcef217a",
+  "skills": [
+    {
+      "skill_id": "a7333646-4afb-53a8-9656-89a6a47489cc",
+      "name": "Spider输出处理钩子实现",
+      "description": "实现 process_spider_output(response, result) 钩子，对 Spider 处理响应后返回的 Request/item 可迭代结果进行拦截与改写，并返回新的可迭代对象。适用于需要在爬虫输出进入后续中间件前统一过滤或转换结果的场景。",
+      "skill_body": "实现 process_spider_output(response, result) 钩子：接收当前 response 与 Spider 返回的 result（Request 与 item 对象的可迭代对象），对结果流进行过滤或改写，并返回一个由 Request 对象和 item 对象组成的可迭代对象。确保返回值符合契约，供后续 Spider 中间件继续处理。\n\n## Objective\n\n在 Spider 输出阶段拦截并改写 Request/item 结果流\n## Applicable Signals\n\n- Spider 已处理响应并返回结果流\n- 需要在结果流进入后续中间件前介入\n\n## Contraindications\n\n- 处理的是下载器请求/响应阶段而非 Spider 输出\n- 仅需记录日志而无需改变结果流\n\n## Intervention Moves\n\n- 定义 process_spider_output(response, result) 方法\n- 遍历 result 中的 Request 与 item 对象\n- 按需过滤或转换结果\n- 返回新的 Request/item 可迭代对象\n\n## Workflow Steps\n\n- 实现 process_spider_output(response, result) 方法，接收 response 与 Spider 返回的 result\n- 对 result 中的 Request 对象和 item 对象进行过滤或改写\n- 返回由 Request 对象和 item 对象组成的可迭代对象\n\n## Constraints\n\n- process_spider_output 必须返回 Request 对象和 item 对象的可迭代对象\n- response 为生成该输出的响应对象\n- result 为 Spider 返回的可迭代结果\n\n## Cautions\n\n- 若 result 为异步可迭代对象，需改用 process_spider_output_async 异步生成器变体\n- 异常处理应使用 process_spider_exception，而非在输出钩子中吞掉异常\n\n## Output Contract\n\n- 返回符合契约的 Request/item 可迭代对象",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在 Spider 输出阶段拦截并改写 Request/item 结果流",
+      "domain": "scrapy",
+      "task_family": "spider_middleware",
+      "method_family": "hook_implementation",
+      "stage": "spider_output_processing",
+      "applicable_signals": [
+        "Spider 已处理响应并返回结果流",
+        "需要在结果流进入后续中间件前介入"
+      ],
+      "contraindications": [
+        "处理的是下载器请求/响应阶段而非 Spider 输出",
+        "仅需记录日志而无需改变结果流"
+      ],
+      "intervention_moves": [
+        "定义 process_spider_output(response, result) 方法",
+        "遍历 result 中的 Request 与 item 对象",
+        "按需过滤或转换结果",
+        "返回新的 Request/item 可迭代对象"
+      ],
+      "triggers": [
+        "需要过滤或改写 Spider 产出的 Request/item",
+        "需要在输出进入下游中间件前统一处理结果"
+      ],
+      "workflow_steps": [
+        "实现 process_spider_output(response, result) 方法，接收 response 与 Spider 返回的 result",
+        "对 result 中的 Request 对象和 item 对象进行过滤或改写",
+        "返回由 Request 对象和 item 对象组成的可迭代对象"
+      ],
+      "constraints": [
+        "process_spider_output 必须返回 Request 对象和 item 对象的可迭代对象",
+        "response 为生成该输出的响应对象",
+        "result 为 Spider 返回的可迭代结果"
+      ],
+      "cautions": [
+        "若 result 为异步可迭代对象，需改用 process_spider_output_async 异步生成器变体",
+        "异常处理应使用 process_spider_exception，而非在输出钩子中吞掉异常"
+      ],
+      "output_contract": [
+        "返回符合契约的 Request/item 可迭代对象"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "spider_middleware",
+        "process_spider_output",
+        "hook"
+      ],
+      "support_ids": [
+        "0888492a-b818-5434-8baf-e71f4e603fd5"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "d1267e9d-a06b-5fbd-845a-1169e4648a61"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在 spider 输出阶段拦截并改写 request/item 结果流|scrapy|spider_middleware|hook_implementation|spider_output_processing|spider输出处理钩子实现",
+        "change_action": "create",
+        "llm_reason": "候选技能实现 process_spider_output 输出钩子，与现有技能（域名正则构建、请求指纹器）能力不同，且与 peer 候选（异步输出钩子、异常钩子、input 返回值契约）为不同钩子/阶段，应作为新的独立 micro_skill 创建。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "d019dfc8-693e-5c16-a087-b34f745060b8",
+      "name": "Spider中间件异步输出钩子实现",
+      "description": "实现 process_spider_output_async 异步生成器方法，在 Spider 输出结果为异步可迭代对象时替代同步 process_spider_output 被调用，用于异步爬虫管道中处理异步结果流。",
+      "skill_body": "在 Spider 中间件中定义 async 生成器方法 process_spider_output_async(response, result)。当 Spider 返回的 result 为异步可迭代对象时，Scrapy 会调用该方法而非 process_spider_output。方法需以异步生成器形式产出 Request 对象与 item 对象，保持与同步输出钩子一致的输出语义。\n\n## Objective\n\n在异步结果流场景下提供异步输出处理\n## Applicable Signals\n\n- Spider 输出结果为异步可迭代对象\n- 需要异步生成器形式的输出处理\n\n## Contraindications\n\n- 结果为同步可迭代对象\n- 未启用异步爬虫管道\n\n## Intervention Moves\n\n- 定义 async 生成器方法 process_spider_output_async(response, result)\n- 在方法内异步产出 Request 对象与 item 对象\n- 确保仅在 result 为异步可迭代时依赖该钩子\n\n## Workflow Steps\n\n- 确认 Spider 输出 result 为异步可迭代对象\n- 在中间件中定义 async 生成器方法 process_spider_output_async(response, result)\n- 在生成器中产出 Request 对象与 item 对象\n- 验证异步结果流被正确传递至后续中间件\n\n## Constraints\n\n- 方法必须为异步生成器\n- 仅在 result 为异步可迭代对象时被调用，替代 process_spider_output\n\n## Cautions\n\n- 同步结果流仍走 process_spider_output，不应依赖异步钩子处理\n\n## Output Contract\n\n- 定义可被调用的异步生成器方法 process_spider_output_async，产出 Request 与 item 对象\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Spider 返回异步可迭代的 result\n- Therapist/Output: process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item\n- Notes: 仅在 result 为异步可迭代时触发",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在异步结果流场景下提供异步输出处理",
+      "domain": "scrapy",
+      "task_family": "spider_middleware",
+      "method_family": "async_hook_implementation",
+      "stage": "spider_output_processing",
+      "applicable_signals": [
+        "Spider 输出结果为异步可迭代对象",
+        "需要异步生成器形式的输出处理"
+      ],
+      "contraindications": [
+        "结果为同步可迭代对象",
+        "未启用异步爬虫管道"
+      ],
+      "intervention_moves": [
+        "定义 async 生成器方法 process_spider_output_async(response, result)",
+        "在方法内异步产出 Request 对象与 item 对象",
+        "确保仅在 result 为异步可迭代时依赖该钩子"
+      ],
+      "triggers": [
+        "Spider 输出结果为异步可迭代对象",
+        "需要异步生成器形式的输出处理",
+        "异步爬虫管道中需处理异步结果流"
+      ],
+      "workflow_steps": [
+        "确认 Spider 输出 result 为异步可迭代对象",
+        "在中间件中定义 async 生成器方法 process_spider_output_async(response, result)",
+        "在生成器中产出 Request 对象与 item 对象",
+        "验证异步结果流被正确传递至后续中间件"
+      ],
+      "constraints": [
+        "方法必须为异步生成器",
+        "仅在 result 为异步可迭代对象时被调用，替代 process_spider_output"
+      ],
+      "cautions": [
+        "同步结果流仍走 process_spider_output，不应依赖异步钩子处理"
+      ],
+      "output_contract": [
+        "定义可被调用的异步生成器方法 process_spider_output_async，产出 Request 与 item 对象"
+      ],
+      "examples": [
+        {
+          "input": "Spider 返回异步可迭代的 result",
+          "output": "process_spider_output_async(response, result) 作为异步生成器被调用并产出 Request 与 item",
+          "notes": "仅在 result 为异步可迭代时触发"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "spider_middleware",
+        "async",
+        "process_spider_output_async"
+      ],
+      "support_ids": [
+        "f246147f-5108-51fa-aed5-5bcdda50058f"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "c11e3178-c5d6-5ed3-8d1c-7db3b10ad4f7"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在异步结果流场景下提供异步输出处理|scrapy|spider_middleware|async_hook_implementation|spider_output_processing|spider中间件异步输出钩子实现",
+        "change_action": "create",
+        "llm_reason": "候选技能实现 process_spider_output_async 异步生成器钩子，与现有同步输出钩子（peer 中）在方法族与调用条件上不同，属于新的独立微技能能力，现有注册表中无对应技能。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "20f141fe-1520-568d-a0ef-844224151e15",
+      "name": "Spider 中间件异常处理钩子实现",
+      "description": "实现 process_spider_exception 钩子，在 Spider 或上游 process_spider_output 抛异常时，决定返回 None 让异常继续传播，或返回 Request/item 可迭代对象接管输出管道。",
+      "skill_body": "在自定义 Spider 中间件中实现 process_spider_exception(response, exception) 钩子。判断当前异常是否应由本中间件接管：若需继续传播，返回 None，Scrapy 会继续调用后续中间件的 process_spider_exception，直至异常到达引擎被记录并丢弃；若需接管，返回一个 Request 或 item 对象的可迭代对象，此时 process_spider_output 管道从下一个中间件开始执行，且不再调用其他 process_spider_exception。确保返回值类型符合契约，不要返回非可迭代的单个对象。\n\n## Objective\n\n在 Spider 阶段异常时选择继续传播或接管输出\n## Applicable Signals\n\n- Spider 或上游 process_spider_output 抛出异常\n- 需要自定义异常走向而非默认记录丢弃\n- 需要在异常后恢复 Request/item 输出流\n\n## Contraindications\n\n- 处理正常输出流而非异常时应使用 process_spider_output\n- 异常应直接交由引擎记录丢弃时无需实现该钩子\n\n## Intervention Moves\n\n- 实现 process_spider_exception(response, exception) 方法\n- 判断异常是否由本中间件接管\n- 返回 None 表示继续传播\n- 返回 Request/item 可迭代对象表示接管并进入 process_spider_output 管道\n\n## Workflow Steps\n\n- 定义 process_spider_exception(response, exception) 方法\n- 根据 response 与 exception 判断是否接管\n- 若继续传播则返回 None\n- 若接管则返回 Request 或 item 对象的可迭代对象\n- 确认接管后 process_spider_output 从下一个中间件开始执行且不再调用其他 process_spider_exception\n\n## Constraints\n\n- 返回值只能是 None 或 Request/item 的可迭代对象\n- 返回 None 时异常继续沿中间件链传播至引擎\n- 返回可迭代对象时不再调用其他 process_spider_exception\n\n## Cautions\n\n- 返回非可迭代的单个对象会违反返回契约\n- 接管异常会跳过后续中间件的异常处理钩子\n\n## Output Contract\n\n- 返回 None 或 Request/item 可迭代对象以明确异常走向\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃\n- Therapist/Output: process_spider_exception 返回 None\n- Notes: 异常继续传播至引擎\n\n### Example 2\n\n- Client/Input: Spider 处理响应时抛出异常，本中间件希望恢复输出流\n- Therapist/Output: process_spider_exception 返回包含 Request 或 item 的可迭代对象\n- Notes: process_spider_output 从下一个中间件开始执行",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在 Spider 阶段异常时选择继续传播或接管输出",
+      "domain": "scrapy",
+      "task_family": "spider_middleware",
+      "method_family": "exception_hook_implementation",
+      "stage": "spider_exception_handling",
+      "applicable_signals": [
+        "Spider 或上游 process_spider_output 抛出异常",
+        "需要自定义异常走向而非默认记录丢弃",
+        "需要在异常后恢复 Request/item 输出流"
+      ],
+      "contraindications": [
+        "处理正常输出流而非异常时应使用 process_spider_output",
+        "异常应直接交由引擎记录丢弃时无需实现该钩子"
+      ],
+      "intervention_moves": [
+        "实现 process_spider_exception(response, exception) 方法",
+        "判断异常是否由本中间件接管",
+        "返回 None 表示继续传播",
+        "返回 Request/item 可迭代对象表示接管并进入 process_spider_output 管道"
+      ],
+      "triggers": [
+        "需要捕获并处理 Spider 或 process_spider_output 抛出的异常",
+        "需要决定异常是否继续传播至引擎",
+        "需要在中间件层集中接管爬虫阶段异常并恢复输出流"
+      ],
+      "workflow_steps": [
+        "定义 process_spider_exception(response, exception) 方法",
+        "根据 response 与 exception 判断是否接管",
+        "若继续传播则返回 None",
+        "若接管则返回 Request 或 item 对象的可迭代对象",
+        "确认接管后 process_spider_output 从下一个中间件开始执行且不再调用其他 process_spider_exception"
+      ],
+      "constraints": [
+        "返回值只能是 None 或 Request/item 的可迭代对象",
+        "返回 None 时异常继续沿中间件链传播至引擎",
+        "返回可迭代对象时不再调用其他 process_spider_exception"
+      ],
+      "cautions": [
+        "返回非可迭代的单个对象会违反返回契约",
+        "接管异常会跳过后续中间件的异常处理钩子"
+      ],
+      "output_contract": [
+        "返回 None 或 Request/item 可迭代对象以明确异常走向"
+      ],
+      "examples": [
+        {
+          "input": "Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃",
+          "output": "process_spider_exception 返回 None",
+          "notes": "异常继续传播至引擎"
+        },
+        {
+          "input": "Spider 处理响应时抛出异常，本中间件希望恢复输出流",
+          "output": "process_spider_exception 返回包含 Request 或 item 的可迭代对象",
+          "notes": "process_spider_output 从下一个中间件开始执行"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "spider_middleware",
+        "exception_handling",
+        "process_spider_exception"
+      ],
+      "support_ids": [
+        "95142d24-e939-5852-9565-319303e04d3d"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "62340056-18ef-5aba-9d0a-79da5218f211"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.82,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在 spider 阶段异常时选择继续传播或接管输出|scrapy|spider_middleware|exception_hook_implementation|spider_exception_handling|spider 中间件异常处理钩子实现",
+        "change_action": "create",
+        "llm_reason": "候选技能实现 Spider 中间件的 process_spider_exception 钩子，属于 spider_middleware 任务族与 spider_exception_handling 阶段；现有技能中 8229ccc7 是下载器中间件 process_exception（不同 task_family/stage），其余为域名正则与 spider_opened 初始化，均无相同能力身份，故应新建。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "b284d083-aed1-42c7-a699-82031dfcc822",
+      "entity_type": "skill",
+      "entity_id": "a7333646-4afb-53a8-9656-89a6a47489cc",
+      "action": "create",
+      "changed_at": "2026-10-25T08:59:02+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能实现 process_spider_output 输出钩子，与现有技能（域名正则构建、请求指纹器）能力不同，且与 peer 候选（异步输出钩子、异常钩子、input 返回值契约）为不同钩子/阶段，应作为新的独立 micro_skill 创建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "a7333646-4afb-53a8-9656-89a6a47489cc",
+        "doc_ids": [
+          "0846bc81-9f63-5a03-baf2-464e92f3e728"
+        ],
+        "support_added": [
+          "0888492a-b818-5434-8baf-e71f4e603fd5"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "d238fd4c-438e-4304-b1b5-9101c636a980",
+      "entity_type": "skill",
+      "entity_id": "d019dfc8-693e-5c16-a087-b34f745060b8",
+      "action": "create",
+      "changed_at": "2026-10-25T08:59:02+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能实现 process_spider_output_async 异步生成器钩子，与现有同步输出钩子（peer 中）在方法族与调用条件上不同，属于新的独立微技能能力，现有注册表中无对应技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d019dfc8-693e-5c16-a087-b34f745060b8",
+        "doc_ids": [
+          "0846bc81-9f63-5a03-baf2-464e92f3e728"
+        ],
+        "support_added": [
+          "f246147f-5108-51fa-aed5-5bcdda50058f"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "0a6500db-023c-4117-83b2-9c1d216d2443",
+      "entity_type": "skill",
+      "entity_id": "20f141fe-1520-568d-a0ef-844224151e15",
+      "action": "create",
+      "changed_at": "2026-10-25T08:59:02+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能实现 Spider 中间件的 process_spider_exception 钩子，属于 spider_middleware 任务族与 spider_exception_handling 阶段；现有技能中 8229ccc7 是下载器中间件 process_exception（不同 task_family/stage），其余为域名正则与 spider_opened 初始化，均无相同能力身份，故应新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "20f141fe-1520-568d-a0ef-844224151e15",
+        "doc_ids": [
+          "0846bc81-9f63-5a03-baf2-464e92f3e728"
+        ],
+        "support_added": [
+          "95142d24-e939-5852-9565-319303e04d3d"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"d9545371-1c8c-5f0e-aa54-f9568fa3fffd\", \"name\": \"process_spider_input 返回值契约\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"保证 process_spider_input 返回值符合框架约定\", \"applicable_signals\": [\"正在编写 process_spider_input 方法\", \"需要确认响应是否继续沿中间件链传递\"], \"contraindications\": [\"实现其他不涉及该返回契约的钩子\"], \"workflow_steps\": [\"确认当前实现的是 process_spider_input 钩子\", \"在正常路径返回 None 以继续处理链\", \"在需要中断或报错时抛出异常\", \"检查方法中不存在返回非 None 值的分支\"], \"constraints\": [\"返回值只能是 None 或抛出异常\", \"返回 None 后由 Scrapy 继续执行后续中间件直至交给 Spider\"], \"triggers\": [\"实现 process_spider_input 方法\", \"审查 Spider 中间件钩子返回值\", \"响应进入 Spider 前需要放行或中断\"], \"output_contract\": [\"返回 None 或抛出异常的实现，处理链可继续\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"89ce30fa-7ffc-51bf-92e6-d77f76cb9f7c\", \"name\": \"编写自定义 Spider 中间件钩子方法\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"实现一个或多个 Spider 中间件钩子方法以定制处理流程\", \"applicable_signals\": [\"需要拦截并处理发往 Spider 的响应\", \"需要处理 Spider 生成的请求或 item\", \"需要定制 Spider 启动输出\"], \"workflow_steps\": [\"确认需要定制的处理点（启动输出、进入响应、产出请求/item）\", \"创建继承 SpiderMiddleware 的子类\", \"按需实现对应钩子方法\", \"确保 process_spider_input 返回 None 或抛出异常\", \"将类路径交由注册配置环节写入 SPIDER_MIDDLEWARES\"], \"output_contract\": [\"可注册的 SpiderMiddleware 子类，含已实现的钩子方法\"], \"score\": 0.7008767552516075}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

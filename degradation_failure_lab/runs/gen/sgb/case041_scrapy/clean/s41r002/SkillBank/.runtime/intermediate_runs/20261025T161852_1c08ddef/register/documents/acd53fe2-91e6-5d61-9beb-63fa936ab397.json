@@ -1,0 +1,871 @@
+{
+  "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+  "title": "input003\\request-response.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+  "documents": [
+    {
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "source_type": "document",
+      "title": "input003\\request-response.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# Requests and Responses — Scrapy 2.14.1 documentation\n\n- Requests and Responses\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/request-response.rst)\n\n---\n\n# Requests and Responses\n\nScrapy uses `Request` and `Response` objects for crawling web\nsites.\n\nTypically, `Request` objects are generated in the spiders and pass\nacross the system until they reach the Downloader, which executes the request\nand returns a `Response` object which travels back to the spider that\nissued the request.\n\nBoth `Request` and `Response` classes have subclasses which add\nfunctionality not required in the base classes. These are described\nbelow in Request subclasses and\nResponse subclasses.\n\n## Request objects\n\n***class*scrapy.Request(**args: Any*, ***kwargs: Any*)[[source]](../_modules/scrapy/http/request.html#Request)**\n\nRepresents an HTTP request, which is usually generated in a Spider and\nexecuted by the Downloader, thus generating a `Response`.\n\n**Parameters:**\n\n- **url** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) –\n\nthe URL of this request\n\nIf the URL is invalid, a [`ValueError`](https://docs.python.org/3/library/exceptions.html#ValueError) exception is raised.\n- **callback** (*Callable**[**Concatenate**[**Response**,**...**]**,**Any**]**|**None*) – sets `callback`, defaults to `None`.\n- **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the HTTP method of this request. Defaults to `'GET'`.\n- **meta** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – the initial values for the `Request.meta` attribute. If\ngiven, the dict passed in this parameter will be shallow copied.\n- **body** ([*bytes*](https://docs.python.org/3/library/stdtypes.html#bytes)*or*[*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the request body. If a string is passed, then it’s encoded as\nbytes using the `encoding` passed (which defaults to `utf-8`). If\n`body` is not given, an empty bytes object is stored. Regardless of the\ntype of this argument, the final value stored will be a bytes object\n(never a string or `None`).\n- **headers** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) –\n\nthe headers of this request. The dict values can be strings\n(for single valued headers) or lists (for multi-valued headers). If\n`None` is passed as value, the HTTP header will not be sent at all.\n\nCookies set via the `Cookie` header are not considered by the\n[CookiesMiddleware](downloader-middleware.html#cookies-mw). If you need to set cookies for a request, use the\n`cookies` argument. This is a known current limitation that is being\nworked on.\n- **cookies** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)*or*[*list*](https://docs.python.org/3/library/stdtypes.html#list)) –\n\nthe request cookies. These can be sent in two forms.\n\n```\nrequest_with_cookies = Request(\n    url=\"http://www.example.com\",\n    cookies={\"currency\": \"USD\", \"country\": \"UY\"},\n)\n```\n\n```\nrequest_with_cookies = Request(\n    url=\"https://www.example.com\",\n    cookies=[\n        {\n            \"name\": \"currency\",\n            \"value\": \"USD\",\n            \"domain\": \"example.com\",\n            \"path\": \"/currency\",\n            \"secure\": True,\n        },\n    ],\n)\n```\n\nThe latter form allows for customizing the `domain` and `path`\nattributes of the cookie. This is only useful if the cookies are saved\nfor later requests.\n\nWhen some site returns cookies (in a response) those are stored in the\ncookies for that domain and will be sent again in future requests.\nThat’s the typical behaviour of any regular web browser.\n\nNote that setting the `dont_merge_cookies` key to `True` in\n`request.meta` causes custom cookies to be\nignored.\n\nFor more info see [CookiesMiddleware](downloader-middleware.html#cookies-mw).\n\nCookies set via the `Cookie` header are not considered by the\n[CookiesMiddleware](downloader-middleware.html#cookies-mw). If you need to set cookies for a request, use the\n`scrapy.Request.cookies` parameter. This is a known\ncurrent limitation that is being worked on.\n  1. Using a dict:\n  1. Using a list of dicts:\n- **encoding** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the encoding of this request (defaults to `'utf-8'`).\nThis encoding will be used to percent-encode the URL and to convert the\nbody to bytes (if given as a string).\n- **priority** ([*int*](https://docs.python.org/3/library/functions.html#int)) – sets `priority`, defaults to `0`.\n- **dont_filter** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – sets `dont_filter`, defaults to `False`.\n- **errback** (*Callable**[**[**Failure**]**,**Any**]**|**None*) – sets `errback`, defaults to `None`.\n- **flags** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – Flags sent to the request, can be used for logging or similar purposes.\n- **cb_kwargs** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – A dict with arbitrary data that will be passed as keyword arguments to the Request’s callback.\n\n**url**\n\nA string containing the URL of this request. Keep in mind that this\nattribute contains the escaped URL, so it can differ from the URL passed in\nthe `__init__()` method.\n\nThis attribute is read-only. To change the URL of a Request use\n`replace()`.\n\n**method**\n\nA string representing the HTTP method in the request. This is guaranteed to\nbe uppercase. Example: `\"GET\"`, `\"POST\"`, `\"PUT\"`, etc\n\n**headers**\n\nA dictionary-like (`scrapy.http.headers.Headers`) object which contains\nthe request headers.\n\n**body**\n\nThe request body as bytes.\n\nThis attribute is read-only. To change the body of a Request use\n`replace()`.\n\n**callback*: CallbackT | [None](https://docs.python.org/3/library/constants.html#None)***\n\n[`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) to parse the\n`Response` to this request once received.\n\nThe callable must expect the response as its first parameter, and\nsupport any additional keyword arguments set through\n`cb_kwargs`.\n\nIn addition to an arbitrary callable, the following values are also\nsupported:\n\n- `None` (default), which indicates that the\n[`parse()`](spiders.html#scrapy.Spider.parse) method of the spider must be used.\n- `NO_CALLBACK()`.\n\nIf an unhandled exception is raised during request or response\nprocessing, i.e. by a [spider middleware](spider-middleware.html#topics-spider-middleware), [downloader middleware](downloader-middleware.html#topics-downloader-middleware) or download handler\n([`DOWNLOAD_HANDLERS`](settings.html#std-setting-DOWNLOAD_HANDLERS)), `errback` is called instead.\n\n[`HttpErrorMiddleware`](spider-middleware.html#scrapy.spidermiddlewares.httperror.HttpErrorMiddleware)\nraises exceptions for non-2xx responses by default, sending them\nto the `errback` instead.\n\nPassing additional data to callback functions\n\n**errback*: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None)***\n\n[`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) to handle exceptions raised\nduring request or response processing.\n\nThe callable must expect a [`Failure`](https://docs.twisted.org/en/stable/api/twisted.python.failure.Failure.html) as\nits first parameter.\n\nUsing errbacks to catch exceptions in request processing\n\n**priority*: [int](https://docs.python.org/3/library/functions.html#int)***\n\nDefault: `0`\n\nValue that the [scheduler](scheduler.html#topics-scheduler) may use for\nrequest prioritization.\n\nBuilt-in schedulers prioritize requests with a higher priority\nvalue.\n\nNegative values are allowed.\n\n**cb_kwargs**\n\nA dictionary that contains arbitrary metadata for this request. Its contents\nwill be passed to the Request’s callback as keyword arguments. It is empty\nfor new Requests, which means by default callbacks only get a\n`Response` object as argument.\n\nThis dict is [shallow copied](https://docs.python.org/3/library/copy.html) when the request is\ncloned using the `copy()` or `replace()` methods, and can also be\naccessed, in your spider, from the `response.cb_kwargs` attribute.\n\nIn case of a failure to process the request, this dict can be accessed as\n`failure.request.cb_kwargs` in the request’s errback. For more information,\nsee Accessing additional data in errback functions.\n\n**meta*= {}***\n\n> A dictionary of arbitrary metadata for the request.\n>\n>\n>\n> You may extend request metadata as you see fit.\n>\n>\n>\n> Request metadata can also be accessed through the\n> `meta` attribute of a response.\n>\n>\n>\n> To pass data from one spider callback to another, consider using\n> `cb_kwargs` instead. However, request metadata may be the right\n> choice in certain scenarios, such as to maintain some debugging data\n> across all follow-up requests (e.g. the source URL).\n>\n>\n>\n> A common use of request metadata is to define request-specific\n> parameters for Scrapy components (extensions, middlewares, etc.). For\n> example, if you set `dont_retry` to `True`,\n> [`RetryMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.retry.RetryMiddleware) will never\n> retry that request, even if it fails. See Request.meta special keys.\n>\n>\n>\n> You may also use request metadata in your custom Scrapy components, for\n> example, to keep request state information relevant to your component.\n> For example,\n> [`RetryMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.retry.RetryMiddleware) uses the\n> `retry_times` metadata key to keep track of how many times a request\n> has been retried so far.\n>\n>\n>\n> Copying all the metadata of a previous request into a new, follow-up\n> request in a spider callback is a bad practice, because request\n> metadata may include metadata set by Scrapy components that is not\n> meant to be copied into other requests. For example, copying the\n> `retry_times` metadata key into follow-up requests can lower the\n> amount of retries allowed for those follow-up requests.\n>\n>\n>\n> You should only copy all request metadata from one request to another\n> if the new request is meant to replace the old request, as is often the\n> case when returning a request from a [downloader middleware](downloader-middleware.html#topics-downloader-middleware) method.\n>\n>\n>\n> Also mind that the `copy()` and `replace()` request methods\n> [shallow-copy](https://docs.python.org/3/library/copy.html) request metadata.\n\n**dont_filter*: [bool](https://docs.python.org/3/library/functions.html#bool)***\n\nWhether this request may be filtered out by [components](components.html#topics-components) that support filtering out requests (`False`,\ndefault), or those components should not filter out this request\n(`True`).\n\nThis attribute is commonly set to `True` to prevent duplicate\nrequests from being filtered out.\n\nWhen defining the start URLs of a spider through\n[`start_urls`](spiders.html#scrapy.Spider.start_urls), this attribute is enabled by\ndefault. See [`start()`](spiders.html#scrapy.Spider.start).\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'callback', 'method', 'headers', 'body', 'cookies', 'meta', 'encoding', 'priority', 'dont_filter', 'errback', 'flags', 'cb_kwargs')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Request.replace()`, `Request.to_dict()` and\n`request_from_dict()`.\n\n**copy()[[source]](../_modules/scrapy/http/request.html#Request.copy)**\n\nReturn a new Request which is a copy of this Request. See also:\nPassing additional data to callback functions.\n\n**replace([*url*, *method*, *headers*, *body*, *cookies*, *meta*, *flags*, *encoding*, *priority*, *dont_filter*, *callback*, *errback*, *cb_kwargs*])[[source]](../_modules/scrapy/http/request.html#Request.replace)**\n\nReturn a Request object with the same members, except for those members\ngiven new values by whichever keyword arguments are specified. The\n`cb_kwargs` and `meta` attributes are shallow\ncopied by default (unless new values are given as arguments). See also\nPassing additional data to callback functions.\n\n***classmethod*from_curl(*curl_command: [str](https://docs.python.org/3/library/stdtypes.html#str)*, *ignore_unknown_options: [bool](https://docs.python.org/3/library/functions.html#bool) = True*, ***kwargs: Any*) → Self[[source]](../_modules/scrapy/http/request.html#Request.from_curl)**\n\nCreate a Request object from a string containing a [cURL](https://curl.se/) command. It populates the HTTP method, the\nURL, the headers, the cookies and the body. It accepts the same\narguments as the `Request` class, taking preference and\noverriding the values of the same arguments contained in the cURL\ncommand.\n\nUnrecognized options are ignored by default. To raise an error when\nfinding unknown options call this method by passing\n`ignore_unknown_options=False`.\n\nUsing `from_curl()` from `Request`\nsubclasses, such as `JsonRequest`, or\n`XmlRpcRequest`, as well as having\n[downloader middlewares](downloader-middleware.html#topics-downloader-middleware)\nand\n[spider middlewares](spider-middleware.html#topics-spider-middleware)\nenabled, such as\n[`DefaultHeadersMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware),\n[`UserAgentMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.useragent.UserAgentMiddleware),\nor\n[`HttpCompressionMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware),\nmay modify the `Request` object.\n\nTo translate a cURL command into a Scrapy request,\nyou may use [curl2scrapy](https://michael-shub.github.io/curl2scrapy/).\n\n**to_dict(***, *spider: [Spider](spiders.html#scrapy.spiders.Spider) | [None](https://docs.python.org/3/library/constants.html#None) = None*) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)][[source]](../_modules/scrapy/http/request.html#Request.to_dict)**\n\nReturn a dictionary containing the Request’s data.\n\nUse `request_from_dict()` to convert back into a `Request` object.\n\nIf a spider is given, this method will try to find out the name of the spider methods used as callback\nand errback and include them in the output dict, raising an exception if they cannot be found.\n\n### Other functions related to requests\n\n**scrapy.http.request.NO_CALLBACK(**args: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*, ***kwargs: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*) → [NoReturn](https://docs.python.org/3/library/typing.html#typing.NoReturn)[[source]](../_modules/scrapy/http/request.html#NO_CALLBACK)**\n\nWhen assigned to the `callback` parameter of\n`Request`, it indicates that the request is not meant\nto have a spider callback at all.\n\nFor example:\n\n```\nRequest(\"https://example.com\", callback=NO_CALLBACK)\n```\n\nThis value should be used by [components](components.html#topics-components) that\ncreate and handle their own requests, e.g. through\n`scrapy.core.engine.ExecutionEngine.download()`, so that downloader\nmiddlewares handling such requests can treat them differently from requests\nintended for the [`parse()`](spiders.html#scrapy.Spider.parse) callback.\n\n**scrapy.utils.request.request_from_dict(*d: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*, ***, *spider: [Spider](spiders.html#scrapy.spiders.Spider) | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Request[[source]](../_modules/scrapy/utils/request.html#request_from_dict)**\n\nCreate a `Request` object from a dict.\n\nIf a spider is given, it will try to resolve the callbacks looking at the\nspider for methods with the same name.\n\n### Passing additional data to callback functions\n\nThe callback of a request is a function that will be called when the response\nof that request is downloaded. The callback function will be called with the\ndownloaded `Response` object as its first argument.\n\nExample:\n\n```\ndef parse_page1(self, response):\n    return scrapy.Request(\n        \"http://www.example.com/some_page.html\", callback=self.parse_page2\n    )\n\ndef parse_page2(self, response):\n    # this would log http://www.example.com/some_page.html\n    self.logger.info(\"Visited %s\", response.url)\n```\n\nIn some cases you may be interested in passing arguments to those callback\nfunctions so you can receive the arguments later, in the second callback.\nThe following example shows how to achieve this by using the\n`Request.cb_kwargs` attribute:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    request.cb_kwargs[\"foo\"] = \"bar\"  # add more arguments for the callback\n    yield request\n\ndef parse_page2(self, response, main_url, foo):\n    yield dict(\n        main_url=main_url,\n        other_url=response.url,\n        foo=foo,\n    )\n```\n\n`Request.cb_kwargs` was introduced in version `1.7`.\nPrior to that, using `Request.meta` was recommended for passing\ninformation around callbacks. After `1.7`, `Request.cb_kwargs`\nbecame the preferred way for handling user information, leaving `Request.meta`\nfor communication with components like middlewares and extensions.\n\n### Using errbacks to catch exceptions in request processing\n\nThe errback of a request is a function that will be called when an exception\nis raise while processing it.\n\nIt receives a [`Failure`](https://docs.twisted.org/en/stable/api/twisted.python.failure.Failure.html) as first parameter and can\nbe used to track connection establishment timeouts, DNS errors etc.\n\nHere’s an example spider logging all errors and catching some specific\nerrors if needed:\n\n```\nimport scrapy\n\nfrom scrapy.spidermiddlewares.httperror import HttpError\nfrom twisted.internet.error import DNSLookupError\nfrom twisted.internet.error import TimeoutError, TCPTimedOutError\n\nclass ErrbackSpider(scrapy.Spider):\n    name = \"errback_example\"\n    start_urls = [\n        \"http://www.httpbin.org/\",  # HTTP 200 expected\n        \"http://www.httpbin.org/status/404\",  # Not found error\n        \"http://www.httpbin.org/status/500\",  # server issue\n        \"http://www.httpbin.org:12345/\",  # non-responding host, timeout expected\n        \"https://example.invalid/\",  # DNS error expected\n    ]\n\n    async def start(self):\n        for u in self.start_urls:\n            yield scrapy.Request(\n                u,\n                callback=self.parse_httpbin,\n                errback=self.errback_httpbin,\n                dont_filter=True,\n            )\n\n    def parse_httpbin(self, response):\n        self.logger.info(\"Got successful response from {}\".format(response.url))\n        # do something useful here...\n\n    def errback_httpbin(self, failure):\n        # log all failures\n        self.logger.error(repr(failure))\n\n        # in case you want to do something special for some errors,\n        # you may need the failure's type:\n\n        if failure.check(HttpError):\n            # these exceptions come from HttpError spider middleware\n            # you can get the non-200 response\n            response = failure.value.response\n            self.logger.error(\"HttpError on %s\", response.url)\n\n        elif failure.check(DNSLookupError):\n            # this is the original request\n            request = failure.request\n            self.logger.error(\"DNSLookupError on %s\", request.url)\n\n        elif failure.check(TimeoutError, TCPTimedOutError):\n            request = failure.request\n            self.logger.error(\"TimeoutError on %s\", request.url)\n```\n\n### Accessing additional data in errback functions\n\nIn case of a failure to process the request, you may be interested in\naccessing arguments to the callback functions so you can process further\nbased on the arguments in the errback. The following example shows how to\nachieve this by using `Failure.request.cb_kwargs`:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        errback=self.errback_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    yield request\n\ndef parse_page2(self, response, main_url):\n    pass\n\ndef errback_page2(self, failure):\n    yield dict(\n        main_url=failure.request.cb_kwargs[\"main_url\"],\n    )\n```\n\n### Request fingerprints\n\nThere are some aspects of scraping, such as filtering out duplicate requests\n(see [`DUPEFILTER_CLASS`](settings.html#std-setting-DUPEFILTER_CLASS)) or caching responses (see\n[`HTTPCACHE_POLICY`](downloader-middleware.html#std-setting-HTTPCACHE_POLICY)), where you need the ability to generate a short,\nunique identifier from a `Request` object: a request\nfingerprint.\n\nYou often do not need to worry about request fingerprints, the default request\nfingerprinter works for most projects.\n\nHowever, there is no universal way to generate a unique identifier from a\nrequest, because different situations require comparing requests differently.\nFor example, sometimes you may need to compare URLs case-insensitively, include\nURL fragments, exclude certain URL query parameters, include some or all\nheaders, etc.\n\nTo change how request fingerprints are built for your requests, use the\n`REQUEST_FINGERPRINTER_CLASS` setting.\n\n#### REQUEST_FINGERPRINTER_CLASS\n\nDefault: `scrapy.utils.request.RequestFingerprinter`\n\nA request fingerprinter class or its\nimport path.\n\n***class*scrapy.utils.request.RequestFingerprinter(*crawler: [Crawler](api.html#scrapy.crawler.Crawler) | [None](https://docs.python.org/3/library/constants.html#None) = None*)[[source]](../_modules/scrapy/utils/request.html#RequestFingerprinter)**\n\nDefault fingerprinter.\n\nIt takes into account a canonical version\n([`w3lib.url.canonicalize_url()`](https://w3lib.readthedocs.io/en/latest/w3lib.html#w3lib.url.canonicalize_url)) of `request.url` and the values of `request.method` and `request.body`. It then generates an [SHA1](https://en.wikipedia.org/wiki/SHA-1) hash.\n\n#### Writing your own request fingerprinter\n\nA request fingerprinter is a [component](components.html#topics-components) that must\nimplement the following method:\n\n**fingerprint(*self*, *request: scrapy.Request*)**\n\nReturn a [`bytes`](https://docs.python.org/3/library/stdtypes.html#bytes) object that uniquely identifies *request*.\n\nSee also Request fingerprint restrictions.\n\nThe `fingerprint()` method of the default request fingerprinter,\n`scrapy.utils.request.RequestFingerprinter`, uses\n`scrapy.utils.request.fingerprint()` with its default parameters. For some\ncommon use cases you can use `scrapy.utils.request.fingerprint()` as well\nin your `fingerprint()` method implementation:\n\n**scrapy.utils.request.fingerprint(*request: Request*, ***, *include_headers: Iterable[[bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *keep_fragments: [bool](https://docs.python.org/3/library/functions.html#bool) = False*) → [bytes](https://docs.python.org/3/library/stdtypes.html#bytes)[[source]](../_modules/scrapy/utils/request.html#fingerprint)**\n\nReturn the request fingerprint.\n\nThe request fingerprint is a hash that uniquely identifies the resource the\nrequest points to. For example, take the following two urls:\n`http://www.example.com/query?id=111&cat=222`,\n`http://www.example.com/query?cat=222&id=111`.\n\nEven though those are two different URLs both point to the same resource\nand are equivalent (i.e. they should return the same response).\n\nAnother example are cookies used to store session ids. Suppose the\nfollowing page is only accessible to authenticated users:\n`http://www.example.com/members/offers.html`.\n\nLots of sites use a cookie to store the session id, which adds a random\ncomponent to the HTTP Request and thus should be ignored when calculating\nthe fingerprint.\n\nFor this reason, request headers are ignored by default when calculating\nthe fingerprint. If you want to include specific headers use the\ninclude_headers argument, which is a list of Request headers to include.\n\nAlso, servers usually ignore fragments in urls when handling requests,\nso they are also ignored by default when calculating the fingerprint.\nIf you want to include them, set the keep_fragments argument to True\n(for instance when handling requests with a headless browser).\n\nFor example, to take the value of a request header named `X-ID` into\naccount:\n\n```\n# my_project/settings.py\nREQUEST_FINGERPRINTER_CLASS = \"my_project.utils.RequestFingerprinter\"\n\n# my_project/utils.py\nfrom scrapy.utils.request import fingerprint\n\nclass RequestFingerprinter:\n    def fingerprint(self, request):\n        return fingerprint(request, include_headers=[\"X-ID\"])\n```\n\nYou can also write your own fingerprinting logic from scratch.\n\nHowever, if you do not use `scrapy.utils.request.fingerprint()`, make sure\nyou use [`WeakKeyDictionary`](https://docs.python.org/3/library/weakref.html#weakref.WeakKeyDictionary) to cache request fingerprints:\n\n- Caching saves CPU by ensuring that fingerprints are calculated only once\nper request, and not once per Scrapy component that needs the fingerprint\nof a request.\n- Using [`WeakKeyDictionary`](https://docs.python.org/3/library/weakref.html#weakref.WeakKeyDictionary) saves memory by ensuring that\nrequest objects do not stay in memory forever just because you have\nreferences to them in your cache dictionary.\n\nFor example, to take into account only the URL of a request, without any prior\nURL canonicalization or taking the request method or body into account:\n\n```\nfrom hashlib import sha1\nfrom weakref import WeakKeyDictionary\n\nfrom scrapy.utils.python import to_bytes\n\nclass RequestFingerprinter:\n    cache = WeakKeyDictionary()\n\n    def fingerprint(self, request):\n        if request not in self.cache:\n            fp = sha1()\n            fp.update(to_bytes(request.url))\n            self.cache[request] = fp.digest()\n        return self.cache[request]\n```\n\nIf you need to be able to override the request fingerprinting for arbitrary\nrequests from your spider callbacks, you may implement a request fingerprinter\nthat reads fingerprints from `request.meta`\nwhen available, and then falls back to\n`scrapy.utils.request.fingerprint()`. For example:\n\n```\nfrom scrapy.utils.request import fingerprint\n\nclass RequestFingerprinter:\n    def fingerprint(self, request):\n        if \"fingerprint\" in request.meta:\n            return request.meta[\"fingerprint\"]\n        return fingerprint(request)\n```\n\nIf you need to reproduce the same fingerprinting algorithm as Scrapy 2.6, use\nthe following request fingerprinter:\n\n```\nfrom hashlib import sha1\nfrom weakref import WeakKeyDictionary\n\nfrom scrapy.utils.python import to_bytes\nfrom w3lib.url import canonicalize_url\n\nclass RequestFingerprinter:\n    cache = WeakKeyDictionary()\n\n    def fingerprint(self, request):\n        if request not in self.cache:\n            fp = sha1()\n            fp.update(to_bytes(request.method))\n            fp.update(to_bytes(canonicalize_url(request.url)))\n            fp.update(request.body or b\"\")\n            self.cache[request] = fp.digest()\n        return self.cache[request]\n```\n\n#### Request fingerprint restrictions\n\nScrapy components that use request fingerprints may impose additional\nrestrictions on the format of the fingerprints that your request\nfingerprinter generates.\n\nThe following built-in Scrapy components have such restrictions:\n\n- [`scrapy.extensions.httpcache.FilesystemCacheStorage`](downloader-middleware.html#scrapy.extensions.httpcache.FilesystemCacheStorage) (default\nvalue of [`HTTPCACHE_STORAGE`](downloader-middleware.html#std-setting-HTTPCACHE_STORAGE))\n\nRequest fingerprints must be at least 1 byte long.\n\nPath and filename length limits of the file system of\n[`HTTPCACHE_DIR`](downloader-middleware.html#std-setting-HTTPCACHE_DIR) also apply. Inside [`HTTPCACHE_DIR`](downloader-middleware.html#std-setting-HTTPCACHE_DIR),\nthe following directory structure is created:\n\nFor example, if a request fingerprint is made of 20 bytes (default),\n[`HTTPCACHE_DIR`](downloader-middleware.html#std-setting-HTTPCACHE_DIR) is `'/home/user/project/.scrapy/httpcache'`,\nand the name of your spider is `'my_spider'` your file system must\nsupport a file path like:\n\n```\n/home/user/project/.scrapy/httpcache/my_spider/01/0123456789abcdef0123456789abcdef01234567/response_headers\n```\n  - [`Spider.name`](spiders.html#scrapy.Spider.name)\n    - first byte of a request fingerprint as hexadecimal\n      - fingerprint as hexadecimal\n        - filenames up to 16 characters long\n- [`scrapy.extensions.httpcache.DbmCacheStorage`](downloader-middleware.html#scrapy.extensions.httpcache.DbmCacheStorage)\n\nThe underlying DBM implementation must support keys as long as twice\nthe number of bytes of a request fingerprint, plus 5. For example,\nif a request fingerprint is made of 20 bytes (default),\n45-character-long keys must be supported.\n\n## Request.meta special keys\n\nThe `Request.meta` attribute can contain any arbitrary data, but there\nare some special keys recognized by Scrapy and its built-in extensions.\n\nThose are:\n\n- [`allow_offsite`](downloader-middleware.html#std-reqmeta-allow_offsite)\n- [`autothrottle_dont_adjust_delay`](autothrottle.html#std-reqmeta-autothrottle_dont_adjust_delay)\n- `bindaddress`\n- [`cookiejar`](downloader-middleware.html#std-reqmeta-cookiejar)\n- [`dont_cache`](downloader-middleware.html#std-reqmeta-dont_cache)\n- `dont_merge_cookies`\n- [`dont_obey_robotstxt`](downloader-middleware.html#std-reqmeta-dont_obey_robotstxt)\n- [`dont_redirect`](downloader-middleware.html#std-reqmeta-dont_redirect)\n- [`dont_retry`](downloader-middleware.html#std-reqmeta-dont_retry)\n- `download_fail_on_dataloss`\n- `download_latency`\n- [`download_maxsize`](settings.html#std-reqmeta-download_maxsize)\n- [`download_warnsize`](settings.html#std-reqmeta-download_warnsize)\n- `download_timeout`\n- `ftp_password` (See [`FTP_PASSWORD`](settings.html#std-setting-FTP_PASSWORD) for more info)\n- `ftp_user` (See [`FTP_USER`](settings.html#std-setting-FTP_USER) for more info)\n- [`handle_httpstatus_all`](spider-middleware.html#std-reqmeta-handle_httpstatus_all)\n- [`handle_httpstatus_list`](spider-middleware.html#std-reqmeta-handle_httpstatus_list)\n- [`is_start_request`](spider-middleware.html#std-reqmeta-is_start_request)\n- `max_retry_times`\n- [`proxy`](downloader-middleware.html#std-reqmeta-proxy)\n- [`redirect_reasons`](downloader-middleware.html#std-reqmeta-redirect_reasons)\n- [`redirect_urls`](downloader-middleware.html#std-reqmeta-redirect_urls)\n- [`referrer_policy`](spider-middleware.html#std-reqmeta-referrer_policy)\n\n### bindaddress\n\nThe IP of the outgoing IP address to use for the performing the request.\n\n### download_timeout\n\nThe amount of time (in secs) that the downloader will wait before timing out.\nSee also: [`DOWNLOAD_TIMEOUT`](settings.html#std-setting-DOWNLOAD_TIMEOUT).\n\n### download_latency\n\nThe amount of time spent to fetch the response, since the request has been\nstarted, i.e. HTTP message sent over the network. This meta key only becomes\navailable when the response has been downloaded. While most other meta keys are\nused to control Scrapy behavior, this one is supposed to be read-only.\n\n### download_fail_on_dataloss\n\nWhether or not to fail on broken responses. See:\n[`DOWNLOAD_FAIL_ON_DATALOSS`](settings.html#std-setting-DOWNLOAD_FAIL_ON_DATALOSS).\n\n### max_retry_times\n\nThe meta key is used set retry times per request. When initialized, the\n`max_retry_times` meta key takes higher precedence over the\n[`RETRY_TIMES`](downloader-middleware.html#std-setting-RETRY_TIMES) setting.\n\n## Stopping the download of a Response\n\nRaising a [`StopDownload`](exceptions.html#scrapy.exceptions.StopDownload) exception from a handler for the\n[`bytes_received`](signals.html#scrapy.signals.bytes_received) or [`headers_received`](signals.html#scrapy.signals.headers_received)\nsignals will stop the download of a given response. See the following example:\n\n```\nimport scrapy\n\nclass StopSpider(scrapy.Spider):\n    name = \"stop\"\n    start_urls = [\"https://docs.scrapy.org/en/latest/\"]\n\n    @classmethod\n    def from_crawler(cls, crawler):\n        spider = super().from_crawler(crawler)\n        crawler.signals.connect(\n            spider.on_bytes_received, signal=scrapy.signals.bytes_received\n        )\n        return spider\n\n    def parse(self, response):\n        # 'last_chars' show that the full response was not downloaded\n        yield {\"len\": len(response.text), \"last_chars\": response.text[-40:]}\n\n    def on_bytes_received(self, data, request, spider):\n        raise scrapy.exceptions.StopDownload(fail=False)\n```\n\nwhich produces the following output:\n\n```\n2020-05-19 17:26:12 [scrapy.core.engine] INFO: Spider opened\n2020-05-19 17:26:12 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)\n2020-05-19 17:26:13 [scrapy.core.downloader.handlers.http11] DEBUG: Download stopped for <GET https://docs.scrapy.org/en/latest/> from signal handler StopSpider.on_bytes_received\n2020-05-19 17:26:13 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://docs.scrapy.org/en/latest/> (referer: None) ['download_stopped']\n2020-05-19 17:26:13 [scrapy.core.scraper] DEBUG: Scraped from <200 https://docs.scrapy.org/en/latest/>\n{'len': 279, 'last_chars': 'dth, initial-scale=1.0\">\\n  \\n  <title>Scr'}\n2020-05-19 17:26:13 [scrapy.core.engine] INFO: Closing spider (finished)\n```\n\nBy default, resulting responses are handled by their corresponding errbacks. To\ncall their callback instead, like in this example, pass `fail=False` to the\n[`StopDownload`](exceptions.html#scrapy.exceptions.StopDownload) exception.\n\n## Request subclasses\n\nHere is the list of built-in `Request` subclasses. You can also subclass\nit to implement your own custom functionality.\n\n### FormRequest objects\n\nThe FormRequest class extends the base `Request` with functionality for\ndealing with HTML forms. It uses [lxml.html forms](https://lxml.de/lxmlhtml.html#forms) to pre-populate form\nfields with form data from `Response` objects.\n\n***class*scrapy.FormRequest(*url*[, *formdata*, *...*])**\n\nThe `FormRequest` class adds a new keyword parameter to the `__init__()` method. The\nremaining arguments are the same as for the `Request` class and are\nnot documented here.\n\n**Parameters:**\n\n**formdata** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)*or*[*collections.abc.Iterable*](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)) – is a dictionary (or iterable of (key, value) tuples)\ncontaining HTML Form data which will be url-encoded and assigned to the\nbody of the request.\n\nThe `FormRequest` objects support the following class method in\naddition to the standard `Request` methods:\n\n***classmethod*from_response(*response*[, *formname=None*, *formid=None*, *formnumber=0*, *formdata=None*, *formxpath=None*, *formcss=None*, *clickdata=None*, *dont_click=False*, *...*])**\n\nReturns a new `FormRequest` object with its form field values\npre-populated with those found in the HTML `<form>` element contained\nin the given response. For an example see\nUsing FormRequest.from_response() to simulate a user login.\n\nThe policy is to automatically simulate a click, by default, on any form\ncontrol that looks clickable, like a `<input type=\"submit\">`. Even\nthough this is quite convenient, and often the desired behaviour,\nsometimes it can cause problems which could be hard to debug. For\nexample, when working with forms that are filled and/or submitted using\njavascript, the default `from_response()` behaviour may not be the\nmost appropriate. To disable this behaviour you can set the\n`dont_click` argument to `True`. Also, if you want to change the\ncontrol clicked (instead of disabling it) you can also use the\n`clickdata` argument.\n\nUsing this method with select elements which have leading\nor trailing whitespace in the option values will not work due to a\n[bug in lxml](https://bugs.launchpad.net/lxml/+bug/1665241), which should be fixed in lxml 3.8 and above.\n\n**Parameters:**\n\n- **response** (`Response` object) – the response containing a HTML form which will be used\nto pre-populate the form fields\n- **formname** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the form with name attribute set to this value will be used.\n- **formid** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the form with id attribute set to this value will be used.\n- **formxpath** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the first form that matches the xpath will be used.\n- **formcss** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the first form that matches the css selector will be used.\n- **formnumber** ([*int*](https://docs.python.org/3/library/functions.html#int)) – the number of form to use, when the response contains\nmultiple forms. The first one (and also the default) is `0`.\n- **formdata** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – fields to override in the form data. If a field was\nalready present in the response `<form>` element, its value is\noverridden by the one passed in this parameter. If a value passed in\nthis parameter is `None`, the field will not be included in the\nrequest, even if it was present in the response `<form>` element.\n- **clickdata** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – attributes to lookup the control clicked. If it’s not\ngiven, the form data will be submitted simulating a click on the\nfirst clickable element. In addition to html attributes, the control\ncan be identified by its zero-based index relative to other\nsubmittable inputs inside the form, via the `nr` attribute.\n- **dont_click** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If True, the form data will be submitted without\nclicking in any element.\n\nThe other parameters of this class method are passed directly to the\n`FormRequest` `__init__()` method.\n\n### Request usage examples\n\n#### Using FormRequest to send data via HTTP POST\n\nIf you want to simulate a HTML Form POST in your spider and send a couple of\nkey-value fields, you can return a `FormRequest` object (from your\nspider) like this:\n\n```\nreturn [\n    FormRequest(\n        url=\"http://www.example.com/post/action\",\n        formdata={\"name\": \"John Doe\", \"age\": \"27\"},\n        callback=self.after_post,\n    )\n]\n```\n\n#### Using FormRequest.from_response() to simulate a user login\n\nIt is usual for web sites to provide pre-populated form fields through `<input\ntype=\"hidden\">` elements, such as session related data or authentication\ntokens (for login pages). When scraping, you’ll want these fields to be\nautomatically pre-populated and only override a couple of them, such as the\nuser name and password. You can use the `FormRequest.from_response()`\nmethod for this job. Here’s an example spider which uses it:\n\n```\nimport scrapy\n\ndef authentication_failed(response):\n    # TODO: Check the contents of the response and return True if it failed\n    # or False if it succeeded.\n    pass\n\nclass LoginSpider(scrapy.Spider):\n    name = \"example.com\"\n    start_urls = [\"http://www.example.com/users/login.php\"]\n\n    def parse(self, response):\n        return scrapy.FormRequest.from_response(\n            response,\n            formdata={\"username\": \"john\", \"password\": \"secret\"},\n            callback=self.after_login,\n        )\n\n    def after_login(self, response):\n        if authentication_failed(response):\n            self.logger.error(\"Login failed\")\n            return\n\n        # continue scraping with authenticated session...\n```\n\n### JsonRequest\n\nThe JsonRequest class extends the base `Request` class with functionality for\ndealing with JSON requests.\n\n***class*scrapy.http.JsonRequest(*url*[, *... data*, *dumps_kwargs*])[[source]](../_modules/scrapy/http/request/json_request.html#JsonRequest)**\n\nThe `JsonRequest` class adds two new keyword parameters to the `__init__()` method. The\nremaining arguments are the same as for the `Request` class and are\nnot documented here.\n\nUsing the `JsonRequest` will set the `Content-Type` header to `application/json`\nand `Accept` header to `application/json, text/javascript, */*; q=0.01`\n\n**Parameters:**\n\n- **data** ([*object*](https://docs.python.org/3/library/functions.html#object)) – is any JSON serializable object that needs to be JSON encoded and assigned to body.\nIf the `body` argument is provided this parameter will be ignored.\nIf the `body` argument is not provided and the\n`data` argument is provided the `method` will be\nset to `'POST'` automatically.\n- **dumps_kwargs** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – Parameters that will be passed to underlying [`json.dumps()`](https://docs.python.org/3/library/json.html#json.dumps) method which is used to serialize\ndata into JSON format.\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'callback', 'method', 'headers', 'body', 'cookies', 'meta', 'encoding', 'priority', 'dont_filter', 'errback', 'flags', 'cb_kwargs', 'dumps_kwargs')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Request.replace()`, `Request.to_dict()` and\n`request_from_dict()`.\n\n### JsonRequest usage example\n\nSending a JSON POST request with a JSON payload:\n\n```\ndata = {\n    \"name1\": \"value1\",\n    \"name2\": \"value2\",\n}\nyield JsonRequest(url=\"http://www.example.com/post/action\", data=data)\n```\n\n## Response objects\n\n***class*scrapy.http.Response(**args: Any*, ***kwargs: Any*)[[source]](../_modules/scrapy/http/response.html#Response)**\n\nAn object that represents an HTTP response, which is usually\ndownloaded (by the Downloader) and fed to the Spiders for processing.\n\n**Parameters:**\n\n- **url** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the URL of this response\n- **status** ([*int*](https://docs.python.org/3/library/functions.html#int)) – the HTTP status of the response. Defaults to `200`.\n- **headers** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – the headers of this response. The dict values can be strings\n(for single valued headers) or lists (for multi-valued headers).\n- **body** ([*bytes*](https://docs.python.org/3/library/stdtypes.html#bytes)) – the response body. To access the decoded text as a string, use\n`response.text` from an encoding-aware\nResponse subclass,\nsuch as `TextResponse`.\n- **flags** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – is a list containing the initial values for the\n`Response.flags` attribute. If given, the list will be shallow\ncopied.\n- **request** (*scrapy.Request*) – the initial value of the `Response.request` attribute.\nThis represents the `Request` that generated this response.\n- **certificate** ([*twisted.internet.ssl.Certificate*](https://docs.twisted.org/en/stable/api/twisted.internet.ssl.Certificate.html)) – an object representing the server’s SSL certificate.\n- **ip_address** ([`ipaddress.IPv4Address`](https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address) or [`ipaddress.IPv6Address`](https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv6Address)) – The IP address of the server from which the Response originated.\n- **protocol** ([`str`](https://docs.python.org/3/library/stdtypes.html#str)) – The protocol that was used to download the response.\nFor instance: “HTTP/1.0”, “HTTP/1.1”, “h2”\n\n**url**\n\nA string containing the URL of the response.\n\nThis attribute is read-only. To change the URL of a Response use\n`replace()`.\n\n**status**\n\nAn integer representing the HTTP status of the response. Example: `200`,\n`404`.\n\n**headers**\n\nA dictionary-like (`scrapy.http.headers.Headers`) object which contains\nthe response headers. Values can be accessed using\n`get()` to return the first header value with\nthe specified name or `getlist()` to return\nall header values with the specified name. For example, this call will give you\nall cookies in the headers:\n\n```\nresponse.headers.getlist('Set-Cookie')\n```\n\n**body**\n\nThe response body as bytes.\n\nIf you want the body as a string, use `TextResponse.text` (only\navailable in `TextResponse` and subclasses).\n\nThis attribute is read-only. To change the body of a Response use\n`replace()`.\n\n**request**\n\nThe `Request` object that generated this response. This attribute is\nassigned in the Scrapy engine, after the response and the request have passed\nthrough all [Downloader Middlewares](downloader-middleware.html#topics-downloader-middleware).\nIn particular, this means that:\n\n- HTTP redirections will create a new request from the request before\nredirection. It has the majority of the same metadata and original\nrequest attributes and gets assigned to the redirected response\ninstead of the propagation of the original request.\n- Response.request.url doesn’t always equal Response.url\n- This attribute is only available in the spider code, and in the\n[Spider Middlewares](spider-middleware.html#topics-spider-middleware), but not in\nDownloader Middlewares (although you have the Request available there by\nother means) and handlers of the [`response_downloaded`](signals.html#std-signal-response_downloaded) signal.\n\n**meta**\n\nA shortcut to the `meta` attribute of the\n`Response.request` object (i.e. `self.request.meta`).\n\nUnlike the `Response.request` attribute, the `Response.meta`\nattribute is propagated along redirects and retries, so you will get\nthe original `Request.meta` sent from your spider.\n\n`Request.meta` attribute\n\n**cb_kwargs**\n\nA shortcut to the `cb_kwargs` attribute of the\n`Response.request` object (i.e. `self.request.cb_kwargs`).\n\nUnlike the `Response.request` attribute, the\n`Response.cb_kwargs` attribute is propagated along redirects and\nretries, so you will get the original `Request.cb_kwargs` sent from your spider.\n\n`Request.cb_kwargs` attribute\n\n**flags**\n\nA list that contains flags for this response. Flags are labels used for\ntagging Responses. For example: `'cached'`, `'redirected`’, etc. And\nthey’re shown on the string representation of the Response (`__str__()`\nmethod) which is used by the engine for logging.\n\n**certificate**\n\nA [`twisted.internet.ssl.Certificate`](https://docs.twisted.org/en/stable/api/twisted.internet.ssl.Certificate.html) object representing\nthe server’s SSL certificate.\n\nOnly populated for `https` responses, `None` otherwise.\n\n**ip_address**\n\nThe IP address of the server from which the Response originated.\n\nThis attribute is currently only populated by the HTTP 1.1 download\nhandler, i.e. for `http(s)` responses. For other handlers,\n`ip_address` is always `None`.\n\n**protocol**\n\nThe protocol that was used to download the response.\nFor instance: “HTTP/1.0”, “HTTP/1.1”\n\nThis attribute is currently only populated by the HTTP download\nhandlers, i.e. for `http(s)` responses. For other handlers,\n`protocol` is always `None`.\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'status', 'headers', 'body', 'flags', 'request', 'certificate', 'ip_address', 'protocol')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Response.replace()`.\n\n**copy()[[source]](../_modules/scrapy/http/response.html#Response.copy)**\n\nReturns a new Response which is a copy of this Response.\n\n**replace([*url*, *status*, *headers*, *body*, *request*, *flags*, *cls*])[[source]](../_modules/scrapy/http/response.html#Response.replace)**\n\nReturns a Response object with the same members, except for those members\ngiven new values by whichever keyword arguments are specified. The\nattribute `Response.meta` is copied by default.\n\n**urljoin(*url*)[[source]](../_modules/scrapy/http/response.html#Response.urljoin)**\n\nConstructs an absolute url by combining the Response’s `url` with\na possible relative url.\n\nThis is a wrapper over [`urljoin()`](https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin), it’s merely an alias for\nmaking this call:\n\n```\nurllib.parse.urljoin(response.url, url)\n```\n\n**follow(*url: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link)*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = 'utf-8'*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Request[[source]](../_modules/scrapy/http/response.html#Response.follow)**\n\nReturn a `Request` instance to follow a link `url`.\nIt accepts the same arguments as `Request.__init__()` method,\nbut `url` can be a relative URL or a [`Link`](link-extractors.html#scrapy.link.Link) object,\nnot only an absolute URL.\n\n`TextResponse` provides a `follow()`\nmethod which supports selectors in addition to absolute/relative URLs\nand Link objects.\n\n**follow_all(*urls: Iterable[[str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link)]*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = 'utf-8'*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Iterable[Request][[source]](../_modules/scrapy/http/response.html#Response.follow_all)**\n\nReturn an iterable of `Request` instances to follow all links\nin `urls`. It accepts the same arguments as `Request.__init__()` method,\nbut elements of `urls` can be relative URLs or [`Link`](link-extractors.html#scrapy.link.Link) objects,\nnot only absolute URLs.\n\n`TextResponse` provides a `follow_all()`\nmethod which supports selectors in addition to absolute/relative URLs\nand Link objects.\n\n## Response subclasses\n\nHere is the list of available built-in Response subclasses. You can also\nsubclass the Response class to implement your own functionality.\n\n### TextResponse objects\n\n***class*scrapy.http.TextResponse(*url*[, *encoding*[, *...*]])[[source]](../_modules/scrapy/http/response/text.html#TextResponse)**\n\n`TextResponse` objects adds encoding capabilities to the base\n`Response` class, which is meant to be used only for binary data,\nsuch as images, sounds or any media file.\n\n`TextResponse` objects support a new `__init__()` method argument, in\naddition to the base `Response` objects. The remaining functionality\nis the same as for the `Response` class and is not documented here.\n\n**Parameters:**\n\n**encoding** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – is a string which contains the encoding to use for this\nresponse. If you create a `TextResponse` object with a string as\nbody, it will be converted to bytes encoded using this encoding. If\n*encoding* is `None` (default), the encoding will be looked up in the\nresponse headers and body instead.\n\n`TextResponse` objects support the following attributes in addition\nto the standard `Response` ones:\n\n**text**\n\nResponse body, as a string.\n\nThe same as `response.body.decode(response.encoding)`, but the\nresult is cached after the first call, so you can access\n`response.text` multiple times without extra overhead.\n\n`str(response.body)` is not a correct way to convert the response\nbody into a string:\n\n```\n>>> str(b\"body\")\n\"b'body'\"\n```\n\n**encoding**\n\nA string with the encoding of this response. The encoding is resolved by\ntrying the following mechanisms, in order:\n\n1. the encoding passed in the `__init__()` method `encoding` argument\n2. the encoding declared in the Content-Type HTTP header. If this\nencoding is not valid (i.e. unknown), it is ignored and the next\nresolution mechanism is tried.\n3. the encoding declared in the response body. The TextResponse class\ndoesn’t provide any special functionality for this. However, the\n`HtmlResponse` and `XmlResponse` classes do.\n4. the encoding inferred by looking at the response body. This is the more\nfragile method but also the last one tried.\n\n**selector**\n\nA [`Selector`](selectors.html#scrapy.Selector) instance using the response as\ntarget. The selector is lazily instantiated on first access.\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'status', 'headers', 'body', 'flags', 'request', 'certificate', 'ip_address', 'protocol', 'encoding')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Response.replace()`.\n\n`TextResponse` objects support the following methods in addition to\nthe standard `Response` ones:\n\n**jmespath(*query*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.jmespath)**\n\nA shortcut to `TextResponse.selector.jmespath(query)`:\n\n```\nresponse.jmespath('object.[*]')\n```\n\n**xpath(*query*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.xpath)**\n\nA shortcut to `TextResponse.selector.xpath(query)`:\n\n```\nresponse.xpath('//p')\n```\n\n**css(*query*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.css)**\n\nA shortcut to `TextResponse.selector.css(query)`:\n\n```\nresponse.css('p')\n```\n\n**follow(*url: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link) | parsel.Selector*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Request[[source]](../_modules/scrapy/http/response/text.html#TextResponse.follow)**\n\nReturn a `Request` instance to follow a link `url`.\nIt accepts the same arguments as `Request.__init__()` method,\nbut `url` can be not only an absolute URL, but also\n\n- a relative URL\n- a [`Link`](link-extractors.html#scrapy.link.Link) object, e.g. the result of\n[Link Extractors](link-extractors.html#topics-link-extractors)\n- a [`Selector`](selectors.html#scrapy.Selector) object for a `<link>` or `<a>` element, e.g.\n`response.css('a.my_link')[0]`\n- an attribute [`Selector`](selectors.html#scrapy.Selector) (not SelectorList), e.g.\n`response.css('a::attr(href)')[0]` or\n`response.xpath('//img/@src')[0]`\n\nSee [A shortcut for creating Requests](../intro/tutorial.html#response-follow-example) for usage examples.\n\n**follow_all(*urls: Iterable[[str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link)] | parsel.SelectorList | [None](https://docs.python.org/3/library/constants.html#None) = None*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *css: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *xpath: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Iterable[Request][[source]](../_modules/scrapy/http/response/text.html#TextResponse.follow_all)**\n\nA generator that produces `Request` instances to follow all\nlinks in `urls`. It accepts the same arguments as the `Request`’s\n`__init__()` method, except that each `urls` element does not need to be\nan absolute URL, it can be any of the following:\n\n- a relative URL\n- a [`Link`](link-extractors.html#scrapy.link.Link) object, e.g. the result of\n[Link Extractors](link-extractors.html#topics-link-extractors)\n- a [`Selector`](selectors.html#scrapy.Selector) object for a `<link>` or `<a>` element, e.g.\n`response.css('a.my_link')[0]`\n- an attribute [`Selector`](selectors.html#scrapy.Selector) (not SelectorList), e.g.\n`response.css('a::attr(href)')[0]` or\n`response.xpath('//img/@src')[0]`\n\nIn addition, `css` and `xpath` arguments are accepted to perform the link extraction\nwithin the `follow_all()` method (only one of `urls`, `css` and `xpath` is accepted).\n\nNote that when passing a `SelectorList` as argument for the `urls` parameter or\nusing the `css` or `xpath` parameters, this method will not produce requests for\nselectors from which links cannot be obtained (for instance, anchor tags without an\n`href` attribute)\n\n**json()[[source]](../_modules/scrapy/http/response/text.html#TextResponse.json)**\n\nDeserialize a JSON document to a Python object.\n\nReturns a Python object from deserialized JSON document.\nThe result is cached after the first call.\n\n**urljoin(*url*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.urljoin)**\n\nConstructs an absolute url by combining the Response’s base url with\na possible relative url. The base url shall be extracted from the\n`<base>` tag, or just `Response.url` if there is no such\ntag.\n\n### HtmlResponse objects\n\n***class*scrapy.http.HtmlResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/html.html#HtmlResponse)**\n\nThe `HtmlResponse` class is a subclass of `TextResponse`\nwhich adds encoding auto-discovering support by looking into the HTML [meta\nhttp-equiv](https://www.w3schools.com/TAGS/att_meta_http_equiv.asp) attribute. See `TextResponse.encoding`.\n\n### XmlResponse objects\n\n***class*scrapy.http.XmlResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/xml.html#XmlResponse)**\n\nThe `XmlResponse` class is a subclass of `TextResponse` which\nadds encoding auto-discovering support by looking into the XML declaration\nline. See `TextResponse.encoding`.\n\n### JsonResponse objects\n\n***class*scrapy.http.JsonResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/json.html#JsonResponse)**\n\nThe `JsonResponse` class is a subclass of `TextResponse`\nthat is used when the response has a [JSON MIME type](https://mimesniff.spec.whatwg.org/#json-mime-type) in its Content-Type\nheader.",
+      "sections": [
+        {
+          "heading": "input003\\request-response.md",
+          "text": "# Requests and Responses — Scrapy 2.14.1 documentation\n\n- Requests and Responses\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/request-response.rst)\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 185
+          },
+          "metadata": {
+            "heading_path": [
+              "input003\\request-response.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# Requests and Responses — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "Requests and Responses"
+            ]
+          }
+        },
+        {
+          "heading": "Requests and Responses",
+          "text": "Scrapy uses `Request` and `Response` objects for crawling web\nsites.\n\nTypically, `Request` objects are generated in the spiders and pass\nacross the system until they reach the Downloader, which executes the request\nand returns a `Response` object which travels back to the spider that\nissued the request.\n\nBoth `Request` and `Response` classes have subclasses which add\nfunctionality not required in the base classes. These are described\nbelow in Request subclasses and\nResponse subclasses.",
+          "level": 1,
+          "span": {
+            "start": 210,
+            "end": 703
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Scrapy uses `Request` and `Response` objects for crawling web",
+            "sibling_headings": [
+              "input003\\request-response.md"
+            ]
+          }
+        },
+        {
+          "heading": "Request objects",
+          "text": "***class*scrapy.Request(**args: Any*, ***kwargs: Any*)[[source]](../_modules/scrapy/http/request.html#Request)**\n\nRepresents an HTTP request, which is usually generated in a Spider and\nexecuted by the Downloader, thus generating a `Response`.\n\n**Parameters:**\n\n- **url** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) –\n\nthe URL of this request\n\nIf the URL is invalid, a [`ValueError`](https://docs.python.org/3/library/exceptions.html#ValueError) exception is raised.\n- **callback** (*Callable**[**Concatenate**[**Response**,**...**]**,**Any**]**|**None*) – sets `callback`, defaults to `None`.\n- **method** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the HTTP method of this request. Defaults to `'GET'`.\n- **meta** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – the initial values for the `Request.meta` attribute. If\ngiven, the dict passed in this parameter will be shallow copied.\n- **body** ([*bytes*](https://docs.python.org/3/library/stdtypes.html#bytes)*or*[*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the request body. If a string is passed, then it’s encoded as\nbytes using the `encoding` passed (which defaults to `utf-8`). If\n`body` is not given, an empty bytes object is stored. Regardless of the\ntype of this argument, the final value stored will be a bytes object\n(never a string or `None`).\n- **headers** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) –\n\nthe headers of this request. The dict values can be strings\n(for single valued headers) or lists (for multi-valued headers). If\n`None` is passed as value, the HTTP header will not be sent at all.\n\nCookies set via the `Cookie` header are not considered by the\n[CookiesMiddleware](downloader-middleware.html#cookies-mw). If you need to set cookies for a request, use the\n`cookies` argument. This is a known current limitation that is being\nworked on.\n- **cookies** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)*or*[*list*](https://docs.python.org/3/library/stdtypes.html#list)) –\n\nthe request cookies. These can be sent in two forms.\n\n```\nrequest_with_cookies = Request(\n    url=\"http://www.example.com\",\n    cookies={\"currency\": \"USD\", \"country\": \"UY\"},\n)\n```\n\n```\nrequest_with_cookies = Request(\n    url=\"https://www.example.com\",\n    cookies=[\n        {\n            \"name\": \"currency\",\n            \"value\": \"USD\",\n            \"domain\": \"example.com\",\n            \"path\": \"/currency\",\n            \"secure\": True,\n        },\n    ],\n)\n```\n\nThe latter form allows for customizing the `domain` and `path`\nattributes of the cookie. This is only useful if the cookies are saved\nfor later requests.\n\nWhen some site returns cookies (in a response) those are stored in the\ncookies for that domain and will be sent again in future requests.\nThat’s the typical behaviour of any regular web browser.\n\nNote that setting the `dont_merge_cookies` key to `True` in\n`request.meta` causes custom cookies to be\nignored.\n\nFor more info see [CookiesMiddleware](downloader-middleware.html#cookies-mw).\n\nCookies set via the `Cookie` header are not considered by the\n[CookiesMiddleware](downloader-middleware.html#cookies-mw). If you need to set cookies for a request, use the\n`scrapy.Request.cookies` parameter. This is a known\ncurrent limitation that is being worked on.\n  1. Using a dict:\n  1. Using a list of dicts:\n- **encoding** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the encoding of this request (defaults to `'utf-8'`).\nThis encoding will be used to percent-encode the URL and to convert the\nbody to bytes (if given as a string).\n- **priority** ([*int*](https://docs.python.org/3/library/functions.html#int)) – sets `priority`, defaults to `0`.\n- **dont_filter** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – sets `dont_filter`, defaults to `False`.\n- **errback** (*Callable**[**[**Failure**]**,**Any**]**|**None*) – sets `errback`, defaults to `None`.\n- **flags** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – Flags sent to the request, can be used for logging or similar purposes.\n- **cb_kwargs** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – A dict with arbitrary data that will be passed as keyword arguments to the Request’s callback.\n\n**url**\n\nA string containing the URL of this request. Keep in mind that this\nattribute contains the escaped URL, so it can differ from the URL passed in\nthe `__init__()` method.\n\nThis attribute is read-only. To change the URL of a Request use\n`replace()`.\n\n**method**\n\nA string representing the HTTP method in the request. This is guaranteed to\nbe uppercase. Example: `\"GET\"`, `\"POST\"`, `\"PUT\"`, etc\n\n**headers**\n\nA dictionary-like (`scrapy.http.headers.Headers`) object which contains\nthe request headers.\n\n**body**\n\nThe request body as bytes.\n\nThis attribute is read-only. To change the body of a Request use\n`replace()`.\n\n**callback*: CallbackT | [None](https://docs.python.org/3/library/constants.html#None)***\n\n[`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) to parse the\n`Response` to this request once received.\n\nThe callable must expect the response as its first parameter, and\nsupport any additional keyword arguments set through\n`cb_kwargs`.\n\nIn addition to an arbitrary callable, the following values are also\nsupported:\n\n- `None` (default), which indicates that the\n[`parse()`](spiders.html#scrapy.Spider.parse) method of the spider must be used.\n- `NO_CALLBACK()`.\n\nIf an unhandled exception is raised during request or response\nprocessing, i.e. by a [spider middleware](spider-middleware.html#topics-spider-middleware), [downloader middleware](downloader-middleware.html#topics-downloader-middleware) or download handler\n([`DOWNLOAD_HANDLERS`](settings.html#std-setting-DOWNLOAD_HANDLERS)), `errback` is called instead.\n\n[`HttpErrorMiddleware`](spider-middleware.html#scrapy.spidermiddlewares.httperror.HttpErrorMiddleware)\nraises exceptions for non-2xx responses by default, sending them\nto the `errback` instead.\n\nPassing additional data to callback functions\n\n**errback*: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None)***\n\n[`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable) to handle exceptions raised\nduring request or response processing.\n\nThe callable must expect a [`Failure`](https://docs.twisted.org/en/stable/api/twisted.python.failure.Failure.html) as\nits first parameter.\n\nUsing errbacks to catch exceptions in request processing\n\n**priority*: [int](https://docs.python.org/3/library/functions.html#int)***\n\nDefault: `0`\n\nValue that the [scheduler](scheduler.html#topics-scheduler) may use for\nrequest prioritization.\n\nBuilt-in schedulers prioritize requests with a higher priority\nvalue.\n\nNegative values are allowed.\n\n**cb_kwargs**\n\nA dictionary that contains arbitrary metadata for this request. Its contents\nwill be passed to the Request’s callback as keyword arguments. It is empty\nfor new Requests, which means by default callbacks only get a\n`Response` object as argument.\n\nThis dict is [shallow copied](https://docs.python.org/3/library/copy.html) when the request is\ncloned using the `copy()` or `replace()` methods, and can also be\naccessed, in your spider, from the `response.cb_kwargs` attribute.\n\nIn case of a failure to process the request, this dict can be accessed as\n`failure.request.cb_kwargs` in the request’s errback. For more information,\nsee Accessing additional data in errback functions.\n\n**meta*= {}***\n\n> A dictionary of arbitrary metadata for the request.\n>\n>\n>\n> You may extend request metadata as you see fit.\n>\n>\n>\n> Request metadata can also be accessed through the\n> `meta` attribute of a response.\n>\n>\n>\n> To pass data from one spider callback to another, consider using\n> `cb_kwargs` instead. However, request metadata may be the right\n> choice in certain scenarios, such as to maintain some debugging data\n> across all follow-up requests (e.g. the source URL).\n>\n>\n>\n> A common use of request metadata is to define request-specific\n> parameters for Scrapy components (extensions, middlewares, etc.). For\n> example, if you set `dont_retry` to `True`,\n> [`RetryMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.retry.RetryMiddleware) will never\n> retry that request, even if it fails. See Request.meta special keys.\n>\n>\n>\n> You may also use request metadata in your custom Scrapy components, for\n> example, to keep request state information relevant to your component.\n> For example,\n> [`RetryMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.retry.RetryMiddleware) uses the\n> `retry_times` metadata key to keep track of how many times a request\n> has been retried so far.\n>\n>\n>\n> Copying all the metadata of a previous request into a new, follow-up\n> request in a spider callback is a bad practice, because request\n> metadata may include metadata set by Scrapy components that is not\n> meant to be copied into other requests. For example, copying the\n> `retry_times` metadata key into follow-up requests can lower the\n> amount of retries allowed for those follow-up requests.\n>\n>\n>\n> You should only copy all request metadata from one request to another\n> if the new request is meant to replace the old request, as is often the\n> case when returning a request from a [downloader middleware](downloader-middleware.html#topics-downloader-middleware) method.\n>\n>\n>\n> Also mind that the `copy()` and `replace()` request methods\n> [shallow-copy](https://docs.python.org/3/library/copy.html) request metadata.\n\n**dont_filter*: [bool](https://docs.python.org/3/library/functions.html#bool)***\n\nWhether this request may be filtered out by [components](components.html#topics-components) that support filtering out requests (`False`,\ndefault), or those components should not filter out this request\n(`True`).\n\nThis attribute is commonly set to `True` to prevent duplicate\nrequests from being filtered out.\n\nWhen defining the start URLs of a spider through\n[`start_urls`](spiders.html#scrapy.Spider.start_urls), this attribute is enabled by\ndefault. See [`start()`](spiders.html#scrapy.Spider.start).\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'callback', 'method', 'headers', 'body', 'cookies', 'meta', 'encoding', 'priority', 'dont_filter', 'errback', 'flags', 'cb_kwargs')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Request.replace()`, `Request.to_dict()` and\n`request_from_dict()`.\n\n**copy()[[source]](../_modules/scrapy/http/request.html#Request.copy)**\n\nReturn a new Request which is a copy of this Request. See also:\nPassing additional data to callback functions.\n\n**replace([*url*, *method*, *headers*, *body*, *cookies*, *meta*, *flags*, *encoding*, *priority*, *dont_filter*, *callback*, *errback*, *cb_kwargs*])[[source]](../_modules/scrapy/http/request.html#Request.replace)**\n\nReturn a Request object with the same members, except for those members\ngiven new values by whichever keyword arguments are specified. The\n`cb_kwargs` and `meta` attributes are shallow\ncopied by default (unless new values are given as arguments). See also\nPassing additional data to callback functions.\n\n***classmethod*from_curl(*curl_command: [str](https://docs.python.org/3/library/stdtypes.html#str)*, *ignore_unknown_options: [bool](https://docs.python.org/3/library/functions.html#bool) = True*, ***kwargs: Any*) → Self[[source]](../_modules/scrapy/http/request.html#Request.from_curl)**\n\nCreate a Request object from a string containing a [cURL](https://curl.se/) command. It populates the HTTP method, the\nURL, the headers, the cookies and the body. It accepts the same\narguments as the `Request` class, taking preference and\noverriding the values of the same arguments contained in the cURL\ncommand.\n\nUnrecognized options are ignored by default. To raise an error when\nfinding unknown options call this method by passing\n`ignore_unknown_options=False`.\n\nUsing `from_curl()` from `Request`\nsubclasses, such as `JsonRequest`, or\n`XmlRpcRequest`, as well as having\n[downloader middlewares](downloader-middleware.html#topics-downloader-middleware)\nand\n[spider middlewares](spider-middleware.html#topics-spider-middleware)\nenabled, such as\n[`DefaultHeadersMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware),\n[`UserAgentMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.useragent.UserAgentMiddleware),\nor\n[`HttpCompressionMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware),\nmay modify the `Request` object.\n\nTo translate a cURL command into a Scrapy request,\nyou may use [curl2scrapy](https://michael-shub.github.io/curl2scrapy/).\n\n**to_dict(***, *spider: [Spider](spiders.html#scrapy.spiders.Spider) | [None](https://docs.python.org/3/library/constants.html#None) = None*) → [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)][[source]](../_modules/scrapy/http/request.html#Request.to_dict)**\n\nReturn a dictionary containing the Request’s data.\n\nUse `request_from_dict()` to convert back into a `Request` object.\n\nIf a spider is given, this method will try to find out the name of the spider methods used as callback\nand errback and include them in the output dict, raising an exception if they cannot be found.",
+          "level": 2,
+          "span": {
+            "start": 722,
+            "end": 14512
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects"
+            ],
+            "parent_heading": "Requests and Responses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.Request(**args: Any*, ***kwargs: Any*)[[source]](../_modules/scrapy/http/request.html#Request)**",
+            "sibling_headings": [
+              "Request.meta special keys",
+              "Stopping the download of a Response",
+              "Request subclasses",
+              "Response objects",
+              "Response subclasses"
+            ]
+          }
+        },
+        {
+          "heading": "Other functions related to requests",
+          "text": "**scrapy.http.request.NO_CALLBACK(**args: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*, ***kwargs: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*) → [NoReturn](https://docs.python.org/3/library/typing.html#typing.NoReturn)[[source]](../_modules/scrapy/http/request.html#NO_CALLBACK)**\n\nWhen assigned to the `callback` parameter of\n`Request`, it indicates that the request is not meant\nto have a spider callback at all.\n\nFor example:\n\n```\nRequest(\"https://example.com\", callback=NO_CALLBACK)\n```\n\nThis value should be used by [components](components.html#topics-components) that\ncreate and handle their own requests, e.g. through\n`scrapy.core.engine.ExecutionEngine.download()`, so that downloader\nmiddlewares handling such requests can treat them differently from requests\nintended for the [`parse()`](spiders.html#scrapy.Spider.parse) callback.\n\n**scrapy.utils.request.request_from_dict(*d: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), [Any](https://docs.python.org/3/library/typing.html#typing.Any)]*, ***, *spider: [Spider](spiders.html#scrapy.spiders.Spider) | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Request[[source]](../_modules/scrapy/utils/request.html#request_from_dict)**\n\nCreate a `Request` object from a dict.\n\nIf a spider is given, it will try to resolve the callbacks looking at the\nspider for methods with the same name.",
+          "level": 3,
+          "span": {
+            "start": 14552,
+            "end": 16037
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Other functions related to requests"
+            ],
+            "parent_heading": "Request objects",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "**scrapy.http.request.NO_CALLBACK(**args: [Any](https://docs.python.org/3/library/typing.html#typing.Any)*, ***kwargs: [Any](https://docs.python.org/3/library/typing.html#typing.An",
+            "sibling_headings": [
+              "Passing additional data to callback functions",
+              "Using errbacks to catch exceptions in request processing",
+              "Accessing additional data in errback functions",
+              "Request fingerprints"
+            ]
+          }
+        },
+        {
+          "heading": "Passing additional data to callback functions",
+          "text": "The callback of a request is a function that will be called when the response\nof that request is downloaded. The callback function will be called with the\ndownloaded `Response` object as its first argument.\n\nExample:\n\n```\ndef parse_page1(self, response):\n    return scrapy.Request(\n        \"http://www.example.com/some_page.html\", callback=self.parse_page2\n    )\n\ndef parse_page2(self, response):\n    # this would log http://www.example.com/some_page.html\n    self.logger.info(\"Visited %s\", response.url)\n```\n\nIn some cases you may be interested in passing arguments to those callback\nfunctions so you can receive the arguments later, in the second callback.\nThe following example shows how to achieve this by using the\n`Request.cb_kwargs` attribute:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    request.cb_kwargs[\"foo\"] = \"bar\"  # add more arguments for the callback\n    yield request\n\ndef parse_page2(self, response, main_url, foo):\n    yield dict(\n        main_url=main_url,\n        other_url=response.url,\n        foo=foo,\n    )\n```\n\n`Request.cb_kwargs` was introduced in version `1.7`.\nPrior to that, using `Request.meta` was recommended for passing\ninformation around callbacks. After `1.7`, `Request.cb_kwargs`\nbecame the preferred way for handling user information, leaving `Request.meta`\nfor communication with components like middlewares and extensions.",
+          "level": 3,
+          "span": {
+            "start": 16087,
+            "end": 17607
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Passing additional data to callback functions"
+            ],
+            "parent_heading": "Request objects",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The callback of a request is a function that will be called when the response",
+            "sibling_headings": [
+              "Other functions related to requests",
+              "Using errbacks to catch exceptions in request processing",
+              "Accessing additional data in errback functions",
+              "Request fingerprints"
+            ]
+          }
+        },
+        {
+          "heading": "Using errbacks to catch exceptions in request processing",
+          "text": "The errback of a request is a function that will be called when an exception\nis raise while processing it.\n\nIt receives a [`Failure`](https://docs.twisted.org/en/stable/api/twisted.python.failure.Failure.html) as first parameter and can\nbe used to track connection establishment timeouts, DNS errors etc.\n\nHere’s an example spider logging all errors and catching some specific\nerrors if needed:\n\n```\nimport scrapy\n\nfrom scrapy.spidermiddlewares.httperror import HttpError\nfrom twisted.internet.error import DNSLookupError\nfrom twisted.internet.error import TimeoutError, TCPTimedOutError\n\nclass ErrbackSpider(scrapy.Spider):\n    name = \"errback_example\"\n    start_urls = [\n        \"http://www.httpbin.org/\",  # HTTP 200 expected\n        \"http://www.httpbin.org/status/404\",  # Not found error\n        \"http://www.httpbin.org/status/500\",  # server issue\n        \"http://www.httpbin.org:12345/\",  # non-responding host, timeout expected\n        \"https://example.invalid/\",  # DNS error expected\n    ]\n\n    async def start(self):\n        for u in self.start_urls:\n            yield scrapy.Request(\n                u,\n                callback=self.parse_httpbin,\n                errback=self.errback_httpbin,\n                dont_filter=True,\n            )\n\n    def parse_httpbin(self, response):\n        self.logger.info(\"Got successful response from {}\".format(response.url))\n        # do something useful here...\n\n    def errback_httpbin(self, failure):\n        # log all failures\n        self.logger.error(repr(failure))\n\n        # in case you want to do something special for some errors,\n        # you may need the failure's type:\n\n        if failure.check(HttpError):\n            # these exceptions come from HttpError spider middleware\n            # you can get the non-200 response\n            response = failure.value.response\n            self.logger.error(\"HttpError on %s\", response.url)\n\n        elif failure.check(DNSLookupError):\n            # this is the original request\n            request = failure.request\n            self.logger.error(\"DNSLookupError on %s\", request.url)\n\n        elif failure.check(TimeoutError, TCPTimedOutError):\n            request = failure.request\n            self.logger.error(\"TimeoutError on %s\", request.url)\n```",
+          "level": 3,
+          "span": {
+            "start": 17668,
+            "end": 19928
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Using errbacks to catch exceptions in request processing"
+            ],
+            "parent_heading": "Request objects",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The errback of a request is a function that will be called when an exception",
+            "sibling_headings": [
+              "Other functions related to requests",
+              "Passing additional data to callback functions",
+              "Accessing additional data in errback functions",
+              "Request fingerprints"
+            ]
+          }
+        },
+        {
+          "heading": "Accessing additional data in errback functions",
+          "text": "In case of a failure to process the request, you may be interested in\naccessing arguments to the callback functions so you can process further\nbased on the arguments in the errback. The following example shows how to\nachieve this by using `Failure.request.cb_kwargs`:\n\n```\ndef parse(self, response):\n    request = scrapy.Request(\n        \"http://www.example.com/index.html\",\n        callback=self.parse_page2,\n        errback=self.errback_page2,\n        cb_kwargs=dict(main_url=response.url),\n    )\n    yield request\n\ndef parse_page2(self, response, main_url):\n    pass\n\ndef errback_page2(self, failure):\n    yield dict(\n        main_url=failure.request.cb_kwargs[\"main_url\"],\n    )\n```",
+          "level": 3,
+          "span": {
+            "start": 19979,
+            "end": 20668
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Accessing additional data in errback functions"
+            ],
+            "parent_heading": "Request objects",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "In case of a failure to process the request, you may be interested in",
+            "sibling_headings": [
+              "Other functions related to requests",
+              "Passing additional data to callback functions",
+              "Using errbacks to catch exceptions in request processing",
+              "Request fingerprints"
+            ]
+          }
+        },
+        {
+          "heading": "Request fingerprints",
+          "text": "There are some aspects of scraping, such as filtering out duplicate requests\n(see [`DUPEFILTER_CLASS`](settings.html#std-setting-DUPEFILTER_CLASS)) or caching responses (see\n[`HTTPCACHE_POLICY`](downloader-middleware.html#std-setting-HTTPCACHE_POLICY)), where you need the ability to generate a short,\nunique identifier from a `Request` object: a request\nfingerprint.\n\nYou often do not need to worry about request fingerprints, the default request\nfingerprinter works for most projects.\n\nHowever, there is no universal way to generate a unique identifier from a\nrequest, because different situations require comparing requests differently.\nFor example, sometimes you may need to compare URLs case-insensitively, include\nURL fragments, exclude certain URL query parameters, include some or all\nheaders, etc.\n\nTo change how request fingerprints are built for your requests, use the\n`REQUEST_FINGERPRINTER_CLASS` setting.",
+          "level": 3,
+          "span": {
+            "start": 20693,
+            "end": 21614
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Request fingerprints"
+            ],
+            "parent_heading": "Request objects",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "There are some aspects of scraping, such as filtering out duplicate requests",
+            "sibling_headings": [
+              "Other functions related to requests",
+              "Passing additional data to callback functions",
+              "Using errbacks to catch exceptions in request processing",
+              "Accessing additional data in errback functions"
+            ]
+          }
+        },
+        {
+          "heading": "REQUEST_FINGERPRINTER_CLASS",
+          "text": "Default: `scrapy.utils.request.RequestFingerprinter`\n\nA request fingerprinter class or its\nimport path.\n\n***class*scrapy.utils.request.RequestFingerprinter(*crawler: [Crawler](api.html#scrapy.crawler.Crawler) | [None](https://docs.python.org/3/library/constants.html#None) = None*)[[source]](../_modules/scrapy/utils/request.html#RequestFingerprinter)**\n\nDefault fingerprinter.\n\nIt takes into account a canonical version\n([`w3lib.url.canonicalize_url()`](https://w3lib.readthedocs.io/en/latest/w3lib.html#w3lib.url.canonicalize_url)) of `request.url` and the values of `request.method` and `request.body`. It then generates an [SHA1](https://en.wikipedia.org/wiki/SHA-1) hash.",
+          "level": 4,
+          "span": {
+            "start": 21647,
+            "end": 22326
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Request fingerprints",
+              "REQUEST_FINGERPRINTER_CLASS"
+            ],
+            "parent_heading": "Request fingerprints",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Default: `scrapy.utils.request.RequestFingerprinter`",
+            "sibling_headings": [
+              "Writing your own request fingerprinter",
+              "Request fingerprint restrictions"
+            ]
+          }
+        },
+        {
+          "heading": "Writing your own request fingerprinter",
+          "text": "A request fingerprinter is a [component](components.html#topics-components) that must\nimplement the following method:\n\n**fingerprint(*self*, *request: scrapy.Request*)**\n\nReturn a [`bytes`](https://docs.python.org/3/library/stdtypes.html#bytes) object that uniquely identifies *request*.\n\nSee also Request fingerprint restrictions.\n\nThe `fingerprint()` method of the default request fingerprinter,\n`scrapy.utils.request.RequestFingerprinter`, uses\n`scrapy.utils.request.fingerprint()` with its default parameters. For some\ncommon use cases you can use `scrapy.utils.request.fingerprint()` as well\nin your `fingerprint()` method implementation:\n\n**scrapy.utils.request.fingerprint(*request: Request*, ***, *include_headers: Iterable[[bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *keep_fragments: [bool](https://docs.python.org/3/library/functions.html#bool) = False*) → [bytes](https://docs.python.org/3/library/stdtypes.html#bytes)[[source]](../_modules/scrapy/utils/request.html#fingerprint)**\n\nReturn the request fingerprint.\n\nThe request fingerprint is a hash that uniquely identifies the resource the\nrequest points to. For example, take the following two urls:\n`http://www.example.com/query?id=111&cat=222`,\n`http://www.example.com/query?cat=222&id=111`.\n\nEven though those are two different URLs both point to the same resource\nand are equivalent (i.e. they should return the same response).\n\nAnother example are cookies used to store session ids. Suppose the\nfollowing page is only accessible to authenticated users:\n`http://www.example.com/members/offers.html`.\n\nLots of sites use a cookie to store the session id, which adds a random\ncomponent to the HTTP Request and thus should be ignored when calculating\nthe fingerprint.\n\nFor this reason, request headers are ignored by default when calculating\nthe fingerprint. If you want to include specific headers use the\ninclude_headers argument, which is a list of Request headers to include.\n\nAlso, servers usually ignore fragments in urls when handling requests,\nso they are also ignored by default when calculating the fingerprint.\nIf you want to include them, set the keep_fragments argument to True\n(for instance when handling requests with a headless browser).\n\nFor example, to take the value of a request header named `X-ID` into\naccount:\n\n```\n# my_project/settings.py\nREQUEST_FINGERPRINTER_CLASS = \"my_project.utils.RequestFingerprinter\"\n\n# my_project/utils.py\nfrom scrapy.utils.request import fingerprint\n\nclass RequestFingerprinter:\n    def fingerprint(self, request):\n        return fingerprint(request, include_headers=[\"X-ID\"])\n```\n\nYou can also write your own fingerprinting logic from scratch.\n\nHowever, if you do not use `scrapy.utils.request.fingerprint()`, make sure\nyou use [`WeakKeyDictionary`](https://docs.python.org/3/library/weakref.html#weakref.WeakKeyDictionary) to cache request fingerprints:\n\n- Caching saves CPU by ensuring that fingerprints are calculated only once\nper request, and not once per Scrapy component that needs the fingerprint\nof a request.\n- Using [`WeakKeyDictionary`](https://docs.python.org/3/library/weakref.html#weakref.WeakKeyDictionary) saves memory by ensuring that\nrequest objects do not stay in memory forever just because you have\nreferences to them in your cache dictionary.\n\nFor example, to take into account only the URL of a request, without any prior\nURL canonicalization or taking the request method or body into account:\n\n```\nfrom hashlib import sha1\nfrom weakref import WeakKeyDictionary\n\nfrom scrapy.utils.python import to_bytes\n\nclass RequestFingerprinter:\n    cache = WeakKeyDictionary()\n\n    def fingerprint(self, request):\n        if request not in self.cache:\n            fp = sha1()\n            fp.update(to_bytes(request.url))\n            self.cache[request] = fp.digest()\n        return self.cache[request]\n```\n\nIf you need to be able to override the request fingerprinting for arbitrary\nrequests from your spider callbacks, you may implement a request fingerprinter\nthat reads fingerprints from `request.meta`\nwhen available, and then falls back to\n`scrapy.utils.request.fingerprint()`. For example:\n\n```\nfrom scrapy.utils.request import fingerprint\n\nclass RequestFingerprinter:\n    def fingerprint(self, request):\n        if \"fingerprint\" in request.meta:\n            return request.meta[\"fingerprint\"]\n        return fingerprint(request)\n```\n\nIf you need to reproduce the same fingerprinting algorithm as Scrapy 2.6, use\nthe following request fingerprinter:\n\n```\nfrom hashlib import sha1\nfrom weakref import WeakKeyDictionary\n\nfrom scrapy.utils.python import to_bytes\nfrom w3lib.url import canonicalize_url\n\nclass RequestFingerprinter:\n    cache = WeakKeyDictionary()\n\n    def fingerprint(self, request):\n        if request not in self.cache:\n            fp = sha1()\n            fp.update(to_bytes(request.method))\n            fp.update(to_bytes(canonicalize_url(request.url)))\n            fp.update(request.body or b\"\")\n            self.cache[request] = fp.digest()\n        return self.cache[request]\n```",
+          "level": 4,
+          "span": {
+            "start": 22370,
+            "end": 27558
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Request fingerprints",
+              "Writing your own request fingerprinter"
+            ],
+            "parent_heading": "Request fingerprints",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "A request fingerprinter is a [component](components.html#topics-components) that must",
+            "sibling_headings": [
+              "REQUEST_FINGERPRINTER_CLASS",
+              "Request fingerprint restrictions"
+            ]
+          }
+        },
+        {
+          "heading": "Request fingerprint restrictions",
+          "text": "Scrapy components that use request fingerprints may impose additional\nrestrictions on the format of the fingerprints that your request\nfingerprinter generates.\n\nThe following built-in Scrapy components have such restrictions:\n\n- [`scrapy.extensions.httpcache.FilesystemCacheStorage`](downloader-middleware.html#scrapy.extensions.httpcache.FilesystemCacheStorage) (default\nvalue of [`HTTPCACHE_STORAGE`](downloader-middleware.html#std-setting-HTTPCACHE_STORAGE))\n\nRequest fingerprints must be at least 1 byte long.\n\nPath and filename length limits of the file system of\n[`HTTPCACHE_DIR`](downloader-middleware.html#std-setting-HTTPCACHE_DIR) also apply. Inside [`HTTPCACHE_DIR`](downloader-middleware.html#std-setting-HTTPCACHE_DIR),\nthe following directory structure is created:\n\nFor example, if a request fingerprint is made of 20 bytes (default),\n[`HTTPCACHE_DIR`](downloader-middleware.html#std-setting-HTTPCACHE_DIR) is `'/home/user/project/.scrapy/httpcache'`,\nand the name of your spider is `'my_spider'` your file system must\nsupport a file path like:\n\n```\n/home/user/project/.scrapy/httpcache/my_spider/01/0123456789abcdef0123456789abcdef01234567/response_headers\n```\n  - [`Spider.name`](spiders.html#scrapy.Spider.name)\n    - first byte of a request fingerprint as hexadecimal\n      - fingerprint as hexadecimal\n        - filenames up to 16 characters long\n- [`scrapy.extensions.httpcache.DbmCacheStorage`](downloader-middleware.html#scrapy.extensions.httpcache.DbmCacheStorage)\n\nThe underlying DBM implementation must support keys as long as twice\nthe number of bytes of a request fingerprint, plus 5. For example,\nif a request fingerprint is made of 20 bytes (default),\n45-character-long keys must be supported.",
+          "level": 4,
+          "span": {
+            "start": 27596,
+            "end": 29321
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request objects",
+              "Request fingerprints",
+              "Request fingerprint restrictions"
+            ],
+            "parent_heading": "Request fingerprints",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Scrapy components that use request fingerprints may impose additional",
+            "sibling_headings": [
+              "REQUEST_FINGERPRINTER_CLASS",
+              "Writing your own request fingerprinter"
+            ]
+          }
+        },
+        {
+          "heading": "Request.meta special keys",
+          "text": "The `Request.meta` attribute can contain any arbitrary data, but there\nare some special keys recognized by Scrapy and its built-in extensions.\n\nThose are:\n\n- [`allow_offsite`](downloader-middleware.html#std-reqmeta-allow_offsite)\n- [`autothrottle_dont_adjust_delay`](autothrottle.html#std-reqmeta-autothrottle_dont_adjust_delay)\n- `bindaddress`\n- [`cookiejar`](downloader-middleware.html#std-reqmeta-cookiejar)\n- [`dont_cache`](downloader-middleware.html#std-reqmeta-dont_cache)\n- `dont_merge_cookies`\n- [`dont_obey_robotstxt`](downloader-middleware.html#std-reqmeta-dont_obey_robotstxt)\n- [`dont_redirect`](downloader-middleware.html#std-reqmeta-dont_redirect)\n- [`dont_retry`](downloader-middleware.html#std-reqmeta-dont_retry)\n- `download_fail_on_dataloss`\n- `download_latency`\n- [`download_maxsize`](settings.html#std-reqmeta-download_maxsize)\n- [`download_warnsize`](settings.html#std-reqmeta-download_warnsize)\n- `download_timeout`\n- `ftp_password` (See [`FTP_PASSWORD`](settings.html#std-setting-FTP_PASSWORD) for more info)\n- `ftp_user` (See [`FTP_USER`](settings.html#std-setting-FTP_USER) for more info)\n- [`handle_httpstatus_all`](spider-middleware.html#std-reqmeta-handle_httpstatus_all)\n- [`handle_httpstatus_list`](spider-middleware.html#std-reqmeta-handle_httpstatus_list)\n- [`is_start_request`](spider-middleware.html#std-reqmeta-is_start_request)\n- `max_retry_times`\n- [`proxy`](downloader-middleware.html#std-reqmeta-proxy)\n- [`redirect_reasons`](downloader-middleware.html#std-reqmeta-redirect_reasons)\n- [`redirect_urls`](downloader-middleware.html#std-reqmeta-redirect_urls)\n- [`referrer_policy`](spider-middleware.html#std-reqmeta-referrer_policy)",
+          "level": 2,
+          "span": {
+            "start": 29350,
+            "end": 31022
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request.meta special keys"
+            ],
+            "parent_heading": "Requests and Responses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The `Request.meta` attribute can contain any arbitrary data, but there",
+            "sibling_headings": [
+              "Request objects",
+              "Stopping the download of a Response",
+              "Request subclasses",
+              "Response objects",
+              "Response subclasses"
+            ]
+          }
+        },
+        {
+          "heading": "bindaddress",
+          "text": "The IP of the outgoing IP address to use for the performing the request.",
+          "level": 3,
+          "span": {
+            "start": 31038,
+            "end": 31113
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request.meta special keys",
+              "bindaddress"
+            ],
+            "parent_heading": "Request.meta special keys",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The IP of the outgoing IP address to use for the performing the request.",
+            "sibling_headings": [
+              "download_timeout",
+              "download_latency",
+              "download_fail_on_dataloss",
+              "max_retry_times"
+            ]
+          }
+        },
+        {
+          "heading": "download_timeout",
+          "text": "The amount of time (in secs) that the downloader will wait before timing out.\nSee also: [`DOWNLOAD_TIMEOUT`](settings.html#std-setting-DOWNLOAD_TIMEOUT).",
+          "level": 3,
+          "span": {
+            "start": 31134,
+            "end": 31290
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request.meta special keys",
+              "download_timeout"
+            ],
+            "parent_heading": "Request.meta special keys",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The amount of time (in secs) that the downloader will wait before timing out.",
+            "sibling_headings": [
+              "bindaddress",
+              "download_latency",
+              "download_fail_on_dataloss",
+              "max_retry_times"
+            ]
+          }
+        },
+        {
+          "heading": "download_latency",
+          "text": "The amount of time spent to fetch the response, since the request has been\nstarted, i.e. HTTP message sent over the network. This meta key only becomes\navailable when the response has been downloaded. While most other meta keys are\nused to control Scrapy behavior, this one is supposed to be read-only.",
+          "level": 3,
+          "span": {
+            "start": 31311,
+            "end": 31616
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request.meta special keys",
+              "download_latency"
+            ],
+            "parent_heading": "Request.meta special keys",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The amount of time spent to fetch the response, since the request has been",
+            "sibling_headings": [
+              "bindaddress",
+              "download_timeout",
+              "download_fail_on_dataloss",
+              "max_retry_times"
+            ]
+          }
+        },
+        {
+          "heading": "download_fail_on_dataloss",
+          "text": "Whether or not to fail on broken responses. See:\n[`DOWNLOAD_FAIL_ON_DATALOSS`](settings.html#std-setting-DOWNLOAD_FAIL_ON_DATALOSS).",
+          "level": 3,
+          "span": {
+            "start": 31646,
+            "end": 31781
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request.meta special keys",
+              "download_fail_on_dataloss"
+            ],
+            "parent_heading": "Request.meta special keys",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Whether or not to fail on broken responses. See:",
+            "sibling_headings": [
+              "bindaddress",
+              "download_timeout",
+              "download_latency",
+              "max_retry_times"
+            ]
+          }
+        },
+        {
+          "heading": "max_retry_times",
+          "text": "The meta key is used set retry times per request. When initialized, the\n`max_retry_times` meta key takes higher precedence over the\n[`RETRY_TIMES`](downloader-middleware.html#std-setting-RETRY_TIMES) setting.",
+          "level": 3,
+          "span": {
+            "start": 31801,
+            "end": 32012
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request.meta special keys",
+              "max_retry_times"
+            ],
+            "parent_heading": "Request.meta special keys",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The meta key is used set retry times per request. When initialized, the",
+            "sibling_headings": [
+              "bindaddress",
+              "download_timeout",
+              "download_latency",
+              "download_fail_on_dataloss"
+            ]
+          }
+        },
+        {
+          "heading": "Stopping the download of a Response",
+          "text": "Raising a [`StopDownload`](exceptions.html#scrapy.exceptions.StopDownload) exception from a handler for the\n[`bytes_received`](signals.html#scrapy.signals.bytes_received) or [`headers_received`](signals.html#scrapy.signals.headers_received)\nsignals will stop the download of a given response. See the following example:\n\n```\nimport scrapy\n\nclass StopSpider(scrapy.Spider):\n    name = \"stop\"\n    start_urls = [\"https://docs.scrapy.org/en/latest/\"]\n\n    @classmethod\n    def from_crawler(cls, crawler):\n        spider = super().from_crawler(crawler)\n        crawler.signals.connect(\n            spider.on_bytes_received, signal=scrapy.signals.bytes_received\n        )\n        return spider\n\n    def parse(self, response):\n        # 'last_chars' show that the full response was not downloaded\n        yield {\"len\": len(response.text), \"last_chars\": response.text[-40:]}\n\n    def on_bytes_received(self, data, request, spider):\n        raise scrapy.exceptions.StopDownload(fail=False)\n```\n\nwhich produces the following output:\n\n```\n2020-05-19 17:26:12 [scrapy.core.engine] INFO: Spider opened\n2020-05-19 17:26:12 [scrapy.extensions.logstats] INFO: Crawled 0 pages (at 0 pages/min), scraped 0 items (at 0 items/min)\n2020-05-19 17:26:13 [scrapy.core.downloader.handlers.http11] DEBUG: Download stopped for <GET https://docs.scrapy.org/en/latest/> from signal handler StopSpider.on_bytes_received\n2020-05-19 17:26:13 [scrapy.core.engine] DEBUG: Crawled (200) <GET https://docs.scrapy.org/en/latest/> (referer: None) ['download_stopped']\n2020-05-19 17:26:13 [scrapy.core.scraper] DEBUG: Scraped from <200 https://docs.scrapy.org/en/latest/>\n{'len': 279, 'last_chars': 'dth, initial-scale=1.0\">\\n  \\n  <title>Scr'}\n2020-05-19 17:26:13 [scrapy.core.engine] INFO: Closing spider (finished)\n```\n\nBy default, resulting responses are handled by their corresponding errbacks. To\ncall their callback instead, like in this example, pass `fail=False` to the\n[`StopDownload`](exceptions.html#scrapy.exceptions.StopDownload) exception.",
+          "level": 2,
+          "span": {
+            "start": 32051,
+            "end": 34069
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Stopping the download of a Response"
+            ],
+            "parent_heading": "Requests and Responses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Raising a [`StopDownload`](exceptions.html#scrapy.exceptions.StopDownload) exception from a handler for the",
+            "sibling_headings": [
+              "Request objects",
+              "Request.meta special keys",
+              "Request subclasses",
+              "Response objects",
+              "Response subclasses"
+            ]
+          }
+        },
+        {
+          "heading": "Request subclasses",
+          "text": "Here is the list of built-in `Request` subclasses. You can also subclass\nit to implement your own custom functionality.",
+          "level": 2,
+          "span": {
+            "start": 34091,
+            "end": 34213
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request subclasses"
+            ],
+            "parent_heading": "Requests and Responses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Here is the list of built-in `Request` subclasses. You can also subclass",
+            "sibling_headings": [
+              "Request objects",
+              "Request.meta special keys",
+              "Stopping the download of a Response",
+              "Response objects",
+              "Response subclasses"
+            ]
+          }
+        },
+        {
+          "heading": "FormRequest objects",
+          "text": "The FormRequest class extends the base `Request` with functionality for\ndealing with HTML forms. It uses [lxml.html forms](https://lxml.de/lxmlhtml.html#forms) to pre-populate form\nfields with form data from `Response` objects.\n\n***class*scrapy.FormRequest(*url*[, *formdata*, *...*])**\n\nThe `FormRequest` class adds a new keyword parameter to the `__init__()` method. The\nremaining arguments are the same as for the `Request` class and are\nnot documented here.\n\n**Parameters:**\n\n**formdata** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)*or*[*collections.abc.Iterable*](https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable)) – is a dictionary (or iterable of (key, value) tuples)\ncontaining HTML Form data which will be url-encoded and assigned to the\nbody of the request.\n\nThe `FormRequest` objects support the following class method in\naddition to the standard `Request` methods:\n\n***classmethod*from_response(*response*[, *formname=None*, *formid=None*, *formnumber=0*, *formdata=None*, *formxpath=None*, *formcss=None*, *clickdata=None*, *dont_click=False*, *...*])**\n\nReturns a new `FormRequest` object with its form field values\npre-populated with those found in the HTML `<form>` element contained\nin the given response. For an example see\nUsing FormRequest.from_response() to simulate a user login.\n\nThe policy is to automatically simulate a click, by default, on any form\ncontrol that looks clickable, like a `<input type=\"submit\">`. Even\nthough this is quite convenient, and often the desired behaviour,\nsometimes it can cause problems which could be hard to debug. For\nexample, when working with forms that are filled and/or submitted using\njavascript, the default `from_response()` behaviour may not be the\nmost appropriate. To disable this behaviour you can set the\n`dont_click` argument to `True`. Also, if you want to change the\ncontrol clicked (instead of disabling it) you can also use the\n`clickdata` argument.\n\nUsing this method with select elements which have leading\nor trailing whitespace in the option values will not work due to a\n[bug in lxml](https://bugs.launchpad.net/lxml/+bug/1665241), which should be fixed in lxml 3.8 and above.\n\n**Parameters:**\n\n- **response** (`Response` object) – the response containing a HTML form which will be used\nto pre-populate the form fields\n- **formname** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the form with name attribute set to this value will be used.\n- **formid** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the form with id attribute set to this value will be used.\n- **formxpath** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the first form that matches the xpath will be used.\n- **formcss** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – if given, the first form that matches the css selector will be used.\n- **formnumber** ([*int*](https://docs.python.org/3/library/functions.html#int)) – the number of form to use, when the response contains\nmultiple forms. The first one (and also the default) is `0`.\n- **formdata** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – fields to override in the form data. If a field was\nalready present in the response `<form>` element, its value is\noverridden by the one passed in this parameter. If a value passed in\nthis parameter is `None`, the field will not be included in the\nrequest, even if it was present in the response `<form>` element.\n- **clickdata** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – attributes to lookup the control clicked. If it’s not\ngiven, the form data will be submitted simulating a click on the\nfirst clickable element. In addition to html attributes, the control\ncan be identified by its zero-based index relative to other\nsubmittable inputs inside the form, via the `nr` attribute.\n- **dont_click** ([*bool*](https://docs.python.org/3/library/functions.html#bool)) – If True, the form data will be submitted without\nclicking in any element.\n\nThe other parameters of this class method are passed directly to the\n`FormRequest` `__init__()` method.",
+          "level": 3,
+          "span": {
+            "start": 34237,
+            "end": 38426
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request subclasses",
+              "FormRequest objects"
+            ],
+            "parent_heading": "Request subclasses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The FormRequest class extends the base `Request` with functionality for",
+            "sibling_headings": [
+              "JsonRequest",
+              "JsonRequest usage example"
+            ]
+          }
+        },
+        {
+          "heading": "Using FormRequest to send data via HTTP POST",
+          "text": "If you want to simulate a HTML Form POST in your spider and send a couple of\nkey-value fields, you can return a `FormRequest` object (from your\nspider) like this:\n\n```\nreturn [\n    FormRequest(\n        url=\"http://www.example.com/post/action\",\n        formdata={\"name\": \"John Doe\", \"age\": \"27\"},\n        callback=self.after_post,\n    )\n]\n```",
+          "level": 4,
+          "span": {
+            "start": 38504,
+            "end": 38848
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request subclasses",
+              "Request usage examples",
+              "Using FormRequest to send data via HTTP POST"
+            ],
+            "parent_heading": "Request usage examples",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "If you want to simulate a HTML Form POST in your spider and send a couple of",
+            "sibling_headings": [
+              "Using FormRequest.from_response() to simulate a user login"
+            ]
+          }
+        },
+        {
+          "heading": "Using FormRequest.from_response() to simulate a user login",
+          "text": "It is usual for web sites to provide pre-populated form fields through `<input\ntype=\"hidden\">` elements, such as session related data or authentication\ntokens (for login pages). When scraping, you’ll want these fields to be\nautomatically pre-populated and only override a couple of them, such as the\nuser name and password. You can use the `FormRequest.from_response()`\nmethod for this job. Here’s an example spider which uses it:\n\n```\nimport scrapy\n\ndef authentication_failed(response):\n    # TODO: Check the contents of the response and return True if it failed\n    # or False if it succeeded.\n    pass\n\nclass LoginSpider(scrapy.Spider):\n    name = \"example.com\"\n    start_urls = [\"http://www.example.com/users/login.php\"]\n\n    def parse(self, response):\n        return scrapy.FormRequest.from_response(\n            response,\n            formdata={\"username\": \"john\", \"password\": \"secret\"},\n            callback=self.after_login,\n        )\n\n    def after_login(self, response):\n        if authentication_failed(response):\n            self.logger.error(\"Login failed\")\n            return\n\n        # continue scraping with authenticated session...\n```",
+          "level": 4,
+          "span": {
+            "start": 38912,
+            "end": 40066
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request subclasses",
+              "Request usage examples",
+              "Using FormRequest.from_response() to simulate a user login"
+            ],
+            "parent_heading": "Request usage examples",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "It is usual for web sites to provide pre-populated form fields through `<input",
+            "sibling_headings": [
+              "Using FormRequest to send data via HTTP POST"
+            ]
+          }
+        },
+        {
+          "heading": "JsonRequest",
+          "text": "The JsonRequest class extends the base `Request` class with functionality for\ndealing with JSON requests.\n\n***class*scrapy.http.JsonRequest(*url*[, *... data*, *dumps_kwargs*])[[source]](../_modules/scrapy/http/request/json_request.html#JsonRequest)**\n\nThe `JsonRequest` class adds two new keyword parameters to the `__init__()` method. The\nremaining arguments are the same as for the `Request` class and are\nnot documented here.\n\nUsing the `JsonRequest` will set the `Content-Type` header to `application/json`\nand `Accept` header to `application/json, text/javascript, */*; q=0.01`\n\n**Parameters:**\n\n- **data** ([*object*](https://docs.python.org/3/library/functions.html#object)) – is any JSON serializable object that needs to be JSON encoded and assigned to body.\nIf the `body` argument is provided this parameter will be ignored.\nIf the `body` argument is not provided and the\n`data` argument is provided the `method` will be\nset to `'POST'` automatically.\n- **dumps_kwargs** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – Parameters that will be passed to underlying [`json.dumps()`](https://docs.python.org/3/library/json.html#json.dumps) method which is used to serialize\ndata into JSON format.\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'callback', 'method', 'headers', 'body', 'cookies', 'meta', 'encoding', 'priority', 'dont_filter', 'errback', 'flags', 'cb_kwargs', 'dumps_kwargs')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Request.replace()`, `Request.to_dict()` and\n`request_from_dict()`.",
+          "level": 3,
+          "span": {
+            "start": 40082,
+            "end": 41901
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request subclasses",
+              "JsonRequest"
+            ],
+            "parent_heading": "Request subclasses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The JsonRequest class extends the base `Request` class with functionality for",
+            "sibling_headings": [
+              "FormRequest objects",
+              "JsonRequest usage example"
+            ]
+          }
+        },
+        {
+          "heading": "JsonRequest usage example",
+          "text": "Sending a JSON POST request with a JSON payload:\n\n```\ndata = {\n    \"name1\": \"value1\",\n    \"name2\": \"value2\",\n}\nyield JsonRequest(url=\"http://www.example.com/post/action\", data=data)\n```",
+          "level": 3,
+          "span": {
+            "start": 41931,
+            "end": 42119
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Request subclasses",
+              "JsonRequest usage example"
+            ],
+            "parent_heading": "Request subclasses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Sending a JSON POST request with a JSON payload:",
+            "sibling_headings": [
+              "FormRequest objects",
+              "JsonRequest"
+            ]
+          }
+        },
+        {
+          "heading": "Response objects",
+          "text": "***class*scrapy.http.Response(**args: Any*, ***kwargs: Any*)[[source]](../_modules/scrapy/http/response.html#Response)**\n\nAn object that represents an HTTP response, which is usually\ndownloaded (by the Downloader) and fed to the Spiders for processing.\n\n**Parameters:**\n\n- **url** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – the URL of this response\n- **status** ([*int*](https://docs.python.org/3/library/functions.html#int)) – the HTTP status of the response. Defaults to `200`.\n- **headers** ([*dict*](https://docs.python.org/3/library/stdtypes.html#dict)) – the headers of this response. The dict values can be strings\n(for single valued headers) or lists (for multi-valued headers).\n- **body** ([*bytes*](https://docs.python.org/3/library/stdtypes.html#bytes)) – the response body. To access the decoded text as a string, use\n`response.text` from an encoding-aware\nResponse subclass,\nsuch as `TextResponse`.\n- **flags** ([*list*](https://docs.python.org/3/library/stdtypes.html#list)) – is a list containing the initial values for the\n`Response.flags` attribute. If given, the list will be shallow\ncopied.\n- **request** (*scrapy.Request*) – the initial value of the `Response.request` attribute.\nThis represents the `Request` that generated this response.\n- **certificate** ([*twisted.internet.ssl.Certificate*](https://docs.twisted.org/en/stable/api/twisted.internet.ssl.Certificate.html)) – an object representing the server’s SSL certificate.\n- **ip_address** ([`ipaddress.IPv4Address`](https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv4Address) or [`ipaddress.IPv6Address`](https://docs.python.org/3/library/ipaddress.html#ipaddress.IPv6Address)) – The IP address of the server from which the Response originated.\n- **protocol** ([`str`](https://docs.python.org/3/library/stdtypes.html#str)) – The protocol that was used to download the response.\nFor instance: “HTTP/1.0”, “HTTP/1.1”, “h2”\n\n**url**\n\nA string containing the URL of the response.\n\nThis attribute is read-only. To change the URL of a Response use\n`replace()`.\n\n**status**\n\nAn integer representing the HTTP status of the response. Example: `200`,\n`404`.\n\n**headers**\n\nA dictionary-like (`scrapy.http.headers.Headers`) object which contains\nthe response headers. Values can be accessed using\n`get()` to return the first header value with\nthe specified name or `getlist()` to return\nall header values with the specified name. For example, this call will give you\nall cookies in the headers:\n\n```\nresponse.headers.getlist('Set-Cookie')\n```\n\n**body**\n\nThe response body as bytes.\n\nIf you want the body as a string, use `TextResponse.text` (only\navailable in `TextResponse` and subclasses).\n\nThis attribute is read-only. To change the body of a Response use\n`replace()`.\n\n**request**\n\nThe `Request` object that generated this response. This attribute is\nassigned in the Scrapy engine, after the response and the request have passed\nthrough all [Downloader Middlewares](downloader-middleware.html#topics-downloader-middleware).\nIn particular, this means that:\n\n- HTTP redirections will create a new request from the request before\nredirection. It has the majority of the same metadata and original\nrequest attributes and gets assigned to the redirected response\ninstead of the propagation of the original request.\n- Response.request.url doesn’t always equal Response.url\n- This attribute is only available in the spider code, and in the\n[Spider Middlewares](spider-middleware.html#topics-spider-middleware), but not in\nDownloader Middlewares (although you have the Request available there by\nother means) and handlers of the [`response_downloaded`](signals.html#std-signal-response_downloaded) signal.\n\n**meta**\n\nA shortcut to the `meta` attribute of the\n`Response.request` object (i.e. `self.request.meta`).\n\nUnlike the `Response.request` attribute, the `Response.meta`\nattribute is propagated along redirects and retries, so you will get\nthe original `Request.meta` sent from your spider.\n\n`Request.meta` attribute\n\n**cb_kwargs**\n\nA shortcut to the `cb_kwargs` attribute of the\n`Response.request` object (i.e. `self.request.cb_kwargs`).\n\nUnlike the `Response.request` attribute, the\n`Response.cb_kwargs` attribute is propagated along redirects and\nretries, so you will get the original `Request.cb_kwargs` sent from your spider.\n\n`Request.cb_kwargs` attribute\n\n**flags**\n\nA list that contains flags for this response. Flags are labels used for\ntagging Responses. For example: `'cached'`, `'redirected`’, etc. And\nthey’re shown on the string representation of the Response (`__str__()`\nmethod) which is used by the engine for logging.\n\n**certificate**\n\nA [`twisted.internet.ssl.Certificate`](https://docs.twisted.org/en/stable/api/twisted.internet.ssl.Certificate.html) object representing\nthe server’s SSL certificate.\n\nOnly populated for `https` responses, `None` otherwise.\n\n**ip_address**\n\nThe IP address of the server from which the Response originated.\n\nThis attribute is currently only populated by the HTTP 1.1 download\nhandler, i.e. for `http(s)` responses. For other handlers,\n`ip_address` is always `None`.\n\n**protocol**\n\nThe protocol that was used to download the response.\nFor instance: “HTTP/1.0”, “HTTP/1.1”\n\nThis attribute is currently only populated by the HTTP download\nhandlers, i.e. for `http(s)` responses. For other handlers,\n`protocol` is always `None`.\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'status', 'headers', 'body', 'flags', 'request', 'certificate', 'ip_address', 'protocol')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Response.replace()`.\n\n**copy()[[source]](../_modules/scrapy/http/response.html#Response.copy)**\n\nReturns a new Response which is a copy of this Response.\n\n**replace([*url*, *status*, *headers*, *body*, *request*, *flags*, *cls*])[[source]](../_modules/scrapy/http/response.html#Response.replace)**\n\nReturns a Response object with the same members, except for those members\ngiven new values by whichever keyword arguments are specified. The\nattribute `Response.meta` is copied by default.\n\n**urljoin(*url*)[[source]](../_modules/scrapy/http/response.html#Response.urljoin)**\n\nConstructs an absolute url by combining the Response’s `url` with\na possible relative url.\n\nThis is a wrapper over [`urljoin()`](https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin), it’s merely an alias for\nmaking this call:\n\n```\nurllib.parse.urljoin(response.url, url)\n```\n\n**follow(*url: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link)*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = 'utf-8'*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Request[[source]](../_modules/scrapy/http/response.html#Response.follow)**\n\nReturn a `Request` instance to follow a link `url`.\nIt accepts the same arguments as `Request.__init__()` method,\nbut `url` can be a relative URL or a [`Link`](link-extractors.html#scrapy.link.Link) object,\nnot only an absolute URL.\n\n`TextResponse` provides a `follow()`\nmethod which supports selectors in addition to absolute/relative URLs\nand Link objects.\n\n**follow_all(*urls: Iterable[[str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link)]*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = 'utf-8'*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Iterable[Request][[source]](../_modules/scrapy/http/response.html#Response.follow_all)**\n\nReturn an iterable of `Request` instances to follow all links\nin `urls`. It accepts the same arguments as `Request.__init__()` method,\nbut elements of `urls` can be relative URLs or [`Link`](link-extractors.html#scrapy.link.Link) objects,\nnot only absolute URLs.\n\n`TextResponse` provides a `follow_all()`\nmethod which supports selectors in addition to absolute/relative URLs\nand Link objects.",
+          "level": 2,
+          "span": {
+            "start": 42139,
+            "end": 53437
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Response objects"
+            ],
+            "parent_heading": "Requests and Responses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.http.Response(**args: Any*, ***kwargs: Any*)[[source]](../_modules/scrapy/http/response.html#Response)**",
+            "sibling_headings": [
+              "Request objects",
+              "Request.meta special keys",
+              "Stopping the download of a Response",
+              "Request subclasses",
+              "Response subclasses"
+            ]
+          }
+        },
+        {
+          "heading": "Response subclasses",
+          "text": "Here is the list of available built-in Response subclasses. You can also\nsubclass the Response class to implement your own functionality.",
+          "level": 2,
+          "span": {
+            "start": 53460,
+            "end": 53600
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Response subclasses"
+            ],
+            "parent_heading": "Requests and Responses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Here is the list of available built-in Response subclasses. You can also",
+            "sibling_headings": [
+              "Request objects",
+              "Request.meta special keys",
+              "Stopping the download of a Response",
+              "Request subclasses",
+              "Response objects"
+            ]
+          }
+        },
+        {
+          "heading": "TextResponse objects",
+          "text": "***class*scrapy.http.TextResponse(*url*[, *encoding*[, *...*]])[[source]](../_modules/scrapy/http/response/text.html#TextResponse)**\n\n`TextResponse` objects adds encoding capabilities to the base\n`Response` class, which is meant to be used only for binary data,\nsuch as images, sounds or any media file.\n\n`TextResponse` objects support a new `__init__()` method argument, in\naddition to the base `Response` objects. The remaining functionality\nis the same as for the `Response` class and is not documented here.\n\n**Parameters:**\n\n**encoding** ([*str*](https://docs.python.org/3/library/stdtypes.html#str)) – is a string which contains the encoding to use for this\nresponse. If you create a `TextResponse` object with a string as\nbody, it will be converted to bytes encoded using this encoding. If\n*encoding* is `None` (default), the encoding will be looked up in the\nresponse headers and body instead.\n\n`TextResponse` objects support the following attributes in addition\nto the standard `Response` ones:\n\n**text**\n\nResponse body, as a string.\n\nThe same as `response.body.decode(response.encoding)`, but the\nresult is cached after the first call, so you can access\n`response.text` multiple times without extra overhead.\n\n`str(response.body)` is not a correct way to convert the response\nbody into a string:\n\n```\n>>> str(b\"body\")\n\"b'body'\"\n```\n\n**encoding**\n\nA string with the encoding of this response. The encoding is resolved by\ntrying the following mechanisms, in order:\n\n1. the encoding passed in the `__init__()` method `encoding` argument\n2. the encoding declared in the Content-Type HTTP header. If this\nencoding is not valid (i.e. unknown), it is ignored and the next\nresolution mechanism is tried.\n3. the encoding declared in the response body. The TextResponse class\ndoesn’t provide any special functionality for this. However, the\n`HtmlResponse` and `XmlResponse` classes do.\n4. the encoding inferred by looking at the response body. This is the more\nfragile method but also the last one tried.\n\n**selector**\n\nA [`Selector`](selectors.html#scrapy.Selector) instance using the response as\ntarget. The selector is lazily instantiated on first access.\n\n**attributes*: [tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[[str](https://docs.python.org/3/library/stdtypes.html#str), ...]**= ('url', 'status', 'headers', 'body', 'flags', 'request', 'certificate', 'ip_address', 'protocol', 'encoding')***\n\nA tuple of [`str`](https://docs.python.org/3/library/stdtypes.html#str) objects containing the name of all public\nattributes of the class that are also keyword parameters of the\n`__init__()` method.\n\nCurrently used by `Response.replace()`.\n\n`TextResponse` objects support the following methods in addition to\nthe standard `Response` ones:\n\n**jmespath(*query*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.jmespath)**\n\nA shortcut to `TextResponse.selector.jmespath(query)`:\n\n```\nresponse.jmespath('object.[*]')\n```\n\n**xpath(*query*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.xpath)**\n\nA shortcut to `TextResponse.selector.xpath(query)`:\n\n```\nresponse.xpath('//p')\n```\n\n**css(*query*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.css)**\n\nA shortcut to `TextResponse.selector.css(query)`:\n\n```\nresponse.css('p')\n```\n\n**follow(*url: [str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link) | parsel.Selector*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Request[[source]](../_modules/scrapy/http/response/text.html#TextResponse.follow)**\n\nReturn a `Request` instance to follow a link `url`.\nIt accepts the same arguments as `Request.__init__()` method,\nbut `url` can be not only an absolute URL, but also\n\n- a relative URL\n- a [`Link`](link-extractors.html#scrapy.link.Link) object, e.g. the result of\n[Link Extractors](link-extractors.html#topics-link-extractors)\n- a [`Selector`](selectors.html#scrapy.Selector) object for a `<link>` or `<a>` element, e.g.\n`response.css('a.my_link')[0]`\n- an attribute [`Selector`](selectors.html#scrapy.Selector) (not SelectorList), e.g.\n`response.css('a::attr(href)')[0]` or\n`response.xpath('//img/@src')[0]`\n\nSee [A shortcut for creating Requests](../intro/tutorial.html#response-follow-example) for usage examples.\n\n**follow_all(*urls: Iterable[[str](https://docs.python.org/3/library/stdtypes.html#str) | [Link](link-extractors.html#scrapy.link.Link)] | parsel.SelectorList | [None](https://docs.python.org/3/library/constants.html#None) = None*, *callback: CallbackT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *method: [str](https://docs.python.org/3/library/stdtypes.html#str) = 'GET'*, *headers: Mapping[AnyStr, Any] | Iterable[[tuple](https://docs.python.org/3/library/stdtypes.html#tuple)[AnyStr, Any]] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *body: [bytes](https://docs.python.org/3/library/stdtypes.html#bytes) | [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cookies: CookiesT | [None](https://docs.python.org/3/library/constants.html#None) = None*, *meta: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *encoding: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *priority: [int](https://docs.python.org/3/library/functions.html#int) = 0*, *dont_filter: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, *errback: Callable[[Failure], Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *cb_kwargs: [dict](https://docs.python.org/3/library/stdtypes.html#dict)[[str](https://docs.python.org/3/library/stdtypes.html#str), Any] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *flags: [list](https://docs.python.org/3/library/stdtypes.html#list)[[str](https://docs.python.org/3/library/stdtypes.html#str)] | [None](https://docs.python.org/3/library/constants.html#None) = None*, *css: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *xpath: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*) → Iterable[Request][[source]](../_modules/scrapy/http/response/text.html#TextResponse.follow_all)**\n\nA generator that produces `Request` instances to follow all\nlinks in `urls`. It accepts the same arguments as the `Request`’s\n`__init__()` method, except that each `urls` element does not need to be\nan absolute URL, it can be any of the following:\n\n- a relative URL\n- a [`Link`](link-extractors.html#scrapy.link.Link) object, e.g. the result of\n[Link Extractors](link-extractors.html#topics-link-extractors)\n- a [`Selector`](selectors.html#scrapy.Selector) object for a `<link>` or `<a>` element, e.g.\n`response.css('a.my_link')[0]`\n- an attribute [`Selector`](selectors.html#scrapy.Selector) (not SelectorList), e.g.\n`response.css('a::attr(href)')[0]` or\n`response.xpath('//img/@src')[0]`\n\nIn addition, `css` and `xpath` arguments are accepted to perform the link extraction\nwithin the `follow_all()` method (only one of `urls`, `css` and `xpath` is accepted).\n\nNote that when passing a `SelectorList` as argument for the `urls` parameter or\nusing the `css` or `xpath` parameters, this method will not produce requests for\nselectors from which links cannot be obtained (for instance, anchor tags without an\n`href` attribute)\n\n**json()[[source]](../_modules/scrapy/http/response/text.html#TextResponse.json)**\n\nDeserialize a JSON document to a Python object.\n\nReturns a Python object from deserialized JSON document.\nThe result is cached after the first call.\n\n**urljoin(*url*)[[source]](../_modules/scrapy/http/response/text.html#TextResponse.urljoin)**\n\nConstructs an absolute url by combining the Response’s base url with\na possible relative url. The base url shall be extracted from the\n`<base>` tag, or just `Response.url` if there is no such\ntag.",
+          "level": 3,
+          "span": {
+            "start": 53625,
+            "end": 63523
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Response subclasses",
+              "TextResponse objects"
+            ],
+            "parent_heading": "Response subclasses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.http.TextResponse(*url*[, *encoding*[, *...*]])[[source]](../_modules/scrapy/http/response/text.html#TextResponse)**",
+            "sibling_headings": [
+              "HtmlResponse objects",
+              "XmlResponse objects",
+              "JsonResponse objects"
+            ]
+          }
+        },
+        {
+          "heading": "HtmlResponse objects",
+          "text": "***class*scrapy.http.HtmlResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/html.html#HtmlResponse)**\n\nThe `HtmlResponse` class is a subclass of `TextResponse`\nwhich adds encoding auto-discovering support by looking into the HTML [meta\nhttp-equiv](https://www.w3schools.com/TAGS/att_meta_http_equiv.asp) attribute. See `TextResponse.encoding`.",
+          "level": 3,
+          "span": {
+            "start": 63548,
+            "end": 63911
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Response subclasses",
+              "HtmlResponse objects"
+            ],
+            "parent_heading": "Response subclasses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.http.HtmlResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/html.html#HtmlResponse)**",
+            "sibling_headings": [
+              "TextResponse objects",
+              "XmlResponse objects",
+              "JsonResponse objects"
+            ]
+          }
+        },
+        {
+          "heading": "XmlResponse objects",
+          "text": "***class*scrapy.http.XmlResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/xml.html#XmlResponse)**\n\nThe `XmlResponse` class is a subclass of `TextResponse` which\nadds encoding auto-discovering support by looking into the XML declaration\nline. See `TextResponse.encoding`.",
+          "level": 3,
+          "span": {
+            "start": 63935,
+            "end": 64226
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Response subclasses",
+              "XmlResponse objects"
+            ],
+            "parent_heading": "Response subclasses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.http.XmlResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/xml.html#XmlResponse)**",
+            "sibling_headings": [
+              "TextResponse objects",
+              "HtmlResponse objects",
+              "JsonResponse objects"
+            ]
+          }
+        },
+        {
+          "heading": "JsonResponse objects",
+          "text": "***class*scrapy.http.JsonResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/json.html#JsonResponse)**\n\nThe `JsonResponse` class is a subclass of `TextResponse`\nthat is used when the response has a [JSON MIME type](https://mimesniff.spec.whatwg.org/#json-mime-type) in its Content-Type\nheader.",
+          "level": 3,
+          "span": {
+            "start": 64251,
+            "end": 64561
+          },
+          "metadata": {
+            "heading_path": [
+              "Requests and Responses",
+              "Response subclasses",
+              "JsonResponse objects"
+            ],
+            "parent_heading": "Response subclasses",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "***class*scrapy.http.JsonResponse(*url*[, *...*])[[source]](../_modules/scrapy/http/response/json.html#JsonResponse)**",
+            "sibling_headings": [
+              "TextResponse objects",
+              "HtmlResponse objects",
+              "XmlResponse objects"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case041_scrapy",
+        "condition_id": "clean",
+        "lab_run_id": "r13fe557951",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case041_scrapy",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-bc70867938051bc4",
+              "source_sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "path": "inputs/input001/offsite.md",
+              "sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/dad43df16d07e2c3/offsite.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-db8ff4e788d28693",
+              "source_sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "path": "inputs/input002/downloader-middleware.md",
+              "sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/491f737b9d4743ec/downloader-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md"
+            },
+            {
+              "input_id": "input003",
+              "source_id": "sgb-819d117ddb8328d1",
+              "source_sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "path": "inputs/input003/request-response.md",
+              "sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/9f6d99ec9d95647c/request-response.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md"
+            },
+            {
+              "input_id": "input004",
+              "source_id": "sgb-ac10205061a5d910",
+              "source_sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "path": "inputs/input004/spider-middleware.md",
+              "sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/3772c49ba00a9fe4/spider-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "ff125a5c28b13b1e3277abcd2f6dd4189abf18063537df59af9ac480bcece012",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "7272528d2b7f3798b2465ba1559a0fa3fd0809ce",
+      "content_hash": "7272528d2b7f3798b2465ba1559a0fa3fd0809ce",
+      "imported_at": "2026-10-25T08:18:59+00:00"
+    }
+  ],
+  "support_records": [],
+  "skill_specs": [],
+  "hierarchy_updates": [],
+  "lifecycles": [],
+  "change_logs": [],
+  "version_history": [],
+  "provenance_links": [],
+  "upserted_store_skills": [],
+  "staging_runs": [],
+  "visible_tree": {},
+  "errors": [
+    {
+      "stage": "register_document",
+      "doc_id": "acd53fe2-91e6-5d61-9beb-63fa936ab397",
+      "title": "input003\\request-response.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md",
+      "error": "P0 external observation budget exhausted",
+      "retryable": false,
+      "retry_attempts": 0
+    }
+  ],
+  "dry_run": false,
+  "processed_documents": 3,
+  "total_documents": 4,
+  "action_counts": {
+    "create": 2
+  },
+  "skipped": true
+}

@@ -1,0 +1,100 @@
+[?2004hroot@48c02303a5e9:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cd /workspace && ls -la
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 26 08:25 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+[?2004hp1$ find /workspace -maxdepth 3 -type f | sort | sed -n '1,200p'
+[?2004l[?2004hp1$ grep -RIn "overwrite\|feed export\|stdout\|s3\|gs\|ftp\|file:///tmp/export.json\|/tmp/export.json" /workspace/docs /workspace/tests /workspace/input 2>/dev/nnull | sed -n '1,200p'
+[?2004l[?2004hp1$ cd /workspace && ls -la docs skill input
+[?2004ldocs:
+total 8
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 ..
+
+input:
+total 8
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 ..
+
+skill:
+total 8
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 ..
+[?2004hp1$ find /workspace/docs -type f | sort | xargs -r -n 1 sh -c 'echo "--- $1"; sed -n "1,200p" "$1"' sh
+[?2004l[?2004hp1$ find /workspace/skill -type f | sort | xargs -r -n 1 sh -c 'echo "--- $1"; sed -n "1,200p" "$1"' sh
+[?2004l[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> """Scrapy feed export default overwrite behavior.
+[?2004l[?2004h> 
+[?2004l[?2004h> Supported backends:
+[?2004l[?2004h> - file:///... and absolute local paths: overwrite by default.
+[?2004l[?2004h> - ftp://...: do not overwrite by default.
+[?2004l[?2004h> - s3://...: do not overwrite by default.
+[?2004l[?2004h> - gs://...: do not overwrite by default.
+[?2004l[?2004h> - stdout:: do not overwrite by default.
+[?2004l[?2004h> """
+[?2004l[?2004h> 
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from urllib.parse import urlparse
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def default_feed_overwrite(uri: str) -> bool:
+[?2004l[?2004h>     """Return Scrapy's built-in default overwrite behavior for a feed URI."""
+[?2004l[?2004h>     if not isinstance(uri, str) or not uri:
+[?2004l[?2004h>         raise ValueError("Unsupported feed URI")
+[?2004l[?2004h> 
+[?2004l[?2004h>     # Absolute local path without scheme is treated as a file backend.
+[?2004l[?2004h>     if uri.startswith("/"):
+[?2004l[?2004h>         return True
+[?2004l[?2004h> 
+[?2004l[?2004h>     if uri == "stdout:" or uri == "stdout":
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     parsed = urlparse(uri)
+[?2004l[?2004h>     scheme = parsed.scheme
+[?2004l[?2004h> 
+[?2004l[?2004h>     if scheme == "file":
+[?2004l[?2004h>         return True
+[?2004l[?2004h>     if scheme in {"ftp", "s3", "gs"}:
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     raise ValueError(f"Unsupported feed URI scheme: {scheme or uri}")
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ cd /workspace && python3 - <<'PY'
+[?2004l[?2004h> from agent_output import default_feed_overwrite
+[?2004l[?2004h> cases = {
+[?2004l[?2004h>     'file:///tmp/export.json': True,
+[?2004l[?2004h>     '/tmp/export.json': True,
+[?2004l[?2004h>     'ftp://server/export.json': False,
+[?2004l[?2004h>     's3://bucket/export.json': False,
+[?2004l[?2004h>     'gs://bucket/export.json': False,
+[?2004l[?2004h>     'stdout:': False,
+[?2004l[?2004h> }
+[?2004l[?2004h> for uri, expected in cases.items():
+[?2004l[?2004h>     got = default_feed_overwrite(uri)
+[?2004l[?2004h>     print(uri, got, 'OK' if got == expected else f'EXPECTED {expected}')
+[?2004l[?2004h> for uri in ['http://x', 'https://x', 'ftps://x', 'stderr:']:
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         default_feed_overwrite(uri)
+[?2004l[?2004h>     except ValueError as e:
+[?2004l[?2004h>         print(uri, 'ValueError')
+[?2004l[?2004h>     else:
+[?2004l[?2004h>         print(uri, 'NO ERROR')
+[?2004l[?2004h> PY
+[?2004lfile:///tmp/export.json True OK
+/tmp/export.json True OK
+ftp://server/export.json False OK
+s3://bucket/export.json False OK
+gs://bucket/export.json False OK
+stdout: False OK
+http://x ValueError
+https://x ValueError
+ftps://x ValueError
+stderr: ValueError
+[?2004hp1$ cd /workspace && bash /workspace/tests/test.sh
+[?2004lbash: /workspace/tests/test.sh: No such file or directory
+[?2004hp1$ 

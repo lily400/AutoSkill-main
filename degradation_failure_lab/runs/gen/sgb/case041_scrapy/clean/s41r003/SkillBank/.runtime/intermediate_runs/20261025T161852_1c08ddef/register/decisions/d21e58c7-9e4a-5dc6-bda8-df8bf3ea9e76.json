@@ -1,0 +1,113 @@
+{
+  "skill_id": "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能是 Scrapy 自定义请求指纹器的会话级工作流，与现有下载器中间件配置、Offsite 域名过滤技能在能力身份上不同；peer 候选虽同族但均为独立候选，无既有同身份技能可合并或强化，故新建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76",
+    "name": "自定义请求指纹器",
+    "description": "当默认请求指纹不满足去重需求时，实现自定义 REQUEST_FINGERPRINTER_CLASS，按业务比较规则规范化 URL（大小写、片段、查询参数、请求头等）生成请求唯一标识，从而控制去重行为。适用于需要定制去重比较规则的 Scrapy 爬虫。",
+    "skill_body": "在确认默认指纹无法满足去重需求后，实现一个自定义请求指纹器类，按业务需要的比较规则（如大小写不敏感、包含/排除 URL 片段、包含/排除查询参数、包含部分或全部请求头）规范化请求并生成唯一标识，然后通过 REQUEST_FINGERPRINTER_CLASS 配置启用，并验证去重行为符合预期。\n\n## Objective\n\n按业务比较规则生成请求唯一指纹以控制去重\n## Applicable Signals\n\n- 默认请求指纹器无法区分或错误合并本应不同/相同的请求\n- 业务要求对 URL 大小写、片段、查询参数或请求头采用特定比较方式\n\n## Contraindications\n\n- 默认指纹已满足去重需求时\n- 去重问题源于调度器配置而非指纹规则时\n\n## Intervention Moves\n\n- 明确业务去重比较规则（大小写、片段、查询参数、请求头）\n- 实现自定义请求指纹器类，规范化请求并生成唯一标识\n- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用自定义指纹器\n- 验证去重行为符合预期\n\n## Workflow Steps\n\n- 确认默认请求指纹器无法满足当前去重需求，并明确差异点\n- 定义业务比较规则：是否大小写敏感、是否包含 URL 片段、包含或排除哪些查询参数、是否纳入请求头\n- 编写自定义请求指纹器类，按上述规则规范化请求并生成唯一标识\n- 在项目配置中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类\n- 运行爬虫并验证去重行为符合预期\n\n## Constraints\n\n- 仅在默认指纹不满足需求时启用自定义指纹器\n- 指纹生成规则需与业务去重语义一致\n- 去重问题若源于调度器配置，应先修正调度器配置而非改指纹规则\n\n## Cautions\n\n- 不存在通用的请求唯一标识生成方式，需按具体场景确定比较规则\n- 修改指纹规则会改变去重结果，需验证不会引入误去重或漏去重\n\n## Output Contract\n\n- 配置生效的自定义请求指纹器类及去重行为验证结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 默认指纹无法区分大小写不同的 URL，导致误去重\n- Therapist/Output: 实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期\n- Notes: 比较规则需与业务语义一致",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "按业务比较规则生成请求唯一指纹以控制去重",
+    "domain": "scrapy",
+    "task_family": "请求去重",
+    "method_family": "自定义指纹器",
+    "stage": "请求调度",
+    "applicable_signals": [
+      "默认请求指纹器无法区分或错误合并本应不同/相同的请求",
+      "业务要求对 URL 大小写、片段、查询参数或请求头采用特定比较方式"
+    ],
+    "contraindications": [
+      "默认指纹已满足去重需求时",
+      "去重问题源于调度器配置而非指纹规则时"
+    ],
+    "intervention_moves": [
+      "明确业务去重比较规则（大小写、片段、查询参数、请求头）",
+      "实现自定义请求指纹器类，规范化请求并生成唯一标识",
+      "通过 REQUEST_FINGERPRINTER_CLASS 配置启用自定义指纹器",
+      "验证去重行为符合预期"
+    ],
+    "triggers": [
+      "默认指纹导致误去重或漏去重",
+      "需要按大小写、片段、查询参数或请求头定制比较规则",
+      "需要为请求生成符合业务比较规则的唯一标识"
+    ],
+    "workflow_steps": [
+      "确认默认请求指纹器无法满足当前去重需求，并明确差异点",
+      "定义业务比较规则：是否大小写敏感、是否包含 URL 片段、包含或排除哪些查询参数、是否纳入请求头",
+      "编写自定义请求指纹器类，按上述规则规范化请求并生成唯一标识",
+      "在项目配置中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类",
+      "运行爬虫并验证去重行为符合预期"
+    ],
+    "constraints": [
+      "仅在默认指纹不满足需求时启用自定义指纹器",
+      "指纹生成规则需与业务去重语义一致",
+      "去重问题若源于调度器配置，应先修正调度器配置而非改指纹规则"
+    ],
+    "cautions": [
+      "不存在通用的请求唯一标识生成方式，需按具体场景确定比较规则",
+      "修改指纹规则会改变去重结果，需验证不会引入误去重或漏去重"
+    ],
+    "output_contract": [
+      "配置生效的自定义请求指纹器类及去重行为验证结果"
+    ],
+    "examples": [
+      {
+        "input": "默认指纹无法区分大小写不同的 URL，导致误去重",
+        "output": "实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期",
+        "notes": "比较规则需与业务语义一致"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "请求去重",
+      "指纹器",
+      "REQUEST_FINGERPRINTER_CLASS"
+    ],
+    "support_ids": [
+      "372b94da-664c-5a0b-876f-889dddcd5fde"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "cbb3676a-eb3f-5891-b276-c087b0ad3364"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||session_skill|session|workflow_skill|按业务比较规则生成请求唯一指纹以控制去重|scrapy|请求去重|自定义指纹器|请求调度|自定义请求指纹器"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

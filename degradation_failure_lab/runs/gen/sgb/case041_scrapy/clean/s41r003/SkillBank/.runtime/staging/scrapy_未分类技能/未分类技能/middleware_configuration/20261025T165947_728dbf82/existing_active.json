@@ -1,0 +1,141 @@
+{
+  "schema": "autoskill.document.staging.existing_active.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "middleware_configuration",
+  "run_id": "20261025T165947_728dbf82",
+  "skills": [
+    {
+      "skill_id": "76394f52-1f81-5c91-8ae3-fd51b942c5e1",
+      "name": "下载器中间件激活与排序配置",
+      "description": "当默认去重逻辑无法满足需求时，通过配置 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类，或编写自定义请求指纹器类来控制 Scrapy 的请求去重判断逻辑。适用于默认指纹不满足去重需求、需要按自定义字段组合判定请求唯一性时。",
+      "skill_body": "当默认请求指纹无法满足去重需求时，按以下步骤定制：1) 确认现有默认去重行为确实不满足需求；2) 决定是仅替换 REQUEST_FINGERPRINTER_CLASS 指向自定义类，还是编写完整 fingerprinter 实现；3) 编写 fingerprinter 类，使其基于请求属性生成稳定指纹；4) 遵守指纹计算限制（如不得依赖不可用或易变数据）；5) 在配置中接入该类并验证请求按新规则生成指纹。\n\n## Objective\n\n为请求定义并接入自定义去重指纹\n## Applicable Signals\n\n- 默认指纹不满足去重需求\n- 需要按自定义字段组合判定请求唯一性\n\n## Contraindications\n\n- 默认去重行为已满足需求\n- 无法遵守指纹计算限制的场景\n\n## Intervention Moves\n\n- 确认默认指纹不适用的具体原因\n- 通过 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类\n- 编写自定义请求指纹器类，基于请求属性生成稳定指纹\n- 遵守请求指纹限制\n- 验证去重行为符合预期\n\n## Workflow Steps\n\n- 判断默认去重是否满足需求，若不满足则进入自定义指纹流程\n- 选择配置 REQUEST_FINGERPRINTER_CLASS 或编写自定义请求指纹器类\n- 实现或指定指纹器类，基于请求属性生成稳定指纹，并遵守请求指纹限制\n- 确认指纹器类可被正确加载并生效\n- 验证去重行为符合预期\n\n## Constraints\n\n- 自定义指纹器须遵守请求指纹限制\n- 仅在默认去重不满足需求时定制指纹\n\n## Cautions\n\n- 仅在默认去重不满足需求时定制指纹，避免不必要的复杂度\n- 避免依赖易变或不可用数据生成指纹，以免去重不稳定\n- 自定义指纹可能改变去重结果，需验证后再上线\n\n## Output Contract\n\n- 配置生效的自定义 fingerprinter 类，请求按新规则生成指纹",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "be9aee15-e037-5420-b34a-eb9af1223666"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "正确注册并排序下载器中间件，使请求/响应处理链按预期生效",
+      "domain": "scrapy",
+      "task_family": "middleware_configuration",
+      "method_family": "settings_registration",
+      "stage": "setup",
+      "applicable_signals": [
+        "默认指纹不满足去重需求",
+        "需要按自定义字段组合判定请求唯一性"
+      ],
+      "contraindications": [
+        "默认去重行为已满足需求",
+        "无法遵守指纹计算限制的场景"
+      ],
+      "intervention_moves": [
+        "确认默认指纹不适用的具体原因",
+        "通过 REQUEST_FINGERPRINTER_CLASS 指定请求指纹器类",
+        "编写自定义请求指纹器类，基于请求属性生成稳定指纹",
+        "遵守请求指纹限制",
+        "验证去重行为符合预期"
+      ],
+      "triggers": [
+        "需要启用自定义下载器中间件",
+        "需要调整或禁用内置中间件顺序"
+      ],
+      "workflow_steps": [
+        "判断默认去重是否满足需求，若不满足则进入自定义指纹流程",
+        "选择配置 REQUEST_FINGERPRINTER_CLASS 或编写自定义请求指纹器类",
+        "实现或指定指纹器类，基于请求属性生成稳定指纹，并遵守请求指纹限制",
+        "确认指纹器类可被正确加载并生效",
+        "验证去重行为符合预期"
+      ],
+      "constraints": [
+        "自定义指纹器须遵守请求指纹限制",
+        "仅在默认去重不满足需求时定制指纹"
+      ],
+      "cautions": [
+        "仅在默认去重不满足需求时定制指纹，避免不必要的复杂度",
+        "避免依赖易变或不可用数据生成指纹，以免去重不稳定",
+        "自定义指纹可能改变去重结果，需验证后再上线"
+      ],
+      "output_contract": [
+        "配置生效的自定义 fingerprinter 类，请求按新规则生成指纹"
+      ],
+      "examples": [
+        {
+          "input": "需要启用自定义下载器中间件",
+          "output": "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n}",
+          "notes": null
+        },
+        {
+          "input": "需要禁用内置 UserAgentMiddleware",
+          "output": "DOWNLOADER_MIDDLEWARES = {\n    \"myproject.middlewares.CustomDownloaderMiddleware\": 543,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": None,\n}",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "去重",
+        "fingerprinter",
+        "请求指纹",
+        "配置"
+      ],
+      "support_ids": [
+        "e3ff6f02-f2ea-5a8d-81b1-f3e2467a1637",
+        "dade6cef-de64-56dd-8e02-786b2cc69422"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "4dfc43a3-38c0-52d0-a1b8-281174c8c12f"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|正确注册并排序下载器中间件，使请求/响应处理链按预期生效|scrapy|middleware_configuration|settings_registration|setup|下载器中间件激活与排序配置",
+        "llm_reason": "候选与两个现有技能语义相同（Scrapy 自定义请求指纹/去重配置），应合并为一个规范技能并弃用重叠的旧技能。",
+        "change_action": "merge",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "be9aee15-e037-5420-b34a-eb9af1223666"
+        ],
+        "merged_from_skill_ids": []
+      },
+      "version": "0.1.1",
+      "status": "active"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "skill_id": "2e8e7620-0a34-53a0-9f9c-59854ce80b05",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批候选 f1bf7454-980d-5d6a-bd1e-7557dc11c8f4（S3 导出凭证与 ACL 配置）高度重叠，后者已覆盖 ACL、endpoint、region 配置，且额外涵盖凭证来源；本候选仅多出 overwrite 默认值提示，不足以构成独立能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "2e8e7620-0a34-53a0-9f9c-59854ce80b05",
+    "name": "S3 导出存储配置",
+    "description": "配置 Scrapy feed 导出到 S3 或 S3 兼容对象存储时的 ACL、endpoint 与 region 参数，并明确该存储后端的 overwrite 默认行为。",
+    "skill_body": "当 feed 导出目标为 S3 或 S3 兼容对象存储时，使用本技能配置存储后端参数：\n1. 确认导出目标为 S3 兼容存储，而非本地文件系统、FTP 或标准输出。\n2. 如需自定义访问控制，设置 FEED_STORAGE_S3_ACL。\n3. 如需自定义服务端点，设置 AWS_ENDPOINT_URL。\n4. 如需指定区域，设置 AWS_REGION_NAME。\n5. 注意该存储后端在 FEEDS 中 overwrite 键的默认值为 True，据此确认覆盖行为是否符合预期。\n仅输出与 S3 存储后端相关的配置项，不扩展到序列化格式或其他存储后端。\n\n## Objective\n\n正确设置 S3 导出后端的访问控制与连接参数\n## Applicable Signals\n\n- 导出目标为 S3 或 S3 兼容对象存储\n- 需要调整 ACL、endpoint 或 region 参数\n\n## Contraindications\n\n- 导出目标为本地文件系统、FTP 或标准输出\n\n## Intervention Moves\n\n- 设置 FEED_STORAGE_S3_ACL 以定义自定义 ACL\n- 设置 AWS_ENDPOINT_URL 以定义自定义端点\n- 设置 AWS_REGION_NAME 以指定区域\n- 确认 FEEDS 中 overwrite 默认值为 True\n\n## Workflow Steps\n\n- 确认导出目标为 S3 兼容存储\n- 按需配置 FEED_STORAGE_S3_ACL\n- 按需配置 AWS_ENDPOINT_URL\n- 按需配置 AWS_REGION_NAME\n- 确认 overwrite 默认值 True 是否符合预期\n\n## Constraints\n\n- 仅处理 S3 存储后端相关设置项\n- 不扩展到序列化格式或其他存储后端\n\n## Cautions\n\n- 该存储后端 overwrite 默认值为 True，可能覆盖已有对象，需确认是否符合预期\n\n## Output Contract\n\n- 完成 S3 相关 FEEDS 设置项配置，并确认 overwrite 默认值",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "正确设置 S3 导出后端的访问控制与连接参数",
+    "domain": "scrapy",
+    "task_family": "feed_export",
+    "method_family": "storage_configuration",
+    "stage": "configuration",
+    "applicable_signals": [
+      "导出目标为 S3 或 S3 兼容对象存储",
+      "需要调整 ACL、endpoint 或 region 参数"
+    ],
+    "contraindications": [
+      "导出目标为本地文件系统、FTP 或标准输出"
+    ],
+    "intervention_moves": [
+      "设置 FEED_STORAGE_S3_ACL 以定义自定义 ACL",
+      "设置 AWS_ENDPOINT_URL 以定义自定义端点",
+      "设置 AWS_REGION_NAME 以指定区域",
+      "确认 FEEDS 中 overwrite 默认值为 True"
+    ],
+    "triggers": [
+      "需要将 feed 导出到 S3 或 S3 兼容存储",
+      "需要自定义 S3 导出的 ACL、endpoint 或 region"
+    ],
+    "workflow_steps": [
+      "确认导出目标为 S3 兼容存储",
+      "按需配置 FEED_STORAGE_S3_ACL",
+      "按需配置 AWS_ENDPOINT_URL",
+      "按需配置 AWS_REGION_NAME",
+      "确认 overwrite 默认值 True 是否符合预期"
+    ],
+    "constraints": [
+      "仅处理 S3 存储后端相关设置项",
+      "不扩展到序列化格式或其他存储后端"
+    ],
+    "cautions": [
+      "该存储后端 overwrite 默认值为 True，可能覆盖已有对象，需确认是否符合预期"
+    ],
+    "output_contract": [
+      "完成 S3 相关 FEEDS 设置项配置，并确认 overwrite 默认值"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "feed_export",
+      "s3",
+      "storage_configuration"
+    ],
+    "support_ids": [
+      "708107db-44a3-5797-a07d-41d392434e3c"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "6568de33-3dfb-5ee3-ba49-42e70971348a"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|正确设置 s3 导出后端的访问控制与连接参数|scrapy|feed_export|storage_configuration|configuration|s3 导出存储配置"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

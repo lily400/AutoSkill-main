@@ -56,8 +56,34 @@ async def export_submission(environment, destination):
     return path, observed
 
 
+async def native_trial(config, fixture=None, probe_hook=None):
+    # Harbor stops its environment before returning Trial.run(). Export while it is live.
+    from contextlib import ExitStack
+    from unittest.mock import patch
+    from harbor.trial.trial import Trial
+    from downstream_eval.sgb.scrapy024 import native_trial as run_native
+    original = Trial._run_agent_phase
+    async def phase(self, *args, **kwargs):
+        result = await original(self, *args, **kwargs)
+        if fixture:
+            await self.agent_environment.upload_file(source_path=fixture, target_path='/workspace/agent_output.py')
+            if probe_hook:
+                await probe_hook(self)
+        self._scrapy041_export = await export_submission(
+            self.agent_environment, self.paths.trial_dir / 'submission-export')
+        return result
+    with ExitStack() as stack:
+        stack.enter_context(patch.object(Trial, '_run_agent_phase', phase))
+        if fixture:
+            for name in ('litellm.acompletion', 'litellm.aresponses'):
+                stack.enter_context(patch(name, side_effect=AssertionError('Zero-model probe forbids requests')))
+        return await run_native(config)
+
+
 def grade_export(trial, output):
-    path, digest = asyncio.run(export_submission(trial.agent_environment, Path(output) / 'export'))
+    path, digest = trial._scrapy041_export
+    if sha256(path) != digest:
+        raise ValueError('Export changed after container stop')
     return score(path, Path(output) / 'score', expected_sha256=digest)
 
 
@@ -70,7 +96,7 @@ def paid_batch(output):
     if read(output / 'readiness.json')['status'] != 'PASS':
         raise RuntimeError('This frozen experiment has not passed preparation')
     config = execution_config(output, profile['generator_run_id'], profile['conditions'])
-    from downstream_eval.sgb.scrapy024 import native_trial, body_exposure
+    from downstream_eval.sgb.scrapy024 import body_exposure
     return runner.execute_batch(LAB, output, config, run_trial=native_trial, grade=grade_export,
         exposure=body_exposure, task_success=lambda result:result['task_success'],
         configure_trial=configure)

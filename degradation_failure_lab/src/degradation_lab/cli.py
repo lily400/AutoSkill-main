@@ -23,6 +23,8 @@ def main():
     p = sub.add_parser('resume', help='Continue an interrupted Plan in a new run; invokes paid model API')
     p.add_argument('--run', required=True, help='Interrupted run id')
     p.add_argument('--run-id', required=True, help='New globally unique run id')
+    p.add_argument('--max-observed-total-tokens', type=int, help='Explicit cumulative resume token threshold')
+    p.add_argument('--max-http-calls', type=int, help='Explicit cumulative resume HTTP attempt limit')
     p = sub.add_parser('verify'); p.add_argument('--run', required=True)
     p.add_argument('--out', help='Project-relative external sidecar directory')
     p = sub.add_parser('aggregate'); p.add_argument('--out', default='results/aggregates/current')
@@ -97,8 +99,11 @@ def main():
     elif args.command == 'resume':
         from .artifacts import resolve_run
         identity, _ = resolve_run(root, args.run)
+        budget = {k:getattr(args,k) for k in ('max_observed_total_tokens','max_http_calls')
+                  if getattr(args,k) is not None}
+        options = {'resume_budget':budget} if budget else {}
         path, code = ExperimentRunner(root).run(identity['case_id'], identity['condition_id'],
-                                               args.run_id, resume_from=args.run)
+                                               args.run_id, resume_from=args.run, **options)
         print(json.dumps({'path':str(path), 'exit_code':code}, ensure_ascii=False, indent=2))
         return int(bool(code))
     elif args.command in ('plan','run'):

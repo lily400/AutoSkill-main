@@ -1,0 +1,119 @@
+{
+  "skill_id": "20f141fe-1520-568d-a0ef-844224151e15",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能实现 Spider 中间件的 process_spider_exception 钩子，属于 spider_middleware 任务族与 spider_exception_handling 阶段；现有技能中 8229ccc7 是下载器中间件 process_exception（不同 task_family/stage），其余为域名正则与 spider_opened 初始化，均无相同能力身份，故应新建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "20f141fe-1520-568d-a0ef-844224151e15",
+    "name": "Spider 中间件异常处理钩子实现",
+    "description": "实现 process_spider_exception 钩子，在 Spider 或上游 process_spider_output 抛异常时，决定返回 None 让异常继续传播，或返回 Request/item 可迭代对象接管输出管道。",
+    "skill_body": "在自定义 Spider 中间件中实现 process_spider_exception(response, exception) 钩子。判断当前异常是否应由本中间件接管：若需继续传播，返回 None，Scrapy 会继续调用后续中间件的 process_spider_exception，直至异常到达引擎被记录并丢弃；若需接管，返回一个 Request 或 item 对象的可迭代对象，此时 process_spider_output 管道从下一个中间件开始执行，且不再调用其他 process_spider_exception。确保返回值类型符合契约，不要返回非可迭代的单个对象。\n\n## Objective\n\n在 Spider 阶段异常时选择继续传播或接管输出\n## Applicable Signals\n\n- Spider 或上游 process_spider_output 抛出异常\n- 需要自定义异常走向而非默认记录丢弃\n- 需要在异常后恢复 Request/item 输出流\n\n## Contraindications\n\n- 处理正常输出流而非异常时应使用 process_spider_output\n- 异常应直接交由引擎记录丢弃时无需实现该钩子\n\n## Intervention Moves\n\n- 实现 process_spider_exception(response, exception) 方法\n- 判断异常是否由本中间件接管\n- 返回 None 表示继续传播\n- 返回 Request/item 可迭代对象表示接管并进入 process_spider_output 管道\n\n## Workflow Steps\n\n- 定义 process_spider_exception(response, exception) 方法\n- 根据 response 与 exception 判断是否接管\n- 若继续传播则返回 None\n- 若接管则返回 Request 或 item 对象的可迭代对象\n- 确认接管后 process_spider_output 从下一个中间件开始执行且不再调用其他 process_spider_exception\n\n## Constraints\n\n- 返回值只能是 None 或 Request/item 的可迭代对象\n- 返回 None 时异常继续沿中间件链传播至引擎\n- 返回可迭代对象时不再调用其他 process_spider_exception\n\n## Cautions\n\n- 返回非可迭代的单个对象会违反返回契约\n- 接管异常会跳过后续中间件的异常处理钩子\n\n## Output Contract\n\n- 返回 None 或 Request/item 可迭代对象以明确异常走向\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃\n- Therapist/Output: process_spider_exception 返回 None\n- Notes: 异常继续传播至引擎\n\n### Example 2\n\n- Client/Input: Spider 处理响应时抛出异常，本中间件希望恢复输出流\n- Therapist/Output: process_spider_exception 返回包含 Request 或 item 的可迭代对象\n- Notes: process_spider_output 从下一个中间件开始执行",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在 Spider 阶段异常时选择继续传播或接管输出",
+    "domain": "scrapy",
+    "task_family": "spider_middleware",
+    "method_family": "exception_hook_implementation",
+    "stage": "spider_exception_handling",
+    "applicable_signals": [
+      "Spider 或上游 process_spider_output 抛出异常",
+      "需要自定义异常走向而非默认记录丢弃",
+      "需要在异常后恢复 Request/item 输出流"
+    ],
+    "contraindications": [
+      "处理正常输出流而非异常时应使用 process_spider_output",
+      "异常应直接交由引擎记录丢弃时无需实现该钩子"
+    ],
+    "intervention_moves": [
+      "实现 process_spider_exception(response, exception) 方法",
+      "判断异常是否由本中间件接管",
+      "返回 None 表示继续传播",
+      "返回 Request/item 可迭代对象表示接管并进入 process_spider_output 管道"
+    ],
+    "triggers": [
+      "需要捕获并处理 Spider 或 process_spider_output 抛出的异常",
+      "需要决定异常是否继续传播至引擎",
+      "需要在中间件层集中接管爬虫阶段异常并恢复输出流"
+    ],
+    "workflow_steps": [
+      "定义 process_spider_exception(response, exception) 方法",
+      "根据 response 与 exception 判断是否接管",
+      "若继续传播则返回 None",
+      "若接管则返回 Request 或 item 对象的可迭代对象",
+      "确认接管后 process_spider_output 从下一个中间件开始执行且不再调用其他 process_spider_exception"
+    ],
+    "constraints": [
+      "返回值只能是 None 或 Request/item 的可迭代对象",
+      "返回 None 时异常继续沿中间件链传播至引擎",
+      "返回可迭代对象时不再调用其他 process_spider_exception"
+    ],
+    "cautions": [
+      "返回非可迭代的单个对象会违反返回契约",
+      "接管异常会跳过后续中间件的异常处理钩子"
+    ],
+    "output_contract": [
+      "返回 None 或 Request/item 可迭代对象以明确异常走向"
+    ],
+    "examples": [
+      {
+        "input": "Spider 处理响应时抛出异常，本中间件希望让引擎记录丢弃",
+        "output": "process_spider_exception 返回 None",
+        "notes": "异常继续传播至引擎"
+      },
+      {
+        "input": "Spider 处理响应时抛出异常，本中间件希望恢复输出流",
+        "output": "process_spider_exception 返回包含 Request 或 item 的可迭代对象",
+        "notes": "process_spider_output 从下一个中间件开始执行"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "spider_middleware",
+      "exception_handling",
+      "process_spider_exception"
+    ],
+    "support_ids": [
+      "95142d24-e939-5852-9565-319303e04d3d"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "62340056-18ef-5aba-9d0a-79da5218f211"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.82,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在 spider 阶段异常时选择继续传播或接管输出|scrapy|spider_middleware|exception_hook_implementation|spider_exception_handling|spider 中间件异常处理钩子实现"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

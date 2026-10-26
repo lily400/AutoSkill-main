@@ -1,0 +1,107 @@
+{
+  "skill_id": "dc522835-58a3-552c-bd8b-30ad389282ea",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能聚焦 Scrapy Request 参数构造与 cb_kwargs 回调数据传递，与现有下载器中间件配置、Offsite 域名过滤及 peer 的请求指纹去重技能在能力身份上均不同，属于新的独立会话技能。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "dc522835-58a3-552c-bd8b-30ad389282ea",
+    "name": "Scrapy 请求构造与回调数据传递",
+    "description": "构造 scrapy.Request 时正确设置 url、callback、errback、cb_kwargs、cookies、priority、dont_filter 等参数，并把附加数据通过 cb_kwargs 传给回调。适用于需要发起请求并向下游回调传递上下文数据的场景。",
+    "skill_body": "在需要发起新的抓取请求时，构造 scrapy.Request 对象：明确设置 url；按需绑定 callback 与 errback；将需要传给回调的上下文数据放入 cb_kwargs（dict，会作为关键字参数传给 callback）；如需设置 cookie，使用 Request 的 cookies 参数而非 Cookie 头；按需设置 priority、dont_filter、encoding、flags 等参数。构造完成后确认回调与 cb_kwargs 已正确绑定。\n\n## Objective\n\n构造可正确路由回调并携带附加数据的 Scrapy 请求\n## Applicable Signals\n\n- 需要发起新的抓取请求\n- 需要向回调函数传递额外上下文数据\n\n## Contraindications\n\n- 仅需解析已有响应\n- 需要设置 Cookie 头而非 cookies 参数\n\n## Intervention Moves\n\n- 设置 url 参数\n- 绑定 callback 与 errback\n- 通过 cb_kwargs 传递附加数据给回调\n- 使用 cookies 参数设置请求 cookie\n- 按需设置 priority、dont_filter、encoding、flags\n\n## Workflow Steps\n\n- 确定请求目标 url\n- 按需绑定 callback 与 errback\n- 将需要传给回调的上下文数据放入 cb_kwargs\n- 如需 cookie，使用 Request 的 cookies 参数而非 Cookie 头\n- 按需设置 priority、dont_filter、encoding、flags 等参数\n- 确认回调与 cb_kwargs 已正确绑定\n\n## Constraints\n\n- cb_kwargs 必须是 dict，会作为关键字参数传给 callback\n- 设置 cookie 应使用 Request.cookies 参数，通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 处理\n\n## Cautions\n\n- 通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 考虑，这是已知限制\n\n## Output Contract\n\n- 一个配置完整、回调与 cb_kwargs 正确绑定的 Request 对象",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "构造可正确路由回调并携带附加数据的 Scrapy 请求",
+    "domain": "scrapy",
+    "task_family": "请求构造",
+    "method_family": "Request 参数配置",
+    "stage": "请求发起",
+    "applicable_signals": [
+      "需要发起新的抓取请求",
+      "需要向回调函数传递额外上下文数据"
+    ],
+    "contraindications": [
+      "仅需解析已有响应",
+      "需要设置 Cookie 头而非 cookies 参数"
+    ],
+    "intervention_moves": [
+      "设置 url 参数",
+      "绑定 callback 与 errback",
+      "通过 cb_kwargs 传递附加数据给回调",
+      "使用 cookies 参数设置请求 cookie",
+      "按需设置 priority、dont_filter、encoding、flags"
+    ],
+    "triggers": [
+      "需要发起新的抓取请求",
+      "需要向回调函数传递额外上下文数据"
+    ],
+    "workflow_steps": [
+      "确定请求目标 url",
+      "按需绑定 callback 与 errback",
+      "将需要传给回调的上下文数据放入 cb_kwargs",
+      "如需 cookie，使用 Request 的 cookies 参数而非 Cookie 头",
+      "按需设置 priority、dont_filter、encoding、flags 等参数",
+      "确认回调与 cb_kwargs 已正确绑定"
+    ],
+    "constraints": [
+      "cb_kwargs 必须是 dict，会作为关键字参数传给 callback",
+      "设置 cookie 应使用 Request.cookies 参数，通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 处理"
+    ],
+    "cautions": [
+      "通过 Cookie 头设置的 cookie 不被 CookiesMiddleware 考虑，这是已知限制"
+    ],
+    "output_contract": [
+      "一个配置完整、回调与 cb_kwargs 正确绑定的 Request 对象"
+    ],
+    "examples": [],
+    "tags": [
+      "scrapy",
+      "request",
+      "callback",
+      "cb_kwargs",
+      "cookies"
+    ],
+    "support_ids": [
+      "99f4126d-cd4a-5f2a-800d-1aef199d69c7"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "4946fbab-5a2c-5a7c-8cb5-d4239ffb677b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||session_skill|session|workflow_skill|构造可正确路由回调并携带附加数据的 scrapy 请求|scrapy|请求构造|request 参数配置|请求发起|scrapy 请求构造与回调数据传递"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 2,
+  "branch": "full"
+}

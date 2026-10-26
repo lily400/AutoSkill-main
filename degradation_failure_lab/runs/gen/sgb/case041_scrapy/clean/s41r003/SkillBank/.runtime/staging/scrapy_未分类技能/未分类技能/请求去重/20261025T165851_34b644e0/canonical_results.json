@@ -1,0 +1,734 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "请求去重",
+  "run_id": "20261025T165851_34b644e0",
+  "skills": [
+    {
+      "skill_id": "508a30a5-6330-5c7e-a9a0-583ed481e86d",
+      "name": "Scrapy 自定义请求指纹器配置",
+      "description": "当默认请求去重指纹不满足需求时，通过 REQUEST_FINGERPRINTER_CLASS 选择或实现自定义请求指纹器，以控制请求去重行为。",
+      "skill_body": "当默认请求指纹无法满足去重需求时，按以下步骤定制请求指纹：先确认默认指纹为何不适用，再决定是配置 REQUEST_FINGERPRINTER_CLASS 还是编写自定义 fingerprinter，实现后验证去重行为符合预期，并遵守指纹限制。\n\n## Objective\n\n定制请求指纹以控制去重行为\n## Applicable Signals\n\n- 默认去重指纹不满足需求\n- 需要自定义请求唯一性判定\n\n## Contraindications\n\n- 默认指纹已满足去重需求\n\n## Intervention Moves\n\n- 确认默认指纹不适用的具体原因\n- 通过 REQUEST_FINGERPRINTER_CLASS 选择指纹器\n- 编写自定义 request fingerprinter\n- 验证去重行为符合预期\n\n## Workflow Steps\n\n- 确认默认去重指纹为何不满足需求\n- 决定使用 REQUEST_FINGERPRINTER_CLASS 配置现有指纹器，或编写自定义 request fingerprinter\n- 实现或配置指纹器，遵守请求指纹限制\n- 验证去重行为符合预期\n\n## Constraints\n\n- 遵守请求指纹限制\n- 仅在默认指纹不满足需求时定制\n\n## Cautions\n\n- 自定义指纹可能改变去重结果，需验证后再上线\n\n## Output Contract\n\n- 已配置或实现的自定义请求指纹器，去重行为符合预期",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "55a14cc4-a8f7-564e-b68a-bd3c5bd396ff"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "定制请求指纹以控制去重行为",
+      "domain": "scrapy",
+      "task_family": "请求去重",
+      "method_family": "请求指纹器配置",
+      "stage": "请求调度",
+      "applicable_signals": [
+        "默认去重指纹不满足需求",
+        "需要自定义请求唯一性判定"
+      ],
+      "contraindications": [
+        "默认指纹已满足去重需求"
+      ],
+      "intervention_moves": [
+        "确认默认指纹不适用的具体原因",
+        "通过 REQUEST_FINGERPRINTER_CLASS 选择指纹器",
+        "编写自定义 request fingerprinter",
+        "验证去重行为符合预期"
+      ],
+      "triggers": [
+        "默认去重指纹不满足需求",
+        "需要自定义请求唯一性判定",
+        "需要调整请求去重逻辑"
+      ],
+      "workflow_steps": [
+        "确认默认去重指纹为何不满足需求",
+        "决定使用 REQUEST_FINGERPRINTER_CLASS 配置现有指纹器，或编写自定义 request fingerprinter",
+        "实现或配置指纹器，遵守请求指纹限制",
+        "验证去重行为符合预期"
+      ],
+      "constraints": [
+        "遵守请求指纹限制",
+        "仅在默认指纹不满足需求时定制"
+      ],
+      "cautions": [
+        "自定义指纹可能改变去重结果，需验证后再上线"
+      ],
+      "output_contract": [
+        "已配置或实现的自定义请求指纹器，去重行为符合预期"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "请求去重",
+        "请求指纹",
+        "REQUEST_FINGERPRINTER_CLASS"
+      ],
+      "support_ids": [
+        "075a1f80-a537-54ca-9e08-167432415257"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "0fcf0f62-a28f-5627-931e-c18869fe49bf"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|定制请求指纹以控制去重行为|scrapy|请求去重|请求指纹器配置|请求调度|scrapy 自定义请求指纹器配置",
+        "change_action": "create",
+        "llm_reason": "候选技能是 Scrapy 请求指纹器配置的会话级工作流技能，与现有下载器中间件配置和 Offsite 域名过滤技能在能力身份上不同，属于新的独立能力；peer 候选虽语义相近但均为候选而非已注册技能，故创建新技能。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "55a14cc4-a8f7-564e-b68a-bd3c5bd396ff"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76",
+      "name": "自定义请求指纹器",
+      "description": "当默认请求指纹不满足去重需求时，实现自定义 REQUEST_FINGERPRINTER_CLASS，按业务比较规则规范化 URL（大小写、片段、查询参数、请求头等）生成请求唯一标识，从而控制去重行为。适用于需要定制去重比较规则的 Scrapy 爬虫。",
+      "skill_body": "在确认默认指纹无法满足去重需求后，实现一个自定义请求指纹器类，按业务需要的比较规则（如大小写不敏感、包含/排除 URL 片段、包含/排除查询参数、包含部分或全部请求头）规范化请求并生成唯一标识，然后通过 REQUEST_FINGERPRINTER_CLASS 配置启用，并验证去重行为符合预期。\n\n## Objective\n\n按业务比较规则生成请求唯一指纹以控制去重\n## Applicable Signals\n\n- 默认请求指纹器无法区分或错误合并本应不同/相同的请求\n- 业务要求对 URL 大小写、片段、查询参数或请求头采用特定比较方式\n\n## Contraindications\n\n- 默认指纹已满足去重需求时\n- 去重问题源于调度器配置而非指纹规则时\n\n## Intervention Moves\n\n- 明确业务去重比较规则（大小写、片段、查询参数、请求头）\n- 实现自定义请求指纹器类，规范化请求并生成唯一标识\n- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用自定义指纹器\n- 验证去重行为符合预期\n\n## Workflow Steps\n\n- 确认默认请求指纹器无法满足当前去重需求，并明确差异点\n- 定义业务比较规则：是否大小写敏感、是否包含 URL 片段、包含或排除哪些查询参数、是否纳入请求头\n- 编写自定义请求指纹器类，按上述规则规范化请求并生成唯一标识\n- 在项目配置中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类\n- 运行爬虫并验证去重行为符合预期\n\n## Constraints\n\n- 仅在默认指纹不满足需求时启用自定义指纹器\n- 指纹生成规则需与业务去重语义一致\n- 去重问题若源于调度器配置，应先修正调度器配置而非改指纹规则\n\n## Cautions\n\n- 不存在通用的请求唯一标识生成方式，需按具体场景确定比较规则\n- 修改指纹规则会改变去重结果，需验证不会引入误去重或漏去重\n\n## Output Contract\n\n- 配置生效的自定义请求指纹器类及去重行为验证结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 默认指纹无法区分大小写不同的 URL，导致误去重\n- Therapist/Output: 实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期\n- Notes: 比较规则需与业务语义一致",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "9719683e-0a4a-5d7e-8169-5d7d854d94d9"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "按业务比较规则生成请求唯一指纹以控制去重",
+      "domain": "scrapy",
+      "task_family": "请求去重",
+      "method_family": "自定义指纹器",
+      "stage": "请求调度",
+      "applicable_signals": [
+        "默认请求指纹器无法区分或错误合并本应不同/相同的请求",
+        "业务要求对 URL 大小写、片段、查询参数或请求头采用特定比较方式"
+      ],
+      "contraindications": [
+        "默认指纹已满足去重需求时",
+        "去重问题源于调度器配置而非指纹规则时"
+      ],
+      "intervention_moves": [
+        "明确业务去重比较规则（大小写、片段、查询参数、请求头）",
+        "实现自定义请求指纹器类，规范化请求并生成唯一标识",
+        "通过 REQUEST_FINGERPRINTER_CLASS 配置启用自定义指纹器",
+        "验证去重行为符合预期"
+      ],
+      "triggers": [
+        "默认指纹导致误去重或漏去重",
+        "需要按大小写、片段、查询参数或请求头定制比较规则",
+        "需要为请求生成符合业务比较规则的唯一标识"
+      ],
+      "workflow_steps": [
+        "确认默认请求指纹器无法满足当前去重需求，并明确差异点",
+        "定义业务比较规则：是否大小写敏感、是否包含 URL 片段、包含或排除哪些查询参数、是否纳入请求头",
+        "编写自定义请求指纹器类，按上述规则规范化请求并生成唯一标识",
+        "在项目配置中通过 REQUEST_FINGERPRINTER_CLASS 指向自定义指纹器类",
+        "运行爬虫并验证去重行为符合预期"
+      ],
+      "constraints": [
+        "仅在默认指纹不满足需求时启用自定义指纹器",
+        "指纹生成规则需与业务去重语义一致",
+        "去重问题若源于调度器配置，应先修正调度器配置而非改指纹规则"
+      ],
+      "cautions": [
+        "不存在通用的请求唯一标识生成方式，需按具体场景确定比较规则",
+        "修改指纹规则会改变去重结果，需验证不会引入误去重或漏去重"
+      ],
+      "output_contract": [
+        "配置生效的自定义请求指纹器类及去重行为验证结果"
+      ],
+      "examples": [
+        {
+          "input": "默认指纹无法区分大小写不同的 URL，导致误去重",
+          "output": "实现大小写不敏感规范化的自定义指纹器并通过 REQUEST_FINGERPRINTER_CLASS 启用，验证去重行为符合预期",
+          "notes": "比较规则需与业务语义一致"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "请求去重",
+        "指纹器",
+        "REQUEST_FINGERPRINTER_CLASS"
+      ],
+      "support_ids": [
+        "372b94da-664c-5a0b-876f-889dddcd5fde"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "cbb3676a-eb3f-5891-b276-c087b0ad3364"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|按业务比较规则生成请求唯一指纹以控制去重|scrapy|请求去重|自定义指纹器|请求调度|自定义请求指纹器",
+        "change_action": "create",
+        "llm_reason": "候选技能是 Scrapy 自定义请求指纹器的会话级工作流，与现有下载器中间件配置、Offsite 域名过滤技能在能力身份上不同；peer 候选虽同族但均为独立候选，无既有同身份技能可合并或强化，故新建。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "9719683e-0a4a-5d7e-8169-5d7d854d94d9"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "bbb2cc51-443c-5e23-a285-3b443df42cb5",
+      "name": "请求指纹规范化计算",
+      "description": "在自定义 RequestFingerprinter 的 fingerprint() 方法内复用标准指纹逻辑：对 request.url 做 canonicalize_url 规范化，结合 method 与 body 生成 SHA1 哈希，从而忽略参数顺序、会话 cookie 等随机成分，得到唯一标识请求资源的指纹。",
+      "skill_body": "当需要在自定义 RequestFingerprinter 的 fingerprint() 方法中复用标准指纹算法时，调用 scrapy.utils.request.fingerprint()（默认参数）。该函数对 request.url 取 canonicalize_url 规范化版本，并结合 request.method 与 request.body 计算 SHA1 哈希，返回 bytes。确保返回值为 bytes 且能唯一标识请求指向的资源；对参数顺序不同但等价的 URL 应得到相同指纹，对仅因会话 cookie 等随机成分不同的请求应忽略这些成分。\n\n## Objective\n\n对单个请求计算规范化指纹哈希\n## Applicable Signals\n\n- 自定义指纹器需要复用标准指纹逻辑\n- 存在等价但字面不同的 URL（如参数顺序不同）\n- 请求含会话 cookie 等应被忽略的随机成分\n\n## Contraindications\n\n- 需要完全自定义非哈希指纹策略时不应使用本微技能\n\n## Intervention Moves\n\n- 在 fingerprint() 中调用 scrapy.utils.request.fingerprint() 并传入 request\n- 依赖 canonicalize_url 规范化 request.url\n- 结合 request.method 与 request.body 计算 SHA1 哈希\n- 返回 bytes 类型的指纹\n\n## Workflow Steps\n\n- 确认当前处于自定义 RequestFingerprinter 的 fingerprint() 实现中\n- 调用 scrapy.utils.request.fingerprint()（默认参数）并传入 request\n- 确认返回值是唯一标识该请求资源的 bytes 对象\n- 验证等价 URL（参数顺序不同）得到相同指纹，含会话 cookie 的请求指纹不受随机成分影响\n\n## Constraints\n\n- fingerprint() 必须返回 bytes 对象\n- 指纹应唯一标识请求指向的资源\n- 默认实现基于 canonicalize_url 规范化 URL 并结合 method、body 生成 SHA1\n\n## Cautions\n\n- 若需非哈希或完全自定义策略，应自行实现 fingerprint() 而非复用标准函数\n\n## Output Contract\n\n- 基于规范化 URL、method、body 的 SHA1 指纹（bytes），可唯一标识请求资源。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111\n- Therapist/Output: 两者经 canonicalize_url 规范化后得到相同指纹\n- Notes: 参数顺序不同但指向同一资源\n\n### Example 2\n\n- Client/Input: 仅会话 cookie 不同的同一页面请求\n- Therapist/Output: 指纹忽略 cookie 随机成分，得到相同指纹\n- Notes: 会话 id 等随机成分不应影响指纹",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+      "parent_candidate_ids": [
+        "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.95,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "对单个请求计算规范化指纹哈希",
+      "domain": "scrapy",
+      "task_family": "请求去重",
+      "method_family": "URL规范化与哈希",
+      "stage": "请求处理",
+      "applicable_signals": [
+        "自定义指纹器需要复用标准指纹逻辑",
+        "存在等价但字面不同的 URL（如参数顺序不同）",
+        "请求含会话 cookie 等应被忽略的随机成分"
+      ],
+      "contraindications": [
+        "需要完全自定义非哈希指纹策略时不应使用本微技能"
+      ],
+      "intervention_moves": [
+        "在 fingerprint() 中调用 scrapy.utils.request.fingerprint() 并传入 request",
+        "依赖 canonicalize_url 规范化 request.url",
+        "结合 request.method 与 request.body 计算 SHA1 哈希",
+        "返回 bytes 类型的指纹"
+      ],
+      "triggers": [
+        "需要在 fingerprint() 方法内复用标准指纹算法",
+        "URL 参数顺序不同但指向同一资源",
+        "请求仅因会话 cookie 等随机成分不同而应视为同一资源"
+      ],
+      "workflow_steps": [
+        "确认当前处于自定义 RequestFingerprinter 的 fingerprint() 实现中",
+        "调用 scrapy.utils.request.fingerprint()（默认参数）并传入 request",
+        "确认返回值是唯一标识该请求资源的 bytes 对象",
+        "验证等价 URL（参数顺序不同）得到相同指纹，含会话 cookie 的请求指纹不受随机成分影响"
+      ],
+      "constraints": [
+        "fingerprint() 必须返回 bytes 对象",
+        "指纹应唯一标识请求指向的资源",
+        "默认实现基于 canonicalize_url 规范化 URL 并结合 method、body 生成 SHA1"
+      ],
+      "cautions": [
+        "若需非哈希或完全自定义策略，应自行实现 fingerprint() 而非复用标准函数"
+      ],
+      "output_contract": [
+        "基于规范化 URL、method、body 的 SHA1 指纹（bytes），可唯一标识请求资源。"
+      ],
+      "examples": [
+        {
+          "input": "两个 URL：http://www.example.com/query?id=111&cat=222 与 http://www.example.com/query?cat=222&id=111",
+          "output": "两者经 canonicalize_url 规范化后得到相同指纹",
+          "notes": "参数顺序不同但指向同一资源"
+        },
+        {
+          "input": "仅会话 cookie 不同的同一页面请求",
+          "output": "指纹忽略 cookie 随机成分，得到相同指纹",
+          "notes": "会话 id 等随机成分不应影响指纹"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "请求去重",
+        "指纹",
+        "URL规范化",
+        "SHA1"
+      ],
+      "support_ids": [
+        "dc44d88e-0494-5b0c-bc90-ad37742213b0"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "4bffa34f-1c1f-50d1-a311-889527f3304f"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|对单个请求计算规范化指纹哈希|scrapy|请求去重|url规范化与哈希|请求处理|请求指纹规范化计算",
+        "llm_reason": "候选技能描述在自定义 RequestFingerprinter 的 fingerprint() 内复用标准指纹逻辑（canonicalize_url + method + body 生成 SHA1），与现有 hostname 安全判定/正则构建技能能力不同，也与 peer 中自定义指纹器实现、errback 处理技能语义不同，属于新的独立微技能。",
+        "change_action": "create",
+        "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+        "parent_candidate_ids": [
+          "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+        ],
+        "hierarchy_confidence": 0.95,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "6ea881fb-07e2-5ee9-8311-f419990e543a",
+      "name": "自定义请求指纹器实现",
+      "description": "实现一个 RequestFingerprinter 类，通过 fingerprint(request) 方法为 Scrapy 请求生成去重指纹，可优先读取 request.meta 中的预置指纹；适用于需要覆盖默认请求指纹算法或自定义去重/缓存键逻辑的场景。",
+      "skill_body": "实现一个 RequestFingerprinter 类，提供 fingerprint(self, request) 方法。若 request.meta 中已存在预置指纹则直接返回该值，否则调用默认 fingerprint(request) 生成指纹。确保生成的指纹满足下游组件（如文件系统缓存存储）对指纹格式的限制。\n\n## Objective\n\n为 Scrapy 请求生成可复用的自定义指纹\n## Applicable Signals\n\n- 需要覆盖默认请求指纹算法\n- 需要基于 request.meta 提供预置指纹\n\n## Contraindications\n\n- 仅需默认指纹行为时\n- 指纹格式不满足下游组件限制时\n\n## Intervention Moves\n\n- 定义 RequestFingerprinter 类并实现 fingerprint(self, request) 方法\n- 在方法内优先检查 request.meta 中的预置指纹并返回\n- 否则调用默认 fingerprint(request) 生成指纹\n\n## Workflow Steps\n\n- 定义 RequestFingerprinter 类\n- 实现 fingerprint(self, request) 方法\n- 若 request.meta 中存在预置指纹则返回该值\n- 否则调用默认 fingerprint(request) 生成并返回指纹\n- 确认指纹满足下游组件（如文件系统缓存存储）的格式限制\n\n## Constraints\n\n- 指纹必须满足使用它的 Scrapy 组件所施加的格式限制\n- 文件系统缓存存储要求指纹至少 1 字节长\n\n## Cautions\n\n- 自定义指纹算法变更可能影响去重与缓存命中行为\n- 若需复现旧版本指纹算法，应显式实现对应算法\n\n## Output Contract\n\n- 一个可被 REQUEST_FINGERPRINTER_CLASS 使用的 RequestFingerprinter 类\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要在 request.meta 中提供预置指纹\n- Therapist/Output: class RequestFingerprinter:\n    def fingerprint(self, request):\n        if \"fingerprint\" in request.meta:\n            return request.meta[\"fingerprint\"]\n        return fingerprint(request)\n- Notes: 优先读取 meta 中的预置指纹，否则回退到默认算法",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+      "parent_candidate_ids": [
+        "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.82,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "为 Scrapy 请求生成可复用的自定义指纹",
+      "domain": "scrapy",
+      "task_family": "请求去重",
+      "method_family": "fingerprinter 实现",
+      "stage": "请求处理",
+      "applicable_signals": [
+        "需要覆盖默认请求指纹算法",
+        "需要基于 request.meta 提供预置指纹"
+      ],
+      "contraindications": [
+        "仅需默认指纹行为时",
+        "指纹格式不满足下游组件限制时"
+      ],
+      "intervention_moves": [
+        "定义 RequestFingerprinter 类并实现 fingerprint(self, request) 方法",
+        "在方法内优先检查 request.meta 中的预置指纹并返回",
+        "否则调用默认 fingerprint(request) 生成指纹"
+      ],
+      "triggers": [
+        "需要覆盖默认请求指纹算法",
+        "需要基于 request.meta 提供预置指纹",
+        "需要自定义请求去重或缓存键逻辑"
+      ],
+      "workflow_steps": [
+        "定义 RequestFingerprinter 类",
+        "实现 fingerprint(self, request) 方法",
+        "若 request.meta 中存在预置指纹则返回该值",
+        "否则调用默认 fingerprint(request) 生成并返回指纹",
+        "确认指纹满足下游组件（如文件系统缓存存储）的格式限制"
+      ],
+      "constraints": [
+        "指纹必须满足使用它的 Scrapy 组件所施加的格式限制",
+        "文件系统缓存存储要求指纹至少 1 字节长"
+      ],
+      "cautions": [
+        "自定义指纹算法变更可能影响去重与缓存命中行为",
+        "若需复现旧版本指纹算法，应显式实现对应算法"
+      ],
+      "output_contract": [
+        "一个可被 REQUEST_FINGERPRINTER_CLASS 使用的 RequestFingerprinter 类"
+      ],
+      "examples": [
+        {
+          "input": "需要在 request.meta 中提供预置指纹",
+          "output": "class RequestFingerprinter:\n    def fingerprint(self, request):\n        if \"fingerprint\" in request.meta:\n            return request.meta[\"fingerprint\"]\n        return fingerprint(request)",
+          "notes": "优先读取 meta 中的预置指纹，否则回退到默认算法"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "request",
+        "fingerprint",
+        "去重",
+        "缓存键"
+      ],
+      "support_ids": [
+        "d20ddbb2-0d5c-5a11-a759-cdcd60a3dc2f"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "263f61e5-2722-5e4c-99cc-15ad9fc54e95"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|为 scrapy 请求生成可复用的自定义指纹|scrapy|请求去重|fingerprinter 实现|请求处理|自定义请求指纹器实现",
+        "change_action": "create",
+        "llm_reason": "候选技能描述自定义 RequestFingerprinter 实现，与现有下载器中间件钩子路由技能在能力身份上不同，且与 peer 候选（规范化指纹计算、errback 处理）属于不同微技能，应新建。",
+        "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+        "parent_candidate_ids": [
+          "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+        ],
+        "hierarchy_confidence": 0.82,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "8a26e484-1c30-5f08-a668-ce5b4b7e99df",
+      "name": "自定义 Request 指纹器实现",
+      "description": "通过 REQUEST_FINGERPRINTER_CLASS 配置或编写自定义请求指纹器，为请求生成去重指纹，并遵守指纹限制（如不得依赖响应数据）。用于默认指纹不满足去重需求的爬取场景。",
+      "skill_body": "当默认请求指纹无法满足去重需求时，实现一个自定义请求指纹器：先确认去重目标与所需字段组合，再编写指纹器类（基于请求本身的数据生成稳定指纹），通过 REQUEST_FINGERPRINTER_CLASS 配置启用，并校验其不依赖响应数据等限制。\n\n## Objective\n\n实现符合限制的自定义请求指纹生成\n## Applicable Signals\n\n- 默认指纹不满足去重需求\n- 需要按特定字段组合生成请求指纹\n\n## Contraindications\n\n- 默认指纹已满足去重需求\n- 指纹需依赖响应内容（受限制）\n\n## Intervention Moves\n\n- 确认去重目标与所需字段组合\n- 编写自定义指纹器类\n- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用\n- 校验指纹器遵守限制\n\n## Workflow Steps\n\n- 确认默认指纹为何不满足去重需求，明确期望的去重粒度与字段组合\n- 编写自定义请求指纹器类，仅基于请求自身数据生成稳定指纹\n- 通过 REQUEST_FINGERPRINTER_CLASS 配置启用该指纹器\n- 校验指纹器不依赖响应数据等限制，并验证去重效果\n\n## Constraints\n\n- 指纹必须仅基于请求数据生成\n- 不得依赖响应内容生成指纹\n- 仅在默认指纹不满足需求时使用\n\n## Cautions\n\n- 依赖响应数据的指纹违反限制，不可采用\n\n## Output Contract\n\n- 可用的自定义指纹器类配置（含指纹器类与 REQUEST_FINGERPRINTER_CLASS 设置）",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "实现符合限制的自定义请求指纹生成",
+      "domain": "scrapy",
+      "task_family": "请求去重",
+      "method_family": "request fingerprinter",
+      "stage": "去重配置",
+      "applicable_signals": [
+        "默认指纹不满足去重需求",
+        "需要按特定字段组合生成请求指纹"
+      ],
+      "contraindications": [
+        "默认指纹已满足去重需求",
+        "指纹需依赖响应内容（受限制）"
+      ],
+      "intervention_moves": [
+        "确认去重目标与所需字段组合",
+        "编写自定义指纹器类",
+        "通过 REQUEST_FINGERPRINTER_CLASS 配置启用",
+        "校验指纹器遵守限制"
+      ],
+      "triggers": [
+        "默认指纹不满足去重需求",
+        "需要按特定字段组合生成请求指纹",
+        "需要定制请求去重逻辑"
+      ],
+      "workflow_steps": [
+        "确认默认指纹为何不满足去重需求，明确期望的去重粒度与字段组合",
+        "编写自定义请求指纹器类，仅基于请求自身数据生成稳定指纹",
+        "通过 REQUEST_FINGERPRINTER_CLASS 配置启用该指纹器",
+        "校验指纹器不依赖响应数据等限制，并验证去重效果"
+      ],
+      "constraints": [
+        "指纹必须仅基于请求数据生成",
+        "不得依赖响应内容生成指纹",
+        "仅在默认指纹不满足需求时使用"
+      ],
+      "cautions": [
+        "依赖响应数据的指纹违反限制，不可采用"
+      ],
+      "output_contract": [
+        "可用的自定义指纹器类配置（含指纹器类与 REQUEST_FINGERPRINTER_CLASS 设置）"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "请求去重",
+        "request-fingerprinter",
+        "去重配置"
+      ],
+      "support_ids": [
+        "b65fabd5-40dc-5e27-97e8-706b54f3c997"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "2b6c9dab-ba75-56a6-8706-d9f6096a79e6"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|实现符合限制的自定义请求指纹生成|scrapy|请求去重|request fingerprinter|去重配置|自定义 request 指纹器实现",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "45af8b83-c69f-4d5c-8278-b9e42cf66df3",
+      "entity_type": "skill",
+      "entity_id": "508a30a5-6330-5c7e-a9a0-583ed481e86d",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是 Scrapy 请求指纹器配置的会话级工作流技能，与现有下载器中间件配置和 Offsite 域名过滤技能在能力身份上不同，属于新的独立能力；peer 候选虽语义相近但均为候选而非已注册技能，故创建新技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "508a30a5-6330-5c7e-a9a0-583ed481e86d",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "075a1f80-a537-54ca-9e08-167432415257"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "acae4aa1-aeec-4be2-a4c0-52dc09b553ec",
+      "entity_type": "skill",
+      "entity_id": "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是 Scrapy 自定义请求指纹器的会话级工作流，与现有下载器中间件配置、Offsite 域名过滤技能在能力身份上不同；peer 候选虽同族但均为独立候选，无既有同身份技能可合并或强化，故新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d21e58c7-9e4a-5dc6-bda8-df8bf3ea9e76",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "372b94da-664c-5a0b-876f-889dddcd5fde"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "e6266d84-b831-4716-b9d8-a5eb753a56b7",
+      "entity_type": "skill",
+      "entity_id": "bbb2cc51-443c-5e23-a285-3b443df42cb5",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能描述在自定义 RequestFingerprinter 的 fingerprint() 内复用标准指纹逻辑（canonicalize_url + method + body 生成 SHA1），与现有 hostname 安全判定/正则构建技能能力不同，也与 peer 中自定义指纹器实现、errback 处理技能语义不同，属于新的独立微技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "bbb2cc51-443c-5e23-a285-3b443df42cb5",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "dc44d88e-0494-5b0c-bc90-ad37742213b0"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "17b6e4d2-f264-4a87-8ae4-e62aca6052bd",
+      "entity_type": "skill",
+      "entity_id": "6ea881fb-07e2-5ee9-8311-f419990e543a",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能描述自定义 RequestFingerprinter 实现，与现有下载器中间件钩子路由技能在能力身份上不同，且与 peer 候选（规范化指纹计算、errback 处理）属于不同微技能，应新建。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "6ea881fb-07e2-5ee9-8311-f419990e543a",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "d20ddbb2-0d5c-5a11-a759-cdcd60a3dc2f"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "61859912-49e3-475d-9b4f-04fe223c50c8",
+      "entity_type": "skill",
+      "entity_id": "8a26e484-1c30-5f08-a668-ce5b4b7e99df",
+      "action": "create",
+      "changed_at": "2026-10-25T08:57:51+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "8a26e484-1c30-5f08-a668-ce5b4b7e99df",
+        "doc_ids": [
+          "acd53fe2-91e6-5d61-9beb-63fa936ab397"
+        ],
+        "support_added": [
+          "b65fabd5-40dc-5e27-97e8-706b54f3c997"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

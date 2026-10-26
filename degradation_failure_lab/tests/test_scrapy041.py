@@ -100,5 +100,42 @@ class Scrapy041(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'not enabled'):
                 paid_batch(Path('/does-not-exist'))
 
+    def test_submission_is_exported_before_native_container_stop(self):
+        from harbor.trial.trial import Trial
+        from downstream_eval.sgb.task_adapters.scrapy041.adapter import native_trial, grade_export
+        payload=b'print("candidate")\n'
+        class FakeEnvironment:
+            stopped=False
+            async def exec(self,*args,**kwargs):
+                if self.stopped:
+                    raise AssertionError('Export attempted after teardown')
+                return SimpleNamespace(return_code=0,stdout=hashlib.sha256(payload).hexdigest())
+            async def download_file(self,*,source_path,target_path):
+                if self.stopped:
+                    raise AssertionError('Download attempted after teardown')
+                target_path.write_bytes(payload)
+        with tempfile.TemporaryDirectory() as temp:
+            trial=SimpleNamespace(agent_environment=FakeEnvironment(),
+                                  paths=SimpleNamespace(trial_dir=Path(temp)))
+            async def phase(self,*args,**kwargs):
+                return None
+            async def fake_native(config):
+                await Trial._run_agent_phase(trial)
+                trial.agent_environment.stopped=True
+                return trial,{'exception_info':None}
+            with patch.object(Trial,'_run_agent_phase',phase), \
+                 patch('downstream_eval.sgb.scrapy024.native_trial',side_effect=fake_native):
+                actual,_=asyncio.run(native_trial(object()))
+            self.assertTrue(actual.agent_environment.stopped)
+            path,digest=actual._scrapy041_export
+            self.assertEqual(path.read_bytes(),payload)
+            with patch('downstream_eval.sgb.task_adapters.scrapy041.adapter.score',return_value={'ok':True}) as scorer:
+                self.assertEqual(grade_export(actual,Path(temp)/'oracle'),{'ok':True})
+                scorer.assert_called_once_with(path,Path(temp)/'oracle/score',expected_sha256=digest)
+            path.write_bytes(b'tampered')
+            with self.assertRaisesRegex(ValueError,'changed after container stop'):
+                grade_export(actual,Path(temp)/'oracle2')
+
+
 
 if __name__=='__main__':unittest.main()

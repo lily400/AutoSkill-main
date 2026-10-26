@@ -1,0 +1,122 @@
+{
+  "skill_id": "6ea881fb-07e2-5ee9-8311-f419990e543a",
+  "name": "自定义请求指纹器实现",
+  "description": "实现一个 RequestFingerprinter 类，通过 fingerprint(request) 方法为 Scrapy 请求生成去重指纹，可优先读取 request.meta 中的预置指纹；适用于需要覆盖默认请求指纹算法或自定义去重/缓存键逻辑的场景。",
+  "skill_body": "实现一个 RequestFingerprinter 类，提供 fingerprint(self, request) 方法。若 request.meta 中已存在预置指纹则直接返回该值，否则调用默认 fingerprint(request) 生成指纹。确保生成的指纹满足下游组件（如文件系统缓存存储）对指纹格式的限制。\n\n## Objective\n\n为 Scrapy 请求生成可复用的自定义指纹\n## Applicable Signals\n\n- 需要覆盖默认请求指纹算法\n- 需要基于 request.meta 提供预置指纹\n\n## Contraindications\n\n- 仅需默认指纹行为时\n- 指纹格式不满足下游组件限制时\n\n## Intervention Moves\n\n- 定义 RequestFingerprinter 类并实现 fingerprint(self, request) 方法\n- 在方法内优先检查 request.meta 中的预置指纹并返回\n- 否则调用默认 fingerprint(request) 生成指纹\n\n## Workflow Steps\n\n- 定义 RequestFingerprinter 类\n- 实现 fingerprint(self, request) 方法\n- 若 request.meta 中存在预置指纹则返回该值\n- 否则调用默认 fingerprint(request) 生成并返回指纹\n- 确认指纹满足下游组件（如文件系统缓存存储）的格式限制\n\n## Constraints\n\n- 指纹必须满足使用它的 Scrapy 组件所施加的格式限制\n- 文件系统缓存存储要求指纹至少 1 字节长\n\n## Cautions\n\n- 自定义指纹算法变更可能影响去重与缓存命中行为\n- 若需复现旧版本指纹算法，应显式实现对应算法\n\n## Output Contract\n\n- 一个可被 REQUEST_FINGERPRINTER_CLASS 使用的 RequestFingerprinter 类\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要在 request.meta 中提供预置指纹\n- Therapist/Output: class RequestFingerprinter:\n    def fingerprint(self, request):\n        if \"fingerprint\" in request.meta:\n            return request.meta[\"fingerprint\"]\n        return fingerprint(request)\n- Notes: 优先读取 meta 中的预置指纹，否则回退到默认算法",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+  "parent_candidate_ids": [
+    "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.82,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "为 Scrapy 请求生成可复用的自定义指纹",
+  "domain": "scrapy",
+  "task_family": "请求去重",
+  "method_family": "fingerprinter 实现",
+  "stage": "请求处理",
+  "applicable_signals": [
+    "需要覆盖默认请求指纹算法",
+    "需要基于 request.meta 提供预置指纹"
+  ],
+  "contraindications": [
+    "仅需默认指纹行为时",
+    "指纹格式不满足下游组件限制时"
+  ],
+  "intervention_moves": [
+    "定义 RequestFingerprinter 类并实现 fingerprint(self, request) 方法",
+    "在方法内优先检查 request.meta 中的预置指纹并返回",
+    "否则调用默认 fingerprint(request) 生成指纹"
+  ],
+  "triggers": [
+    "需要覆盖默认请求指纹算法",
+    "需要基于 request.meta 提供预置指纹",
+    "需要自定义请求去重或缓存键逻辑"
+  ],
+  "workflow_steps": [
+    "定义 RequestFingerprinter 类",
+    "实现 fingerprint(self, request) 方法",
+    "若 request.meta 中存在预置指纹则返回该值",
+    "否则调用默认 fingerprint(request) 生成并返回指纹",
+    "确认指纹满足下游组件（如文件系统缓存存储）的格式限制"
+  ],
+  "constraints": [
+    "指纹必须满足使用它的 Scrapy 组件所施加的格式限制",
+    "文件系统缓存存储要求指纹至少 1 字节长"
+  ],
+  "cautions": [
+    "自定义指纹算法变更可能影响去重与缓存命中行为",
+    "若需复现旧版本指纹算法，应显式实现对应算法"
+  ],
+  "output_contract": [
+    "一个可被 REQUEST_FINGERPRINTER_CLASS 使用的 RequestFingerprinter 类"
+  ],
+  "examples": [
+    {
+      "input": "需要在 request.meta 中提供预置指纹",
+      "output": "class RequestFingerprinter:\n    def fingerprint(self, request):\n        if \"fingerprint\" in request.meta:\n            return request.meta[\"fingerprint\"]\n        return fingerprint(request)",
+      "notes": "优先读取 meta 中的预置指纹，否则回退到默认算法"
+    }
+  ],
+  "tags": [
+    "scrapy",
+    "request",
+    "fingerprint",
+    "去重",
+    "缓存键"
+  ],
+  "support_ids": [
+    "d20ddbb2-0d5c-5a11-a759-cdcd60a3dc2f"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "263f61e5-2722-5e4c-99cc-15ad9fc54e95"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "scrapy",
+    "taxonomy_id": "scrapy",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "scrapy::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|为 scrapy 请求生成可复用的自定义指纹|scrapy|请求去重|fingerprinter 实现|请求处理|自定义请求指纹器实现",
+    "change_action": "create",
+    "llm_reason": "候选技能描述自定义 RequestFingerprinter 实现，与现有下载器中间件钩子路由技能在能力身份上不同，且与 peer 候选（规范化指纹计算、errback 处理）属于不同微技能，应新建。",
+    "parent_skill_id": "feef4a0a-e457-54fe-95b0-d28f9ed4ec32",
+    "parent_candidate_ids": [
+      "feef4a0a-e457-54fe-95b0-d28f9ed4ec32"
+    ],
+    "hierarchy_confidence": 0.82,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

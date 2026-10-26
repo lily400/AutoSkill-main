@@ -1,0 +1,915 @@
+{
+  "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+  "title": "input001\\offsite.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+  "documents": [
+    {
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "source_type": "document",
+      "title": "input001\\offsite.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# scrapy.downloadermiddlewares.offsite — Scrapy 2.14.1 documentation\n\n- [Module code](../../index.html)\n- scrapy.downloadermiddlewares.offsite\n\n---\n\n# Source code for scrapy.downloadermiddlewares.offsite\n\n```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\n    from scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\n    def __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\n    @classmethod\n    def from_crawler(cls, crawler: Crawler) -> Self:\n        assert crawler.stats\n        o = cls(crawler.stats)\n        crawler.signals.connect(o.spider_opened, signal=signals.spider_opened)\n        crawler.signals.connect(o.request_scheduled, signal=signals.request_scheduled)\n        o.crawler = crawler\n        return o\n\n    def spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\n    def request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\n    @_warn_spider_arg\n    def process_request(self, request: Request, spider: Spider | None = None) -> None:\n        assert self.crawler.spider\n        if (\n            request.dont_filter\n            or request.meta.get(\"allow_offsite\")\n            or self.should_follow(request, self.crawler.spider)\n        ):\n            return\n        domain = urlparse_cached(request).hostname\n        if domain and domain not in self.domains_seen:\n            self.domains_seen.add(domain)\n            logger.debug(\n                \"Filtered offsite request to %(domain)r: %(request)s\",\n                {\"domain\": domain, \"request\": request},\n                extra={\"spider\": self.crawler.spider},\n            )\n            self.stats.inc_value(\"offsite/domains\")\n        self.stats.inc_value(\"offsite/filtered\")\n        raise IgnoreRequest\n\n    def should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))\n\n    def get_host_regex(self, spider: Spider) -> re.Pattern[str]:\n        \"\"\"Override this method to implement a different offsite policy\"\"\"\n        allowed_domains = getattr(spider, \"allowed_domains\", None)\n        if not allowed_domains:\n            return re.compile(\"\")  # allow all by default\n        url_pattern = re.compile(r\"^https?://.*$\")\n        port_pattern = re.compile(r\":\\d+$\")\n        domains = []\n        for domain in allowed_domains:\n            if domain is None:\n                continue\n            if url_pattern.match(domain):\n                message = (\n                    \"allowed_domains accepts only domains, not URLs. \"\n                    f\"Ignoring URL entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            elif port_pattern.search(domain):\n                message = (\n                    \"allowed_domains accepts only domains without ports. \"\n                    f\"Ignoring entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            else:\n                domains.append(re.escape(domain))\n        regex = rf\"^(.*\\.)?({'|'.join(domains)})$\"\n        return re.compile(regex)\n```",
+      "sections": [
+        {
+          "heading": "input001\\offsite.md",
+          "text": "# scrapy.downloadermiddlewares.offsite — Scrapy 2.14.1 documentation\n\n- [Module code](../../index.html)\n- scrapy.downloadermiddlewares.offsite\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 149
+          },
+          "metadata": {
+            "heading_path": [
+              "input001\\offsite.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# scrapy.downloadermiddlewares.offsite — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "# Source code for scrapy.downloadermiddlewares.offsite"
+            ]
+          }
+        },
+        {
+          "heading": "# Source code for scrapy.downloadermiddlewares.offsite",
+          "text": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\n    from scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\n    def __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\n    @classmethod\n    def from_crawler(cls, crawler: Crawler) -> Self:\n        assert crawler.stats\n        o = cls(crawler.stats)\n        crawler.signals.connect(o.spider_opened, signal=signals.spider_opened)\n        crawler.signals.connect(o.request_scheduled, signal=signals.request_scheduled)\n        o.crawler = crawler\n        return o\n\n    def spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\n    def request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\n    @_warn_spider_arg\n    def process_request(self, request: Request, spider: Spider | None = None) -> None:\n        assert self.crawler.spider\n        if (\n            request.dont_filter\n            or request.meta.get(\"allow_offsite\")\n            or self.should_follow(request, self.crawler.spider)\n        ):\n            return\n        domain = urlparse_cached(request).hostname\n        if domain and domain not in self.domains_seen:\n            self.domains_seen.add(domain)\n            logger.debug(\n                \"Filtered offsite request to %(domain)r: %(request)s\",\n                {\"domain\": domain, \"request\": request},\n                extra={\"spider\": self.crawler.spider},\n            )\n            self.stats.inc_value(\"offsite/domains\")\n        self.stats.inc_value(\"offsite/filtered\")\n        raise IgnoreRequest\n\n    def should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))\n\n    def get_host_regex(self, spider: Spider) -> re.Pattern[str]:\n        \"\"\"Override this method to implement a different offsite policy\"\"\"\n        allowed_domains = getattr(spider, \"allowed_domains\", None)\n        if not allowed_domains:\n            return re.compile(\"\")  # allow all by default\n        url_pattern = re.compile(r\"^https?://.*$\")\n        port_pattern = re.compile(r\":\\d+$\")\n        domains = []\n        for domain in allowed_domains:\n            if domain is None:\n                continue\n            if url_pattern.match(domain):\n                message = (\n                    \"allowed_domains accepts only domains, not URLs. \"\n                    f\"Ignoring URL entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            elif port_pattern.search(domain):\n                message = (\n                    \"allowed_domains accepts only domains without ports. \"\n                    f\"Ignoring entry {domain} in allowed_domains.\"\n                )\n                warnings.warn(message)\n            else:\n                domains.append(re.escape(domain))\n        regex = rf\"^(.*\\.)?({'|'.join(domains)})$\"\n        return re.compile(regex)\n```",
+          "level": 1,
+          "span": {
+            "start": 204,
+            "end": 3800
+          },
+          "metadata": {
+            "heading_path": [
+              "# Source code for scrapy.downloadermiddlewares.offsite"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "```",
+            "sibling_headings": [
+              "input001\\offsite.md"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case041_scrapy",
+        "condition_id": "clean",
+        "lab_run_id": "r13fe557951",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case041_scrapy",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-bc70867938051bc4",
+              "source_sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "path": "inputs/input001/offsite.md",
+              "sha256": "dad43df16d07e2c3550978ddc3baffafb5721dc23e060fdd58028e4d8a0216b8",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/dad43df16d07e2c3/offsite.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-db8ff4e788d28693",
+              "source_sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "path": "inputs/input002/downloader-middleware.md",
+              "sha256": "491f737b9d4743ec7b0e943f5be719969f0bb390aac55f25d9ada1d37060b10c",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/491f737b9d4743ec/downloader-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input002\\downloader-middleware.md"
+            },
+            {
+              "input_id": "input003",
+              "source_id": "sgb-819d117ddb8328d1",
+              "source_sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "path": "inputs/input003/request-response.md",
+              "sha256": "9f6d99ec9d95647cc3e949c54791022b33f4409787063b1e8be292561aa949b4",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/9f6d99ec9d95647c/request-response.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input003\\request-response.md"
+            },
+            {
+              "input_id": "input004",
+              "source_id": "sgb-ac10205061a5d910",
+              "source_sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "path": "inputs/input004/spider-middleware.md",
+              "sha256": "3772c49ba00a9fe46b78d1092b9fb2b47d0589c80296a04a7e407757eaa8e04a",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/3772c49ba00a9fe4/spider-middleware.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input004\\spider-middleware.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "ff125a5c28b13b1e3277abcd2f6dd4189abf18063537df59af9ac480bcece012",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "0118572fccd47ca6c5716927e0dec9d88678afa4",
+      "content_hash": "0118572fccd47ca6c5716927e0dec9d88678afa4",
+      "imported_at": "2026-10-25T08:18:53+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "ee446c4a-4013-576f-8aea-d08349d973a6",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "skill_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+      "section": "# Source code for scrapy.downloadermiddlewares.offsite",
+      "span": {
+        "start": 204,
+        "end": 2592
+      },
+      "excerpt": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\nfrom scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\ndef __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\ndef spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\ndef request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\ndef should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input001\\offsite.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Offsite请求域名过滤",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "在请求调度阶段过滤掉不属于允许域名的站外请求",
+        "task_family": "请求过滤",
+        "method_family": "域名正则匹配",
+        "stage": "request_scheduled",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      },
+      "created_at": "2026-10-25T08:19:15+00:00"
+    },
+    {
+      "support_id": "df27c7ab-e3e2-5b68-b833-647faad9c2a8",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "skill_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+      "section": "# Source code for scrapy.downloadermiddlewares.offsite",
+      "span": {
+        "start": 204,
+        "end": 2592
+      },
+      "excerpt": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\nfrom scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\ndef __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\ndef spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\ndef request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\ndef should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\offsite.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "允许域名正则构建",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在spider_opened阶段构建host_regex",
+        "task_family": "域名规则初始化",
+        "method_family": "正则表达式构建",
+        "stage": "spider_opened",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 2,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      },
+      "created_at": "2026-10-25T08:19:15+00:00"
+    },
+    {
+      "support_id": "c95ebfa6-0c76-52d0-b88e-8655b01a26f2",
+      "doc_id": "97f9fa22-9557-5601-8e90-c1ac6c978f0c",
+      "skill_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\r13fe557951\\inputs\\input001\\offsite.md",
+      "section": "# Source code for scrapy.downloadermiddlewares.offsite",
+      "span": {
+        "start": 204,
+        "end": 2592
+      },
+      "excerpt": "```\nfrom __future__ import annotations\n\nimport logging\nimport re\nimport warnings\nfrom typing import TYPE_CHECKING\n\nfrom scrapy import Request, Spider, signals\nfrom scrapy.exceptions import IgnoreRequest\nfrom scrapy.utils.decorators import _warn_spider_arg\nfrom scrapy.utils.httpobj import urlparse_cached\n\nif TYPE_CHECKING:\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\nfrom scrapy.crawler import Crawler\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass OffsiteMiddleware:\n    crawler: Crawler\n\ndef __init__(self, stats: StatsCollector):\n        self.stats = stats\n        self.domains_seen: set[str] = set()\n\ndef spider_opened(self, spider: Spider) -> None:\n        self.host_regex: re.Pattern[str] = self.get_host_regex(spider)\n\ndef request_scheduled(self, request: Request, spider: Spider) -> None:\n        self.process_request(request)\n\ndef should_follow(self, request: Request, spider: Spider) -> bool:\n        regex = self.host_regex\n        # hostname can be None for wrong urls (like javascript links)\n        host = urlparse_cached(request).hostname or \"\"\n        return bool(regex.search(host))",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\offsite.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "请求hostname安全判定",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "判断单个请求是否属于允许域名",
+        "task_family": "请求判定",
+        "method_family": "URL解析加正则匹配",
+        "stage": "should_follow",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 3,
+        "window_id": "26be8b8c-9d94-5937-b2d1-2624e3c19bf6",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 12,
+        "heading_path": [
+          "# Source code for scrapy.downloadermiddlewares.offsite"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\offsite.md"
+        ],
+        "subsection_headings": [],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "```"
+      },
+      "created_at": "2026-10-25T08:19:15+00:00"
+    }
+  ],
+  "skill_specs": [
+    {
+      "skill_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "name": "Offsite请求域名过滤",
+      "description": "在请求被调度时，基于spider允许域名的正则判断请求是否属于站内；站外请求应被忽略，站内请求继续进入调度。用于控制爬虫只跟随允许域名范围内的链接。",
+      "skill_body": "当请求进入调度阶段时，使用spider允许域名正则对请求hostname进行匹配：解析请求URL得到hostname（无法解析时视为空字符串），用host_regex.search(host)判断是否站内；站内请求放行继续调度，站外请求按忽略处理。\n\n## Objective\n\n在请求调度阶段过滤掉不属于允许域名的站外请求\n## Applicable Signals\n\n- spider已配置允许域名范围\n- 请求被调度时需判断是否站内\n- 存在站外链接需要被拦截\n\n## Contraindications\n\n- 需要跨域抓取且无域名白名单\n- 请求URL无法解析出hostname时不应直接放行\n\n## Intervention Moves\n\n- 在spider_opened时构建host_regex\n- 在request_scheduled中调用process_request处理请求\n- 用urlparse_cached获取hostname，None时置为空字符串\n- 用host_regex.search(host)判断是否站内并决定放行或忽略\n\n## Workflow Steps\n\n- spider_opened阶段通过get_host_regex(spider)构建host_regex\n- 请求被调度时触发request_scheduled，调用process_request\n- 解析请求得到hostname，无法解析时使用空字符串\n- 用host_regex.search(host)判断是否站内\n- 站内请求继续进入调度，站外请求被忽略\n\n## Constraints\n\n- 域名判断必须基于spider允许域名正则\n- hostname为None时不得直接放行，应按空字符串处理\n\n## Cautions\n\n- hostname可能为None（如javascript链接），需按空字符串处理以避免误判\n- 过滤发生在调度阶段，需确保host_regex在spider_opened时已构建\n\n## Output Contract\n\n- 站外请求被忽略，站内请求继续进入调度\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请求hostname不在允许域名正则范围内\n- Therapist/Output: 该请求被忽略，不进入调度\n- Notes: 站外请求拦截\n\n### Example 2\n\n- Client/Input: 请求hostname匹配允许域名正则\n- Therapist/Output: 该请求继续进入调度\n- Notes: 站内请求放行",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "在请求调度阶段过滤掉不属于允许域名的站外请求",
+      "domain": "scrapy",
+      "task_family": "请求过滤",
+      "method_family": "域名正则匹配",
+      "stage": "request_scheduled",
+      "applicable_signals": [
+        "spider已配置允许域名范围",
+        "请求被调度时需判断是否站内",
+        "存在站外链接需要被拦截"
+      ],
+      "contraindications": [
+        "需要跨域抓取且无域名白名单",
+        "请求URL无法解析出hostname时不应直接放行"
+      ],
+      "intervention_moves": [
+        "在spider_opened时构建host_regex",
+        "在request_scheduled中调用process_request处理请求",
+        "用urlparse_cached获取hostname，None时置为空字符串",
+        "用host_regex.search(host)判断是否站内并决定放行或忽略"
+      ],
+      "triggers": [
+        "需要限制爬虫只抓取指定域名",
+        "需要拦截站外链接请求",
+        "请求进入request_scheduled阶段需要做域名归属判断"
+      ],
+      "workflow_steps": [
+        "spider_opened阶段通过get_host_regex(spider)构建host_regex",
+        "请求被调度时触发request_scheduled，调用process_request",
+        "解析请求得到hostname，无法解析时使用空字符串",
+        "用host_regex.search(host)判断是否站内",
+        "站内请求继续进入调度，站外请求被忽略"
+      ],
+      "constraints": [
+        "域名判断必须基于spider允许域名正则",
+        "hostname为None时不得直接放行，应按空字符串处理"
+      ],
+      "cautions": [
+        "hostname可能为None（如javascript链接），需按空字符串处理以避免误判",
+        "过滤发生在调度阶段，需确保host_regex在spider_opened时已构建"
+      ],
+      "output_contract": [
+        "站外请求被忽略，站内请求继续进入调度"
+      ],
+      "examples": [
+        {
+          "input": "请求hostname不在允许域名正则范围内",
+          "output": "该请求被忽略，不进入调度",
+          "notes": "站外请求拦截"
+        },
+        {
+          "input": "请求hostname匹配允许域名正则",
+          "output": "该请求继续进入调度",
+          "notes": "站内请求放行"
+        }
+      ],
+      "tags": [
+        "scrapy",
+        "offsite",
+        "域名过滤",
+        "请求调度",
+        "IgnoreRequest"
+      ],
+      "support_ids": [
+        "ee446c4a-4013-576f-8aea-d08349d973a6"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "f5632c0c-aae0-5207-a5b7-1f1fda9b816c"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||session_skill|session|workflow_skill|在请求调度阶段过滤掉不属于允许域名的站外请求|scrapy|请求过滤|域名正则匹配|request_scheduled|offsite请求域名过滤",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "name": "允许域名正则构建",
+      "description": "在 spider_opened 阶段根据 spider 配置构建用于匹配允许域名的 host_regex 正则对象，供后续请求过滤逻辑复用。",
+      "skill_body": "在 spider_opened 阶段调用 get_host_regex(spider) 构建 host_regex 正则对象并保存为实例属性，供后续 should_follow 等请求过滤逻辑复用。仅做规则初始化，不在此步骤过滤请求。\n\n## Objective\n\n在spider_opened阶段构建host_regex\n## Applicable Signals\n\n- spider启动时需要初始化域名匹配规则\n\n## Contraindications\n\n- spider尚未打开或未配置允许域名\n\n## Intervention Moves\n\n- 在spider_opened中调用get_host_regex(spider)\n- 将返回的正则对象保存为self.host_regex供后续复用\n\n## Workflow Steps\n\n- 在spider_opened(self, spider)中调用self.get_host_regex(spider)\n- 将结果赋值给self.host_regex\n- 后续请求过滤逻辑直接复用该正则对象\n\n## Constraints\n\n- 仅在spider_opened阶段执行初始化\n- 本步骤不执行请求过滤，只构建规则\n\n## Cautions\n\n- hostname可能为None（如javascript链接），匹配时需容错处理\n\n## Output Contract\n\n- 生成可复用的host_regex正则对象",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在spider_opened阶段构建host_regex",
+      "domain": "scrapy",
+      "task_family": "域名规则初始化",
+      "method_family": "正则表达式构建",
+      "stage": "spider_opened",
+      "applicable_signals": [
+        "spider启动时需要初始化域名匹配规则"
+      ],
+      "contraindications": [
+        "spider尚未打开或未配置允许域名"
+      ],
+      "intervention_moves": [
+        "在spider_opened中调用get_host_regex(spider)",
+        "将返回的正则对象保存为self.host_regex供后续复用"
+      ],
+      "triggers": [
+        "spider启动时需要初始化域名匹配规则",
+        "需要在请求过滤前准备站内域名判定规则"
+      ],
+      "workflow_steps": [
+        "在spider_opened(self, spider)中调用self.get_host_regex(spider)",
+        "将结果赋值给self.host_regex",
+        "后续请求过滤逻辑直接复用该正则对象"
+      ],
+      "constraints": [
+        "仅在spider_opened阶段执行初始化",
+        "本步骤不执行请求过滤，只构建规则"
+      ],
+      "cautions": [
+        "hostname可能为None（如javascript链接），匹配时需容错处理"
+      ],
+      "output_contract": [
+        "生成可复用的host_regex正则对象"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "offsite",
+        "域名规则",
+        "正则构建",
+        "spider_opened"
+      ],
+      "support_ids": [
+        "df27c7ab-e3e2-5b68-b833-647faad9c2a8"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "69e66254-54bb-5dd6-b07c-da44b09cb5bd"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在spider_opened阶段构建host_regex|scrapy|域名规则初始化|正则表达式构建|spider_opened|允许域名正则构建",
+        "change_action": "create",
+        "llm_reason": "该候选是spider_opened阶段构建host_regex的独立微技能，与同批的请求判定和会话级过滤技能职责不同，无冗余或冲突，保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "name": "请求hostname安全判定",
+      "description": "对单个请求解析其URL的hostname，并用已初始化的允许域名正则判断该请求是否应被跟随；hostname为空（如javascript链接等错误URL）时按不匹配处理。用于单请求的站内/站外判定。",
+      "skill_body": "输入一个请求对象与已初始化的host_regex。先通过缓存的URL解析取得请求的hostname；若hostname为None或空字符串，则视为不匹配。否则用host_regex对hostname执行search，返回布尔结果表示是否应跟随该请求。不要在此步骤构建或修改正则，也不要执行调度阶段的过滤逻辑。\n\n## Objective\n\n判断单个请求是否属于允许域名\n## Applicable Signals\n\n- 需要对单个请求做站内/站外判定\n- host_regex已初始化可用\n\n## Contraindications\n\n- host_regex尚未初始化\n- 需要构建或修改允许域名正则\n- 需要执行调度阶段的批量过滤\n\n## Intervention Moves\n\n- 用缓存URL解析获取请求hostname\n- hostname为空时按不匹配处理\n- 用host_regex对hostname执行search并返回布尔结果\n\n## Workflow Steps\n\n- 取得已初始化的host_regex\n- 通过urlparse_cached解析请求，取hostname，空值置为空字符串\n- 用host_regex.search(host)判断是否匹配\n- 返回布尔值表示是否应跟随该请求\n\n## Constraints\n\n- hostname可能为None（如javascript链接），须按不匹配处理\n- 仅做单请求判定，不构建正则、不做调度过滤\n\n## Cautions\n\n- host_regex未初始化时不应调用本判定\n\n## Output Contract\n\n- 返回布尔值表示是否应跟随该请求",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "判断单个请求是否属于允许域名",
+      "domain": "scrapy",
+      "task_family": "请求判定",
+      "method_family": "URL解析加正则匹配",
+      "stage": "should_follow",
+      "applicable_signals": [
+        "需要对单个请求做站内/站外判定",
+        "host_regex已初始化可用"
+      ],
+      "contraindications": [
+        "host_regex尚未初始化",
+        "需要构建或修改允许域名正则",
+        "需要执行调度阶段的批量过滤"
+      ],
+      "intervention_moves": [
+        "用缓存URL解析获取请求hostname",
+        "hostname为空时按不匹配处理",
+        "用host_regex对hostname执行search并返回布尔结果"
+      ],
+      "triggers": [
+        "需要对单个请求做站内/站外判定",
+        "已有host_regex并需判断某请求是否应跟随"
+      ],
+      "workflow_steps": [
+        "取得已初始化的host_regex",
+        "通过urlparse_cached解析请求，取hostname，空值置为空字符串",
+        "用host_regex.search(host)判断是否匹配",
+        "返回布尔值表示是否应跟随该请求"
+      ],
+      "constraints": [
+        "hostname可能为None（如javascript链接），须按不匹配处理",
+        "仅做单请求判定，不构建正则、不做调度过滤"
+      ],
+      "cautions": [
+        "host_regex未初始化时不应调用本判定"
+      ],
+      "output_contract": [
+        "返回布尔值表示是否应跟随该请求"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "offsite",
+        "should_follow",
+        "hostname",
+        "正则匹配"
+      ],
+      "support_ids": [
+        "c95ebfa6-0c76-52d0-b88e-8655b01a26f2"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "58f9c066-0f49-52b9-b075-d916cd44e2e3"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|判断单个请求是否属于允许域名|scrapy|请求判定|url解析加正则匹配|should_follow|请求hostname安全判定",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "hierarchy_updates": [],
+  "lifecycles": [
+    {
+      "lifecycle_id": "a314353d-70cf-4da4-9d61-e1e1c7c3ac51",
+      "skill_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "from_state": null,
+      "to_state": "active",
+      "reason": "create",
+      "metadata": {
+        "doc_ids": [
+          "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+        ],
+        "llm_reason": "create"
+      },
+      "changed_at": "2026-10-25T08:45:46+00:00"
+    },
+    {
+      "lifecycle_id": "62a76c29-7298-4ae2-8903-8406870556fc",
+      "skill_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "from_state": null,
+      "to_state": "active",
+      "reason": "create",
+      "metadata": {
+        "doc_ids": [
+          "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+        ],
+        "llm_reason": "该候选是spider_opened阶段构建host_regex的独立微技能，与同批的请求判定和会话级过滤技能职责不同，无冗余或冲突，保留。"
+      },
+      "changed_at": "2026-10-25T08:45:46+00:00"
+    },
+    {
+      "lifecycle_id": "f8b3a9f7-0af8-4690-a660-5479b23b566d",
+      "skill_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "from_state": null,
+      "to_state": "active",
+      "reason": "create",
+      "metadata": {
+        "doc_ids": [
+          "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+        ],
+        "llm_reason": "create"
+      },
+      "changed_at": "2026-10-25T08:45:46+00:00"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "bd0670f5-1cb1-42e0-8a00-22216dd97424",
+      "entity_type": "skill",
+      "entity_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:46+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+        "doc_ids": [
+          "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+        ],
+        "support_added": [
+          "ee446c4a-4013-576f-8aea-d08349d973a6"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "c9562052-10fa-4537-ba84-5aa98a0230db",
+      "entity_type": "skill",
+      "entity_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:46+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选是spider_opened阶段构建host_regex的独立微技能，与同批的请求判定和会话级过滤技能职责不同，无冗余或冲突，保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+        "doc_ids": [
+          "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+        ],
+        "support_added": [
+          "df27c7ab-e3e2-5b68-b833-647faad9c2a8"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "3529e224-c28c-4676-9197-27165c8c0b5f",
+      "entity_type": "skill",
+      "entity_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:46+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+        "doc_ids": [
+          "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+        ],
+        "support_added": [
+          "c95ebfa6-0c76-52d0-b88e-8655b01a26f2"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ],
+  "version_history": [
+    {
+      "entity_type": "skill",
+      "entity_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "version": "0.1.0",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:46+00:00",
+      "status": "active",
+      "related_entity_ids": []
+    },
+    {
+      "entity_type": "skill",
+      "entity_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "version": "0.1.0",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:46+00:00",
+      "status": "active",
+      "related_entity_ids": []
+    },
+    {
+      "entity_type": "skill",
+      "entity_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "version": "0.1.0",
+      "action": "create",
+      "changed_at": "2026-10-25T08:45:46+00:00",
+      "status": "active",
+      "related_entity_ids": []
+    }
+  ],
+  "provenance_links": [
+    {
+      "entity_type": "skill",
+      "entity_id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "doc_ids": [
+        "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+      ],
+      "support_added": [
+        "ee446c4a-4013-576f-8aea-d08349d973a6"
+      ],
+      "support_conflicts": [],
+      "related_entity_ids": []
+    },
+    {
+      "entity_type": "skill",
+      "entity_id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "doc_ids": [
+        "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+      ],
+      "support_added": [
+        "df27c7ab-e3e2-5b68-b833-647faad9c2a8"
+      ],
+      "support_conflicts": [],
+      "related_entity_ids": []
+    },
+    {
+      "entity_type": "skill",
+      "entity_id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "doc_ids": [
+        "97f9fa22-9557-5601-8e90-c1ac6c978f0c"
+      ],
+      "support_added": [
+        "c95ebfa6-0c76-52d0-b88e-8655b01a26f2"
+      ],
+      "support_conflicts": [],
+      "related_entity_ids": []
+    }
+  ],
+  "upserted_store_skills": [
+    {
+      "id": "0f70cd3f-8916-5100-949a-b17f1bc29338",
+      "name": "Offsite请求域名过滤",
+      "description": "在请求被调度时，基于spider允许域名的正则判断请求是否属于站内；站外请求应被忽略，站内请求继续进入调度。用于控制爬虫只跟随允许域名范围内的链接。",
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "id": "75b3516a-ed35-54d1-96aa-35292b1ac49f",
+      "name": "允许域名正则构建",
+      "description": "在 spider_opened 阶段根据 spider 配置构建用于匹配允许域名的 host_regex 正则对象，供后续请求过滤逻辑复用。",
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "id": "d18ce1e0-736d-55d1-8960-8bee27f14091",
+      "name": "请求hostname安全判定",
+      "description": "对单个请求解析其URL的hostname，并用已初始化的允许域名正则判断该请求是否应被跟随；hostname为空（如javascript链接等错误URL）时按不匹配处理。用于单请求的站内/站外判定。",
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "staging_runs": [
+    {
+      "profile_id": "scrapy::未分类技能",
+      "family_id": "未分类技能",
+      "child_type": "请求过滤",
+      "run_id": "20261025T164546_08a6fc35",
+      "run_dir": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35",
+      "files": [
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35\\bucket.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35\\raw_candidates.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35\\existing_active.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35\\shortlists.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35\\merge_decisions.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35\\clusters.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求过滤\\20261025T164546_08a6fc35\\canonical_results.json"
+      ]
+    },
+    {
+      "profile_id": "scrapy::未分类技能",
+      "family_id": "未分类技能",
+      "child_type": "域名规则初始化",
+      "run_id": "20261025T164546_661a53e8",
+      "run_dir": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8",
+      "files": [
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8\\bucket.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8\\raw_candidates.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8\\existing_active.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8\\shortlists.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8\\merge_decisions.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8\\clusters.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\域名规则初始化\\20261025T164546_661a53e8\\canonical_results.json"
+      ]
+    },
+    {
+      "profile_id": "scrapy::未分类技能",
+      "family_id": "未分类技能",
+      "child_type": "请求判定",
+      "run_id": "20261025T164546_c287af17",
+      "run_dir": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17",
+      "files": [
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17\\bucket.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17\\raw_candidates.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17\\existing_active.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17\\shortlists.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17\\merge_decisions.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17\\clusters.json",
+        "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\staging\\scrapy_未分类技能\\未分类技能\\请求判定\\20261025T164546_c287af17\\canonical_results.json"
+      ]
+    }
+  ],
+  "visible_tree": {
+    "store_root": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank",
+    "affected_families": [
+      "未分类技能"
+    ],
+    "parent_paths": [
+      "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\通用技能领域\\Family技能\\未分类技能\\总技能\\SKILL.md"
+    ],
+    "child_paths": [
+      "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\通用技能领域\\Family技能\\未分类技能\\二级技能\\Offsite请求域名过滤\\SKILL.md",
+      "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\通用技能领域\\Family技能\\未分类技能\\微技能\\允许域名正则构建\\SKILL.md",
+      "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\通用技能领域\\Family技能\\未分类技能\\微技能\\请求hostname安全判定\\SKILL.md"
+    ],
+    "library_manifest_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\.runtime\\library_manifest.json",
+    "readme_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case041_scrapy\\clean\\s41r002\\SkillBank\\README.md"
+  },
+  "errors": [],
+  "dry_run": false,
+  "processed_documents": 1,
+  "total_documents": 4,
+  "action_counts": {
+    "create": 3
+  },
+  "skipped": false
+}

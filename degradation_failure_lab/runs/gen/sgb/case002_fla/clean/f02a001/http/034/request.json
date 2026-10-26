@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"51940545-807d-51e1-8f3c-dfc1ce331fe2\", \"name\": \"30天声誉事件复盘报告编制\", \"asset_type\": \"safety_rule\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"产出经数据核对、含分众信任评分与明确建议的30天复盘报告\", \"applicable_signals\": [\"事件已满30天且进入收尾复盘阶段\", \"存在多份渠道或时间点不同的数据工件需要交叉核对\", \"交付对象要求分众信任评分与建议清单\"], \"contraindications\": [\"事件仍在爆发期需实时响应\", \"仅有单一渠道数据无法交叉核对\", \"缺乏可核对的原始数据来源\"], \"workflow_steps\": [\"收集各渠道原始指标工件（舆情、渠道表现、客服与退款、流失/卸载/取消、预测简报）\", \"逐项核对数据口径，识别并说明不一致处（如CTR与打开/点击值不符、涨幅标注与原始数字不符、不同版本导出管线差异）\", \"以核对后数据为基础，按利益相关方分组汇总信任评分\", \"基于核对结果形成明确、可执行的建议清单\", \"输出含数据核对说明、分众信任评分与建议清单的复盘报告\"], \"constraints\": [\"以核对后的原始数据为准，不直接沿用未核实的二手结论\", \"所有数据不一致处须在报告中显式说明\", \"信任评分须按利益相关方分组呈现\", \"建议须明确可执行\"], \"triggers\": [\"事件进入30天收尾节点\", \"需要向管理层提交最终学习报告\", \"要求包含分众信任评分与建议\", \"需要跨渠道汇总并核对数据口径\"], \"output_contract\": [\"一份含数据核对说明、分众信任评分与建议清单的30天复盘报告\"]}, \"allowed_parent_nodes\": [\"macro_skill\"], \"parent_candidates\": [{\"skill_id\": \"b3cb7269-fbe0-5de0-b13e-215c800611df\", \"name\": \"危机响应后效果复盘与信任恢复评估\", \"asset_node_id\": \"macro_skill\", \"asset_level\": 1, \"objective\": \"判定回应成效与信任变化，形成防止重犯与复制有效动作的建议\", \"applicable_signals\": [\"官方回应已发布并进入观察期\", \"情绪或提及量出现明显波动\", \"客服工单、退款、流失等业务指标异常\"], \"workflow_steps\": [\"确认官方回应已发布并界定复盘观察窗口\", \"按时间序列收集情绪与关键指标数据\", \"分利益相关方维度整理各方反应\", \"对比实际结果与先前风险预测的偏差\", \"归因有效动作与有害动作\", \"检查各渠道传播效果\"], \"output_contract\": [\"包含信任得失判断、有效/有害动作归因与改进建议的复盘报告\"], \"score\": 0.5114466146846842}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}
