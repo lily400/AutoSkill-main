@@ -70,6 +70,38 @@ class SkillFreeze(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'matching generation'):
             freeze_generation(LAB, 's41r003', self.output, case_id='another_case')
 
+    def test_empty_active_registry_is_not_replaced_with_a_fake_skill(self):
+        import downstream_eval.integration.skill_freeze as module
+        actual = module.read
+        def inactive(path):
+            value = actual(path)
+            if Path(path).parent == RUN / 'SkillBank/.runtime/document_registry/skills':
+                value['status'] = 'inactive'
+            return value
+        with patch.object(module, 'read', side_effect=inactive):
+            with self.assertRaisesRegex(ValueError, 'Final live registry'):
+                freeze_generation(LAB, 's41r003', self.output)
+        self.assertFalse(self.output.exists())
+
+    def test_failed_generation_is_not_a_normal_clean_package(self):
+        import downstream_eval.integration.skill_freeze as module
+        actual = module.load_run
+        def failed(*args):
+            identity, run, result, stages = actual(*args)
+            result['status'] = 'failed'
+            return identity, run, result, stages
+        with patch.object(module, 'load_run', side_effect=failed):
+            with self.assertRaisesRegex(ValueError, 'Completed matching generation'):
+                freeze_generation(LAB, 's41r003', self.output)
+        self.assertFalse(self.output.exists())
+
+    def test_unsafe_package_is_still_rejected(self):
+        path = next((RUN / 'SkillBank/Users').rglob('SKILL.md'))
+        with patch.object(Path, 'is_symlink', lambda value: value == path):
+            with self.assertRaisesRegex(ValueError, 'Unsupported package symlink'):
+                freeze_generation(LAB, 's41r003', self.output)
+        self.assertFalse((self.output / 'skill_freeze.json').exists())
+
 
 if __name__ == '__main__':
     unittest.main()

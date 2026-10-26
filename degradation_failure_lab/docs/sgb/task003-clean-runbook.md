@@ -26,6 +26,17 @@
 
 公共 pilot 当前一次运行固定一对条件，不支持独立重启某一组。因此阶段 5 的唯一付费运行命令会依次执行 **NoSkill1 → CleanSkill1**；阶段 6 检查已执行的 CleanSkill，绝不再次运行 `run`。重复次数一组一次；这只是首个 pilot，不估计稳定成功率或显著性。
 
+报告 schema_version=2 将四类状态分开：
+
+| 字段 | 含义 |
+|---|---|
+| `experiment_execution_status` | `completed/partial/not_started`，依据两组真实 trial 结束、提交绑定和原 Oracle 有效评分，不要求任务成功、读正文或机制证据齐全 |
+| `skill_usage_status` | 每组复用原 usage 状态；仅索引、正文确认、日志未知分别保留，不能从缺日志断言未读 |
+| `task_success` | 每组真实有效 Oracle 评分为 true/false；没有有效评分为 null，不补造失败分数 |
+| `attribution_status` | `pending_review/insufficient_evidence/reviewed/not_comparable`；七阶段名称齐全但证据 unknown 仍是不足，reviewed 也不等于已验证因果 |
+
+`comparability` 独立保留 eligible/ineligible/unknown。两组执行完成而控制变量不一致时，执行可 completed、比较仍 ineligible。任务失败不代表归因完成，正文读取也不自动证明理解或遵循。只有真实受控干预及差分证据满足原验证契约，才能使用 intervention_supported。
+
 首次执行按编号推进；所有 `$LASTEXITCODE` 检查必须保留。目录已经存在时先判断是否已执行到该步骤，继续读取已有证据；不要删除目录、重置 ledger、换 ID 自动补跑或覆盖报告。新 ID 和新增调用需要新方案及明确授权。
 
 ## 阶段 0：运行前检查
@@ -246,7 +257,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Generation stopped; preserve sn3g001 and inspe
 - **预期结果**：`runs/gen/sgb/case003_san/clean/sn3g001/` 出现 input/config/upstream 快照、SkillBank、中间产物、HTTP 请求响应、pipeline.log、official_result.json、status.json、execution.json 和 artifact_manifest.json。
 - **成功标准**：官方管线内部完成 ingest→extract→compile→register；只有 1 个 `context.md` 输入，原字节保持。没有独立 `ingest`、`extract`、`compile` 或 `register` CLI 命令。
 - **失败处理**：不重跑此命令，不修改同一个 run。supports=0／drafts=0：看 ingest/result 与 extract/windows、pipeline.log，作为生成失败保留；编译／注册失败：看相邻阶段和 HTTP 响应。请求中断、预算停止、使用量未知：停止，保留执行记录，另行审核恢复方案与累计预算。本手册没有授权 resume。
-- **下一步**：无论成功或中止先执行 3C；只有完整成功才能进入阶段 4。
+- **下一步**：无论成功或中止先执行 3C；只有生成工程链完整且有可用包，才能进入阶段 4；语义质量另行如实记录。
 
 本题是单文档，使用 `cases/sgb/case003_san/inputs/clean.json` 指定的完整 108565-byte 原文，不按问题拆分或去重。窗口筛选由当前 Anything2Skill 配置决定。公共框架虽支持多文档，但本任务不使用；增加文档会改变条件、配置和预算，必须另审。
 
@@ -305,12 +316,15 @@ Get-Content -LiteralPath results/sgb/upstream/sn3g001/exports/skill_drafts.json 
 Get-Content -LiteralPath results/sgb/upstream/sn3g001/exports/skill_specs.json -Raw
 Get-Content -LiteralPath results/sgb/upstream/sn3g001/exports/skill_files.json -Raw
 Get-ChildItem -LiteralPath runs/gen/sgb/case003_san/clean/sn3g001/SkillBank/Users -Filter SKILL.md -Recurse | ForEach-Object { $_.FullName; Get-Content -LiteralPath $_.FullName -Encoding UTF8 }
+Get-ChildItem -LiteralPath runs/gen/sgb/case003_san/clean/sn3g001/SkillBank/Users -File -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Path,@{Name='sha256';Expression={$_.Hash.ToLowerInvariant()}}
+notepad.exe results/sgb/upstream/sn3g001/manual-quality-audit.md
+Get-FileHash -Algorithm SHA256 -LiteralPath results/sgb/upstream/sn3g001/manual-quality-audit.md | Select-Object Path,@{Name='sha256';Expression={$_.Hash.ToLowerInvariant()}}
 notepad.exe evaluations/case003_san/clean/sn3g001/pre_downstream.json
 ```
 
 - **预期结果**：实际窗口、support、draft、最终正文可逐项比对；人工保存真实审核结果。
-- **成功标准**：4 条目标 rule_preservation 都经审核。填写真实 reviewer、status、skill_ids、trace_refs 的实际实体 ID、generated_evidence 的实际 Skill 行号和 notes。`correct` 必须有相应语义证据，不能只搜索数字。原文坐标、规范化窗口坐标和 Skill 行号分别记录。审查是否遗漏先后条件、把 10／5 互换、错误默认值、加入无依据规则；无依据内容可追加 `generated_addition` 记录。
-- **失败处理**：没有保留、含糊或冲突分别填 incorrect／uncertain 及 error_types；保留材料，停止下游。不得人工修补正文再仍称本次未经干预的 CleanSkill；需要另立干预版本。本步骤无法自动代替语义审核，notepad 打开成功不等于审核完成。
+- **成功标准**：4 条目标 rule_preservation 均完成真实审核，不能删记录回避缺陷。现有合法状态为 correct/incorrect/uncertain/unreviewed；确认遗漏使用 `incorrect + error_types=["rule_omission"]`，不新增 omitted 枚举。有正文的正确或错误结论填写真实 skill_ids、trace_refs、generated_evidence；uncertain 可无确定正文锚点，但要说明不确定原因。确认遗漏不强求不存在的正文锚点，必须在 manual-quality-audit.md 写明来源规则、检查过的全部最终包文件及哈希、检查范围和遗漏证据，并把这个报告相对路径及实际小写哈希填入审核 JSON 的 provenance.file/sha256。审核顶层填写真实 reviewer，每条记录填写非空证据说明 notes；generated_addition 的错误也照实保留。结构 VALID 不代表语义 correct。
+- **失败处理**：语义错误、遗漏和不确定均是要测量的结果，审核完成且工程、安全、授权条件满足时可进入下游，不因非 correct 自动停止。真正 unreviewed、目标规则未覆盖、来源/引用/哈希不可信、遗漏没有检查范围证据时停止补齐审核；没有可用包或包不安全则停止，不能造 Skill。不得人工修补正文后仍称本次原始 CleanSkill，修复需单列干预版本。notepad 打开成功不等于审核完成。
 - **下一步**：4C。
 
 ### 4C — 验证质量审核并冻结最终包
@@ -323,7 +337,7 @@ notepad.exe evaluations/case003_san/clean/sn3g001/pre_downstream.json
 & $Task003Python -B scripts/lab.py evaluation-validate --file evaluations/case003_san/clean/sn3g001/pre_downstream.json
 if ($LASTEXITCODE -ne 0) { throw '4C review schema/entity validation failed' }
 & $Task003Python -B scripts/sgb/sanctuary002.py quality --generator-run sn3g001
-if ($LASTEXITCODE -ne 0) { throw 'STOP: upstream target-rule review is not complete and correct' }
+if ($LASTEXITCODE -ne 0) { throw 'STOP: required review is incomplete or its evidence is invalid' }
 & $Task003Python -B scripts/sgb/pilot.py plan --task sanctuary_endgame_scheduler_002 --generator-run sn3g001 --experiment sn3e001
 if ($LASTEXITCODE -ne 0) { throw '4C completed generation or fresh experiment check failed' }
 & $Task003Python -B scripts/sgb/pilot.py freeze --task sanctuary_endgame_scheduler_002 --generator-run sn3g001 --output runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001
@@ -331,9 +345,9 @@ if ($LASTEXITCODE -ne 0) { throw '4C freeze failed; preserve evidence' }
 Get-Content -LiteralPath runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/skill_freeze.json -Raw
 ```
 
-- **预期结果**：quality PASS，plan 给出固定模型／预算／两组，freeze 为 FROZEN；生成 skills/、skills_manifest.json、skill_freeze.json 和 canonical_files.json。
+- **预期结果**：quality 输出 review_status=reviewed、原样 semantic_findings 和审核哈希，plan 给出固定模型／预算／两组，freeze 为 FROZEN；生成 skills/、skills_manifest.json、skill_freeze.json 和 canonical_files.json。
 - **成功标准**：最终活动版本、源链、逐文件 SHA 和实际包副本通过校验。先 plan 后 freeze，因为 plan 拒绝已经存在的下游目录。
-- **失败处理**：包不一致、空包或审核未完成就停止；不要重新注册或覆盖包。冻结成功后不要再改源 run、Skill 或审核文件。
+- **失败处理**：包不一致、空包、不安全或审核未完成就停止；语义缺陷不是冻结拒绝条件；不要重新注册或覆盖包。冻结成功后不要再改源 run、Skill 或审核文件。
 - **下一步**：获得这**一对下游运行**明确授权后，执行 5A。
 
 ## 阶段 5：NoSkill 基线与配对批次启动
@@ -352,7 +366,7 @@ if ($LASTEXITCODE -ne 0) { throw '5A preparation failed; inspect engineering att
 ```
 
 - **预期结果**：READY、model_calls=0；readiness.json PASS；两组受控 probe 导出正确／错误夹具并评分；创建一次 budget.sqlite3 和 execution_manifest.json。
-- **成功标准**：下游批准绑定 `sn3e001`／`sn3g001`、同一 profile 哈希、一组一次、总 12 HTTP 上限，并包含 `approval_evidence.file/sha256` 与 4C 返回的 `quality_review_sha256`。**必须在 prepare 前完成批准和 gate 更新**，之后 gate 也属于冻结文件。
+- **成功标准**：下游批准绑定 `sn3e001`／`sn3g001`、同一 profile 哈希、一组一次、总 12 HTTP 上限；绑定的是完成且可追溯的审核，而非全部 correct 的审核，并包含 `approval_evidence.file/sha256` 与 4C 返回的 `quality_review_sha256`。**必须在 prepare 前完成批准和 gate 更新**，之后 gate 也属于冻结文件。
 - **失败处理**：当前交付时此步仍会 BLOCKED。不得只设置环境变量绕过 gate。若已创建 ledger，不重做 prepare；现有代码明确禁止重置预算。失败看 engineering/attempt-*/failure.json、report.json、network 日志和原 score。
 - **下一步**：5B。受控 probe 的读取不能算真实 Agent 读取。
 
@@ -449,8 +463,15 @@ Get-Content -LiteralPath runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/o
 
 ```powershell
 if (Test-Path -LiteralPath results/sgb/analyses/sn3e001) { throw 'Analysis exists; inspect it instead of overwriting' }
-& $Task003Python -B scripts/sgb/pilot.py analyze --task sanctuary_endgame_scheduler_002 --experiment sn3e001 --output results/sgb/analyses/sn3e001
-if ($LASTEXITCODE -ne 0) { throw '7A downstream analysis failed' }
+$Task003AnalysisInputs = @(
+  'runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/profile.json',
+  'runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/configs/NoSkill1.json',
+  'runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/configs/CleanSkill1.json'
+)
+if (@($Task003AnalysisInputs | Where-Object { -not (Test-Path -LiteralPath $_) }).Count -eq 0) {
+  & $Task003Python -B scripts/sgb/pilot.py analyze --task sanctuary_endgame_scheduler_002 --experiment sn3e001 --output results/sgb/analyses/sn3e001
+  if ($LASTEXITCODE -ne 0) { throw '7A downstream analysis failed' }
+} else { Write-Output 'Analysis inputs missing; use the partial report command in 7D without starting anything' }
 if (Test-Path -LiteralPath results/sgb/upstream/sn3g001/aggregate) { throw 'Aggregate exists; inspect it instead of overwriting' }
 & $Task003Python -B scripts/lab.py aggregate --case case003_san --out results/sgb/upstream/sn3g001/aggregate
 if ($LASTEXITCODE -ne 0) { throw '7A upstream aggregation failed' }
@@ -460,7 +481,7 @@ Get-Content -LiteralPath results/sgb/analyses/sn3e001/NoSkill1-skill-usage.json 
 
 - **预期结果**：analysis.json、report.md、skills.md、两组 skill-usage.json；上游 runs.json、rule_results.json/csv。
 - **成功标准**：读取证据分层，受控 probe 不被算为真实 Agent；tokens／HTTP 从原 outcomes 和 observer 读取。当前 provider 真实价格未验证，货币成本必须保留 null／unknown，不能套官方参考价当实际账单。
-- **失败处理**：已有目录保留；不完整运行按缺失证据处理。若还未 prepare 而完全没有下游数据，停止下游报告部分，只交上游失败／阻断报告。
+- **失败处理**：已有目录保留；不完整运行按缺失证据处理。若还未 prepare 或缺少分析输入，可直接用 7D 的 report 生成 not_started/partial 报告；不要为输出报告启动实验。上游 aggregate 依赖真实生成，未产生该运行时不执行它。
 - **下一步**：7B。
 
 ### 7B — 自动审查配对资格和逐项 Oracle 差分
@@ -511,19 +532,25 @@ notepad.exe configs/attribution/sn3e001.json
 - **完整命令**：
 
 ```powershell
-& $Task003Python -B scripts/sgb/attribution.py --spec configs/attribution/sn3e001.json --output results/sgb/attributions/sn3e001-v1
-if ($LASTEXITCODE -ne 0) { throw '7D attribution export failed; preserve the existing report if present' }
+if (Test-Path -LiteralPath configs/attribution/sn3e001.json) {
+  if (-not (Test-Path -LiteralPath results/sgb/attributions/sn3e001-v1)) {
+    & $Task003Python -B scripts/sgb/attribution.py --spec configs/attribution/sn3e001.json --output results/sgb/attributions/sn3e001-v1
+    if ($LASTEXITCODE -ne 0) { throw '7D attribution export failed; preserve the existing report if present' }
+  } else { Write-Output 'Preserving existing attribution export; report will verify its spec digest' }
+} else { Write-Output 'Attribution review spec missing; report will record missing evidence' }
 & $Task003Python -B scripts/sgb/sanctuary002.py report --generator-run sn3g001 --experiment sn3e001
 if ($LASTEXITCODE -ne 0) { throw '7D baseline identity/frozen ledger validation failed' }
 Get-Content -LiteralPath results/sgb/baselines/sn3e001/baseline.md -Encoding UTF8
 ```
 
 - **预期结果**：归因 report.json/md；最终 baseline.json/md 和 evidence-manifest.json。源文哈希、模型／预算绑定、整题及逐项结果、正文读取、tokens 和成本未知状态可追溯。
-- **成功标准**：只有资料充分且配对可比，四条规则均记录七个传递阶段及下游映射、完成人工审核，且目标规则正文在相关动作前进入成功请求时，baseline 才显示 COMPLETE；功能成败另列。空 spec 或仅一份无关 Skill 的正文读入会产生未完成状态。spec 必须与已导出的 v1 归因报告一致。
-- **失败处理**：已存在的报告不覆盖。若要修订语义审核，保留 v1，另审新的分析版本；不要修改历史 trial。环境异常和缺组仍可保存未完成报告，不能强行改 COMPLETE。不要为了让报告“完成”新增模型请求。
+- **成功标准**：执行、使用、任务结果及归因四字段分别记录。两组实际执行和原 Oracle 评分均完整即 execution=completed；未读正文、任务失败、规则链不完整不改变该事实。仅阶段名称齐全、证据全 unknown 只能 attribution=insufficient_evidence。未审核则 pending_review，不具备可比性则 not_comparable。reviewed 表示证据审核完成，不证明因果。review、analysis 或归因文件缺失时尽可能生成带 missing_evidence 的报告；若 spec 和已导出的 v1 报告同时存在，二者摘要仍须匹配。哈希冲突、跨运行引用等完整性错误继续拒绝。
+- **失败处理**：已存在的报告不覆盖。若要修订语义审核，保留 v1，另审新的分析版本；不要修改历史 trial。环境异常和缺组保存 partial/not_started 及 null 评分；不得为了完成报告补造数据。不要为了让报告“完成”新增模型请求。
 - **下一步**：8A。
 
 ## 阶段 8：最终验收
+
+阶段 8 的完整执行验收适用于已经有冻结包和运行记录的情况。not_started/partial 报告本身是可交付的真实状态，但不能冒充执行完成；缺包时保留失败/阻断报告，不强行执行冻结包存在性断言。
 
 ### 8A — 重查身份、冻结包、账本和历史保护
 
@@ -555,13 +582,13 @@ git -C 'D:\AS\AutoSkill-main' status --short
 - **完整命令**：
 
 ```powershell
-& $Task003Python -B -c "import json,pathlib; b=json.loads(pathlib.Path('results/sgb/baselines/sn3e001/baseline.json').read_text()); print('baseline_status=',b['status']); print('comparability=',b['comparability']); print('difference=',b['task_difference']); print('ledger=',b['ledger']); print('functional_success=',{k:v.get('task_success') for k,v in b['outcomes'].items()}); assert b['status']=='COMPLETE'; assert b['ledger']['http_attempts']<=12; assert all(v.get('infra_ok') is True and v.get('oracle',{}).get('task_result',{}).get('tests')==8 for v in b['outcomes'].values()); print('Task003 full-flow acceptance: PASS')"
-if ($LASTEXITCODE -ne 0) { throw 'Task003 is not a completed comparable Clean full-flow experiment' }
+& $Task003Python -B -c "import json,pathlib; b=json.loads(pathlib.Path('results/sgb/baselines/sn3e001/baseline.json').read_text()); print('execution=',b['experiment_execution_status']); print('usage=',b['skill_usage_status']); print('task_success=',b['task_success']); print('attribution=',b['attribution_status']); print('comparability=',b['comparability']); print('difference=',b['task_difference']); assert b['experiment_execution_status']=='completed'; assert b['ledger']['http_attempts']<=12; assert all(v is not None for v in b['task_success'].values()); print('Execution/scoring complete; inspect comparability and attribution separately')"
+if ($LASTEXITCODE -ne 0) { throw 'Task003 execution/scoring is not complete; preserve partial results' }
 ```
 
-- **预期结果**：COMPLETE、eligible、两组原始 8 项结果完整、证据与预算一致。
-- **成功标准**：源文→真实正式生成→已审查的冻结 Skill→同协议 NoSkill/CleanSkill→真实导出→独立原 Oracle→逐项差分→人工规则归因→可追溯报告全部完成。只有这一链满足，才说“第三任务 Clean 实验全流程已跑通”。若 CleanSkill 8/8 且 infra_ok=true，才另说“CleanSkill Agent 完成功能任务”；允许全流程完成但功能失败。
-- **失败处理**：缺正文、缺组、预算停止、环境异常或未完成审核，按 INCOMPLETE／unresolved 交付真实记录，不当作 Skill 伤害或任务通过。下一次尝试、规则修复、增加重复、换模型或预算扩展都需要单独批准。
+- **预期结果**：execution=completed，两组原始 8 项评分完整且预算一致；使用、功能成败、归因和比较资格分别展示，不预设为正面结果。
+- **成功标准**：源文、真实生成、工程有效且质量已记录的冻结包、两组真实执行、绑定提交和原 Oracle 有效评分均完成，可说“执行与评分全流程已跑通”。eligible 才能作正式配对差分；若控制变量不一致，执行仍可 completed，但不得宣称对照成立。CleanSkill 8/8 且评分有效才是任务成功；规则归因可保留未决，不要求为了完成实验把未知改成已证实。
+- **失败处理**：未读正文是使用/协议观察，归因不足或待审核不会抹去已完成执行；缺实际组、未结束或缺有效评分才是 partial/not_started。无有效对照标 not_comparable，差分 unresolved。不得当作 Skill 伤害或任务通过。下一次尝试、规则修复、增加重复、换模型或预算扩展都需要单独批准。
 - **下一步**：停止执行，审核报告。不自动进入 Degraded 条件或启动新试验。
 
 ## 当前预算与尚未执行的步骤
@@ -570,7 +597,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Task003 is not a completed comparable Clean fu
 |---|---|---|
 | 选题、静态审核、确定性测试、隔离 Oracle 夹具 | 本轮授权且已执行；详见 admission 和 validation 记录 | 研究者审核本手册 |
 | `sn3g001` 正式 Anything2Skill | **NOT_AUTHORIZED**；未调用 | 明确批准一次生成的额度及配置，保留批准来源哈希 |
-| 上游语义审核与真实包冻结 | 等待真实生成；不能提前宣称通过 | 人工填写 pre_downstream，所有目标规则通过 |
+| 上游语义审核与真实包冻结 | 等待真实生成；不能提前宣称通过 | 人工完成全部目标规则审核，保留 correct/incorrect/uncertain/omission；工程包必须有效 |
 | 真实包 native prepare | 等待生成与下游批准；当前只做了资产／评分器验收 | 按 5A 验收真实包、冻结 gate、创建一次 ledger |
 | `sn3e001` 两组真实执行 | **NOT_AUTHORIZED**；未启动 | 明确批准一对、每组一次、6+6 HTTP 及完整 profile 预算；绑定质量审核哈希 |
 | 稳定收益、因果干预、额外重复、退化 | 未授权、未执行 | 另立方案；不属于本手册执行范围 |
@@ -578,3 +605,5 @@ if ($LASTEXITCODE -ne 0) { throw 'Task003 is not a completed comparable Clean fu
 上游 450000 是响应后的观测阈值，不能保证最后一次响应后严格不超 token；下游输入为预算预留估计并保留实际 usage。请求错误或超时仍可能计费；使用量未知须保留，不能按零成本处理。准确货币成本需要提供商账单或已核验单价；当前结果以实际请求数及 token 为准。
 
 批准交接时，生成批准记录建议保存为 `results/sgb/authorizations/task003-generation-sn3g001.md`，下游批准记录保存为 `results/sgb/authorizations/task003-downstream-sn3e001.md`，内容必须来自研究者真实批准，不能把预算提案复制为批准。授权维护者用记录的实际 SHA-256 填入 gate 对应 `approval_evidence`，把获批的 `authorization_status` 设为 AUTHORIZED；生成获批后顶层 status 才能 PASS，下游另外获批后 downstream.status 才能 PASS。下游还要填入 4C 的真实 quality_review_sha256。金额、次数或配置若与本手册提案不同，先调整方案并重新审核，不能修改批准数字使检查通过。没有批准记录时，3A／5A 的 STOP 就是最终停止点。
+
+本手册已同步 Task003 状态解耦修复。旧验收属于历史版本，不被覆盖；本次修复与回归记录见 `results/sgb/audits/task003-semantics-fix-20261026-001/validation.json`。report 仍拒绝覆盖既有目录，需定稿后执行一次；状态轮询使用 status，不为更新报告重跑实验。

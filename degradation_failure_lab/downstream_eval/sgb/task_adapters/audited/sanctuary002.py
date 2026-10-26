@@ -43,14 +43,37 @@ def score(submission, output, *, expected_sha256=None):
 def check_review(generator):
     path = LAB / f'evaluations/{CASE_ID}/clean/{generator}/pre_downstream.json'
     review = validate_evaluation(LAB, read(path))
+    if (review['case_id'], review['condition_id'], review['run_id']) != (CASE_ID, 'clean', generator):
+        raise ValueError('Review does not belong to the requested Task003 generation')
     rules = {r['rule_id'] for r in CaseManager(LAB).load(CASE_ID)['rules']['rules']}
     records = [r for r in review['records'] if r['judgment_scope'] == 'rule_preservation']
-    if (review['reviewer'] == 'pending' or {r['rule_id'] for r in records} != rules
-            or any(r['status'] != 'correct' for r in review['records'])
-            or len(records) != len(rules) or any(r['status'] != 'correct' or not r['skill_ids']
-               or not r['generated_evidence'] or not r['trace_refs'] for r in records)):
-        raise RuntimeError('BLOCKED: every target rule needs a completed, evidence-linked quality review')
+    if (not review['reviewer'].strip() or review['reviewer'].strip() == 'pending'
+            or {r['rule_id'] for r in records} != rules or len(records) != len(rules)
+            or any(r['status'] == 'unreviewed' for r in review['records'])):
+        raise RuntimeError('BLOCKED: every target rule needs a completed review, regardless of its verdict')
+    for record in review['records']:
+        omitted = 'rule_omission' in record['error_types']
+        if not record['notes'].strip():
+            raise RuntimeError('BLOCKED: completed review needs evidence rationale')
+        if omitted:
+            if record['status'] == 'correct':
+                raise ValueError('A correct rule cannot also be a confirmed rule omission')
+            # A negative finding has no nonexistent body anchor. Bind the human
+            # inspection scope / final-package inventory through existing provenance.
+            if not review['provenance']:
+                raise RuntimeError('BLOCKED: omission review needs hash-bound inspection provenance')
+        elif record['status'] != 'uncertain' and (not record['skill_ids']
+                or not record['generated_evidence'] or not record['trace_refs']):
+            raise RuntimeError('BLOCKED: a body judgment needs mapped evidence; use rule_omission for absence')
     return path
+
+
+def review_findings(review):
+    """Use the existing enum: confirmed omission = incorrect + rule_omission."""
+    return [{'rule_id': r['rule_id'], 'judgment_scope': r['judgment_scope'],
+             'status': r['status'], 'semantic_finding': 'omitted'
+                if r['status'] == 'incorrect' and 'rule_omission' in r['error_types'] else r['status'],
+             'error_types': r['error_types'], 'notes': r['notes']} for r in review['records']]
 
 
 def check_authorization(phase, generator='sn3g001', experiment='sn3e001'):
@@ -59,7 +82,9 @@ def check_authorization(phase, generator='sn3g001', experiment='sn3e001'):
     if gate.get('status') != 'PASS':
         raise RuntimeError('BLOCKED: Task003 generation budget has not been authorized')
     requested = gate['requested_generation']
-    if (requested['run_id'] != generator or requested.get('authorization_status') != 'AUTHORIZED'
+    if (requested['run_id'] != generator or requested.get('case_id') != CASE_ID
+            or requested.get('condition_id') != 'clean' or requested.get('repeat') != 1
+            or requested.get('authorization_status') != 'AUTHORIZED'
             or requested['configuration_sha256'] != sha256(LAB / requested['configuration'])):
         raise RuntimeError('BLOCKED: generation identity/configuration authorization is incomplete')
     config = read(LAB / requested['configuration'])

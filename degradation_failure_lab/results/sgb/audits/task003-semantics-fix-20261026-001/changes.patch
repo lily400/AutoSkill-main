@@ -1,0 +1,1004 @@
+diff --git a/degradation_failure_lab/docs/sgb/task003-clean-admission.md b/degradation_failure_lab/docs/sgb/task003-clean-admission.md
+index eefc76b..c42ae24 100644
+--- a/degradation_failure_lab/docs/sgb/task003-clean-admission.md
++++ b/degradation_failure_lab/docs/sgb/task003-clean-admission.md
+@@ -91,8 +91,20 @@ NoSkill 容器没有源文和 Skill。CleanSkill 仅挂载生成后冻结的包
+ 
+ `results/sgb/audits/task003-sanctuary-zero-20261026-001/acceptance.json`：正例 8/8；错误目标数 1/8；错误触发标记 1/8；错误最后回合标记 3/8；四项均匹配预期。各评分保留 candidate/scorer network 报告、命令、提交哈希、envelope、原 JUnit 和 bridge 收据。网络／挂载探针为受控工程动作，不能计为 Agent 自主读取。
+ 
+-最终单元／回归日志、历史保护和代码身份见 `results/sgb/audits/task003-clean-20261026-001/validation.json`。**实际生成后的 native 两组 prepare 仍待执行**：它依赖真实、完整且通过人工质量审核的生成包。本轮没有伪造生成包来宣称该步已通过。
++最终单元／回归日志、历史保护和代码身份见 `results/sgb/audits/task003-clean-20261026-001/validation.json`。**实际生成后的 native 两组 prepare 仍待执行**：它依赖真实、工程完整且已完成人工质量记录的生成包（语义错误/遗漏/不确定不自动排除）。本轮没有伪造生成包来宣称该步已通过。
+ 
+ 预算文件 `data/manifests/sgb/gates/t-febd929cffec.json` 当前 BLOCKED。提案：一次生成，现配置上限 150 HTTP／450000 观测总 token；一次两组下游，每组最多 6 HTTP、总共 12，每组输入总预留上限 100000、每次输出上限 2048、无自动重试。**这些是配置上限，不是授权余额。** 上游 token 阈值按响应后观测，不是预付费额度或绝对账单封顶；HTTP 次数是请求前门禁。未授权恢复、第二次生成、额外重复或预算扩张。
+ 
+ 下一步是审核本手册并批准明确执行额度。批准后才可按阶段 3 开始真实生成；质量审核完成且下游额度获批后，才可 prepare 并运行这一对条件。环境异常和预算停止保留为未完成，不转写成普通任务失败。
++
++## 6. 语义门禁与完成状态修复
++
++本节更正原手册和 Task003 实现中的选择性门禁，不改变上面的任务身份、原 Oracle、源文和历史验收记录。
++
++- check_review 现在检查真实审核者、任务/运行身份、目标规则覆盖及证据可信性；允许 correct、incorrect 和 uncertain。确认遗漏复用 incorrect + rule_omission，不要求不存在的最终正文锚点，但须提供有哈希绑定的检查范围/最终包审查报告。unreviewed 或引用不可信仍阻断正式执行。
++- 工程有效且有语义缺陷的 CleanSkill 可以冻结，并在真实预算批准后测量下游；无可用产物、不安全或身份/哈希损坏仍停止。不修 Anything2Skill 核心，不造 Skill，不人工修好后仍标成原始 Clean。
++- 最终报告 schema_version=2 分别记录 experiment_execution_status、skill_usage_status、每组 task_success、attribution_status，以及独立 comparability。已结束并有效评分的执行不因未读正文、任务失败或规则证据不足改成未完成。
++- 七阶段名称齐全但证据 unknown 仍是归因证据不足。正文进入请求不等于理解、遵循或因果成立；继续保留 observed/inferred/hypothesis/intervention_supported，只有经受控干预且满足原差分验证规则才可提升为 intervention_supported。
++- profile、审核、分析或归因文件缺失时尽可能给出明确缺失说明；错误哈希、身份错连和伪造记录仍拒绝。没有有效对照不能借其他历史运行拼接。
++
++本次修复只运行确定性测试，未调用模型或启动 Agent；实际 gate 和授权均未调整。新回归与保护证据见 `results/sgb/audits/task003-semantics-fix-20261026-001/validation.json`。正式生成、真实包 native prepare 和正式 Agent 两组仍需原有独立授权与工程验收。
+diff --git a/degradation_failure_lab/docs/sgb/task003-clean-runbook.md b/degradation_failure_lab/docs/sgb/task003-clean-runbook.md
+index 19729c3..d8f99f7 100644
+--- a/degradation_failure_lab/docs/sgb/task003-clean-runbook.md
++++ b/degradation_failure_lab/docs/sgb/task003-clean-runbook.md
+@@ -26,6 +26,17 @@
+ 
+ 公共 pilot 当前一次运行固定一对条件，不支持独立重启某一组。因此阶段 5 的唯一付费运行命令会依次执行 **NoSkill1 → CleanSkill1**；阶段 6 检查已执行的 CleanSkill，绝不再次运行 `run`。重复次数一组一次；这只是首个 pilot，不估计稳定成功率或显著性。
+ 
++报告 schema_version=2 将四类状态分开：
++
++| 字段 | 含义 |
++|---|---|
++| `experiment_execution_status` | `completed/partial/not_started`，依据两组真实 trial 结束、提交绑定和原 Oracle 有效评分，不要求任务成功、读正文或机制证据齐全 |
++| `skill_usage_status` | 每组复用原 usage 状态；仅索引、正文确认、日志未知分别保留，不能从缺日志断言未读 |
++| `task_success` | 每组真实有效 Oracle 评分为 true/false；没有有效评分为 null，不补造失败分数 |
++| `attribution_status` | `pending_review/insufficient_evidence/reviewed/not_comparable`；七阶段名称齐全但证据 unknown 仍是不足，reviewed 也不等于已验证因果 |
++
++`comparability` 独立保留 eligible/ineligible/unknown。两组执行完成而控制变量不一致时，执行可 completed、比较仍 ineligible。任务失败不代表归因完成，正文读取也不自动证明理解或遵循。只有真实受控干预及差分证据满足原验证契约，才能使用 intervention_supported。
++
+ 首次执行按编号推进；所有 `$LASTEXITCODE` 检查必须保留。目录已经存在时先判断是否已执行到该步骤，继续读取已有证据；不要删除目录、重置 ledger、换 ID 自动补跑或覆盖报告。新 ID 和新增调用需要新方案及明确授权。
+ 
+ ## 阶段 0：运行前检查
+@@ -246,7 +257,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Generation stopped; preserve sn3g001 and inspe
+ - **预期结果**：`runs/gen/sgb/case003_san/clean/sn3g001/` 出现 input/config/upstream 快照、SkillBank、中间产物、HTTP 请求响应、pipeline.log、official_result.json、status.json、execution.json 和 artifact_manifest.json。
+ - **成功标准**：官方管线内部完成 ingest→extract→compile→register；只有 1 个 `context.md` 输入，原字节保持。没有独立 `ingest`、`extract`、`compile` 或 `register` CLI 命令。
+ - **失败处理**：不重跑此命令，不修改同一个 run。supports=0／drafts=0：看 ingest/result 与 extract/windows、pipeline.log，作为生成失败保留；编译／注册失败：看相邻阶段和 HTTP 响应。请求中断、预算停止、使用量未知：停止，保留执行记录，另行审核恢复方案与累计预算。本手册没有授权 resume。
+-- **下一步**：无论成功或中止先执行 3C；只有完整成功才能进入阶段 4。
++- **下一步**：无论成功或中止先执行 3C；只有生成工程链完整且有可用包，才能进入阶段 4；语义质量另行如实记录。
+ 
+ 本题是单文档，使用 `cases/sgb/case003_san/inputs/clean.json` 指定的完整 108565-byte 原文，不按问题拆分或去重。窗口筛选由当前 Anything2Skill 配置决定。公共框架虽支持多文档，但本任务不使用；增加文档会改变条件、配置和预算，必须另审。
+ 
+@@ -305,12 +316,15 @@ Get-Content -LiteralPath results/sgb/upstream/sn3g001/exports/skill_drafts.json
+ Get-Content -LiteralPath results/sgb/upstream/sn3g001/exports/skill_specs.json -Raw
+ Get-Content -LiteralPath results/sgb/upstream/sn3g001/exports/skill_files.json -Raw
+ Get-ChildItem -LiteralPath runs/gen/sgb/case003_san/clean/sn3g001/SkillBank/Users -Filter SKILL.md -Recurse | ForEach-Object { $_.FullName; Get-Content -LiteralPath $_.FullName -Encoding UTF8 }
++Get-ChildItem -LiteralPath runs/gen/sgb/case003_san/clean/sn3g001/SkillBank/Users -File -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Path,@{Name='sha256';Expression={$_.Hash.ToLowerInvariant()}}
++notepad.exe results/sgb/upstream/sn3g001/manual-quality-audit.md
++Get-FileHash -Algorithm SHA256 -LiteralPath results/sgb/upstream/sn3g001/manual-quality-audit.md | Select-Object Path,@{Name='sha256';Expression={$_.Hash.ToLowerInvariant()}}
+ notepad.exe evaluations/case003_san/clean/sn3g001/pre_downstream.json
+ ```
+ 
+ - **预期结果**：实际窗口、support、draft、最终正文可逐项比对；人工保存真实审核结果。
+-- **成功标准**：4 条目标 rule_preservation 都经审核。填写真实 reviewer、status、skill_ids、trace_refs 的实际实体 ID、generated_evidence 的实际 Skill 行号和 notes。`correct` 必须有相应语义证据，不能只搜索数字。原文坐标、规范化窗口坐标和 Skill 行号分别记录。审查是否遗漏先后条件、把 10／5 互换、错误默认值、加入无依据规则；无依据内容可追加 `generated_addition` 记录。
+-- **失败处理**：没有保留、含糊或冲突分别填 incorrect／uncertain 及 error_types；保留材料，停止下游。不得人工修补正文再仍称本次未经干预的 CleanSkill；需要另立干预版本。本步骤无法自动代替语义审核，notepad 打开成功不等于审核完成。
++- **成功标准**：4 条目标 rule_preservation 均完成真实审核，不能删记录回避缺陷。现有合法状态为 correct/incorrect/uncertain/unreviewed；确认遗漏使用 `incorrect + error_types=["rule_omission"]`，不新增 omitted 枚举。有正文的正确或错误结论填写真实 skill_ids、trace_refs、generated_evidence；uncertain 可无确定正文锚点，但要说明不确定原因。确认遗漏不强求不存在的正文锚点，必须在 manual-quality-audit.md 写明来源规则、检查过的全部最终包文件及哈希、检查范围和遗漏证据，并把这个报告相对路径及实际小写哈希填入审核 JSON 的 provenance.file/sha256。审核顶层填写真实 reviewer，每条记录填写非空证据说明 notes；generated_addition 的错误也照实保留。结构 VALID 不代表语义 correct。
++- **失败处理**：语义错误、遗漏和不确定均是要测量的结果，审核完成且工程、安全、授权条件满足时可进入下游，不因非 correct 自动停止。真正 unreviewed、目标规则未覆盖、来源/引用/哈希不可信、遗漏没有检查范围证据时停止补齐审核；没有可用包或包不安全则停止，不能造 Skill。不得人工修补正文后仍称本次原始 CleanSkill，修复需单列干预版本。notepad 打开成功不等于审核完成。
+ - **下一步**：4C。
+ 
+ ### 4C — 验证质量审核并冻结最终包
+@@ -323,7 +337,7 @@ notepad.exe evaluations/case003_san/clean/sn3g001/pre_downstream.json
+ & $Task003Python -B scripts/lab.py evaluation-validate --file evaluations/case003_san/clean/sn3g001/pre_downstream.json
+ if ($LASTEXITCODE -ne 0) { throw '4C review schema/entity validation failed' }
+ & $Task003Python -B scripts/sgb/sanctuary002.py quality --generator-run sn3g001
+-if ($LASTEXITCODE -ne 0) { throw 'STOP: upstream target-rule review is not complete and correct' }
++if ($LASTEXITCODE -ne 0) { throw 'STOP: required review is incomplete or its evidence is invalid' }
+ & $Task003Python -B scripts/sgb/pilot.py plan --task sanctuary_endgame_scheduler_002 --generator-run sn3g001 --experiment sn3e001
+ if ($LASTEXITCODE -ne 0) { throw '4C completed generation or fresh experiment check failed' }
+ & $Task003Python -B scripts/sgb/pilot.py freeze --task sanctuary_endgame_scheduler_002 --generator-run sn3g001 --output runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001
+@@ -331,9 +345,9 @@ if ($LASTEXITCODE -ne 0) { throw '4C freeze failed; preserve evidence' }
+ Get-Content -LiteralPath runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/skill_freeze.json -Raw
+ ```
+ 
+-- **预期结果**：quality PASS，plan 给出固定模型／预算／两组，freeze 为 FROZEN；生成 skills/、skills_manifest.json、skill_freeze.json 和 canonical_files.json。
++- **预期结果**：quality 输出 review_status=reviewed、原样 semantic_findings 和审核哈希，plan 给出固定模型／预算／两组，freeze 为 FROZEN；生成 skills/、skills_manifest.json、skill_freeze.json 和 canonical_files.json。
+ - **成功标准**：最终活动版本、源链、逐文件 SHA 和实际包副本通过校验。先 plan 后 freeze，因为 plan 拒绝已经存在的下游目录。
+-- **失败处理**：包不一致、空包或审核未完成就停止；不要重新注册或覆盖包。冻结成功后不要再改源 run、Skill 或审核文件。
++- **失败处理**：包不一致、空包、不安全或审核未完成就停止；语义缺陷不是冻结拒绝条件；不要重新注册或覆盖包。冻结成功后不要再改源 run、Skill 或审核文件。
+ - **下一步**：获得这**一对下游运行**明确授权后，执行 5A。
+ 
+ ## 阶段 5：NoSkill 基线与配对批次启动
+@@ -352,7 +366,7 @@ if ($LASTEXITCODE -ne 0) { throw '5A preparation failed; inspect engineering att
+ ```
+ 
+ - **预期结果**：READY、model_calls=0；readiness.json PASS；两组受控 probe 导出正确／错误夹具并评分；创建一次 budget.sqlite3 和 execution_manifest.json。
+-- **成功标准**：下游批准绑定 `sn3e001`／`sn3g001`、同一 profile 哈希、一组一次、总 12 HTTP 上限，并包含 `approval_evidence.file/sha256` 与 4C 返回的 `quality_review_sha256`。**必须在 prepare 前完成批准和 gate 更新**，之后 gate 也属于冻结文件。
++- **成功标准**：下游批准绑定 `sn3e001`／`sn3g001`、同一 profile 哈希、一组一次、总 12 HTTP 上限；绑定的是完成且可追溯的审核，而非全部 correct 的审核，并包含 `approval_evidence.file/sha256` 与 4C 返回的 `quality_review_sha256`。**必须在 prepare 前完成批准和 gate 更新**，之后 gate 也属于冻结文件。
+ - **失败处理**：当前交付时此步仍会 BLOCKED。不得只设置环境变量绕过 gate。若已创建 ledger，不重做 prepare；现有代码明确禁止重置预算。失败看 engineering/attempt-*/failure.json、report.json、network 日志和原 score。
+ - **下一步**：5B。受控 probe 的读取不能算真实 Agent 读取。
+ 
+@@ -449,8 +463,15 @@ Get-Content -LiteralPath runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/o
+ 
+ ```powershell
+ if (Test-Path -LiteralPath results/sgb/analyses/sn3e001) { throw 'Analysis exists; inspect it instead of overwriting' }
+-& $Task003Python -B scripts/sgb/pilot.py analyze --task sanctuary_endgame_scheduler_002 --experiment sn3e001 --output results/sgb/analyses/sn3e001
+-if ($LASTEXITCODE -ne 0) { throw '7A downstream analysis failed' }
++$Task003AnalysisInputs = @(
++  'runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/profile.json',
++  'runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/configs/NoSkill1.json',
++  'runs/eval/sgb/sanctuary_endgame_scheduler_002/sn3e001/configs/CleanSkill1.json'
++)
++if (@($Task003AnalysisInputs | Where-Object { -not (Test-Path -LiteralPath $_) }).Count -eq 0) {
++  & $Task003Python -B scripts/sgb/pilot.py analyze --task sanctuary_endgame_scheduler_002 --experiment sn3e001 --output results/sgb/analyses/sn3e001
++  if ($LASTEXITCODE -ne 0) { throw '7A downstream analysis failed' }
++} else { Write-Output 'Analysis inputs missing; use the partial report command in 7D without starting anything' }
+ if (Test-Path -LiteralPath results/sgb/upstream/sn3g001/aggregate) { throw 'Aggregate exists; inspect it instead of overwriting' }
+ & $Task003Python -B scripts/lab.py aggregate --case case003_san --out results/sgb/upstream/sn3g001/aggregate
+ if ($LASTEXITCODE -ne 0) { throw '7A upstream aggregation failed' }
+@@ -460,7 +481,7 @@ Get-Content -LiteralPath results/sgb/analyses/sn3e001/NoSkill1-skill-usage.json
+ 
+ - **预期结果**：analysis.json、report.md、skills.md、两组 skill-usage.json；上游 runs.json、rule_results.json/csv。
+ - **成功标准**：读取证据分层，受控 probe 不被算为真实 Agent；tokens／HTTP 从原 outcomes 和 observer 读取。当前 provider 真实价格未验证，货币成本必须保留 null／unknown，不能套官方参考价当实际账单。
+-- **失败处理**：已有目录保留；不完整运行按缺失证据处理。若还未 prepare 而完全没有下游数据，停止下游报告部分，只交上游失败／阻断报告。
++- **失败处理**：已有目录保留；不完整运行按缺失证据处理。若还未 prepare 或缺少分析输入，可直接用 7D 的 report 生成 not_started/partial 报告；不要为输出报告启动实验。上游 aggregate 依赖真实生成，未产生该运行时不执行它。
+ - **下一步**：7B。
+ 
+ ### 7B — 自动审查配对资格和逐项 Oracle 差分
+@@ -511,20 +532,26 @@ notepad.exe configs/attribution/sn3e001.json
+ - **完整命令**：
+ 
+ ```powershell
+-& $Task003Python -B scripts/sgb/attribution.py --spec configs/attribution/sn3e001.json --output results/sgb/attributions/sn3e001-v1
+-if ($LASTEXITCODE -ne 0) { throw '7D attribution export failed; preserve the existing report if present' }
++if (Test-Path -LiteralPath configs/attribution/sn3e001.json) {
++  if (-not (Test-Path -LiteralPath results/sgb/attributions/sn3e001-v1)) {
++    & $Task003Python -B scripts/sgb/attribution.py --spec configs/attribution/sn3e001.json --output results/sgb/attributions/sn3e001-v1
++    if ($LASTEXITCODE -ne 0) { throw '7D attribution export failed; preserve the existing report if present' }
++  } else { Write-Output 'Preserving existing attribution export; report will verify its spec digest' }
++} else { Write-Output 'Attribution review spec missing; report will record missing evidence' }
+ & $Task003Python -B scripts/sgb/sanctuary002.py report --generator-run sn3g001 --experiment sn3e001
+ if ($LASTEXITCODE -ne 0) { throw '7D baseline identity/frozen ledger validation failed' }
+ Get-Content -LiteralPath results/sgb/baselines/sn3e001/baseline.md -Encoding UTF8
+ ```
+ 
+ - **预期结果**：归因 report.json/md；最终 baseline.json/md 和 evidence-manifest.json。源文哈希、模型／预算绑定、整题及逐项结果、正文读取、tokens 和成本未知状态可追溯。
+-- **成功标准**：只有资料充分且配对可比，四条规则均记录七个传递阶段及下游映射、完成人工审核，且目标规则正文在相关动作前进入成功请求时，baseline 才显示 COMPLETE；功能成败另列。空 spec 或仅一份无关 Skill 的正文读入会产生未完成状态。spec 必须与已导出的 v1 归因报告一致。
+-- **失败处理**：已存在的报告不覆盖。若要修订语义审核，保留 v1，另审新的分析版本；不要修改历史 trial。环境异常和缺组仍可保存未完成报告，不能强行改 COMPLETE。不要为了让报告“完成”新增模型请求。
++- **成功标准**：执行、使用、任务结果及归因四字段分别记录。两组实际执行和原 Oracle 评分均完整即 execution=completed；未读正文、任务失败、规则链不完整不改变该事实。仅阶段名称齐全、证据全 unknown 只能 attribution=insufficient_evidence。未审核则 pending_review，不具备可比性则 not_comparable。reviewed 表示证据审核完成，不证明因果。review、analysis 或归因文件缺失时尽可能生成带 missing_evidence 的报告；若 spec 和已导出的 v1 报告同时存在，二者摘要仍须匹配。哈希冲突、跨运行引用等完整性错误继续拒绝。
++- **失败处理**：已存在的报告不覆盖。若要修订语义审核，保留 v1，另审新的分析版本；不要修改历史 trial。环境异常和缺组保存 partial/not_started 及 null 评分；不得为了完成报告补造数据。不要为了让报告“完成”新增模型请求。
+ - **下一步**：8A。
+ 
+ ## 阶段 8：最终验收
+ 
++阶段 8 的完整执行验收适用于已经有冻结包和运行记录的情况。not_started/partial 报告本身是可交付的真实状态，但不能冒充执行完成；缺包时保留失败/阻断报告，不强行执行冻结包存在性断言。
++
+ ### 8A — 重查身份、冻结包、账本和历史保护
+ 
+ - **当前目标**：核实所有关键证据仍是原字节，账本没有重置。
+@@ -555,13 +582,13 @@ git -C 'D:\AS\AutoSkill-main' status --short
+ - **完整命令**：
+ 
+ ```powershell
+-& $Task003Python -B -c "import json,pathlib; b=json.loads(pathlib.Path('results/sgb/baselines/sn3e001/baseline.json').read_text()); print('baseline_status=',b['status']); print('comparability=',b['comparability']); print('difference=',b['task_difference']); print('ledger=',b['ledger']); print('functional_success=',{k:v.get('task_success') for k,v in b['outcomes'].items()}); assert b['status']=='COMPLETE'; assert b['ledger']['http_attempts']<=12; assert all(v.get('infra_ok') is True and v.get('oracle',{}).get('task_result',{}).get('tests')==8 for v in b['outcomes'].values()); print('Task003 full-flow acceptance: PASS')"
+-if ($LASTEXITCODE -ne 0) { throw 'Task003 is not a completed comparable Clean full-flow experiment' }
++& $Task003Python -B -c "import json,pathlib; b=json.loads(pathlib.Path('results/sgb/baselines/sn3e001/baseline.json').read_text()); print('execution=',b['experiment_execution_status']); print('usage=',b['skill_usage_status']); print('task_success=',b['task_success']); print('attribution=',b['attribution_status']); print('comparability=',b['comparability']); print('difference=',b['task_difference']); assert b['experiment_execution_status']=='completed'; assert b['ledger']['http_attempts']<=12; assert all(v is not None for v in b['task_success'].values()); print('Execution/scoring complete; inspect comparability and attribution separately')"
++if ($LASTEXITCODE -ne 0) { throw 'Task003 execution/scoring is not complete; preserve partial results' }
+ ```
+ 
+-- **预期结果**：COMPLETE、eligible、两组原始 8 项结果完整、证据与预算一致。
+-- **成功标准**：源文→真实正式生成→已审查的冻结 Skill→同协议 NoSkill/CleanSkill→真实导出→独立原 Oracle→逐项差分→人工规则归因→可追溯报告全部完成。只有这一链满足，才说“第三任务 Clean 实验全流程已跑通”。若 CleanSkill 8/8 且 infra_ok=true，才另说“CleanSkill Agent 完成功能任务”；允许全流程完成但功能失败。
+-- **失败处理**：缺正文、缺组、预算停止、环境异常或未完成审核，按 INCOMPLETE／unresolved 交付真实记录，不当作 Skill 伤害或任务通过。下一次尝试、规则修复、增加重复、换模型或预算扩展都需要单独批准。
++- **预期结果**：execution=completed，两组原始 8 项评分完整且预算一致；使用、功能成败、归因和比较资格分别展示，不预设为正面结果。
++- **成功标准**：源文、真实生成、工程有效且质量已记录的冻结包、两组真实执行、绑定提交和原 Oracle 有效评分均完成，可说“执行与评分全流程已跑通”。eligible 才能作正式配对差分；若控制变量不一致，执行仍可 completed，但不得宣称对照成立。CleanSkill 8/8 且评分有效才是任务成功；规则归因可保留未决，不要求为了完成实验把未知改成已证实。
++- **失败处理**：未读正文是使用/协议观察，归因不足或待审核不会抹去已完成执行；缺实际组、未结束或缺有效评分才是 partial/not_started。无有效对照标 not_comparable，差分 unresolved。不得当作 Skill 伤害或任务通过。下一次尝试、规则修复、增加重复、换模型或预算扩展都需要单独批准。
+ - **下一步**：停止执行，审核报告。不自动进入 Degraded 条件或启动新试验。
+ 
+ ## 当前预算与尚未执行的步骤
+@@ -570,7 +597,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Task003 is not a completed comparable Clean fu
+ |---|---|---|
+ | 选题、静态审核、确定性测试、隔离 Oracle 夹具 | 本轮授权且已执行；详见 admission 和 validation 记录 | 研究者审核本手册 |
+ | `sn3g001` 正式 Anything2Skill | **NOT_AUTHORIZED**；未调用 | 明确批准一次生成的额度及配置，保留批准来源哈希 |
+-| 上游语义审核与真实包冻结 | 等待真实生成；不能提前宣称通过 | 人工填写 pre_downstream，所有目标规则通过 |
++| 上游语义审核与真实包冻结 | 等待真实生成；不能提前宣称通过 | 人工完成全部目标规则审核，保留 correct/incorrect/uncertain/omission；工程包必须有效 |
+ | 真实包 native prepare | 等待生成与下游批准；当前只做了资产／评分器验收 | 按 5A 验收真实包、冻结 gate、创建一次 ledger |
+ | `sn3e001` 两组真实执行 | **NOT_AUTHORIZED**；未启动 | 明确批准一对、每组一次、6+6 HTTP 及完整 profile 预算；绑定质量审核哈希 |
+ | 稳定收益、因果干预、额外重复、退化 | 未授权、未执行 | 另立方案；不属于本手册执行范围 |
+@@ -578,3 +605,5 @@ if ($LASTEXITCODE -ne 0) { throw 'Task003 is not a completed comparable Clean fu
+ 上游 450000 是响应后的观测阈值，不能保证最后一次响应后严格不超 token；下游输入为预算预留估计并保留实际 usage。请求错误或超时仍可能计费；使用量未知须保留，不能按零成本处理。准确货币成本需要提供商账单或已核验单价；当前结果以实际请求数及 token 为准。
+ 
+ 批准交接时，生成批准记录建议保存为 `results/sgb/authorizations/task003-generation-sn3g001.md`，下游批准记录保存为 `results/sgb/authorizations/task003-downstream-sn3e001.md`，内容必须来自研究者真实批准，不能把预算提案复制为批准。授权维护者用记录的实际 SHA-256 填入 gate 对应 `approval_evidence`，把获批的 `authorization_status` 设为 AUTHORIZED；生成获批后顶层 status 才能 PASS，下游另外获批后 downstream.status 才能 PASS。下游还要填入 4C 的真实 quality_review_sha256。金额、次数或配置若与本手册提案不同，先调整方案并重新审核，不能修改批准数字使检查通过。没有批准记录时，3A／5A 的 STOP 就是最终停止点。
++
++本手册已同步 Task003 状态解耦修复。旧验收属于历史版本，不被覆盖；本次修复与回归记录见 `results/sgb/audits/task003-semantics-fix-20261026-001/validation.json`。report 仍拒绝覆盖既有目录，需定稿后执行一次；状态轮询使用 status，不为更新报告重跑实验。
+diff --git a/degradation_failure_lab/downstream_eval/sgb/task_adapters/audited/sanctuary002.py b/degradation_failure_lab/downstream_eval/sgb/task_adapters/audited/sanctuary002.py
+index e97a2d7..5137142 100644
+--- a/degradation_failure_lab/downstream_eval/sgb/task_adapters/audited/sanctuary002.py
++++ b/degradation_failure_lab/downstream_eval/sgb/task_adapters/audited/sanctuary002.py
+@@ -43,23 +43,48 @@ def score(submission, output, *, expected_sha256=None):
+ def check_review(generator):
+     path = LAB / f'evaluations/{CASE_ID}/clean/{generator}/pre_downstream.json'
+     review = validate_evaluation(LAB, read(path))
++    if (review['case_id'], review['condition_id'], review['run_id']) != (CASE_ID, 'clean', generator):
++        raise ValueError('Review does not belong to the requested Task003 generation')
+     rules = {r['rule_id'] for r in CaseManager(LAB).load(CASE_ID)['rules']['rules']}
+     records = [r for r in review['records'] if r['judgment_scope'] == 'rule_preservation']
+-    if (review['reviewer'] == 'pending' or {r['rule_id'] for r in records} != rules
+-            or any(r['status'] != 'correct' for r in review['records'])
+-            or len(records) != len(rules) or any(r['status'] != 'correct' or not r['skill_ids']
+-               or not r['generated_evidence'] or not r['trace_refs'] for r in records)):
+-        raise RuntimeError('BLOCKED: every target rule needs a completed, evidence-linked quality review')
++    if (not review['reviewer'].strip() or review['reviewer'].strip() == 'pending'
++            or {r['rule_id'] for r in records} != rules or len(records) != len(rules)
++            or any(r['status'] == 'unreviewed' for r in review['records'])):
++        raise RuntimeError('BLOCKED: every target rule needs a completed review, regardless of its verdict')
++    for record in review['records']:
++        omitted = 'rule_omission' in record['error_types']
++        if not record['notes'].strip():
++            raise RuntimeError('BLOCKED: completed review needs evidence rationale')
++        if omitted:
++            if record['status'] == 'correct':
++                raise ValueError('A correct rule cannot also be a confirmed rule omission')
++            # A negative finding has no nonexistent body anchor. Bind the human
++            # inspection scope / final-package inventory through existing provenance.
++            if not review['provenance']:
++                raise RuntimeError('BLOCKED: omission review needs hash-bound inspection provenance')
++        elif record['status'] != 'uncertain' and (not record['skill_ids']
++                or not record['generated_evidence'] or not record['trace_refs']):
++            raise RuntimeError('BLOCKED: a body judgment needs mapped evidence; use rule_omission for absence')
+     return path
+ 
+ 
++def review_findings(review):
++    """Use the existing enum: confirmed omission = incorrect + rule_omission."""
++    return [{'rule_id': r['rule_id'], 'judgment_scope': r['judgment_scope'],
++             'status': r['status'], 'semantic_finding': 'omitted'
++                if r['status'] == 'incorrect' and 'rule_omission' in r['error_types'] else r['status'],
++             'error_types': r['error_types'], 'notes': r['notes']} for r in review['records']]
++
++
+ def check_authorization(phase, generator='sn3g001', experiment='sn3e001'):
+     """Check explicit approval; this function never grants it or changes a ledger."""
+     gate = read(GATE)
+     if gate.get('status') != 'PASS':
+         raise RuntimeError('BLOCKED: Task003 generation budget has not been authorized')
+     requested = gate['requested_generation']
+-    if (requested['run_id'] != generator or requested.get('authorization_status') != 'AUTHORIZED'
++    if (requested['run_id'] != generator or requested.get('case_id') != CASE_ID
++            or requested.get('condition_id') != 'clean' or requested.get('repeat') != 1
++            or requested.get('authorization_status') != 'AUTHORIZED'
+             or requested['configuration_sha256'] != sha256(LAB / requested['configuration'])):
+         raise RuntimeError('BLOCKED: generation identity/configuration authorization is incomplete')
+     config = read(LAB / requested['configuration'])
+diff --git a/degradation_failure_lab/scripts/sgb/sanctuary002.py b/degradation_failure_lab/scripts/sgb/sanctuary002.py
+index 705b0a2..de2c1eb 100644
+--- a/degradation_failure_lab/scripts/sgb/sanctuary002.py
++++ b/degradation_failure_lab/scripts/sgb/sanctuary002.py
+@@ -45,75 +45,198 @@ def history(audit_id, create=False):
+ 
+ def baseline_report(task, generator, experiment):
+     from degradation_lab.io import inventory
+-    from downstream_eval.sgb.attribution import audit_pair
+-    output = LAB / 'runs/eval/sgb' / task.TASK_ID / experiment
++    from downstream_eval.sgb.attribution import audit_pair, classify
++    from downstream_eval.sgb.attribution_contract import STAGES
++
++    if not pilot.runner._identifier(generator):
++        raise ValueError('Safe generator ID required')
++    binding = pilot.load_binding(LAB, task.TASK_ID)
++    output = pilot.output_path(LAB, binding, experiment)
++    destination = LAB / 'results/sgb/baselines' / experiment
++    if destination.exists():
++        raise FileExistsError(destination)
++    assets = task.verify_assets()
++    missing, inputs = [], {}
++
++    def optional(path):
++        if not path.is_file():
++            missing.append(path.relative_to(LAB).as_posix())
++            return None
++        inputs[path.relative_to(LAB).as_posix()] = sha256(path)
++        return read(path)
++
++    profile = optional(output / 'profile.json')
++    if profile is not None and any(profile.get(k) != v for k, v in (
++            ('generator_run_id', generator), ('task_id', task.TASK_ID), ('experiment_id', experiment))):
++        raise ValueError('Wrong generator, task or experiment in profile')
+     analysis_path = LAB / 'results/sgb/analyses' / experiment / 'analysis.json'
+-    review_path = task.check_review(generator)
+-    profile = read(output / 'profile.json')
+-    if profile['generator_run_id'] != generator or profile['task_id'] != task.TASK_ID:
+-        raise ValueError('Wrong generator or task in the requested report')
+-    analysis = read(analysis_path)
+-    if analysis['experiment_id'] != experiment:
++    analysis = optional(analysis_path)
++    if analysis is not None and analysis.get('experiment_id') != experiment:
+         raise ValueError('Wrong pilot analysis')
+-    specification = LAB / 'configs/attribution' / (experiment + '.json')
+-    attribution = audit_pair(LAB, read(specification))
+-    saved_attribution = LAB / 'results/sgb/attributions' / (experiment + '-v1') / 'report.json'
+-    if read(saved_attribution)['spec_digest'] != attribution['spec_digest']:
+-        raise ValueError('Exported attribution report differs from the current review specification')
+-    binding = pilot.load_binding(LAB, task.TASK_ID)
+-    config = task.execution_config(output, generator, binding['conditions'])
+-    pilot.runner.verify_frozen(LAB, output)
+-    pilot.runner.verify_ledger(LAB, output, config, profile)
++    review_path = LAB / f'evaluations/{task.CASE_ID}/clean/{generator}/pre_downstream.json'
++    review = optional(review_path)
++    review_status, review_reason = 'missing', None
++    if review is not None:
++        try:
++            task.check_review(generator)
++            review_status = 'reviewed'
++        except RuntimeError as error:
++            review_status, review_reason = 'pending_review', str(error)
++    gate = optional(task.GATE)
++    approved = (gate or {}).get('downstream', {})
++    if (review is not None and approved.get('experiment_id') == experiment
++            and approved.get('generator_run_id') == generator and approved.get('quality_review_sha256')
++            and approved['quality_review_sha256'] != sha256(review_path)):
++        raise ValueError('Review hash differs from the bound authorization')
++
++    manifest = optional(output / 'execution_manifest.json')
++    missing_frozen = set()
++    for name, digest in (manifest or {}).items():
++        path = pilot.inside(LAB, name)
++        if not path.is_file():
++            missing_frozen.add(name)
++            missing.append(name)
++        elif sha256(path) != digest:
++            raise ValueError('Frozen execution file changed: ' + name)
+     ledger = pilot.status(LAB, binding, experiment)
++    if profile and manifest and (output / 'budget.sqlite3').is_file():
++        config = task.execution_config(output, generator, binding['conditions'])
++        pilot.runner.verify_ledger(LAB, output, config, profile)
++
++    run_path = output.relative_to(LAB).as_posix()
++    base_spec = dict(schema_version=1, analysis_id=experiment+'-report', pair_id=experiment+'-pair',
++        task_id=task.TASK_ID, comparison_kind='no_skill_clean',
++        reference={'run_path':run_path,'label':'NoSkill1'}, target={'run_path':run_path,'label':'CleanSkill1'},
++        evidence=[], rules=[], claims=[], interventions=[])
++    specification = LAB / 'configs/attribution' / (experiment + '.json')
++    supplied = optional(specification)
++    spec = supplied if supplied is not None else base_spec
++    if spec['task_id'] != task.TASK_ID or spec['comparison_kind'] != 'no_skill_clean':
++        raise ValueError('Attribution specification belongs to another task or treatment')
++    for side in ('reference', 'target'):
++        if spec[side] is not None and spec[side] != base_spec[side]:
++            raise ValueError('Attribution must not borrow a trial from another batch or condition')
++    pair = audit_pair(LAB, spec)
++    # A missing declared comparison does not erase independently completed trials.
++    execution = pair if all(spec[s] == base_spec[s] for s in ('reference','target')) else audit_pair(LAB, base_spec)
++    saved_path = LAB / 'results/sgb/attributions' / (experiment + '-v1') / 'report.json'
++    saved = optional(saved_path)
++    if saved is not None:
++        if saved.get('task_id') != task.TASK_ID:
++            raise ValueError('Saved attribution belongs to another task')
++        if supplied is not None and saved.get('spec_digest') != pair['spec_digest']:
++            raise ValueError('Exported attribution differs from the current review specification')
++    for generation in execution['generations'].values():
++        if generation and generation['case_id'] != task.CASE_ID:
++            raise ValueError('Generation belongs to another task case')
++        if generation and generation['integrity'] == 'mismatch':
++            raise ValueError('Generation/source integrity mismatch: ' + str(generation['mismatches']))
++
++    expected_tests = binding['expected_oracle_tests']
++    expected_oracle = assets['files']['oracle/eval.py']
++    trial_status, success, usage, outcomes = {}, {}, {}, {}
++    for label, side in (('NoSkill1','reference'), ('CleanSkill1','target')):
++        trial = execution['trials'][side]
++        oracle = (trial or {}).get('oracle') or {}
++        raw = (trial or {}).get('raw_outcome') or {}
++        issues = []
++        for issue in (trial or {}).get('integrity_issues', []):
++            absent = issue.startswith('Frozen run file mismatch: ') and issue.split(': ',1)[1] in missing_frozen
++            no_score_yet = (issue == 'Submitted bytes disagree with Oracle candidate hash'
++                            and not oracle.get('candidate_sha256') and not raw)
++            if not absent and not no_score_yet:
++                issues.append(issue)
++        if issues:
++            raise ValueError('Trial integrity error: ' + '; '.join(issues))
++        if trial and trial['generator_run_id'] not in (None, generator):
++            raise ValueError('Trial belongs to another generation')
++        if trial and trial['case_id'] not in (None, task.CASE_ID):
++            raise ValueError('Trial belongs to another task case')
++        oracle_id = oracle.get('oracle_sha256') or oracle.get('oracle_original_sha256')
++        if oracle.get('task_id') not in (None, task.TASK_ID):
++            raise ValueError('Score belongs to another task')
++        if oracle_id is not None and oracle_id != expected_oracle:
++            raise ValueError('Score was produced by another Oracle')
++        counts = oracle.get('task_result', {})
++        if oracle.get('infra_ok') is True and counts.get('tests', 0) and counts['tests'] != expected_tests:
++            raise ValueError('Oracle assertion count differs from the task contract')
++        score_valid = bool(trial and raw.get('model_api_results') is True and oracle.get('infra_ok') is True
++            and oracle.get('candidate_binding_verified') is True and trial['paths']['candidate']
++            and trial['assertions'] is not None and counts.get('tests') == expected_tests
++            and not counts.get('errors') and not counts.get('skipped') and oracle_id == expected_oracle)
++        if score_valid and raw.get('task_success') is not (counts.get('passed') == expected_tests):
++            raise ValueError('Task success disagrees with the original Oracle score')
++        success[label] = raw['task_success'] if score_valid else None
++        started = bool(raw or (output / 'batch.started').exists()
++                       or (trial and (LAB / trial['paths']['trial']).exists()))
++        trial_status[label] = ('completed' if score_valid and trial['scorable'] else
++                               'partial' if started else 'not_started')
++        observed = (trial or {}).get('usage')
++        usage[label] = observed or {'status':'INCOMPLETE_EVIDENCE', 'behavioral_use':{'status':'UNKNOWN'}}
++        outcomes[label] = raw
++    execution_status = ('completed' if all(s == 'completed' for s in trial_status.values()) else
++                        'not_started' if all(s == 'not_started' for s in trial_status.values()) else 'partial')
++    comparability = pair['comparability']
++    if comparability == 'eligible' and any(s is None for s in success.values()):
++        comparability = 'unknown'
++    difference = classify(success['NoSkill1'], success['CleanSkill1'], comparability == 'eligible')
+     expected_rules = {r['rule_id'] for r in read(LAB / f'cases/sgb/{task.CASE_ID}/rules.json')['rules']}
+-    required_stages = {'source', 'window', 'support', 'draft', 'spec', 'registered', 'skill'}
+-    reviewed = {r['rule_id'] for r in attribution['rule_reviews'] if r['review_status'] == 'reviewed'
+-                and {s['stage'] for s in r['stages']} == required_stages and r['downstream_links']}
+-    exposed = {r['rule_id'] for r in attribution['rule_reviews']
+-        if any(link['side'] == 'target' and link['delivery']['before_action'] is True
+-               for link in r['downstream_links'])}
+-    outcomes = {label: read(output / 'outcomes' / label / 'result.json')
+-                if (output / 'outcomes' / label / 'result.json').is_file() else {}
+-                for label in binding['conditions']}
+-    clean = next(r for r in analysis['results'] if r['label'] == 'CleanSkill1')
+-    complete = (ledger['status'] == 'COMPLETED' and attribution['comparability'] == 'eligible'
+-        and expected_rules <= reviewed
+-        and expected_rules <= exposed
+-        and clean['skill_usage']['counts']['full_body_in_successful_model_request'] > 0)
+-    destination = LAB / 'results/sgb/baselines' / experiment
++    reviewed = [r for r in pair['rule_reviews'] if r['review_status'] == 'reviewed']
++    if comparability != 'eligible':
++        attribution_status = 'not_comparable'
++    elif not supplied or not expected_rules <= {r['parent_rule_id'] for r in reviewed}:
++        attribution_status = 'pending_review'
++    elif any(not r['downstream_links'] or {s['stage'] for s in r['stages']} != set(STAGES) or any(
++            s['status'] == 'unknown' or not s['evidence_ids'] for s in r['stages']) for r in reviewed):
++        attribution_status = 'insufficient_evidence'
++    else:
++        attribution_status = 'reviewed'
++    files = dict(inputs)
++    tracked = execution['evidence_files'] + pair['evidence_files']
++    tracked += [{'path':(output/name).relative_to(LAB).as_posix(), 'sha256':digest}
++                for name,digest in inventory(output).items()]
++    for entry in tracked:
++        name, digest = entry['path'], entry['sha256']
++        if name in files and files[name] != digest:
++            raise ValueError('Evidence changed during reporting: ' + name)
++        files[name] = digest
++    if any(not pilot.inside(LAB,name).is_file() or sha256(pilot.inside(LAB,name)) != digest
++           for name,digest in files.items()):
++        raise ValueError('Evidence changed during reporting')
+     destination.mkdir(parents=True, exist_ok=False)
+-    value = {'status': 'COMPLETE' if complete else 'INCOMPLETE_REVIEW_OR_EXECUTION',
+-        'task_id': task.TASK_ID, 'generator': generator, 'experiment': experiment,
+-        'source_sha256': task.verify_assets()['source_document']['sha256'],
+-        'ledger': ledger, 'comparability': attribution['comparability'], 'task_difference': attribution['task_difference'],
+-        'outcomes': outcomes, 'quality_review_sha256': sha256(review_path),
+-        'rule_review_complete': expected_rules <= reviewed, 'skill_usage': clean['skill_usage'],
+-        'target_rule_context_before_action_confirmed': expected_rules <= exposed,
+-        'price_usd_per_million_tokens': profile.get('price_usd_per_million_tokens'),
+-        'cost_usd': None, 'cost_reason': 'Exact provider billing is unverified; actual token usage is recorded per trial.',
+-        'model_calls_in_report': 0}
++    value = {'schema_version':2, 'task_id':task.TASK_ID, 'generator':generator, 'experiment':experiment,
++        'experiment_execution_status':execution_status, 'trial_execution_status':trial_status,
++        'skill_usage_status':{label:u['status'] for label,u in usage.items()}, 'skill_usage':usage,
++        'task_success':success, 'attribution_status':attribution_status,
++        'comparability':comparability, 'task_difference':difference,
++        'attribution_details':{k:pair[k] for k in ('rule_reviews','review_evidence','claims','interventions','semantic_validation')},
++        'source_sha256':assets['source_document']['sha256'], 'ledger':ledger, 'outcomes':outcomes,
++        'upstream_review_status':review_status, 'upstream_review_reason':review_reason,
++        'semantic_findings':task.review_findings(review) if review is not None else [],
++        'quality_review_sha256':sha256(review_path) if review is not None else None,
++        'missing_evidence':sorted(set(missing)), 'model_calls_in_report':0,
++        'cost_usd':None, 'cost_reason':'Exact provider billing is unverified; actual usage remains in the trial records.'}
+     write(destination / 'baseline.json', value)
+-    files = {str(p.relative_to(LAB)): sha256(p) for p in [analysis_path, specification, review_path,
+-             saved_attribution, saved_attribution.with_suffix('.md')]}
+-    files.update({str((output / name).relative_to(LAB)): digest for name,digest in inventory(output).items()})
+     write(destination / 'evidence-manifest.json', files)
+-    lines = ['# Sanctuary Task003 Clean baseline', '', 'Status: ' + value['status'],
+-        '', 'Protocol: one paired NoSkill/CleanSkill run; identical conditional body-reading instruction.',
+-        '', 'Comparability: ' + attribution['comparability'] + '; result: ' + attribution['task_difference'],
+-        '', '| Condition | Passed / 8 | Task success | HTTP attempts | Tokens |', '|---|---:|---|---:|---|']
+-    for label,result in outcomes.items():
+-        lines.append(f"| {label} | {result.get('oracle',{}).get('task_result',{}).get('passed')} | "
+-            f"{result.get('task_success')} | {result.get('http_attempts')} | {json.dumps(result.get('token_usage'))} |")
+-    lines += ['', 'Cost USD: unknown; use the provider billing record before reporting money spent.',
+-        '', f'Upstream quality review: `{review_path.relative_to(LAB).as_posix()}`',
+-        f'Pilot evidence: `{analysis_path.relative_to(LAB).as_posix()}`',
+-        f'Attribution specification: `{specification.relative_to(LAB).as_posix()}`',
+-        f'Attribution report: `{saved_attribution.with_suffix(".md").relative_to(LAB).as_posix()}`',
+-        '', 'Each assertion is a whole input/output case, not an independent causal case. Reading does not prove reliance.',
+-        'Both failures cannot establish Skill-induced harm. Source, prompt, runtime and Oracle scope limits remain in the admission report.',
+-        'COMPLETE means an auditable paired execution and rule review; task functionality is reported separately above.']
+-    (destination / 'baseline.md').write_text('\n'.join(lines)+'\n', encoding='utf-8')
+-    return {'status': value['status'], 'report': str(destination / 'baseline.md'), 'model_calls': 0}
++    lines = ['# Sanctuary Task003 Clean baseline', '',
++        'Execution: '+execution_status, 'Comparability: '+comparability,
++        'Attribution: '+attribution_status+'; differential result: '+difference, '',
++        '| Condition | Execution | Task success | Skill usage | Passed / tests |', '|---|---|---|---|---|']
++    for label in binding['conditions']:
++        counts = outcomes[label].get('oracle',{}).get('task_result',{})
++        lines.append(f"| {label} | {trial_status[label]} | {success[label]} | {usage[label]['status']} | "
++                     f"{counts.get('passed')} / {counts.get('tests')} |")
++    lines += ['', 'Semantic findings: '+json.dumps(value['semantic_findings'],ensure_ascii=False),
++        '', 'Missing evidence: '+json.dumps(value['missing_evidence'],ensure_ascii=False),
++        '', 'Execution completion does not require task success, Skill reading, or a complete mechanism trace.',
++        'Reading does not prove understanding or reliance. Reviewed attribution does not establish causation;',
++        'claim evidence levels remain observed/inferred/hypothesis/intervention_supported as explicitly validated.',
++        'Noncompliance with required reading remains a usage/protocol observation, not an erased execution.',
++        'USD cost is unknown. Inspect the original trial usage and provider billing before reporting money spent.']
++    (destination / 'baseline.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
++    return {k:value[k] for k in ('experiment_execution_status','attribution_status','comparability')} | {
++        'report':str(destination/'baseline.md'), 'model_calls':0}
++
+ 
+ 
+ def main():
+@@ -146,7 +269,8 @@ def main():
+             'conditions': binding['conditions'], 'gate': read(task.GATE), 'model_calls': 0}
+     elif args.phase == 'quality':
+         path = task.check_review(args.generator_run)
+-        result = {'status': 'PASS', 'review': str(path), 'sha256': sha256(path), 'model_calls': 0}
++        result = {'review_status': 'reviewed', 'semantic_findings': task.review_findings(read(path)),
++                  'review': str(path), 'sha256': sha256(path), 'model_calls': 0}
+     elif args.phase == 'authorization':
+         result = task.check_authorization(args.authorization_phase, args.generator_run, args.experiment)
+     else:
+diff --git a/degradation_failure_lab/tests/test_sgb_sanctuary002.py b/degradation_failure_lab/tests/test_sgb_sanctuary002.py
+index 255c5a3..cf20082 100644
+--- a/degradation_failure_lab/tests/test_sgb_sanctuary002.py
++++ b/degradation_failure_lab/tests/test_sgb_sanctuary002.py
+@@ -2,6 +2,7 @@
+ from copy import deepcopy
+ import importlib.util
+ import json
++import os
+ from pathlib import Path
+ import sys
+ import tempfile
+@@ -97,18 +98,6 @@ class SanctuaryContracts(unittest.TestCase):
+             with self.assertRaisesRegex(RuntimeError,'identity/configuration'):
+                 task.check_authorization('generation','different-run')
+ 
+-    def test_incorrect_addition_blocks_even_when_target_rules_pass(self):
+-        rules=read(LAB/f'cases/sgb/{task.CASE_ID}/rules.json')['rules']
+-        review={'reviewer':'unit-reviewer','records':[{'rule_id':r['rule_id'],
+-            'judgment_scope':'rule_preservation','status':'correct','skill_ids':['unit'],
+-            'generated_evidence':[{'skill_id':'unit','lines':[1]}],
+-            'trace_refs':[{'stage':'skill','entity_id':'unit'}]} for r in rules]}
+-        with patch.object(task,'read',return_value=review), patch.object(task,'validate_evaluation',return_value=review):
+-            task.check_review('unit-generator')
+-            review['records'].append({'rule_id':rules[0]['rule_id'],
+-                'judgment_scope':'generated_addition','status':'incorrect'})
+-            with self.assertRaisesRegex(RuntimeError,'quality review'):
+-                task.check_review('unit-generator')
+ 
+ 
+ class HistoricalProtection(unittest.TestCase):
+@@ -135,37 +124,367 @@ class HistoricalProtection(unittest.TestCase):
+             with self.assertRaises(FileExistsError):
+                 self.cli.history('snapshot',create=True)
+ 
+-    def test_baseline_requires_target_rule_context_not_just_an_unrelated_body(self):
+-        from downstream_eval.sgb import attribution
+-        rules=read(LAB/f'cases/sgb/{task.CASE_ID}/rules.json')
+-        conditions={'NoSkill1':'NoSkill','CleanSkill1':'CleanSkill'}
+-        with tempfile.TemporaryDirectory() as directory:
+-            root=Path(directory);quality=root/'quality.json';write(quality,{'fixture':True})
+-            write(root/f'cases/sgb/{task.CASE_ID}/rules.json',rules)
+-            stub=SimpleNamespace(TASK_ID=task.TASK_ID,CASE_ID=task.CASE_ID,check_review=lambda _:quality,
+-                verify_assets=lambda:{'source_document':{'sha256':'0'*64}},execution_config=lambda *args:None)
+-            for experiment,before_action,expected in [('missing',None,'INCOMPLETE_REVIEW_OR_EXECUTION'),('confirmed',True,'COMPLETE')]:
+-                output=root/'runs/eval/sgb'/task.TASK_ID/experiment
+-                write(output/'profile.json',{'task_id':task.TASK_ID,'generator_run_id':'unit-generator'})
+-                for label in conditions:
+-                    write(output/'outcomes'/label/'result.json',{'task_success':True,'infra_ok':True,
+-                        'oracle':{'task_result':{'tests':8,'passed':8}},'http_attempts':1,'token_usage':{}})
+-                write(root/'configs/attribution'/(experiment+'.json'),{'fixture':True})
+-                saved=root/'results/sgb/attributions'/(experiment+'-v1')/'report.json'
+-                write(saved,{'spec_digest':'unit'});saved.with_suffix('.md').write_text('unit fixture')
+-                usage={'counts':{'full_body_in_successful_model_request':1}}
+-                write(root/'results/sgb/analyses'/experiment/'analysis.json',
+-                    {'experiment_id':experiment,'results':[{'label':'CleanSkill1','skill_usage':usage}]})
+-                reviewed=[{'rule_id':r['rule_id'],'review_status':'reviewed',
+-                    'stages':[{'stage':s} for s in ['source','window','support','draft','spec','registered','skill']],
+-                    'downstream_links':[{'side':'target','delivery':{'before_action':before_action}}]} for r in rules['rules']]
+-                pair={'spec_digest':'unit','comparability':'eligible','task_difference':'both_passed','rule_reviews':reviewed}
+-                with patch.object(self.cli,'LAB',root),patch.object(attribution,'audit_pair',return_value=pair), \
+-                     patch.object(pilot,'load_binding',return_value={'conditions':conditions}), \
+-                     patch.object(pilot,'status',return_value={'status':'COMPLETED','http_attempts':2}), \
+-                     patch.object(pilot.runner,'verify_frozen'),patch.object(pilot.runner,'verify_ledger'):
+-                    result=self.cli.baseline_report(stub,'unit-generator',experiment)
+-                    self.assertEqual(result['status'],expected)
++
++
++class CompletedReview(unittest.TestCase):
++    def setUp(self):
++        from test_framework import fixture_catalog, fixture_artifacts
++        from degradation_lab.runner import ExperimentRunner
++        from degradation_lab.evaluation import init_evaluation
++        self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
++        self.root=Path(self.temp.name)
++        upstream=self.root/'fixture-upstream'
++        for name in ['AutoSkill4Doc/pipeline.py','autoskill/__init__.py']:
++            p=upstream/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('# TEST ONLY; no generation code\n')
++        self.env=patch.dict(os.environ,{'ANYTHING2SKILL_SOURCE':str(upstream),'SGB_AUDIT_ALLOW_PAID':'1'})
++        self.env.start();self.addCleanup(self.env.stop)
++        fixture_catalog(self.root)
++        self.run=ExperimentRunner(self.root).prepare('case002_fixture','clean','unit-review',fixture=True)
++        fixture_artifacts(self.run)
++        self.path=init_evaluation(self.root,self.run.name,'pre_downstream')
++        self.review=read(self.path);self.review['reviewer']='unit-reviewer'
++        self.review['records'][0].update(status='correct',skill_ids=['skill-fixture'],
++            generated_evidence=[{'skill_id':'skill-fixture','lines':[4]}],
++            trace_refs=[{'stage':'skill','entity_id':'skill-fixture'}],notes='TEST ONLY: inspected final artifact')
++        self.gate=self.root/'gate.json'
++        approval=self.root/'approval.txt';approval.write_text('UNIT TEST ONLY. Not a real approval.')
++        profile=self.root/'profile-template.json';write(profile,read(LAB/'downstream_eval/configs/p1_smoke.json'))
++        cfg=read(self.root/'configs/shared.json')
++        evidence={'file':'approval.txt','sha256':sha256(approval)}
++        self.authorization={'status':'PASS','requested_generation':{'run_id':self.run.name,
++            'case_id':'case002_fixture','condition_id':'clean','repeat':1,'authorization_status':'AUTHORIZED',
++            'configuration':'configs/shared.json','configuration_sha256':sha256(self.root/'configs/shared.json'),
++            'max_http_calls':cfg['max_http_calls'],'max_observed_total_tokens':cfg['max_observed_total_tokens'],
++            'approval_evidence':evidence},'downstream':{'status':'PASS','authorization_status':'AUTHORIZED',
++            'generator_run_id':self.run.name,'experiment_id':'unit-pair','profile_template':'profile-template.json',
++            'profile_sha256':sha256(profile),'max_http_calls':12,'repeats_per_arm':1,
++            'conditions':{'NoSkill1':'NoSkill','CleanSkill1':'CleanSkill'},'approval_evidence':evidence}}
++        self.output=self.root/'unit-pair';write(self.output/'profile.json',dict(generator_run_id=self.run.name,
++            experiment_id='unit-pair',conditions=self.authorization['downstream']['conditions']))
++        write(self.output/'readiness.json',{'status':'PASS'})
++        # Copy only task assets into a temporary engineering fixture; never stage a real Skill.
++        self.assets=self.root/'task';self.original=self.root/'original'
++        manifest=read(task.TASK/'source_manifest.json')
++        for name in manifest['files']:
++            target=self.assets/name;target.parent.mkdir(parents=True,exist_ok=True)
++            target.write_bytes((task.TASK/name).read_bytes())
++        for local,released in [('instruction.md','instruction.md'),('task.original.toml','task.toml'),
++                              ('oracle/eval.py','tests/eval.py'),('oracle/testcases.json','tests/testcases.json')]:
++            target=self.original/released;target.parent.mkdir(parents=True,exist_ok=True)
++            target.write_bytes((self.assets/local).read_bytes())
++        source=read(self.root/'data/source.json')
++        manifest.update(original_task='original',source_document={'path':source['local_path'],
++            'sha256':source['sha256'],'manifest':'data/source.json','manifest_sha256':sha256(self.root/'data/source.json')})
++        write(self.assets/'source_manifest.json',manifest)
++        for name,value in [('LAB',self.root),('CASE_ID','case002_fixture'),('GATE',self.gate),('TASK',self.assets)]:
++            p=patch.object(task,name,value);p.start();self.addCleanup(p.stop)
++        self.save()
++
++    def save(self):
++        write(self.path,self.review)
++        self.authorization['downstream']['quality_review_sha256']=sha256(self.path)
++        write(self.gate,self.authorization)
++
++    def enter_backend(self):
++        with patch.object(pilot.runner,'execute_batch',return_value=0) as backend:
++            self.assertEqual(task.paid_batch(self.output),0)
++            backend.assert_called_once()
++
++    def test_completed_verdicts_allow_measurement_and_keep_their_values(self):
++        from degradation_lab.evaluation import validate_evaluation
++        for status in ['correct','incorrect','uncertain']:
++            with self.subTest(status=status):
++                self.review['records'][0]['status']=status;self.save()
++                self.assertEqual(validate_evaluation(self.root,self.review)['records'][0]['status'],status)
++                self.assertEqual(task.check_review(self.run.name),self.path)
++                self.enter_backend()
++                self.assertEqual(read(self.path)['records'][0]['status'],status)
++
++    def test_incorrect_addition_is_recorded_instead_of_vetoing_execution(self):
++        addition=deepcopy(self.review['records'][0])
++        addition.update(record_id='addition',judgment_scope='generated_addition',status='incorrect',
++                        error_types=['unsupported_addition'],notes='TEST ONLY: unsupported statement')
++        self.review['records'].append(addition);self.save();self.enter_backend()
++        self.assertEqual(task.review_findings(self.review)[1]['semantic_finding'],'incorrect')
++
++    def test_quality_cli_reports_the_defect_without_calling_it_correct(self):
++        import io
++        from contextlib import redirect_stdout
++        p=importlib.util.spec_from_file_location('quality_cli',LAB/'scripts/sgb/sanctuary002.py')
++        cli=importlib.util.module_from_spec(p);p.loader.exec_module(cli)
++        self.review['records'][0]['status']='incorrect';self.save()
++        stream=io.StringIO()
++        with patch('sys.argv',['sanctuary002.py','quality','--generator-run',self.run.name]),redirect_stdout(stream):
++            self.assertEqual(cli.main(),0)
++        value=json.loads(stream.getvalue())
++        self.assertEqual(value['review_status'],'reviewed')
++        self.assertEqual(value['semantic_findings'][0]['status'],'incorrect')
++        self.assertEqual(value['model_calls'],0)
++
++    def test_omission_needs_inspection_provenance_not_a_nonexistent_body_anchor(self):
++        p=self.root/'inspection.json'
++        write(p,{'test_only':True,'inspected':{'skill-fixture':sha256(self.run/'SkillBank/Users/fixture-user/fixture-skill/SKILL.md')},
++                 'finding':'Expected --flag absent from the inspected final body'})
++        self.review['provenance']={'file':'inspection.json','sha256':sha256(p)}
++        self.review['records'][0].update(status='incorrect',error_types=['rule_omission'],
++            skill_ids=[],generated_evidence=[],trace_refs=[],notes='Expected source rule absent; inspected complete final body')
++        self.save();self.enter_backend()
++        self.assertEqual(task.review_findings(self.review)[0]['semantic_finding'],'omitted')
++        self.review['provenance']={};self.save()
++        with self.assertRaisesRegex(RuntimeError,'inspection provenance'):task.check_review(self.run.name)
++
++    def test_uncertain_can_have_no_final_anchor_but_unreviewed_or_deleted_rule_cannot_pass(self):
++        record=self.review['records'][0]
++        record.update(status='uncertain',skill_ids=[],generated_evidence=[],trace_refs=[],notes='Inspected but mapping remains ambiguous')
++        self.save();self.enter_backend()
++        record['status']='unreviewed';self.save()
++        with self.assertRaises(RuntimeError):task.check_review(self.run.name)
++        self.review['records']=[dict(record,judgment_scope='generated_addition',status='uncertain')];self.save()
++        with self.assertRaises(RuntimeError):task.check_review(self.run.name)
++
++    def test_review_identity_and_source_hash_are_still_enforced(self):
++        from test_framework import fixture_artifacts
++        from degradation_lab.runner import ExperimentRunner
++        other=ExperimentRunner(self.root).prepare('case002_fixture','clean','another-run',fixture=True)
++        fixture_artifacts(other)
++        self.review['run_id']=other.name;self.save()
++        with self.assertRaises(ValueError):task.check_review(self.run.name)
++        self.review['run_id']=self.run.name;self.save()
++        source=self.root/'data/raw_sources/fixture/source.md';source.write_text('changed')
++        with self.assertRaises(ValueError):task.check_review(self.run.name)
++
++    def test_review_and_approval_hash_mismatch_still_block_before_backend(self):
++        for changed in ['review','approval','config']:
++            with self.subTest(changed=changed),patch.object(pilot.runner,'execute_batch') as backend:
++                if changed=='review':
++                    self.review['records'][0]['notes']='changed after approval';write(self.path,self.review)
++                elif changed=='approval':(self.root/'approval.txt').write_text('tampered')
++                else:(self.root/'configs/shared.json').write_text('{}')
++                with self.assertRaises((ValueError,RuntimeError)):task.paid_batch(self.output)
++                backend.assert_not_called()
++                if changed=='review':self.save()
++
++    def test_valid_review_does_not_bypass_asset_integrity(self):
++        task.verify_assets()
++        with patch.object(pilot.runner,'execute_batch') as backend:
++            (self.assets/'instruction.md').write_text('tampered')
++            with self.assertRaises(ValueError):task.paid_batch(self.output)
++            backend.assert_not_called()
++
++
++class ReportStates(unittest.TestCase):
++    def setUp(self):
++        from test_attribution import OfflineAttribution
++        self.fixture=OfflineAttribution();self.fixture.setUp();self.addCleanup(self.fixture.doCleanups)
++        self.root=self.fixture.root;self.output=self.fixture.run
++        p=importlib.util.spec_from_file_location('task003_report',LAB/'scripts/sgb/sanctuary002.py')
++        self.cli=importlib.util.module_from_spec(p);p.loader.exec_module(self.cli)
++        self.binding={'task_id':'task','conditions':{'NoSkill1':'NoSkill','CleanSkill1':'CleanSkill'},'expected_oracle_tests':1}
++        self.fixture.profile['experiment_id']='r1';write(self.output/'profile.json',self.fixture.profile)
++        write(self.root/'cases/sgb/case001_test/rules.json',{'rules':[{'rule_id':'parent'}]})
++        self.review=self.root/'evaluations/case001_test/clean/g1/pre_downstream.json'
++        self.stub=SimpleNamespace(TASK_ID='task',CASE_ID='case001_test',GATE=self.root/'gate.json',
++            check_review=lambda _:self.review,review_findings=lambda review:[],execution_config=lambda *args:None,
++            verify_assets=lambda:{'source_document':{'sha256':'0'*64},'files':{'oracle/eval.py':'b'*64}})
++        self.patchers=[patch.object(self.cli,'LAB',self.root),patch.object(pilot,'load_binding',return_value=self.binding)]
++        for p in self.patchers:p.start();self.addCleanup(p.stop)
++
++    def rule(self,stages=None):
++        from downstream_eval.sgb.attribution_contract import STAGES
++        return dict(rule_id='atom',parent_rule_id='parent',generator_run_id='g1',claim='TEST ONLY',
++            reviewer='unit',review_status='reviewed',stages=stages or [dict(stage=s,status='unknown',evidence_ids=[],rationale='Missing') for s in STAGES],
++            downstream_links=[dict(side='target',assertions=['ftp'],oracle_not_covered=False,skill_id='one',
++                                  skill_lines=[7],action_event=1,interpretation='Synthetic anchor')])
++
++    def report(self,write_spec=True):
++        if write_spec:write(self.root/'configs/attribution/r1.json',self.fixture.spec)
++        self.fixture.freeze()
++        self.cli.baseline_report(self.stub,'g1','r1')
++        return read(self.root/'results/sgb/baselines/r1/baseline.json')
++
++    def test_no_body_still_has_completed_execution_and_valid_failure_scores(self):
++        observer=self.output/'trials/cleanskill1/p1-observer'
++        self.fixture.event(observer,'model-requests',dict(mode='paid',time=1,messages=[dict(role='user',content=self.fixture.index)]))
++        write(observer/'p1-summary.json',dict(mode='paid',model_read_ids=[],controlled_probe_read_ids=[]))
++        self.fixture.spec['rules']=[self.rule()]
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['skill_usage_status']['CleanSkill1'],'INDEX_ONLY_OBSERVED')
++        self.assertEqual(value['task_success'],{'NoSkill1':False,'CleanSkill1':False})
++        self.assertEqual(value['attribution_status'],'insufficient_evidence')
++        self.assertNotIn('status',value)
++
++    def test_missing_stages_do_not_change_execution_completion(self):
++        self.fixture.spec['rules']=[self.rule([dict(stage='source',status='unknown',evidence_ids=[],rationale='Missing')])]
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['attribution_status'],'insufficient_evidence')
++
++    def test_all_unknown_stage_names_do_not_establish_attribution(self):
++        self.fixture.spec['rules']=[self.rule()];value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['skill_usage_status']['CleanSkill1'],'BODY_CONTEXT_CONFIRMED')
++        self.assertEqual(value['attribution_status'],'insufficient_evidence')
++        self.assertEqual(value['task_difference'],'both_failed')
++        self.assertEqual(value['attribution_details']['claims'],[])
++
++    def test_body_after_action_does_not_become_causal_reliance_or_incomplete_execution(self):
++        observer=self.output/'trials/cleanskill1/p1-observer'
++        self.fixture.event(observer,'model-requests',dict(mode='paid',time=4,
++            messages=[dict(role='user',content=self.fixture.index+self.fixture.body)]))
++        self.fixture.event(observer,'model-http',dict(logical_request_number=1,http_status=200,time=5))
++        self.fixture.spec['rules']=[self.rule()];value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['skill_usage_status']['CleanSkill1'],'BODY_CONTEXT_CONFIRMED')
++        self.assertIs(value['attribution_details']['rule_reviews'][0]['downstream_links'][0]['delivery']['before_action'],False)
++        self.assertEqual(value['attribution_details']['claims'],[])
++
++    def verified_rule(self):
++        from downstream_eval.sgb.attribution_contract import STAGES
++        entities={'source':{'doc_id':'doc','text':'Use True for FTP'},
++            'window':{'window_id':'w','doc_id':'doc','text':'Use True for FTP'},
++            'support':{'support_id':'s','metadata':{'window_id':'w'},'excerpt':'Use True for FTP'},
++            'draft':{'draft_id':'d','support_ids':['s']},
++            'spec':{'skill_id':'one','metadata':{'source_draft_ids':['d']}},
++            'registered':{'skill_id':'one'},'skill':{'skill_id':'one','body':'Use True for FTP'}}
++        path=self.fixture.gen/'stage-entities.json';write(path,entities)
++        manifest=inventory(self.fixture.gen);manifest.pop('artifact_manifest.json')
++        write(self.fixture.gen/'artifact_manifest.json',manifest)
++        evidence=[dict(evidence_id=s,artifact_path=path.relative_to(self.root).as_posix(),artifact_sha256=sha256(path),
++            run_id='g1',stage=s,entity_id={'source':'doc','window':'w','support':'s','draft':'d',
++                'spec':'one','registered':'one','skill':'one'}[s],
++            locator=dict(kind='json_pointer',value='/'+s,coordinate_space='artifact'),
++            claim_status='observed',claim='TEST ONLY stage observation',missing_reason=None) for s in STAGES]
++        self.fixture.spec['evidence']=evidence
++        self.fixture.spec['rules']=[self.rule([dict(stage=s,status='preserved',evidence_ids=[s],rationale='TEST ONLY') for s in STAGES])]
++
++    def test_reviewed_stage_evidence_does_not_automatically_create_causal_claims(self):
++        self.verified_rule()
++        value=self.report()
++        self.assertEqual(value['attribution_status'],'reviewed')
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['attribution_details']['claims'],[])
++
++    def test_verified_upstream_trace_without_downstream_mapping_remains_insufficient(self):
++        self.verified_rule();self.fixture.spec['rules'][0]['downstream_links']=[]
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['attribution_status'],'insufficient_evidence')
++
++    def test_missing_review_analysis_and_export_are_reported_without_inventing_results(self):
++        value=self.report(write_spec=False)
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['upstream_review_status'],'missing')
++        self.assertEqual(value['attribution_status'],'pending_review')
++        self.assertGreaterEqual(len(value['missing_evidence']),4)
++
++    def test_missing_trial_is_partial_and_its_score_is_null(self):
++        (self.output/'outcomes/CleanSkill1/result.json').unlink()
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'partial')
++        self.assertIsNone(value['task_success']['CleanSkill1'])
++        self.assertIs(value['task_success']['NoSkill1'],False)
++        self.assertEqual(value['attribution_status'],'not_comparable')
++
++    def test_no_started_trials_is_not_started(self):
++        import shutil
++        shutil.rmtree(self.output/'trials');shutil.rmtree(self.output/'outcomes')
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'not_started')
++        self.assertEqual(value['task_success'],{'NoSkill1':None,'CleanSkill1':None})
++
++    def test_missing_declared_control_does_not_erase_completed_trials(self):
++        self.fixture.spec['reference']=None;value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['comparability'],'unknown')
++        self.assertEqual(value['attribution_status'],'not_comparable')
++        self.assertEqual(value['task_difference'],'unresolved')
++
++    def test_missing_control_result_is_not_filled_from_another_run(self):
++        (self.output/'outcomes/NoSkill1/result.json').unlink()
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'partial')
++        self.assertIsNone(value['task_success']['NoSkill1'])
++        self.assertIs(value['task_success']['CleanSkill1'],False)
++        self.assertEqual(value['attribution_status'],'not_comparable')
++
++    def test_different_models_are_completed_but_not_comparable(self):
++        path=self.output/'configs/CleanSkill1.json';config=read(path)
++        config['agent']['model_name']='another-model';write(path,config)
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'completed')
++        self.assertEqual(value['comparability'],'ineligible')
++        self.assertEqual(value['attribution_status'],'not_comparable')
++
++    def test_missing_profile_can_produce_partial_report(self):
++        self.fixture.freeze();(self.output/'profile.json').unlink()
++        # Do not refreeze away the missing required evidence.
++        write(self.root/'configs/attribution/r1.json',self.fixture.spec)
++        self.cli.baseline_report(self.stub,'g1','r1')
++        value=read(self.root/'results/sgb/baselines/r1/baseline.json')
++        self.assertEqual(value['experiment_execution_status'],'partial')
++        self.assertIn('runs/eval/sgb/task/r1/profile.json',value['missing_evidence'])
++
++    def test_frozen_hash_conflict_rejects_instead_of_becoming_partial(self):
++        self.fixture.freeze();(self.output/'profile.json').write_text('{}')
++        with self.assertRaises(ValueError):self.cli.baseline_report(self.stub,'g1','r1')
++        self.assertFalse((self.root/'results/sgb/baselines/r1').exists())
++
++    def test_candidate_hash_conflict_is_not_downgraded_to_missing_evidence(self):
++        (self.output/'trials/cleanskill1/submission-export/agent_output.py').write_text('tampered')
++        with self.assertRaisesRegex(ValueError,'Submitted bytes disagree'):self.report()
++
++    def test_bound_review_hash_conflict_is_rejected(self):
++        write(self.review,{'records':[]})
++        write(self.stub.GATE,{'downstream':{'experiment_id':'r1','generator_run_id':'g1',
++                                          'quality_review_sha256':'0'*64}})
++        with self.assertRaisesRegex(ValueError,'Review hash differs'):self.report()
++
++    def test_wrong_oracle_is_rejected(self):
++        path=self.output/'outcomes/CleanSkill1/result.json';value=read(path)
++        value['oracle']['oracle_sha256']='c'*64;write(path,value)
++        with self.assertRaisesRegex(ValueError,'another Oracle'):self.report()
++
++    def test_incomplete_native_record_does_not_falsify_an_existing_valid_score(self):
++        path=self.output/'outcomes/CleanSkill1/native.json';native=read(path)
++        native['finished_at']=None;write(path,native)
++        value=self.report()
++        self.assertEqual(value['experiment_execution_status'],'partial')
++        self.assertIs(value['task_success']['CleanSkill1'],False)
++        self.assertEqual(value['task_difference'],'unresolved')
++
++    def test_offline_fixture_score_cannot_become_a_real_agent_result(self):
++        path=self.output/'outcomes/CleanSkill1/result.json';value=read(path)
++        value['model_api_results']=False;write(path,value)
++        result=self.report()
++        self.assertEqual(result['experiment_execution_status'],'partial')
++        self.assertIsNone(result['task_success']['CleanSkill1'])
++        self.assertEqual(result['task_difference'],'unresolved')
++
++    def test_score_from_another_task_is_rejected_even_with_same_generic_oracle(self):
++        path=self.output/'outcomes/CleanSkill1/result.json';value=read(path)
++        value['oracle']['task_id']='foreign-domain-task';write(path,value)
++        with self.assertRaisesRegex(ValueError,'another task'):self.report()
++
++    def test_source_rule_evidence_hash_conflict_is_not_hidden_by_partial_reporting(self):
++        path=self.fixture.gen/'rules.json'
++        self.fixture.spec['evidence']=[dict(evidence_id='source',artifact_path=path.relative_to(self.root).as_posix(),
++            artifact_sha256='0'*64,run_id='g1',stage='source',entity_id=None,
++            locator=dict(kind='json_pointer',value='/rules/0',coordinate_space='artifact'),
++            claim_status='observed',claim='TEST ONLY',missing_reason=None)]
++        with self.assertRaisesRegex(ValueError,'Evidence hash mismatch'):self.report()
++
++    def test_generation_source_hash_conflict_is_rejected(self):
++        (self.fixture.gen/'config.json').write_text('{}')
++        with self.assertRaisesRegex(ValueError,'Generation/source integrity'):self.report()
++
++    def test_foreign_trial_reference_is_not_used_to_fill_a_pair(self):
++        self.fixture.spec['reference']['run_path']='runs/eval/sgb/task/foreign'
++        with self.assertRaisesRegex(ValueError,'another batch'):self.report()
++
++    def test_existing_report_cannot_be_overwritten(self):
++        self.report()
++        with self.assertRaises(FileExistsError):self.cli.baseline_report(self.stub,'g1','r1')
+ 
+ 
+ if __name__=='__main__':
+diff --git a/degradation_failure_lab/tests/test_skill_freeze.py b/degradation_failure_lab/tests/test_skill_freeze.py
+index cea076f..876d941 100644
+--- a/degradation_failure_lab/tests/test_skill_freeze.py
++++ b/degradation_failure_lab/tests/test_skill_freeze.py
+@@ -70,6 +70,38 @@ class SkillFreeze(unittest.TestCase):
+         with self.assertRaisesRegex(ValueError, 'matching generation'):
+             freeze_generation(LAB, 's41r003', self.output, case_id='another_case')
+ 
++    def test_empty_active_registry_is_not_replaced_with_a_fake_skill(self):
++        import downstream_eval.integration.skill_freeze as module
++        actual = module.read
++        def inactive(path):
++            value = actual(path)
++            if Path(path).parent == RUN / 'SkillBank/.runtime/document_registry/skills':
++                value['status'] = 'inactive'
++            return value
++        with patch.object(module, 'read', side_effect=inactive):
++            with self.assertRaisesRegex(ValueError, 'Final live registry'):
++                freeze_generation(LAB, 's41r003', self.output)
++        self.assertFalse(self.output.exists())
++
++    def test_failed_generation_is_not_a_normal_clean_package(self):
++        import downstream_eval.integration.skill_freeze as module
++        actual = module.load_run
++        def failed(*args):
++            identity, run, result, stages = actual(*args)
++            result['status'] = 'failed'
++            return identity, run, result, stages
++        with patch.object(module, 'load_run', side_effect=failed):
++            with self.assertRaisesRegex(ValueError, 'Completed matching generation'):
++                freeze_generation(LAB, 's41r003', self.output)
++        self.assertFalse(self.output.exists())
++
++    def test_unsafe_package_is_still_rejected(self):
++        path = next((RUN / 'SkillBank/Users').rglob('SKILL.md'))
++        with patch.object(Path, 'is_symlink', lambda value: value == path):
++            with self.assertRaisesRegex(ValueError, 'Unsupported package symlink'):
++                freeze_generation(LAB, 's41r003', self.output)
++        self.assertFalse((self.output / 'skill_freeze.json').exists())
++
+ 
+ if __name__ == '__main__':
+     unittest.main()

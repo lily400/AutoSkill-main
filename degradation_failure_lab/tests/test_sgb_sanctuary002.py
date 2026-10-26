@@ -2,6 +2,7 @@
 from copy import deepcopy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -97,18 +98,6 @@ class SanctuaryContracts(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'identity/configuration'):
                 task.check_authorization('generation','different-run')
 
-    def test_incorrect_addition_blocks_even_when_target_rules_pass(self):
-        rules=read(LAB/f'cases/sgb/{task.CASE_ID}/rules.json')['rules']
-        review={'reviewer':'unit-reviewer','records':[{'rule_id':r['rule_id'],
-            'judgment_scope':'rule_preservation','status':'correct','skill_ids':['unit'],
-            'generated_evidence':[{'skill_id':'unit','lines':[1]}],
-            'trace_refs':[{'stage':'skill','entity_id':'unit'}]} for r in rules]}
-        with patch.object(task,'read',return_value=review), patch.object(task,'validate_evaluation',return_value=review):
-            task.check_review('unit-generator')
-            review['records'].append({'rule_id':rules[0]['rule_id'],
-                'judgment_scope':'generated_addition','status':'incorrect'})
-            with self.assertRaisesRegex(RuntimeError,'quality review'):
-                task.check_review('unit-generator')
 
 
 class HistoricalProtection(unittest.TestCase):
@@ -135,37 +124,367 @@ class HistoricalProtection(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 self.cli.history('snapshot',create=True)
 
-    def test_baseline_requires_target_rule_context_not_just_an_unrelated_body(self):
-        from downstream_eval.sgb import attribution
-        rules=read(LAB/f'cases/sgb/{task.CASE_ID}/rules.json')
-        conditions={'NoSkill1':'NoSkill','CleanSkill1':'CleanSkill'}
-        with tempfile.TemporaryDirectory() as directory:
-            root=Path(directory);quality=root/'quality.json';write(quality,{'fixture':True})
-            write(root/f'cases/sgb/{task.CASE_ID}/rules.json',rules)
-            stub=SimpleNamespace(TASK_ID=task.TASK_ID,CASE_ID=task.CASE_ID,check_review=lambda _:quality,
-                verify_assets=lambda:{'source_document':{'sha256':'0'*64}},execution_config=lambda *args:None)
-            for experiment,before_action,expected in [('missing',None,'INCOMPLETE_REVIEW_OR_EXECUTION'),('confirmed',True,'COMPLETE')]:
-                output=root/'runs/eval/sgb'/task.TASK_ID/experiment
-                write(output/'profile.json',{'task_id':task.TASK_ID,'generator_run_id':'unit-generator'})
-                for label in conditions:
-                    write(output/'outcomes'/label/'result.json',{'task_success':True,'infra_ok':True,
-                        'oracle':{'task_result':{'tests':8,'passed':8}},'http_attempts':1,'token_usage':{}})
-                write(root/'configs/attribution'/(experiment+'.json'),{'fixture':True})
-                saved=root/'results/sgb/attributions'/(experiment+'-v1')/'report.json'
-                write(saved,{'spec_digest':'unit'});saved.with_suffix('.md').write_text('unit fixture')
-                usage={'counts':{'full_body_in_successful_model_request':1}}
-                write(root/'results/sgb/analyses'/experiment/'analysis.json',
-                    {'experiment_id':experiment,'results':[{'label':'CleanSkill1','skill_usage':usage}]})
-                reviewed=[{'rule_id':r['rule_id'],'review_status':'reviewed',
-                    'stages':[{'stage':s} for s in ['source','window','support','draft','spec','registered','skill']],
-                    'downstream_links':[{'side':'target','delivery':{'before_action':before_action}}]} for r in rules['rules']]
-                pair={'spec_digest':'unit','comparability':'eligible','task_difference':'both_passed','rule_reviews':reviewed}
-                with patch.object(self.cli,'LAB',root),patch.object(attribution,'audit_pair',return_value=pair), \
-                     patch.object(pilot,'load_binding',return_value={'conditions':conditions}), \
-                     patch.object(pilot,'status',return_value={'status':'COMPLETED','http_attempts':2}), \
-                     patch.object(pilot.runner,'verify_frozen'),patch.object(pilot.runner,'verify_ledger'):
-                    result=self.cli.baseline_report(stub,'unit-generator',experiment)
-                    self.assertEqual(result['status'],expected)
+
+
+class CompletedReview(unittest.TestCase):
+    def setUp(self):
+        from test_framework import fixture_catalog, fixture_artifacts
+        from degradation_lab.runner import ExperimentRunner
+        from degradation_lab.evaluation import init_evaluation
+        self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
+        self.root=Path(self.temp.name)
+        upstream=self.root/'fixture-upstream'
+        for name in ['AutoSkill4Doc/pipeline.py','autoskill/__init__.py']:
+            p=upstream/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('# TEST ONLY; no generation code\n')
+        self.env=patch.dict(os.environ,{'ANYTHING2SKILL_SOURCE':str(upstream),'SGB_AUDIT_ALLOW_PAID':'1'})
+        self.env.start();self.addCleanup(self.env.stop)
+        fixture_catalog(self.root)
+        self.run=ExperimentRunner(self.root).prepare('case002_fixture','clean','unit-review',fixture=True)
+        fixture_artifacts(self.run)
+        self.path=init_evaluation(self.root,self.run.name,'pre_downstream')
+        self.review=read(self.path);self.review['reviewer']='unit-reviewer'
+        self.review['records'][0].update(status='correct',skill_ids=['skill-fixture'],
+            generated_evidence=[{'skill_id':'skill-fixture','lines':[4]}],
+            trace_refs=[{'stage':'skill','entity_id':'skill-fixture'}],notes='TEST ONLY: inspected final artifact')
+        self.gate=self.root/'gate.json'
+        approval=self.root/'approval.txt';approval.write_text('UNIT TEST ONLY. Not a real approval.')
+        profile=self.root/'profile-template.json';write(profile,read(LAB/'downstream_eval/configs/p1_smoke.json'))
+        cfg=read(self.root/'configs/shared.json')
+        evidence={'file':'approval.txt','sha256':sha256(approval)}
+        self.authorization={'status':'PASS','requested_generation':{'run_id':self.run.name,
+            'case_id':'case002_fixture','condition_id':'clean','repeat':1,'authorization_status':'AUTHORIZED',
+            'configuration':'configs/shared.json','configuration_sha256':sha256(self.root/'configs/shared.json'),
+            'max_http_calls':cfg['max_http_calls'],'max_observed_total_tokens':cfg['max_observed_total_tokens'],
+            'approval_evidence':evidence},'downstream':{'status':'PASS','authorization_status':'AUTHORIZED',
+            'generator_run_id':self.run.name,'experiment_id':'unit-pair','profile_template':'profile-template.json',
+            'profile_sha256':sha256(profile),'max_http_calls':12,'repeats_per_arm':1,
+            'conditions':{'NoSkill1':'NoSkill','CleanSkill1':'CleanSkill'},'approval_evidence':evidence}}
+        self.output=self.root/'unit-pair';write(self.output/'profile.json',dict(generator_run_id=self.run.name,
+            experiment_id='unit-pair',conditions=self.authorization['downstream']['conditions']))
+        write(self.output/'readiness.json',{'status':'PASS'})
+        # Copy only task assets into a temporary engineering fixture; never stage a real Skill.
+        self.assets=self.root/'task';self.original=self.root/'original'
+        manifest=read(task.TASK/'source_manifest.json')
+        for name in manifest['files']:
+            target=self.assets/name;target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes((task.TASK/name).read_bytes())
+        for local,released in [('instruction.md','instruction.md'),('task.original.toml','task.toml'),
+                              ('oracle/eval.py','tests/eval.py'),('oracle/testcases.json','tests/testcases.json')]:
+            target=self.original/released;target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes((self.assets/local).read_bytes())
+        source=read(self.root/'data/source.json')
+        manifest.update(original_task='original',source_document={'path':source['local_path'],
+            'sha256':source['sha256'],'manifest':'data/source.json','manifest_sha256':sha256(self.root/'data/source.json')})
+        write(self.assets/'source_manifest.json',manifest)
+        for name,value in [('LAB',self.root),('CASE_ID','case002_fixture'),('GATE',self.gate),('TASK',self.assets)]:
+            p=patch.object(task,name,value);p.start();self.addCleanup(p.stop)
+        self.save()
+
+    def save(self):
+        write(self.path,self.review)
+        self.authorization['downstream']['quality_review_sha256']=sha256(self.path)
+        write(self.gate,self.authorization)
+
+    def enter_backend(self):
+        with patch.object(pilot.runner,'execute_batch',return_value=0) as backend:
+            self.assertEqual(task.paid_batch(self.output),0)
+            backend.assert_called_once()
+
+    def test_completed_verdicts_allow_measurement_and_keep_their_values(self):
+        from degradation_lab.evaluation import validate_evaluation
+        for status in ['correct','incorrect','uncertain']:
+            with self.subTest(status=status):
+                self.review['records'][0]['status']=status;self.save()
+                self.assertEqual(validate_evaluation(self.root,self.review)['records'][0]['status'],status)
+                self.assertEqual(task.check_review(self.run.name),self.path)
+                self.enter_backend()
+                self.assertEqual(read(self.path)['records'][0]['status'],status)
+
+    def test_incorrect_addition_is_recorded_instead_of_vetoing_execution(self):
+        addition=deepcopy(self.review['records'][0])
+        addition.update(record_id='addition',judgment_scope='generated_addition',status='incorrect',
+                        error_types=['unsupported_addition'],notes='TEST ONLY: unsupported statement')
+        self.review['records'].append(addition);self.save();self.enter_backend()
+        self.assertEqual(task.review_findings(self.review)[1]['semantic_finding'],'incorrect')
+
+    def test_quality_cli_reports_the_defect_without_calling_it_correct(self):
+        import io
+        from contextlib import redirect_stdout
+        p=importlib.util.spec_from_file_location('quality_cli',LAB/'scripts/sgb/sanctuary002.py')
+        cli=importlib.util.module_from_spec(p);p.loader.exec_module(cli)
+        self.review['records'][0]['status']='incorrect';self.save()
+        stream=io.StringIO()
+        with patch('sys.argv',['sanctuary002.py','quality','--generator-run',self.run.name]),redirect_stdout(stream):
+            self.assertEqual(cli.main(),0)
+        value=json.loads(stream.getvalue())
+        self.assertEqual(value['review_status'],'reviewed')
+        self.assertEqual(value['semantic_findings'][0]['status'],'incorrect')
+        self.assertEqual(value['model_calls'],0)
+
+    def test_omission_needs_inspection_provenance_not_a_nonexistent_body_anchor(self):
+        p=self.root/'inspection.json'
+        write(p,{'test_only':True,'inspected':{'skill-fixture':sha256(self.run/'SkillBank/Users/fixture-user/fixture-skill/SKILL.md')},
+                 'finding':'Expected --flag absent from the inspected final body'})
+        self.review['provenance']={'file':'inspection.json','sha256':sha256(p)}
+        self.review['records'][0].update(status='incorrect',error_types=['rule_omission'],
+            skill_ids=[],generated_evidence=[],trace_refs=[],notes='Expected source rule absent; inspected complete final body')
+        self.save();self.enter_backend()
+        self.assertEqual(task.review_findings(self.review)[0]['semantic_finding'],'omitted')
+        self.review['provenance']={};self.save()
+        with self.assertRaisesRegex(RuntimeError,'inspection provenance'):task.check_review(self.run.name)
+
+    def test_uncertain_can_have_no_final_anchor_but_unreviewed_or_deleted_rule_cannot_pass(self):
+        record=self.review['records'][0]
+        record.update(status='uncertain',skill_ids=[],generated_evidence=[],trace_refs=[],notes='Inspected but mapping remains ambiguous')
+        self.save();self.enter_backend()
+        record['status']='unreviewed';self.save()
+        with self.assertRaises(RuntimeError):task.check_review(self.run.name)
+        self.review['records']=[dict(record,judgment_scope='generated_addition',status='uncertain')];self.save()
+        with self.assertRaises(RuntimeError):task.check_review(self.run.name)
+
+    def test_review_identity_and_source_hash_are_still_enforced(self):
+        from test_framework import fixture_artifacts
+        from degradation_lab.runner import ExperimentRunner
+        other=ExperimentRunner(self.root).prepare('case002_fixture','clean','another-run',fixture=True)
+        fixture_artifacts(other)
+        self.review['run_id']=other.name;self.save()
+        with self.assertRaises(ValueError):task.check_review(self.run.name)
+        self.review['run_id']=self.run.name;self.save()
+        source=self.root/'data/raw_sources/fixture/source.md';source.write_text('changed')
+        with self.assertRaises(ValueError):task.check_review(self.run.name)
+
+    def test_review_and_approval_hash_mismatch_still_block_before_backend(self):
+        for changed in ['review','approval','config']:
+            with self.subTest(changed=changed),patch.object(pilot.runner,'execute_batch') as backend:
+                if changed=='review':
+                    self.review['records'][0]['notes']='changed after approval';write(self.path,self.review)
+                elif changed=='approval':(self.root/'approval.txt').write_text('tampered')
+                else:(self.root/'configs/shared.json').write_text('{}')
+                with self.assertRaises((ValueError,RuntimeError)):task.paid_batch(self.output)
+                backend.assert_not_called()
+                if changed=='review':self.save()
+
+    def test_valid_review_does_not_bypass_asset_integrity(self):
+        task.verify_assets()
+        with patch.object(pilot.runner,'execute_batch') as backend:
+            (self.assets/'instruction.md').write_text('tampered')
+            with self.assertRaises(ValueError):task.paid_batch(self.output)
+            backend.assert_not_called()
+
+
+class ReportStates(unittest.TestCase):
+    def setUp(self):
+        from test_attribution import OfflineAttribution
+        self.fixture=OfflineAttribution();self.fixture.setUp();self.addCleanup(self.fixture.doCleanups)
+        self.root=self.fixture.root;self.output=self.fixture.run
+        p=importlib.util.spec_from_file_location('task003_report',LAB/'scripts/sgb/sanctuary002.py')
+        self.cli=importlib.util.module_from_spec(p);p.loader.exec_module(self.cli)
+        self.binding={'task_id':'task','conditions':{'NoSkill1':'NoSkill','CleanSkill1':'CleanSkill'},'expected_oracle_tests':1}
+        self.fixture.profile['experiment_id']='r1';write(self.output/'profile.json',self.fixture.profile)
+        write(self.root/'cases/sgb/case001_test/rules.json',{'rules':[{'rule_id':'parent'}]})
+        self.review=self.root/'evaluations/case001_test/clean/g1/pre_downstream.json'
+        self.stub=SimpleNamespace(TASK_ID='task',CASE_ID='case001_test',GATE=self.root/'gate.json',
+            check_review=lambda _:self.review,review_findings=lambda review:[],execution_config=lambda *args:None,
+            verify_assets=lambda:{'source_document':{'sha256':'0'*64},'files':{'oracle/eval.py':'b'*64}})
+        self.patchers=[patch.object(self.cli,'LAB',self.root),patch.object(pilot,'load_binding',return_value=self.binding)]
+        for p in self.patchers:p.start();self.addCleanup(p.stop)
+
+    def rule(self,stages=None):
+        from downstream_eval.sgb.attribution_contract import STAGES
+        return dict(rule_id='atom',parent_rule_id='parent',generator_run_id='g1',claim='TEST ONLY',
+            reviewer='unit',review_status='reviewed',stages=stages or [dict(stage=s,status='unknown',evidence_ids=[],rationale='Missing') for s in STAGES],
+            downstream_links=[dict(side='target',assertions=['ftp'],oracle_not_covered=False,skill_id='one',
+                                  skill_lines=[7],action_event=1,interpretation='Synthetic anchor')])
+
+    def report(self,write_spec=True):
+        if write_spec:write(self.root/'configs/attribution/r1.json',self.fixture.spec)
+        self.fixture.freeze()
+        self.cli.baseline_report(self.stub,'g1','r1')
+        return read(self.root/'results/sgb/baselines/r1/baseline.json')
+
+    def test_no_body_still_has_completed_execution_and_valid_failure_scores(self):
+        observer=self.output/'trials/cleanskill1/p1-observer'
+        self.fixture.event(observer,'model-requests',dict(mode='paid',time=1,messages=[dict(role='user',content=self.fixture.index)]))
+        write(observer/'p1-summary.json',dict(mode='paid',model_read_ids=[],controlled_probe_read_ids=[]))
+        self.fixture.spec['rules']=[self.rule()]
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['skill_usage_status']['CleanSkill1'],'INDEX_ONLY_OBSERVED')
+        self.assertEqual(value['task_success'],{'NoSkill1':False,'CleanSkill1':False})
+        self.assertEqual(value['attribution_status'],'insufficient_evidence')
+        self.assertNotIn('status',value)
+
+    def test_missing_stages_do_not_change_execution_completion(self):
+        self.fixture.spec['rules']=[self.rule([dict(stage='source',status='unknown',evidence_ids=[],rationale='Missing')])]
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['attribution_status'],'insufficient_evidence')
+
+    def test_all_unknown_stage_names_do_not_establish_attribution(self):
+        self.fixture.spec['rules']=[self.rule()];value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['skill_usage_status']['CleanSkill1'],'BODY_CONTEXT_CONFIRMED')
+        self.assertEqual(value['attribution_status'],'insufficient_evidence')
+        self.assertEqual(value['task_difference'],'both_failed')
+        self.assertEqual(value['attribution_details']['claims'],[])
+
+    def test_body_after_action_does_not_become_causal_reliance_or_incomplete_execution(self):
+        observer=self.output/'trials/cleanskill1/p1-observer'
+        self.fixture.event(observer,'model-requests',dict(mode='paid',time=4,
+            messages=[dict(role='user',content=self.fixture.index+self.fixture.body)]))
+        self.fixture.event(observer,'model-http',dict(logical_request_number=1,http_status=200,time=5))
+        self.fixture.spec['rules']=[self.rule()];value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['skill_usage_status']['CleanSkill1'],'BODY_CONTEXT_CONFIRMED')
+        self.assertIs(value['attribution_details']['rule_reviews'][0]['downstream_links'][0]['delivery']['before_action'],False)
+        self.assertEqual(value['attribution_details']['claims'],[])
+
+    def verified_rule(self):
+        from downstream_eval.sgb.attribution_contract import STAGES
+        entities={'source':{'doc_id':'doc','text':'Use True for FTP'},
+            'window':{'window_id':'w','doc_id':'doc','text':'Use True for FTP'},
+            'support':{'support_id':'s','metadata':{'window_id':'w'},'excerpt':'Use True for FTP'},
+            'draft':{'draft_id':'d','support_ids':['s']},
+            'spec':{'skill_id':'one','metadata':{'source_draft_ids':['d']}},
+            'registered':{'skill_id':'one'},'skill':{'skill_id':'one','body':'Use True for FTP'}}
+        path=self.fixture.gen/'stage-entities.json';write(path,entities)
+        manifest=inventory(self.fixture.gen);manifest.pop('artifact_manifest.json')
+        write(self.fixture.gen/'artifact_manifest.json',manifest)
+        evidence=[dict(evidence_id=s,artifact_path=path.relative_to(self.root).as_posix(),artifact_sha256=sha256(path),
+            run_id='g1',stage=s,entity_id={'source':'doc','window':'w','support':'s','draft':'d',
+                'spec':'one','registered':'one','skill':'one'}[s],
+            locator=dict(kind='json_pointer',value='/'+s,coordinate_space='artifact'),
+            claim_status='observed',claim='TEST ONLY stage observation',missing_reason=None) for s in STAGES]
+        self.fixture.spec['evidence']=evidence
+        self.fixture.spec['rules']=[self.rule([dict(stage=s,status='preserved',evidence_ids=[s],rationale='TEST ONLY') for s in STAGES])]
+
+    def test_reviewed_stage_evidence_does_not_automatically_create_causal_claims(self):
+        self.verified_rule()
+        value=self.report()
+        self.assertEqual(value['attribution_status'],'reviewed')
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['attribution_details']['claims'],[])
+
+    def test_verified_upstream_trace_without_downstream_mapping_remains_insufficient(self):
+        self.verified_rule();self.fixture.spec['rules'][0]['downstream_links']=[]
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['attribution_status'],'insufficient_evidence')
+
+    def test_missing_review_analysis_and_export_are_reported_without_inventing_results(self):
+        value=self.report(write_spec=False)
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['upstream_review_status'],'missing')
+        self.assertEqual(value['attribution_status'],'pending_review')
+        self.assertGreaterEqual(len(value['missing_evidence']),4)
+
+    def test_missing_trial_is_partial_and_its_score_is_null(self):
+        (self.output/'outcomes/CleanSkill1/result.json').unlink()
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'partial')
+        self.assertIsNone(value['task_success']['CleanSkill1'])
+        self.assertIs(value['task_success']['NoSkill1'],False)
+        self.assertEqual(value['attribution_status'],'not_comparable')
+
+    def test_no_started_trials_is_not_started(self):
+        import shutil
+        shutil.rmtree(self.output/'trials');shutil.rmtree(self.output/'outcomes')
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'not_started')
+        self.assertEqual(value['task_success'],{'NoSkill1':None,'CleanSkill1':None})
+
+    def test_missing_declared_control_does_not_erase_completed_trials(self):
+        self.fixture.spec['reference']=None;value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['comparability'],'unknown')
+        self.assertEqual(value['attribution_status'],'not_comparable')
+        self.assertEqual(value['task_difference'],'unresolved')
+
+    def test_missing_control_result_is_not_filled_from_another_run(self):
+        (self.output/'outcomes/NoSkill1/result.json').unlink()
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'partial')
+        self.assertIsNone(value['task_success']['NoSkill1'])
+        self.assertIs(value['task_success']['CleanSkill1'],False)
+        self.assertEqual(value['attribution_status'],'not_comparable')
+
+    def test_different_models_are_completed_but_not_comparable(self):
+        path=self.output/'configs/CleanSkill1.json';config=read(path)
+        config['agent']['model_name']='another-model';write(path,config)
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'completed')
+        self.assertEqual(value['comparability'],'ineligible')
+        self.assertEqual(value['attribution_status'],'not_comparable')
+
+    def test_missing_profile_can_produce_partial_report(self):
+        self.fixture.freeze();(self.output/'profile.json').unlink()
+        # Do not refreeze away the missing required evidence.
+        write(self.root/'configs/attribution/r1.json',self.fixture.spec)
+        self.cli.baseline_report(self.stub,'g1','r1')
+        value=read(self.root/'results/sgb/baselines/r1/baseline.json')
+        self.assertEqual(value['experiment_execution_status'],'partial')
+        self.assertIn('runs/eval/sgb/task/r1/profile.json',value['missing_evidence'])
+
+    def test_frozen_hash_conflict_rejects_instead_of_becoming_partial(self):
+        self.fixture.freeze();(self.output/'profile.json').write_text('{}')
+        with self.assertRaises(ValueError):self.cli.baseline_report(self.stub,'g1','r1')
+        self.assertFalse((self.root/'results/sgb/baselines/r1').exists())
+
+    def test_candidate_hash_conflict_is_not_downgraded_to_missing_evidence(self):
+        (self.output/'trials/cleanskill1/submission-export/agent_output.py').write_text('tampered')
+        with self.assertRaisesRegex(ValueError,'Submitted bytes disagree'):self.report()
+
+    def test_bound_review_hash_conflict_is_rejected(self):
+        write(self.review,{'records':[]})
+        write(self.stub.GATE,{'downstream':{'experiment_id':'r1','generator_run_id':'g1',
+                                          'quality_review_sha256':'0'*64}})
+        with self.assertRaisesRegex(ValueError,'Review hash differs'):self.report()
+
+    def test_wrong_oracle_is_rejected(self):
+        path=self.output/'outcomes/CleanSkill1/result.json';value=read(path)
+        value['oracle']['oracle_sha256']='c'*64;write(path,value)
+        with self.assertRaisesRegex(ValueError,'another Oracle'):self.report()
+
+    def test_incomplete_native_record_does_not_falsify_an_existing_valid_score(self):
+        path=self.output/'outcomes/CleanSkill1/native.json';native=read(path)
+        native['finished_at']=None;write(path,native)
+        value=self.report()
+        self.assertEqual(value['experiment_execution_status'],'partial')
+        self.assertIs(value['task_success']['CleanSkill1'],False)
+        self.assertEqual(value['task_difference'],'unresolved')
+
+    def test_offline_fixture_score_cannot_become_a_real_agent_result(self):
+        path=self.output/'outcomes/CleanSkill1/result.json';value=read(path)
+        value['model_api_results']=False;write(path,value)
+        result=self.report()
+        self.assertEqual(result['experiment_execution_status'],'partial')
+        self.assertIsNone(result['task_success']['CleanSkill1'])
+        self.assertEqual(result['task_difference'],'unresolved')
+
+    def test_score_from_another_task_is_rejected_even_with_same_generic_oracle(self):
+        path=self.output/'outcomes/CleanSkill1/result.json';value=read(path)
+        value['oracle']['task_id']='foreign-domain-task';write(path,value)
+        with self.assertRaisesRegex(ValueError,'another task'):self.report()
+
+    def test_source_rule_evidence_hash_conflict_is_not_hidden_by_partial_reporting(self):
+        path=self.fixture.gen/'rules.json'
+        self.fixture.spec['evidence']=[dict(evidence_id='source',artifact_path=path.relative_to(self.root).as_posix(),
+            artifact_sha256='0'*64,run_id='g1',stage='source',entity_id=None,
+            locator=dict(kind='json_pointer',value='/rules/0',coordinate_space='artifact'),
+            claim_status='observed',claim='TEST ONLY',missing_reason=None)]
+        with self.assertRaisesRegex(ValueError,'Evidence hash mismatch'):self.report()
+
+    def test_generation_source_hash_conflict_is_rejected(self):
+        (self.fixture.gen/'config.json').write_text('{}')
+        with self.assertRaisesRegex(ValueError,'Generation/source integrity'):self.report()
+
+    def test_foreign_trial_reference_is_not_used_to_fill_a_pair(self):
+        self.fixture.spec['reference']['run_path']='runs/eval/sgb/task/foreign'
+        with self.assertRaisesRegex(ValueError,'another batch'):self.report()
+
+    def test_existing_report_cannot_be_overwritten(self):
+        self.report()
+        with self.assertRaises(FileExistsError):self.cli.baseline_report(self.stub,'g1','r1')
 
 
 if __name__=='__main__':

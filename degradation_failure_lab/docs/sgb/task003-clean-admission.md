@@ -91,8 +91,20 @@ NoSkill 容器没有源文和 Skill。CleanSkill 仅挂载生成后冻结的包�
 
 `results/sgb/audits/task003-sanctuary-zero-20261026-001/acceptance.json`：正例 8/8；错误目标数 1/8；错误触发标记 1/8；错误最后回合标记 3/8；四项均匹配预期。各评分保留 candidate/scorer network 报告、命令、提交哈希、envelope、原 JUnit 和 bridge 收据。网络／挂载探针为受控工程动作，不能计为 Agent 自主读取。
 
-最终单元／回归日志、历史保护和代码身份见 `results/sgb/audits/task003-clean-20261026-001/validation.json`。**实际生成后的 native 两组 prepare 仍待执行**：它依赖真实、完整且通过人工质量审核的生成包。本轮没有伪造生成包来宣称该步已通过。
+最终单元／回归日志、历史保护和代码身份见 `results/sgb/audits/task003-clean-20261026-001/validation.json`。**实际生成后的 native 两组 prepare 仍待执行**：它依赖真实、工程完整且已完成人工质量记录的生成包（语义错误/遗漏/不确定不自动排除）。本轮没有伪造生成包来宣称该步已通过。
 
 预算文件 `data/manifests/sgb/gates/t-febd929cffec.json` 当前 BLOCKED。提案：一次生成，现配置上限 150 HTTP／450000 观测总 token；一次两组下游，每组最多 6 HTTP、总共 12，每组输入总预留上限 100000、每次输出上限 2048、无自动重试。**这些是配置上限，不是授权余额。** 上游 token 阈值按响应后观测，不是预付费额度或绝对账单封顶；HTTP 次数是请求前门禁。未授权恢复、第二次生成、额外重复或预算扩张。
 
 下一步是审核本手册并批准明确执行额度。批准后才可按阶段 3 开始真实生成；质量审核完成且下游额度获批后，才可 prepare 并运行这一对条件。环境异常和预算停止保留为未完成，不转写成普通任务失败。
+
+## 6. 语义门禁与完成状态修复
+
+本节更正原手册和 Task003 实现中的选择性门禁，不改变上面的任务身份、原 Oracle、源文和历史验收记录。
+
+- check_review 现在检查真实审核者、任务/运行身份、目标规则覆盖及证据可信性；允许 correct、incorrect 和 uncertain。确认遗漏复用 incorrect + rule_omission，不要求不存在的最终正文锚点，但须提供有哈希绑定的检查范围/最终包审查报告。unreviewed 或引用不可信仍阻断正式执行。
+- 工程有效且有语义缺陷的 CleanSkill 可以冻结，并在真实预算批准后测量下游；无可用产物、不安全或身份/哈希损坏仍停止。不修 Anything2Skill 核心，不造 Skill，不人工修好后仍标成原始 Clean。
+- 最终报告 schema_version=2 分别记录 experiment_execution_status、skill_usage_status、每组 task_success、attribution_status，以及独立 comparability。已结束并有效评分的执行不因未读正文、任务失败或规则证据不足改成未完成。
+- 七阶段名称齐全但证据 unknown 仍是归因证据不足。正文进入请求不等于理解、遵循或因果成立；继续保留 observed/inferred/hypothesis/intervention_supported，只有经受控干预且满足原差分验证规则才可提升为 intervention_supported。
+- profile、审核、分析或归因文件缺失时尽可能给出明确缺失说明；错误哈希、身份错连和伪造记录仍拒绝。没有有效对照不能借其他历史运行拼接。
+
+本次修复只运行确定性测试，未调用模型或启动 Agent；实际 gate 和授权均未调整。新回归与保护证据见 `results/sgb/audits/task003-semantics-fix-20261026-001/validation.json`。正式生成、真实包 native prepare 和正式 Agent 两组仍需原有独立授权与工程验收。
