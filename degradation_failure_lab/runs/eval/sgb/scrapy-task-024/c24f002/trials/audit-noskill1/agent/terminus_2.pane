@@ -1,0 +1,49 @@
+[?2004hroot@b1343570d912:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ find /harbor/skills -maxdepth 2 -name SKILL.md -print
+[?2004l[?2004hp1$ find /workspace/docs -maxdepth 2 -type f | sed 's#^#/##' | sort
+[?2004l[?2004hp1$ find /workspace -maxdepth 3 -type f | sort | sed -n '1,200p'
+[?2004l[?2004hp1$ grep -RIn "overwrite\|stdout\|s3\|gs\|ftp\|file:///tmp/export.json" /workspace 2>/dev/null | sed -n '1,200p'
+[?2004l[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> """Scrapy feed-export default overwrite behavior by backend.
+[?2004l[?2004h> 
+[?2004l[?2004h> Supported built-in backends:
+[?2004l[?2004h> - Local filesystem ("file:///..." and absolute paths like "/tmp/export.json"): defaults to overwrite.
+[?2004l[?2004h> - FTP ("ftp://..."): defaults to no overwrite.
+[?2004l[?2004h> - S3 ("s3://..."): defaults to no overwrite.
+[?2004l[?2004h> - GCS ("gs://..."): defaults to no overwrite.
+[?2004l[?2004h> - Standard output ("stdout:"): defaults to overwrite/streaming behavior.
+[?2004l[?2004h> 
+[?2004l[?2004h> Unsupported schemes raise ValueError.
+[?2004l[?2004h> """
+[?2004l[?2004h> 
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from urllib.parse import urlparse
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def default_feed_overwrite(uri: str) -> bool:
+[?2004l[?2004h>     """Return Scrapy's built-in default overwrite behavior for a feed URI."""
+[?2004l[?2004h> 
+[?2004l[?2004h>     if not isinstance(uri, str) or not uri:
+[?2004l[?2004h>         raise ValueError("uri must be a non-empty string")
+[?2004l[?2004h> 
+[?2004l[?2004h>     # Absolute local filesystem paths are treated as file backend URIs.
+[?2004l[?2004h>     if uri.startswith("/"):
+[?2004l[?2004h>         return True
+[?2004l[?2004h> 
+[?2004l[?2004h>     parsed = urlparse(uri)
+[?2004l[?2004h> 
+[?2004l[?2004h>     # Special-case stdout: which Scrapy treats as a supported built-in target.
+[?2004l[?2004h>     if uri == "stdout:" or (parsed.scheme == "stdout" and not parsed.netloc and not parsed.path):
+[?2004l[?2004h>         return True
+[?2004l[?2004h> 
+[?2004l[?2004h>     scheme = parsed.scheme
+[?2004l[?2004h>     if scheme == "file":
+[?2004l[?2004h>         return True
+[?2004l[?2004h>     if scheme in {"ftp", "s3", "gs"}:
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     raise ValueError(f"Unsupported feed URI scheme: {scheme or uri!r}")
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-27",
+  "scope": "per-experiment SGB downstream authorization",
+  "files": {
+    "scripts/sgb/authorize_downstream.py": "a1f2ad6ef3778833facea923e6340a01d8bb182117ba1627800624c462f61de8",
+    "downstream_eval/sgb/pilot.py": "c5a969b02bc3a384142376ced9f9ca8151753b2bbcba5f5469a430e76977a017",
+    "downstream_eval/sgb/task_adapters/audited/json_task.py": "90b21f85f1e24a33361f208a507f0e0e86d0eeaa77a55fa60b059ced88d59deb",
+    "downstream_eval/sgb/downstream_authorization.py": "686fc9b9c70a577042922d037f011bd6528614c4d887b5025699fb1f19b95c13",
+    "tests/test_sgb_downstream_authorization.py": "b40269f8bee4e3c2b6cdb949d66b3518ee422a47cdb7e443666d3a690a355c3e",
+    "docs/sgb/experiment_authorization.md": "f7cea2c3371fe6a53114fbb12aa260d4ea66853cb75256fe2bb4477a0c05c31d",
+    "scripts/sgb/m01f004_authorize_prepare.ps1": "6c3a2bff87159b404f2abab4e3fe57e8863d22964a58aa1b468527ec84de9326"
+  },
+  "source_snapshot_files": {
+    "scripts/sgb/authorize_downstream.py": "7464fdf33393b85bedac167edf9f672c2882e287b95fb34f5d0f0d03fb88aeab",
+    "downstream_eval/sgb/pilot.py": "be04be3d02a105e3e31e30f1cc329fbe20e751cc4e32a487b212a4c6b468ca84",
+    "downstream_eval/sgb/task_adapters/audited/json_task.py": "822bd9d78734e7baa287605f11e3331f0f8b974302105808e2a5a0432ad16cea"
+  },
+  "historical_files_unchanged": 3423,
+  "experiments_protected": 19,
+  "tests": {
+    "new_authorization_linux": {
+      "run": 7,
+      "passed": 7
+    },
+    "existing_related_linux": {
+      "run": 61,
+      "passed": 60,
+      "baseline_failures": [
+        {
+          "test": "test_clean_cohort.ConfiguredJSON.test_exact_generation_gate_blocks_before_credentials",
+          "expected_message": "execution gate",
+          "actual_message": "BLOCKED: exact generation identity/configuration/budget is not authorized",
+          "reproduced_with_archived_source": true
+        }
+      ]
+    },
+    "powershell_syntax": "PASS"
+  },
+  "production_checks": {
+    "m01f002_rerun": "BLOCKED",
+    "m01f003_reprepare": "BLOCKED",
+    "m01f002_reauthorization": "BLOCKED",
+    "m01f003_reauthorization": "BLOCKED",
+    "m01f004_authorization_preview": "PASS",
+    "m01f004_authorized_or_prepared": false
+  },
+  "real_model_requests": 0,
+  "paid_runs": 0
+}

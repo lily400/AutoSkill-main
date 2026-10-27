@@ -193,6 +193,9 @@ def prepare(root, task, generator, experiment):
     output = output_path(root, task, experiment)
     if (output / 'budget.sqlite3').exists() or (output / 'batch.started').exists():
         raise RuntimeError('Existing pilot budget must never be reset')
+    from . import downstream_authorization as authorization
+    grant = (authorization.load_authorization(root, task, generator, experiment)
+             if task['adapter'] == authorization.ADAPTER else None)
     adapter = adapter_for(root, task)
     for hook in ('verify_assets', 'execution_config', 'configure', 'native_trial', 'grade_export', 'paid_batch'):
         if not callable(getattr(adapter, hook, None)):
@@ -218,7 +221,10 @@ def prepare(root, task, generator, experiment):
         packages = freeze_generation(root, generator, output, case_id=task['case_id'])
     attempt = output / 'engineering' / ('attempt-%03d' % (len(list((output / 'engineering').glob('attempt-*'))) + 1))
     attempt.mkdir(parents=True, exist_ok=False)
-    write(output / 'task_config.json', task)
+    if grant is not None:
+        (output / 'task_config.json').write_bytes(authorization.task_config_bytes(task))
+    else:
+        write(output / 'task_config.json', task)
     template = read(inside(root, task['profile_template']))
     config = adapter.execution_config(output, generator, task['conditions'])
     profile = {'experiment_id': experiment, 'task_id': task['task_id'], 'generator_run_id': generator,
@@ -232,6 +238,8 @@ def prepare(root, task, generator, experiment):
     limit = profile['budget']['max_requests']
     profile['hard_http_budget'] = {'database': str(output / 'budget.sqlite3'),
         'per_arm_limit': limit, 'global_limit': limit * len(task['conditions']), 'order': list(task['conditions'])}
+    if grant is not None:
+        profile['downstream_authorization'] = authorization.freeze_authorization(output, *grant)
     write(output / 'profile.json', profile)
     write(output / 'runtime_versions.json', versions)
     _stage(output, packages, generator, task['conditions'])
@@ -264,7 +272,12 @@ def prepare(root, task, generator, experiment):
     for name, digest in inventory(output).items():
         if not name.startswith('engineering/') and name not in ('execution_manifest.json', 'budget.sqlite3'):
             frozen[(output / name).relative_to(root).as_posix()] = digest
+    if grant is not None:
+        frozen[grant[0]['path']] = grant[0]['sha256']
+        frozen['scripts/sgb/authorize_downstream.py'] = sha256(root / 'scripts/sgb/authorize_downstream.py')
     write(output / 'execution_manifest.json', frozen)
+    if grant is not None:
+        authorization.validate_prepared(root, task, output)
     Ledger.create(output / 'budget.sqlite3', {
         'scope': config.budget_scope, 'order': list(task['conditions']),
         'global_limit': limit * len(task['conditions']), 'per_trial_limit': limit,

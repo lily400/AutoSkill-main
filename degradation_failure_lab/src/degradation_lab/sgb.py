@@ -9,7 +9,12 @@ import re
 import shutil
 import subprocess
 import sys
-import tomllib
+
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
+
 
 from .io import inside, inventory, read, sha256, utc, write
 from .schema import check

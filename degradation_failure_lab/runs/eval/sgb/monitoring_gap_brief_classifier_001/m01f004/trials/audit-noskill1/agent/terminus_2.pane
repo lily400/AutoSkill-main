@@ -1,0 +1,192 @@
+[?2004hroot@e69d7c1670e3:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ ls -la /workspace
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 27 09:55 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+[?2004hp1$ find /workspace/skill -maxdepth 2 -name SKILL.md -print
+[?2004l[?2004hp1$ find /workspace/docs -maxdepth 3 -type f | sed 's#^#/##' | head -200
+[?2004l[?2004hp1$ ls -la /workspace/docs
+[?2004ltotal 8
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 ..
+[?2004hp1$ ls -la /workspace/skill
+[?2004ltotal 8
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 ..
+[?2004hp1$ find /workspace -maxdepth 4 -type f | sort | head -200
+[?2004l[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from typing import Any, Dict, List
+[?2004l[?2004h> import re
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> NO_SYSTEMATIC = "NO_SYSTEMATIC_MONITORING"
+[?2004l[?2004h> NEEDS_IMPROVED = "NEEDS_IMPROVED_MONITORING"
+[?2004l[?2004h> SYSTEMATIC = "SYSTEMATIC_MONITORING_PRESENT"
+[?2004l[?2004h> NOT_SPECIFIED = "NOT_SPECIFIED_IN_CH8"
+[?2004l[?2004h> 
+[?2004l[?2004h> ACTION_ORDER = {
+[?2004l[?2004h>     NO_SYSTEMATIC: ["WORKGROUP", "STD_PROTOCOLS", "PARTNERSHIPS", "ECOSYS_MON"],
+[?2004l[?2004h>     NEEDS_IMPROVED: ["STD_PROTOCOLS", "ECOSYS_MON", "WORKGROUP", "PARTNERSHIPS"],
+[?2004l[?2004h>     SYSTEMATIC: ["STD_PROTOCOLS", "ECOSYS_MON", "WORKGROUP"],
+[?2004l[?2004h>     NOT_SPECIFIED: ["WORKGROUP", "STD_PROTOCOLS"],
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> CHALLENGES = [
+[?2004l[?2004h>     "INADEQUATE_FUNDS",
+[?2004l[?2004h>     "LACK_TRAINED_PERSONNEL",
+[?2004l[?2004h>     "INSUFFICIENT_TOOLS_PROTOCOLS",
+[?2004l[?2004h>     "POOR_DATA_MANAGEMENT",
+[?2004l[?2004h>     "INFO_SHARING_GAPS",
+[?2004l[?2004h>     "RARE_FLUCTUATING_TRADEOFFS",
+[?2004l[?2004h> ]
+[?2004l[?2004h> 
+[?2004l[?2004h> # Hardcoded canonical labels derived from Chapter 8 when available.
+[?2004l[?2004h> # The container does not include the excerpt, so this table intentionally
+[?2004l[?2004h> # remains conservative and can be extended if the excerpt is supplied.
+[?2004l[?2004h> NAME_TO_CLASS = {
+[?2004l[?2004h>     # Example placeholders for exact matching if the excerpted canonical labels are known.
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _classify_name(name: str) -> str:
+[?2004l[?2004h>     return NAME_TO_CLASS.get(name, NOT_SPECIFIED)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _guardrail(claimed_status: Any) -> str:
+[?2004l[?2004h>     if not isinstance(claimed_status, str) or not claimed_status.strip():
+[?2004l[?2004h>         return "OK"
+[?2004l[?2004h>     s = claimed_status.lower()
+[?2004l[?2004h>     if re.search(r"\b(will\s+go\s+extinct|certain\s+extinction|go\s+extinct|extinct\b)", s):
+[?2004l[?2004h>         return "BLOCK"
+[?2004l[?2004h>     if re.search(r"\b(within\s+\d+\s+(?:years?|months?|days?)|by\s+\d{4}|by\s+20\d{2})\b", s):
+[?2004l[?2004h>         return "BLOCK"
+[?2004l[?2004h>     if re.search(r"\b[a-z]+\s+[a-z]+\b", s) and any(tok in s for tok in ["extinct", "extinction", "will"])):
+[?2004l[?2004h>         return "BLOCK"
+[?2004l[?2004h>     return "OK"
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _actions_for(monitoring_class: str, mode: str) -> List[str]:
+[?2004l[?2004h>     limit = 2 if mode == "short" else 4
+[?2004l[?2004h>     ordered = ACTION_ORDER.get(monitoring_class, ["WORKGROUP", "STD_PROTOCOLS"])
+[?2004l[?2004h>     return ordered[:limit]
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+[?2004l[?2004h>     items = input_data.get("items", []) or []
+[?2004l[?2004h>     request = input_data.get("request", {}) or {}
+[?2004l[?2004h>     mode = request.get("mode", "short")
+[?2004l[?2004h>     include_actions = bool(request.get("include_actions", False))
+[?2004l[?2004h>     include_challenges = bool(request.get("include_challenges", False))
+[?2004l[?2004h> 
+[?2004l[?2004h>     briefs = []
+[?2004l[?2004h>     for item in items:
+[?2004l[?2004h>         item_id = item.get("id")
+[?2004l[?2004h>         name = item.get("name", "")
+[?2004l[?2004h>         claimed_status = item.get("claimed_status")
+[?2004l[?2004h>         monitoring_class = _classify_name(name)
+[?2004l[?2004h>         brief = {
+[?2004l[?2004h>             "id": item_id,
+[?2004l[?2004h>             "monitoring_class": monitoring_class,
+[?2004l[?2004h>             "guardrail": _guardrail(claimed_status),
+[?2004l[?2004h>         }
+[?2004l[?2004h>         if include_actions:
+[?2004l[?2004h>             brief["actions"] = _actions_for(monitoring_class, mode)
+[?2004l[?2004h>         if include_challenges:
+[?2004l[?2004h>             brief["challenges"] = list(CHALLENGES)
+[?2004l[?2004h>         briefs.append(brief)
+[?2004l[?2004h> 
+[?2004l[?2004h>     return {"briefs": briefs}
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l  File "/workspace/agent_output.py", line 48
+    if re.search(r"\b[a-z]+\s+[a-z]+\b", s) and any(tok in s for tok in ["extinct", "extinction", "will"])):
+                                                                                                          ^
+SyntaxError: unmatched ')'
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from typing import Any, Dict, List
+[?2004l[?2004h> import re
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> NO_SYSTEMATIC = "NO_SYSTEMATIC_MONITORING"
+[?2004l[?2004h> NEEDS_IMPROVED = "NEEDS_IMPROVED_MONITORING"
+[?2004l[?2004h> SYSTEMATIC = "SYSTEMATIC_MONITORING_PRESENT"
+[?2004l[?2004h> NOT_SPECIFIED = "NOT_SPECIFIED_IN_CH8"
+[?2004l[?2004h> 
+[?2004l[?2004h> ACTION_ORDER = {
+[?2004l[?2004h>     NO_SYSTEMATIC: ["WORKGROUP", "STD_PROTOCOLS", "PARTNERSHIPS", "ECOSYS_MON"],
+[?2004l[?2004h>     NEEDS_IMPROVED: ["STD_PROTOCOLS", "ECOSYS_MON", "WORKGROUP", "PARTNERSHIPS"],
+[?2004l[?2004h>     SYSTEMATIC: ["STD_PROTOCOLS", "ECOSYS_MON", "WORKGROUP"],
+[?2004l[?2004h>     NOT_SPECIFIED: ["WORKGROUP", "STD_PROTOCOLS"],
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> CHALLENGES = [
+[?2004l[?2004h>     "INADEQUATE_FUNDS",
+[?2004l[?2004h>     "LACK_TRAINED_PERSONNEL",
+[?2004l[?2004h>     "INSUFFICIENT_TOOLS_PROTOCOLS",
+[?2004l[?2004h>     "POOR_DATA_MANAGEMENT",
+[?2004l[?2004h>     "INFO_SHARING_GAPS",
+[?2004l[?2004h>     "RARE_FLUCTUATING_TRADEOFFS",
+[?2004l[?2004h> ]
+[?2004l[?2004h> 
+[?2004l[?2004h> NAME_TO_CLASS = {
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _classify_name(name: str) -> str:
+[?2004l[?2004h>     return NAME_TO_CLASS.get(name, NOT_SPECIFIED)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _guardrail(claimed_status: Any) -> str:
+[?2004l[?2004h>     if not isinstance(claimed_status, str) or not claimed_status.strip():
+[?2004l[?2004h>         return "OK"
+[?2004l[?2004h>     s = claimed_status.lower()
+[?2004l[?2004h>     if re.search(r"\b(will\s+go\s+extinct|certain\s+extinction|go\s+extinct|extinct\b)", s):
+[?2004l[?2004h>         return "BLOCK"
+[?2004l[?2004h>     if re.search(r"\b(within\s+\d+\s+(?:years?|months?|days?)|by\s+\d{4}|by\s+20\d{2})\b", s):
+[?2004l[?2004h>         return "BLOCK"
+[?2004l[?2004h>     if re.search(r"\b[a-z]+\s+[a-z]+\b", s) and any(tok in s for tok in ["extinct", "extinction", "will"]):
+[?2004l[?2004h>         return "BLOCK"
+[?2004l[?2004h>     return "OK"
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _actions_for(monitoring_class: str, mode: str) -> List[str]:
+[?2004l[?2004h>     limit = 2 if mode == "short" else 4
+[?2004l[?2004h>     ordered = ACTION_ORDER.get(monitoring_class, ["WORKGROUP", "STD_PROTOCOLS"])
+[?2004l[?2004h>     return ordered[:limit]
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+[?2004l[?2004h>     items = input_data.get("items", []) or []
+[?2004l[?2004h>     request = input_data.get("request", {}) or {}
+[?2004l[?2004h>     mode = request.get("mode", "short")
+[?2004l[?2004h>     include_actions = bool(request.get("include_actions", False))
+[?2004l[?2004h>     include_challenges = bool(request.get("include_challenges", False))
+[?2004l[?2004h> 
+[?2004l[?2004h>     briefs = []
+[?2004l[?2004h>     for item in items:
+[?2004l[?2004h>         item_id = item.get("id")
+[?2004l[?2004h>         name = item.get("name", "")
+[?2004l[?2004h>         claimed_status = item.get("claimed_status")
+[?2004l[?2004h>         monitoring_class = _classify_name(name)
+[?2004l[?2004h>         brief = {
+[?2004l[?2004h>             "id": item_id,
+[?2004l[?2004h>             "monitoring_class": monitoring_class,
+[?2004l[?2004h>             "guardrail": _guardrail(claimed_status),
+[?2004l[?2004h>         }
+[?2004l[?2004h>         if include_actions:
+[?2004l[?2004h>             brief["actions"] = _actions_for(monitoring_class, mode)
+[?2004l[?2004h>         if include_challenges:
+[?2004l[?2004h>             brief["challenges"] = list(CHALLENGES)
+[?2004l[?2004h>         briefs.append(brief)
+[?2004l[?2004h> 
+[?2004l[?2004h>     return {"briefs": briefs}
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

@@ -3,7 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from degradation_lab.io import inside, read, sha256
-from degradation_lab.catalog import CaseManager
+from downstream_eval.sgb.downstream_authorization import validate_prepared
 from . import fla
 from .common import bind, native_trial
 
@@ -39,15 +39,7 @@ def for_task(root, config):
 
     def paid_batch(output):
         # Registration/preparation never grants either generation or downstream authorization.
-        case = CaseManager(root).load(config['case_id'])['case']
-        gate = read(inside(root, case['execution_gate']))
-        profile = read(Path(output) / 'profile.json'); approval = gate.get('downstream', {})
-        if (gate.get('status') != 'PASS' or approval.get('authorization_status') != 'AUTHORIZED'
-                or approval.get('generator_run_id') != profile['generator_run_id']
-                or approval.get('experiment_id') != profile['experiment_id']
-                or approval.get('task_config_sha256') != profile['task_config_sha256']
-                or approval.get('max_http_calls') != profile['hard_http_budget']['global_limit']):
-            raise RuntimeError('Configured JSON task awaits exact downstream authorization')
+        validate_prepared(root, config, output)
         return paid(output)
 
     return SimpleNamespace(verify_assets=verify_assets, execution_config=execution_config,

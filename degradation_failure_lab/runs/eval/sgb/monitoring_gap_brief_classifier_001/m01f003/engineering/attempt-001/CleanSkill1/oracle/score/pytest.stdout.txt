@@ -1,0 +1,554 @@
+FFFFFFFFF.                                                               [100%]
+=================================== FAILURES ===================================
+____________________________ test_cl_case[1-case0] _____________________________
+
+case_index = 1
+case = {'expected_output': {'briefs': [{'actions': ['STD_PROTOCOLS', 'ECOSYS_MON'], 'guardrail': 'OK', 'id': 't1', 'monitorin...type', 'name': 'Tidepools', ...}], 'request': {'include_actions': True, 'include_challenges': False, 'mode': 'short'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'NEEDS_IMPROVED_MONITORING'
+path = 'case_1.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_1.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'NEEDS_IMPROVED_MONITORING'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'NEEDS_IMPROVED_MONITORING'
+E             
+E             - NEEDS_IMPROVED_MONITORING
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[2-case1] _____________________________
+
+case_index = 2
+case = {'expected_output': {'briefs': [{'actions': ['WORKGROUP', 'STD_PROTOCOLS', 'PARTNERSHIPS', 'ECOSYS_MON'], 'challenges'... 'Anchialine-pond fauna', ...}], 'request': {'include_actions': True, 'include_challenges': True, 'mode': 'detailed'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'NO_SYSTEMATIC_MONITORING'
+path = 'case_2.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_2.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'NO_SYSTEMATIC_MONITORING'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'NO_SYSTEMATIC_MONITORING'
+E             
+E             - NO_SYSTEMATIC_MONITORING
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[3-case2] _____________________________
+
+case_index = 3
+case = {'expected_output': {'briefs': [{'challenges': ['INADEQUATE_FUNDS', 'LACK_TRAINED_PERSONNEL', 'INSUFFICIENT_TOOLS_PROT...type', 'name': 'Estuaries', ...}], 'request': {'include_actions': False, 'include_challenges': True, 'mode': 'short'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'NO_SYSTEMATIC_MONITORING'
+path = 'case_3.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_3.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'NO_SYSTEMATIC_MONITORING'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'NO_SYSTEMATIC_MONITORING'
+E             
+E             - NO_SYSTEMATIC_MONITORING
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[4-case3] _____________________________
+
+case_index = 4
+case = {'expected_output': {'briefs': [{'actions': ['STD_PROTOCOLS', 'ECOSYS_MON', 'WORKGROUP'], 'guardrail': 'OK', 'id': 't4... 'name': 'Marine algae', ...}], 'request': {'include_actions': True, 'include_challenges': False, 'mode': 'detailed'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'SYSTEMATIC_MONITORING_PRESENT'
+path = 'case_4.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_4.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'SYSTEMATIC_MONITORING_PRESENT'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'SYSTEMATIC_M...ORING_PRESENT'
+E             
+E             - SYSTEMATIC_MONITORING_PRESENT
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[5-case4] _____________________________
+
+case_index = 5
+case = {'expected_output': {'briefs': [{'actions': ['WORKGROUP', 'STD_PROTOCOLS'], 'guardrail': 'BLOCK', 'id': 't5', 'monitor...'name': 'Freshwater algae', ...}], 'request': {'include_actions': True, 'include_challenges': False, 'mode': 'short'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'NO_SYSTEMATIC_MONITORING'
+path = 'case_5.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_5.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'NO_SYSTEMATIC_MONITORING'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'NO_SYSTEMATIC_MONITORING'
+E             
+E             - NO_SYSTEMATIC_MONITORING
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[6-case5] _____________________________
+
+case_index = 6
+case = {'expected_output': {'briefs': [{'actions': ['STD_PROTOCOLS', 'ECOSYS_MON'], 'challenges': ['INADEQUATE_FUNDS', 'LACK_...ype', 'name': 'Coral reefs', ...}], 'request': {'include_actions': True, 'include_challenges': True, 'mode': 'short'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'SYSTEMATIC_MONITORING_PRESENT'
+path = 'case_6.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_6.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'SYSTEMATIC_MONITORING_PRESENT'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'SYSTEMATIC_M...ORING_PRESENT'
+E             
+E             - SYSTEMATIC_MONITORING_PRESENT
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[7-case6] _____________________________
+
+case_index = 7
+case = {'expected_output': {'briefs': [{'actions': ['WORKGROUP', 'STD_PROTOCOLS', 'PARTNERSHIPS', 'ECOSYS_MON'], 'guardrail':...d marine invertebrates', ...}], 'request': {'include_actions': True, 'include_challenges': False, 'mode': 'detailed'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'NO_SYSTEMATIC_MONITORING'
+path = 'case_7.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_7.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'NO_SYSTEMATIC_MONITORING'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'NO_SYSTEMATIC_MONITORING'
+E             
+E             - NO_SYSTEMATIC_MONITORING
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[8-case7] _____________________________
+
+case_index = 8
+case = {'expected_output': {'briefs': [{'actions': ['WORKGROUP', 'STD_PROTOCOLS'], 'guardrail': 'OK', 'id': 't8', 'monitoring...me': 'Deep water habitats', ...}], 'request': {'include_actions': True, 'include_challenges': False, 'mode': 'short'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'NO_SYSTEMATIC_MONITORING'
+path = 'case_8.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_8.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'NO_SYSTEMATIC_MONITORING'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'NO_SYSTEMATIC_MONITORING'
+E             
+E             - NO_SYSTEMATIC_MONITORING
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+____________________________ test_cl_case[9-case8] _____________________________
+
+case_index = 9
+case = {'expected_output': {'briefs': [{'actions': ['STD_PROTOCOLS', 'ECOSYS_MON', 'WORKGROUP', 'PARTNERSHIPS'], 'challenges'...ame': 'Anchialine pools', ...}], 'request': {'include_actions': True, 'include_challenges': True, 'mode': 'detailed'}}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'NOT_SPECIFIED_IN_CH8', expected = 'NEEDS_IMPROVED_MONITORING'
+path = 'case_9.briefs[0].monitoring_class'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+>           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_9.briefs[0].monitoring_class: 'NOT_SPECIFIED_IN_CH8' != 'NEEDS_IMPROVED_MONITORING'
+E           assert 'NOT_SPECIFIED_IN_CH8' == 'NEEDS_IMPROVED_MONITORING'
+E             
+E             - NEEDS_IMPROVED_MONITORING
+E             + NOT_SPECIFIED_IN_CH8
+
+oracle/eval.py:80: AssertionError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED oracle/eval.py::test_cl_case[1-case0] - AssertionError: case_1.briefs[...
+FAILED oracle/eval.py::test_cl_case[2-case1] - AssertionError: case_2.briefs[...
+FAILED oracle/eval.py::test_cl_case[3-case2] - AssertionError: case_3.briefs[...
+FAILED oracle/eval.py::test_cl_case[4-case3] - AssertionError: case_4.briefs[...
+FAILED oracle/eval.py::test_cl_case[5-case4] - AssertionError: case_5.briefs[...
+FAILED oracle/eval.py::test_cl_case[6-case5] - AssertionError: case_6.briefs[...
+FAILED oracle/eval.py::test_cl_case[7-case6] - AssertionError: case_7.briefs[...
+FAILED oracle/eval.py::test_cl_case[8-case7] - AssertionError: case_8.briefs[...
+FAILED oracle/eval.py::test_cl_case[9-case8] - AssertionError: case_9.briefs[...
+9 failed, 1 passed in 0.41s

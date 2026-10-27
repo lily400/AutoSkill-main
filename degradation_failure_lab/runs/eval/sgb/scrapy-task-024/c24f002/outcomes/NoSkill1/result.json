@@ -1,0 +1,116 @@
+{
+  "label": "NoSkill1",
+  "condition": "NoSkill",
+  "task_success": false,
+  "infra_ok": true,
+  "oracle": {
+    "protocol": "unchanged original 19 assertions + candidate response bridge; original source assertions read exact submitted bytes",
+    "oracle_original_sha256": "dbde11a8dce8a699101792be3b48e85a672e91a0cdc6cc4de32862cffeeb3918",
+    "candidate_sha256": "5e51f15e205a868e2dff799dd8d1078db77dd5b1f151460d9fb6335de528ee6c",
+    "environment": "Linux Python3.13.9, no-network, nonroot, isolated candidate and trusted scorer containers",
+    "task_result": {
+      "tests": 19,
+      "passed": 12,
+      "failed": 7,
+      "errors": 0,
+      "exit_code": 1
+    },
+    "rule_result": {
+      "rule_id": "scrapy024.ftp-default-overwrite",
+      "assertion": "test_supported_backends[ftp://server/export.json-True]",
+      "passed": false
+    },
+    "failures": [
+      {
+        "name": "test_supported_backends[file:///tmp/export.json-False]",
+        "detail": "AssertionError: Incorrect default overwrite for file:///tmp/export.json: expected False, got True\nassert True is False"
+      },
+      {
+        "name": "test_supported_backends[file:///tmp/export.csv-False]",
+        "detail": "AssertionError: Incorrect default overwrite for file:///tmp/export.csv: expected False, got True\nassert True is False"
+      },
+      {
+        "name": "test_supported_backends[/tmp/export.json-False]",
+        "detail": "AssertionError: Incorrect default overwrite for /tmp/export.json: expected False, got True\nassert True is False"
+      },
+      {
+        "name": "test_supported_backends[ftp://server/export.json-True]",
+        "detail": "AssertionError: Incorrect default overwrite for ftp://server/export.json: expected True, got False\nassert False is True"
+      },
+      {
+        "name": "test_supported_backends[s3://bucket/export.json-True]",
+        "detail": "AssertionError: Incorrect default overwrite for s3://bucket/export.json: expected True, got False\nassert False is True"
+      },
+      {
+        "name": "test_supported_backends[gs://bucket/export.json-True]",
+        "detail": "AssertionError: Incorrect default overwrite for gs://bucket/export.json: expected True, got False\nassert False is True"
+      },
+      {
+        "name": "test_supported_backends[stdout:-False]",
+        "detail": "AssertionError: Incorrect default overwrite for stdout:: expected False, got True\nassert True is False"
+      }
+    ],
+    "loading_errors": [],
+    "environment_errors": [],
+    "revised_oracle": "NOT_CREATED",
+    "model_calls": 0,
+    "failure_category": "task_assertion_error",
+    "candidate_binding_verified": true,
+    "infra_ok": true,
+    "task_success": false,
+    "failed_tests": [
+      "test_supported_backends[file:///tmp/export.json-False]",
+      "test_supported_backends[file:///tmp/export.csv-False]",
+      "test_supported_backends[/tmp/export.json-False]",
+      "test_supported_backends[ftp://server/export.json-True]",
+      "test_supported_backends[s3://bucket/export.json-True]",
+      "test_supported_backends[gs://bucket/export.json-True]",
+      "test_supported_backends[stdout:-False]"
+    ]
+  },
+  "exposure": {
+    "summary": {
+      "mode": "paid",
+      "stopped_before_model": false,
+      "paid_requests": 4,
+      "logical_model_dispatches": 4,
+      "actual_http_attempts": 4,
+      "estimated_input_reserved": 8645,
+      "model_read_ids": [],
+      "controlled_probe_read_ids": [],
+      "full_body_visible_ids_ignoring_terminal_whitespace": [],
+      "rule_following": "requires action and Oracle review; not inferred from model self-report"
+    },
+    "model_body_exposed_ids": [],
+    "evidence": "kernel access + entire frozen body in messages of a successful HTTP model request",
+    "rule_following": "Not inferred; assess output and independent Oracle separately"
+  },
+  "outcome_schema": 2,
+  "failure_kind": "task_failure",
+  "elapsed_seconds": 90.77344971599814,
+  "model_api_results": true,
+  "failure_category": "task_assertion_error",
+  "native_exception": null,
+  "tool_calls": 4,
+  "skill_usage": {
+    "status": "NO_SKILL_CONDITION",
+    "counts": {
+      "installed": 0,
+      "discovered": 0,
+      "index_in_successful_model_request": 0,
+      "model_file_access_observed": 0,
+      "full_body_in_successful_model_request": 0
+    },
+    "behavioral_use": {
+      "status": "UNKNOWN",
+      "reason": "Reading or matching text does not prove reliance on its rules."
+    }
+  },
+  "http_attempts": 4,
+  "token_usage": {
+    "input_tokens": 7660,
+    "cached_tokens": 4224,
+    "output_tokens": 1356
+  },
+  "unknown_usage_attempts": 0
+}
