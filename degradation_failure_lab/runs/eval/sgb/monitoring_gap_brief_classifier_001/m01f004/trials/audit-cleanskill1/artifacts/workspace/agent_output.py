@@ -19,8 +19,7 @@ def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
     }
     systematic = {
         # explicit systematic / long-term monitoring present
-‘
-
+        'NONE',
     }
 
     # Since the excerpt is not available in-container, use a conservative exact-match
