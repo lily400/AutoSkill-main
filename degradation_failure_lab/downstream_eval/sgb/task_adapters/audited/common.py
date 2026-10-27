@@ -29,10 +29,14 @@ def bind(task_id, score, verify_assets):
         from harbor.models.trial.config import TrialConfig
         raw = runner.trial_config(output, label, mode, config)
         raw['extra_instruction_paths'] = [str(task / 'runtime-note.md')]
-        return TrialConfig.model_validate(raw)
+        from downstream_eval.sgb.protocol import apply
+        return TrialConfig.model_validate(apply(LAB, Path(output), raw))
 
     def grade_export(trial, output):
         path, digest = trial._scrapy041_export
+        if path is None:
+            return {'task_success':False, 'infra_ok':True, 'failure_category':digest,
+                    'task_result':{'tests':0, 'passed':0, 'failed':0, 'errors':0, 'skipped':0}}
         if sha256(path) != digest:
             raise ValueError('Native export changed')
         return score(path, Path(output) / 'score', expected_sha256=digest)

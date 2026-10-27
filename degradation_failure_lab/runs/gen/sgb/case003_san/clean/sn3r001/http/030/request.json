@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"459b47ca-d6c1-5af7-a762-97643e475732\", \"name\": \"行动卡升级操作\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"按条件将行动卡升级至II面并消耗升级标记\", \"applicable_signals\": [\"玩家已满足某项升级标记条件\", \"需要增强某张行动卡\"], \"contraindications\": [\"未满足对应升级条件\", \"该行动卡已升级\", \"升级标记已用完\"], \"workflow_steps\": [\"确认玩家已满足某项升级标记的条件\", \"选择一个已满足条件且未使用的升级标记\", \"选择一张尚未升级的行动卡\", \"将该行动卡从I面翻到II面\", \"翻面作废该升级标记，不可再次使用\", \"若还有其他已满足条件的未用标记，重复以上步骤\"], \"constraints\": [\"每个升级标记只能使用一次\", \"只能升级尚未升级的行动卡\", \"必须满足对应升级标记的条件才能使用该标记\", \"可一次连续使用多个已满足条件的标记\"], \"triggers\": [\"玩家已满足某项升级标记条件\", \"玩家希望增强某张行动卡\", \"回合行动中需要执行升级\"], \"output_contract\": [\"行动卡翻至II面且对应升级标记翻面作废\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"12088cea-5a72-5997-94e9-56794cb7b6dd\", \"name\": \"终局触发与额外回合结算\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"正确判定终局触发、发放终局标记并安排最后一轮，使游戏平稳过渡到终局计分。\", \"applicable_signals\": [\"回合结束行政阶段完成，需检查终局\", \"玩家已放满4个保护成就标记\", \"玩家动物园地图已无空格\"], \"workflow_steps\": [\"在回合结束行政阶段后，检查条件1：该玩家是否已支持4个保护目标。\", \"检查条件2：该玩家动物园地图是否已完全覆盖、无空格。\", \"检查条件3：面朝下板块堆是否已抽空。\", \"若条件1和/或2满足：由该玩家取10分终局标记，其余玩家各获得最后一回合（触发者不再行动）。\", \"若条件3先于条件1或2满足：该玩家回合结束后立即结束游戏，直接进入终局计分。\", \"若其他玩家触发终局后，某玩家在最后一回合也满足条件1和/或2：该玩家取5分终局标记。\"], \"output_contract\": [\"明确记录终局触发者、终局标记归属（10分或5分）及剩余玩家最后一轮安排。\"], \"score\": 0.539781030684213}, {\"skill_id\": \"3d06241b-fc3f-5127-a283-9314c77d55cd\", \"name\": \"终局计分汇总流程\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"按规则顺序完整汇总各方终局得分并确定胜者或平局。\", \"applicable_signals\": [\"游戏已结束，进入最终计分\", \"需要给出最终排名\", \"需要复核某玩家的得分来源\"], \"workflow_steps\": [\"确认游戏已结束并进入最终计分阶段\", \"对每位玩家计算动物园板块分：先动物（黄），再建筑（蓝）、项目（紫）、开放区域；固定分值直接取分，依赖图标的板块按相邻或全场对应图标数计分\", \"累加保护板上已放置的保护成就标记分值\", \"每个袋鼠标记与每个剩余保护标记各加 2 分\", \"加入终局标记分值（10 或 5，若有）\", \"单人模式：每个背面朝上的单人标记加 5 分\"], \"output_contract\": [\"每位玩家的分项得分清单与最终排名（含平局判定结果）。\"], \"score\": 0.5098820812279156}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

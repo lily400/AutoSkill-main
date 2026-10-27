@@ -130,8 +130,21 @@ class ExperimentRunner:
         else:
             bundle, _, _, config = self.resolve(case_id, condition_id)
         gate_path = bundle['case'].get('execution_gate')
-        if gate_path and read(inside(self.root, gate_path)).get('status') != 'PASS':
-            raise RuntimeError('BLOCKED: execution gate has not passed: ' + gate_path)
+        if gate_path:
+            gate = read(inside(self.root, gate_path))
+            if gate.get('status') != 'PASS':
+                raise RuntimeError('BLOCKED: execution gate has not passed: ' + gate_path)
+            if gate.get('authorization_contract') == 'exact-generation-v1':
+                request = gate.get('requested_generation', {})
+                configuration = bundle['case']['generation_config']
+                if (request.get('authorization_status') != 'AUTHORIZED'
+                        or request.get('run_id') != run_id or request.get('case_id') != case_id
+                        or request.get('condition_id') != condition_id
+                        or request.get('configuration') != configuration
+                        or request.get('configuration_sha256') != sha256(inside(self.root, configuration))
+                        or any(request.get(k) != config[k] for k in ('max_http_calls','max_observed_total_tokens'))
+                        or resume_from is not None):
+                    raise RuntimeError('BLOCKED: exact generation identity/configuration/budget is not authorized')
         if not os.environ.get(config['credential_env']):
             raise RuntimeError('BLOCKED: set environment variable ' + config['credential_env'])
         if resume_from:

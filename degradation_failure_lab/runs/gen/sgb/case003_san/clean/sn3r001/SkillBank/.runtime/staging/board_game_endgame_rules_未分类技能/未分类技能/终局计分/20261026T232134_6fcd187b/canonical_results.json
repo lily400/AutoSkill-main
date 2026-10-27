@@ -1,0 +1,159 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "board_game_endgame_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "终局计分",
+  "run_id": "20261026T232134_6fcd187b",
+  "skills": [
+    {
+      "skill_id": "3d06241b-fc3f-5127-a283-9314c77d55cd",
+      "name": "终局计分汇总流程",
+      "description": "在游戏结束后按固定顺序累加每位玩家的终局得分（动物园板块分、保护成就标记分、袋鼠与剩余保护标记分、终局标记分），并按平局规则判定胜者或平局。用于最终排名计算与得分构成核对。",
+      "skill_body": "当游戏已结束、需要计算最终排名时使用本流程。对每位玩家按顺序逐项累加：1) 动物园内板块分数——先计动物（黄），再计建筑（蓝）、项目（紫）、开放区域；固定分值板块直接取分，依赖图标数量的板块按相邻或全场对应图标数计分。2) 保护板上已放置的保护成就标记分值。3) 每个袋鼠标记与每个剩余保护标记各 2 分。4) 终局标记分值（10 或 5，若有）。单人模式另加每个背面朝上的单人标记 5 分。汇总后比较总分，最高者获胜；平局时比较动物园中动物数量，多者获胜；若仍相同则共享胜利。输出每位玩家的分项清单与最终排名。\n\n## Objective\n\n按规则顺序完整汇总各方终局得分并确定胜者或平局。\n## Applicable Signals\n\n- 游戏已结束，进入最终计分\n- 需要给出最终排名\n- 需要复核某玩家的得分来源\n\n## Contraindications\n\n- 游戏尚未结束\n- 仅需判断是否触发终局\n\n## Intervention Moves\n\n- 按动物→建筑→项目→开放区域的顺序计算板块分\n- 累加保护成就标记分\n- 每个袋鼠标记与剩余保护标记各计 2 分\n- 加入终局标记分（10 或 5）\n- 单人模式加入每个背面单人标记 5 分\n- 比较总分并按平局规则裁决\n\n## Workflow Steps\n\n- 确认游戏已结束并进入最终计分阶段\n- 对每位玩家计算动物园板块分：先动物（黄），再建筑（蓝）、项目（紫）、开放区域；固定分值直接取分，依赖图标的板块按相邻或全场对应图标数计分\n- 累加保护板上已放置的保护成就标记分值\n- 每个袋鼠标记与每个剩余保护标记各加 2 分\n- 加入终局标记分值（10 或 5，若有）\n- 单人模式：每个背面朝上的单人标记加 5 分\n- 汇总每位玩家总分并排名\n- 平局时比较动物园中动物数量，多者获胜；仍相同则共享胜利\n- 输出每位玩家的分项清单与最终排名\n\n## Constraints\n\n- 板块分必须按动物→建筑→项目→开放区域的顺序计算\n- 依赖图标的板块需按相邻或全场对应图标数正确计分\n- 袋鼠标记与剩余保护标记各计 2 分\n- 终局标记按 10 或 5 分计入\n- 平局先比动物数量，再判共享胜利\n\n## Cautions\n\n- 不要遗漏剩余保护标记的 2 分\n- 区分固定分值板块与依赖图标数量的板块\n- 终局标记分值需区分 10 分与 5 分两种情形\n\n## Output Contract\n\n- 每位玩家的分项得分清单与最终排名（含平局判定结果）。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "按规则顺序完整汇总各方终局得分并确定胜者或平局。",
+      "domain": "桌游终局规则",
+      "task_family": "终局计分",
+      "method_family": "分项累加与平局裁决",
+      "stage": "终局计分",
+      "applicable_signals": [
+        "游戏已结束，进入最终计分",
+        "需要给出最终排名",
+        "需要复核某玩家的得分来源"
+      ],
+      "contraindications": [
+        "游戏尚未结束",
+        "仅需判断是否触发终局"
+      ],
+      "intervention_moves": [
+        "按动物→建筑→项目→开放区域的顺序计算板块分",
+        "累加保护成就标记分",
+        "每个袋鼠标记与剩余保护标记各计 2 分",
+        "加入终局标记分（10 或 5）",
+        "单人模式加入每个背面单人标记 5 分",
+        "比较总分并按平局规则裁决"
+      ],
+      "triggers": [
+        "所有玩家完成最后一轮后需要排名",
+        "需要核对某玩家最终得分构成",
+        "终局已触发并进入最终计分阶段"
+      ],
+      "workflow_steps": [
+        "确认游戏已结束并进入最终计分阶段",
+        "对每位玩家计算动物园板块分：先动物（黄），再建筑（蓝）、项目（紫）、开放区域；固定分值直接取分，依赖图标的板块按相邻或全场对应图标数计分",
+        "累加保护板上已放置的保护成就标记分值",
+        "每个袋鼠标记与每个剩余保护标记各加 2 分",
+        "加入终局标记分值（10 或 5，若有）",
+        "单人模式：每个背面朝上的单人标记加 5 分",
+        "汇总每位玩家总分并排名",
+        "平局时比较动物园中动物数量，多者获胜；仍相同则共享胜利",
+        "输出每位玩家的分项清单与最终排名"
+      ],
+      "constraints": [
+        "板块分必须按动物→建筑→项目→开放区域的顺序计算",
+        "依赖图标的板块需按相邻或全场对应图标数正确计分",
+        "袋鼠标记与剩余保护标记各计 2 分",
+        "终局标记按 10 或 5 分计入",
+        "平局先比动物数量，再判共享胜利"
+      ],
+      "cautions": [
+        "不要遗漏剩余保护标记的 2 分",
+        "区分固定分值板块与依赖图标数量的板块",
+        "终局标记分值需区分 10 分与 5 分两种情形"
+      ],
+      "output_contract": [
+        "每位玩家的分项得分清单与最终排名（含平局判定结果）。"
+      ],
+      "examples": [],
+      "tags": [
+        "终局计分",
+        "排名",
+        "平局裁决",
+        "分项累加"
+      ],
+      "support_ids": [
+        "89ead392-10f2-5790-b70c-e569f5eb3a29"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "756cd655-cd82-54e8-894c-472ef61cf0f9"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.88,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||session_skill|session|workflow_skill|按规则顺序完整汇总各方终局得分并确定胜者或平局。|桌游终局规则|终局计分|分项累加与平局裁决|终局计分|终局计分汇总流程",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "9013fe5f-3cc3-46fc-9ca2-6f5d0a766f4c",
+      "entity_type": "skill",
+      "entity_id": "3d06241b-fc3f-5127-a283-9314c77d55cd",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3d06241b-fc3f-5127-a283-9314c77d55cd",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "89ead392-10f2-5790-b70c-e569f5eb3a29"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

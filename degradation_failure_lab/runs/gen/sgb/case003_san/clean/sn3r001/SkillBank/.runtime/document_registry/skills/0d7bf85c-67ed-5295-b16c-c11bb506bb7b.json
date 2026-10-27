@@ -1,0 +1,118 @@
+{
+  "skill_id": "0d7bf85c-67ed-5295-b16c-c11bb506bb7b",
+  "name": "回合末管理检查",
+  "description": "在玩家回合行动全部完成后，按顺序执行回合末三项管理：检查板块上限、补充展示区、判定游戏是否结束。用于每回合收尾阶段。",
+  "skill_body": "当玩家本回合的必做与可选步骤均已完成后，按顺序执行回合末管理：1) 检查手牌/持有板块是否超过板块上限，超出则按规则处理；2) 补充展示区至规定数量；3) 检查是否满足游戏结束条件并给出终局判定。仅执行收尾管理，不重做行动执行或行动卡滑动。\n\n## Objective\n\n完成回合末三项管理并判定游戏结束条件\n## Applicable Signals\n\n- 玩家已完成本回合的取板块与行动卡行动\n- 展示区出现空位需要补充\n- 可能触发终局条件需要确认\n\n## Contraindications\n\n- 回合尚未结束，行动步骤未完成\n- 游戏已判定结束，无需再执行收尾\n\n## Intervention Moves\n\n- 核对板块上限并处理超额\n- 将展示区补充至规定数量\n- 检查终局条件并给出判定\n\n## Workflow Steps\n\n- 确认本回合必做与可选步骤均已完成\n- 检查板块上限，若超出则按规则处理\n- 补充展示区至规定数量\n- 检查是否满足游戏结束条件并给出终局判定\n\n## Constraints\n\n- 严格按顺序执行：板块上限→补充展示区→终局判定\n- 仅执行回合末管理，不重复行动执行或行动卡滑动\n\n## Cautions\n\n- 终局判定需依据规则中的结束条件，避免误判\n- 补充展示区前先确认板块上限已合规\n\n## Output Contract\n\n- 展示区已补充、板块上限合规、终局状态已判定\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 玩家已完成取板块与行动卡行动，展示区有空位，手牌板块数接近上限。\n- Therapist/Output: 确认板块上限合规，补充展示区至规定数量，判定游戏未结束，进入下一位玩家回合。",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "完成回合末三项管理并判定游戏结束条件",
+  "domain": "桌游终局规则",
+  "task_family": "回合末管理",
+  "method_family": "检查清单",
+  "stage": "回合收尾",
+  "applicable_signals": [
+    "玩家已完成本回合的取板块与行动卡行动",
+    "展示区出现空位需要补充",
+    "可能触发终局条件需要确认"
+  ],
+  "contraindications": [
+    "回合尚未结束，行动步骤未完成",
+    "游戏已判定结束，无需再执行收尾"
+  ],
+  "intervention_moves": [
+    "核对板块上限并处理超额",
+    "将展示区补充至规定数量",
+    "检查终局条件并给出判定"
+  ],
+  "triggers": [
+    "玩家回合行动已全部完成",
+    "需要补充展示区",
+    "需要判断游戏是否结束"
+  ],
+  "workflow_steps": [
+    "确认本回合必做与可选步骤均已完成",
+    "检查板块上限，若超出则按规则处理",
+    "补充展示区至规定数量",
+    "检查是否满足游戏结束条件并给出终局判定"
+  ],
+  "constraints": [
+    "严格按顺序执行：板块上限→补充展示区→终局判定",
+    "仅执行回合末管理，不重复行动执行或行动卡滑动"
+  ],
+  "cautions": [
+    "终局判定需依据规则中的结束条件，避免误判",
+    "补充展示区前先确认板块上限已合规"
+  ],
+  "output_contract": [
+    "展示区已补充、板块上限合规、终局状态已判定"
+  ],
+  "examples": [
+    {
+      "input": "玩家已完成取板块与行动卡行动，展示区有空位，手牌板块数接近上限。",
+      "output": "确认板块上限合规，补充展示区至规定数量，判定游戏未结束，进入下一位玩家回合。",
+      "notes": null
+    }
+  ],
+  "tags": [
+    "回合末",
+    "管理阶段",
+    "展示区补充",
+    "终局判定",
+    "板块上限"
+  ],
+  "support_ids": [
+    "d7170003-7586-5223-bc0f-89887470c93f"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "835c0cc8-d7ad-5a73-ab3c-56079be5ab76"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "board game endgame rules",
+    "taxonomy_id": "board game endgame rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "board_game_endgame_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|完成回合末三项管理并判定游戏结束条件|桌游终局规则|回合末管理|检查清单|回合收尾|回合末管理检查",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

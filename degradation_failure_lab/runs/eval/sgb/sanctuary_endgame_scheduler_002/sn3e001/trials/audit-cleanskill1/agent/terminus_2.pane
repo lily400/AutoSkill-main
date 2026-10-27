@@ -1,0 +1,347 @@
+[?2004hroot@84003d17e34d:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ sed -n '1,220p' /harbor/skills/12088cea-5a72-5997-94e9-56794cb7b6dd/SKILL.md
+[?2004l---
+id: "12088cea-5a72-5997-94e9-56794cb7b6dd"
+name: "终局触发与额外回合结算"
+description: "在每名玩家回合结束的行政阶段之后检查三项终局条件，按触发者与条件类型发放终局标记并安排额外回合，随后移交终局计分。用于游戏进入收尾阶段、需要判定何时结束与如何补偿其他玩家时。"
+version: "0.1.0"
+tags:
+  - "桌游"
+  - "终局判定"
+  - "回合补偿"
+  - "终局标记"
+  - "收尾流程"
+triggers:
+  - "某玩家回合结束需检查是否满足终局条件"
+  - "有人已覆盖完整动物园地图或支持满4个保护目标"
+  - "面朝下板块堆已抽空"
+examples:
+  - input: "某玩家回合结束时已支持4个保护目标，其余玩家尚未行动。"
+    output: "该玩家取10分终局标记，其余玩家各获得最后一回合，随后进入终局计分。"
+    notes: "条件1触发，触发者不再行动。"
+  - input: "某玩家回合结束时面朝下板块堆已抽空，无人满足条件1或2。"
+    output: "该玩家回合结束后立即结束游戏，直接进入终局计分，无额外回合。"
+    notes: "条件3单独触发。"
+---
+
+# 终局触发与额外回合结算
+
+在每名玩家回合结束的行政阶段之后检查三项终局条件，按触发者与条件类型发放终局标记并安排额外回合，随后移交终局计分。用于游戏进入收尾阶段、需要判定何时结束与如何补偿其他玩家时。
+
+## Prompt
+
+在每名玩家回合结束的行政阶段之后，依次检查三项终局条件：1) 该玩家已支持4个保护目标（4个保护成就标记均已放上保护板）；2) 该玩家已完全覆盖动物园地图（无空格）；3) 面朝下板块堆已抽空。若条件1和/或2被满足，由该玩家取10分终局标记，其余玩家各获得最后一回合（触发者不再行动），随后进入终局计分。若条件3先于条件1或2被满足，则在该玩家回合结束后立即结束游戏，直接进入终局计分。若其他玩家触发终局后，某玩家在其最后一回合也满足条件1和/或2，该玩家取5分终局标记。若触发终局后板块堆为空，洗混弃置板块组成新堆。记录触发者、终局标记归属与最后一轮安排后移交终局计分。
+
+## Objective
+
+正确判定终局触发、发放终局标记并安排最后一轮，使游戏平稳过渡到终局计分。
+## Applicable Signals
+
+- 回合结束行政阶段完成，需检查终局
+- 玩家已放满4个保护成就标记
+- 玩家动物园地图已无空格
+- 面朝下板块堆已空
+
+## Contraindications
+
+- 游戏尚在开局或中盘、无人接近终局条件
+- 仅需计算单个板块得分
+
+## Intervention Moves
+
+- 逐项核对三项终局条件
+- 按触发者身份发放10分或5分终局标记
+- 为其余玩家安排最后一回合
+- 板块堆为空时洗混弃置板块组成新堆
+- 记录触发信息并移交终局计分
+
+## Workflow Steps
+
+- 在回合结束行政阶段后，检查条件1：该玩家是否已支持4个保护目标。
+- 检查条件2：该玩家动物园地图是否已完全覆盖、无空格。
+- 检查条件3：面朝下板块堆是否已抽空。
+- 若条件1和/或2满足：由该玩家取10分终局标记，其余玩家各获得最后一回合（触发者不再行动）。
+- 若条件3先于条件1或2满足：该玩家回合结束后立即结束游戏，直接进入终局计分。
+- 若其他玩家触发终局后，某玩家在最后一回合也满足条件1和/或2：该玩家取5分终局标记。
+- 若触发终局后板块堆为空：洗混弃置板块组成新堆。
+- 记录触发者、终局标记归属与最后一轮安排，移交终局计分。
+
+## Constraints
+
+- 终局条件仅在回合结束时检查。
+- 触发者本人不参与额外回合。
+- 条件3单独触发时无额外回合，立即进入终局计分。
+- 同一玩家不得同时持有10分与5分终局标记。
+
+## Cautions
+
+- 注意区分条件1/2触发（有额外回合）与条件3触发（立即结束）的不同处理。
+- 确认终局标记分值归属，避免误发或重复发放。
+
+## Output Contract
+
+- 明确记录终局触发者、终局标记归属（10分或5分）及剩余玩家最后一轮安排。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 某玩家回合结束时已支持4个保护目标，其余玩家尚未行动。
+- Therapist/Output: 该玩家取10分终局标记，其余玩家各获得最后一回合，随后进入终局计分。
+- Notes: 条件1触发，触发者不再行动。
+
+### Example 2
+
+- Client/Input: 某玩家回合结束时面朝下板块堆已抽空，无人满足条件1或2。
+- Therapist/Output: 该玩家回合结束后立即结束游戏，直接进入终局计分，无额外回合。
+- Notes: 条件3单独触发。
+
+## Triggers
+
+- 某玩家回合结束需检查是否满足终局条件
+- 有人已覆盖完整动物园地图或支持满4个保护目标
+- 面朝下板块堆已抽空
+
+## Examples
+
+### Example 1
+
+Input:
+
+  某玩家回合结束时已支持4个保护目标，其余玩家尚未行动。
+
+Output:
+
+  该玩家取10分终局标记，其余玩家各获得最后一回合，随后进入终局计分。
+
+Notes:
+
+  条件1触发，触发者不再行动。
+
+### Example 2
+
+Input:
+
+  某玩家回合结束时面朝下板块堆已抽空，无人满足条件1或2。
+
+Output:
+
+  该玩家回合结束后立即结束游戏，直接进入终局计分，无额外回合。
+
+Notes:
+
+  条件3单独触发。
+[?2004hp1$ sed -n '1,220p' /harbor/skills/ce211f89-442f-5626-98c6-abc9b73428fa/SKILL.md
+[?2004l---
+id: "ce211f89-442f-5626-98c6-abc9b73428fa"
+name: "终局触发与最后回合结算流程"
+description: "在每名玩家回合结束时检查三种终局条件，按触发者与触发方式分配额外回合和终局标记，然后衔接到最终计分。用于游戏进入收尾阶段、需要判定何时结束及如何结算时。"
+version: "0.1.0"
+tags:
+  - "桌游"
+  - "终局判定"
+  - "最终计分"
+  - "回合分配"
+  - "Sanctuary"
+triggers:
+  - "回合结束需要检查是否满足终局条件"
+  - "某玩家已满足条件1或2需要确定后续回合顺序"
+  - "牌堆耗尽需要决定立即结束还是补牌堆"
+examples:
+  - input: "某玩家回合结束时已支持4个保护目标。"
+    output: "该玩家取10分终局标记，其他玩家各得1个额外回合，随后进入最终计分。"
+    notes: "条件1触发"
+  - input: "某玩家回合结束时面朝下板块堆为空，且无人满足条件1或2。"
+    output: "游戏立即结束，直接进入最终计分。"
+    notes: "条件3先触发"
+---
+
+# 终局触发与最后回合结算流程
+
+在每名玩家回合结束时检查三种终局条件，按触发者与触发方式分配额外回合和终局标记，然后衔接到最终计分。用于游戏进入收尾阶段、需要判定何时结束及如何结算时。
+
+## Prompt
+
+在每个玩家回合结束时执行终局检查：依次核对三种终局条件（已支持4个保护目标、动物园地图完全覆盖、面朝下板块堆为空）。若条件1和/或2被满足，由触发者取10分终局标记，其余玩家各获得1个额外回合（触发者不再行动），随后进入最终计分。若条件3先于条件1或2被满足，则立即结束游戏并直接进入最终计分；若条件3在终局触发后出现，则洗混弃置板块组成新牌堆。若其他玩家在最后回合也满足条件1和/或2，取5分终局标记。最终计分按板块分值、保护成就标记、Pouch与剩余保护标记（各2分）、终局标记分值累加，最高分获胜；平局时比较动物数量，仍平局则共享胜利。
+
+## Objective
+
+正确判定终局触发、分配最后回合与终局标记，并衔接到最终计分
+## Applicable Signals
+
+- 回合结束阶段
+- 有玩家接近或达成条件1或2
+- 面朝下板块堆即将或已经耗尽
+
+## Contraindications
+
+- 游戏尚在早期、无人接近终局条件
+- 仅需查询单条计分细则而非整体终局流程
+
+## Intervention Moves
+
+- 逐条核对三种终局条件
+- 按触发者身份分配10分或5分终局标记
+- 为其他玩家安排各1个额外回合
+- 条件3触发时立即结束或洗混弃置板块补堆
+- 进入最终计分并处理平局
+
+## Workflow Steps
+
+- 回合结束时检查条件1：已支持4个保护目标（4个成就标记均在保护板上）
+- 检查条件2：动物园地图完全覆盖，无空位
+- 检查条件3：面朝下板块堆为空
+- 若条件1和/或2满足：触发者取10分终局标记，其他玩家各得1个额外回合（触发者除外），之后进入最终计分
+- 若条件3先于条件1或2满足：立即结束游戏，直接进入最终计分
+- 若条件3在终局触发后出现：洗混弃置板块组成新牌堆
+- 若其他玩家在最后回合也满足条件1和/或2：取5分终局标记
+- 最终计分：累加板块分值、保护成就标记分值、每个Pouch与剩余保护标记各2分、终局标记分值
+- 最高分获胜；平局比较动物数量，仍平局则共享胜利
+
+## Constraints
+
+- 终局检查必须在回合结束时进行
+- 触发者不获得额外回合，其他玩家各1个
+- 条件3先触发时不得补牌堆，直接结算
+- 终局标记分值区分10分（触发者）与5分（最后回合达成者）
+
+## Cautions
+
+- 注意区分条件3先触发与终局后触发两种情形
+- 最终计分需按动物、建筑、项目、开放区域的顺序计算板块分值
+
+## Output Contract
+
+- 明确的终局触发判定结果、额外回合分配与终局标记发放，并进入最终计分
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 某玩家回合结束时已支持4个保护目标。
+- Therapist/Output: 该玩家取10分终局标记，其他玩家各得1个额外回合，随后进入最终计分。
+- Notes: 条件1触发
+
+### Example 2
+
+- Client/Input: 某玩家回合结束时面朝下板块堆为空，且无人满足条件1或2。
+- Therapist/Output: 游戏立即结束，直接进入最终计分。
+- Notes: 条件3先触发
+
+## Triggers
+
+- 回合结束需要检查是否满足终局条件
+- 某玩家已满足条件1或2需要确定后续回合顺序
+- 牌堆耗尽需要决定立即结束还是补牌堆
+
+## Examples
+
+### Example 1
+
+Input:
+
+  某玩家回合结束时已支持4个保护目标。
+
+Output:
+
+  该玩家取10分终局标记，其他玩家各得1个额外回合，随后进入最终计分。
+
+Notes:
+
+  条件1触发
+
+### Example 2
+
+Input:
+
+  某玩家回合结束时面朝下板块堆为空，且无人满足条件1或2。
+
+Output:
+
+  游戏立即结束，直接进入最终计分。
+
+Notes:
+
+  条件3先触发
+[?2004hp1$ ls -la /workspace
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 26 15:47 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from typing import Any, Dict, List
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+[?2004l[?2004h>     players: List[str] = input_data.get('players', [])
+[?2004l[?2004h>     turn_log: List[Dict[str, Any]] = input_data.get('turn_log', [])
+[?2004l[?2004h> 
+[?2004l[?2004h>     end_trigger = {
+[?2004l[?2004h>         'turn_index': -1,
+[?2004l[?2004h>         'player': None,
+[?2004l[?2004h>         'conditions_met': [],
+[?2004l[?2004h>     }
+[?2004l[?2004h>     scheduled_turns_after_trigger: List[str] = []
+[?2004l[?2004h>     markers: Dict[str, int] = {p: 0 for p in players}
+[?2004l[?2004h>     pile_recycled = False
+[?2004l[?2004h> 
+[?2004l[?2004h>     trigger_idx = None
+[?2004l[?2004h>     trigger_turn = None
+[?2004l[?2004h>     trigger_conditions = []
+[?2004l[?2004h> 
+[?2004l[?2004h>     for i, turn in enumerate(turn_log):
+[?2004l[?2004h>         conds = []
+[?2004l[?2004h>         if turn.get('supported_objectives', 0) >= 4:
+[?2004l[?2004h>             conds.append(1)
+[?2004l[?2004h>         if turn.get('zoo_full', False):
+[?2004l[?2004h>             conds.append(2)
+[?2004l[?2004h>         if turn.get('pile_empty', False):
+[?2004l[?2004h>             conds.append(3)
+[?2004l[?2004h>         if conds:
+[?2004l[?2004h>             trigger_idx = i
+[?2004l[?2004h>             trigger_turn = turn
+[?2004l[?2004h>             trigger_conditions = conds
+[?2004l[?2004h>             break
+[?2004l[?2004h> 
+[?2004l[?2004h>     if trigger_idx is None:
+[?2004l[?2004h>         return {
+[?2004l[?2004h>             'end_trigger': end_trigger,
+[?2004l[?2004h>             'scheduled_turns_after_trigger': scheduled_turns_after_trigger,
+[?2004l[?2004h>             'markers': markers,
+[?2004l[?2004h>             'pile_recycled': pile_recycled,
+[?2004l[?2004h>         }
+[?2004l[?2004h> 
+[?2004l[?2004h>     end_trigger = {
+[?2004l[?2004h>         'turn_index': trigger_idx,
+[?2004l[?2004h>         'player': trigger_turn['player'],
+[?2004l[?2004h>         'conditions_met': sorted(trigger_conditions),
+[?2004l[?2004h>     }
+[?2004l[?2004h> 
+[?2004l[?2004h>     has_1_or_2 = any(c in (1, 2) for c in trigger_conditions)
+[?2004l[?2004h>     if has_1_or_2:
+[?2004l[?2004h>         if trigger_turn.get('pile_empty', False):
+[?2004l[?2004h>             pile_recycled = True
+[?2004l[?2004h>         if players:
+[?2004l[?2004h>             start = (players.index(trigger_turn['player']) + 1) % len(players)
+[?2004l[?2004h>             ordered = players[start:] + players[:start]
+[?2004l[?2004h>             scheduled_turns_after_trigger = [p for p in ordered if p != trigger_turn['player']]
+[?2004l[?2004h>         markers[trigger_turn['player']] = 10
+[?2004l[?2004h> 
+[?2004l[?2004h>         for p in scheduled_turns_after_trigger:
+[?2004l[?2004h>             for turn in turn_log[trigger_idx + 1:]:
+[?2004l[?2004h>                 if turn.get('player') == p:
+[?2004l[?2004h>                     if turn.get('supported_objectives', 0) >= 4 or turn.get('zoo_full', False):
+[?2004l[?2004h>                         markers[p] = 5
+[?2004l[?2004h>                     break
+[?2004l[?2004h> 
+[?2004l[?2004h>     return {
+[?2004l[?2004h>         'end_trigger': end_trigger,
+[?2004l[?2004h>         'scheduled_turns_after_trigger': scheduled_turns_after_trigger,
+[?2004l[?2004h>         'markers': markers,
+[?2004l[?2004h>         'pile_recycled': pile_recycled,
+[?2004l[?2004h>     }
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

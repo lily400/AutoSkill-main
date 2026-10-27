@@ -1,0 +1,153 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "board_game_endgame_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "回合收尾整理",
+  "run_id": "20261026T232134_97de5368",
+  "skills": [
+    {
+      "skill_id": "562b0933-2527-56d9-bbd9-080210e1d2ff",
+      "name": "回合末行政整理",
+      "description": "在玩家回合结束时依次执行手牌上限弃牌、展示区补位与补牌、终局条件检查三项固定动作，用于每个回合收尾以保持公共展示区与手牌合规。",
+      "skill_body": "当玩家完成主要行动、准备结束回合时，按固定顺序执行三步整理：1) 手牌限额：若手牌超过6张，弃牌至恰好6张（回合中可超过6张，但回合末不可）；2) 补满展示区：先将展示区已有牌下移到最低的空位以消除空隙，再从牌堆正面朝上补入每个空位，使展示区恢复6张；3) 终局检查：核查是否至少满足一个终局条件，若未满足则按顺时针轮到下一位玩家。\n\n## Objective\n\n在回合末完成手牌限额、展示区补满与终局检查的固定整理序列。\n## Applicable Signals\n\n- 玩家完成主要行动准备结束回合\n- 展示区出现空位或手牌超过6张\n\n## Contraindications\n\n- 回合进行中尚未结束\n- 游戏已进入终局计分\n\n## Intervention Moves\n\n- 手牌超过6张时弃牌至恰好6张\n- 将展示区已有牌下移消除空隙\n- 从牌堆正面朝上补满每个空位至6张\n- 核查终局条件是否满足\n\n## Workflow Steps\n\n- 手牌限额：若手牌超过6张，弃牌至恰好6张。\n- 补满展示区：先将展示区已有牌下移到最低空位以消除空隙，再从牌堆正面朝上补入每个空位，使展示区恢复6张。\n- 终局检查：核查是否至少满足一个终局条件；若未满足，按顺时针轮到下一位玩家。\n\n## Constraints\n\n- 三步须按固定顺序执行：先手牌限额，再补展示区，最后终局检查。\n- 回合中手牌可超过6张，但回合末必须恰好不超过6张。\n- 补牌前必须先下移消除空隙，再补入空位。\n\n## Cautions\n\n- 终局条件一旦满足需转入终局流程，不可继续常规回合。\n\n## Output Contract\n\n- 手牌不超过6张、展示区恢复6张、终局条件已核查并记录。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 回合开始时从位置2取走一张牌，随后用项目行动取走位置5的牌，回合末展示区出现空位。\n- Therapist/Output: 先将位置3、4、6的牌下移，再从牌堆翻开2张新牌补入空出的位置5和6，展示区恢复6张。\n- Notes: 补位与补牌顺序示例。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在回合末完成手牌限额、展示区补满与终局检查的固定整理序列。",
+      "domain": "桌游终局规则",
+      "task_family": "回合收尾整理",
+      "method_family": "固定顺序检查清单",
+      "stage": "回合结束",
+      "applicable_signals": [
+        "玩家完成主要行动准备结束回合",
+        "展示区出现空位或手牌超过6张"
+      ],
+      "contraindications": [
+        "回合进行中尚未结束",
+        "游戏已进入终局计分"
+      ],
+      "intervention_moves": [
+        "手牌超过6张时弃牌至恰好6张",
+        "将展示区已有牌下移消除空隙",
+        "从牌堆正面朝上补满每个空位至6张",
+        "核查终局条件是否满足"
+      ],
+      "triggers": [
+        "玩家完成主要行动准备结束回合",
+        "展示区出现空位",
+        "手牌超过6张"
+      ],
+      "workflow_steps": [
+        "手牌限额：若手牌超过6张，弃牌至恰好6张。",
+        "补满展示区：先将展示区已有牌下移到最低空位以消除空隙，再从牌堆正面朝上补入每个空位，使展示区恢复6张。",
+        "终局检查：核查是否至少满足一个终局条件；若未满足，按顺时针轮到下一位玩家。"
+      ],
+      "constraints": [
+        "三步须按固定顺序执行：先手牌限额，再补展示区，最后终局检查。",
+        "回合中手牌可超过6张，但回合末必须恰好不超过6张。",
+        "补牌前必须先下移消除空隙，再补入空位。"
+      ],
+      "cautions": [
+        "终局条件一旦满足需转入终局流程，不可继续常规回合。"
+      ],
+      "output_contract": [
+        "手牌不超过6张、展示区恢复6张、终局条件已核查并记录。"
+      ],
+      "examples": [
+        {
+          "input": "回合开始时从位置2取走一张牌，随后用项目行动取走位置5的牌，回合末展示区出现空位。",
+          "output": "先将位置3、4、6的牌下移，再从牌堆翻开2张新牌补入空出的位置5和6，展示区恢复6张。",
+          "notes": "补位与补牌顺序示例。"
+        }
+      ],
+      "tags": [
+        "回合收尾",
+        "行政整理",
+        "手牌上限",
+        "展示区补牌",
+        "终局检查"
+      ],
+      "support_ids": [
+        "6c92800e-53a2-5e0c-9fc4-312456a56729"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "2d7ed3ca-c553-53ef-956d-be995dcaf386"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|在回合末完成手牌限额、展示区补满与终局检查的固定整理序列。|桌游终局规则|回合收尾整理|固定顺序检查清单|回合结束|回合末行政整理",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "959b5679-2b7e-4c02-ac08-be13cc83b897",
+      "entity_type": "skill",
+      "entity_id": "562b0933-2527-56d9-bbd9-080210e1d2ff",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "562b0933-2527-56d9-bbd9-080210e1d2ff",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "6c92800e-53a2-5e0c-9fc4-312456a56729"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

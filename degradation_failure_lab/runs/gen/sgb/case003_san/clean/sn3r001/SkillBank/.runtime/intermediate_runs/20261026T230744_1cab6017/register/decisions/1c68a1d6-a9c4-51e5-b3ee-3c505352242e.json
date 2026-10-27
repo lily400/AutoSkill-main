@@ -1,0 +1,115 @@
+{
+  "skill_id": "1c68a1d6-a9c4-51e5-b3ee-3c505352242e",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“终局计分汇总流程”高度重复，后者步骤更完整（含单人模式计分与终局确认），本候选无独立价值。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "1c68a1d6-a9c4-51e5-b3ee-3c505352242e",
+    "name": "终局计分汇总",
+    "description": "在游戏已触发终局并完成额外回合后，按固定顺序累加各玩家分数（动物园板块、保护成就标记、剩余标记、终局标记），并处理平局判定，最终宣布胜者。",
+    "skill_body": "当游戏已结束并进入最终计分阶段时，按以下顺序为每位玩家累加分数：1) 动物园内板块分数（先动物黄色，再建筑蓝色，再项目紫色，最后开放区域；固定分值直接取，条件分值按相邻或全场对应图标数量计算）；2) 保护板上已放置的保护成就标记分数；3) 每个袋鼠标记与剩余保护标记各 2 分；4) 终局标记分数（10 或 5，若有）。累加后比较总分，最高者获胜；平局时比较动物园中动物数量，仍平局则共享胜利。\n\n## Objective\n\n准确计算每位玩家最终得分并确定胜者\n## Applicable Signals\n\n- 游戏已触发终局并完成额外回合\n- 需要宣布胜者\n\n## Contraindications\n\n- 游戏尚未结束\n- 仅需评估单类板块分值\n\n## Intervention Moves\n\n- 按动物、建筑、项目、开放区域顺序计算板块分数\n- 累加保护成就标记分数\n- 每个袋鼠标记与剩余保护标记计 2 分\n- 加入终局标记分数\n- 比较总分并以动物数量裁决平局\n\n## Workflow Steps\n\n- 累加动物园内板块分数：先动物（黄色），再建筑（蓝色），再项目（紫色），最后开放区域；固定分值直接取，条件分值按相邻或全场对应图标数量计算。\n- 累加保护板上已放置的保护成就标记分数。\n- 每个袋鼠标记与每个剩余保护标记各计 2 分。\n- 若有终局标记，加入其分数（10 或 5）。\n- 比较各玩家总分，最高者获胜。\n- 平局时比较动物园中动物数量，多者获胜；仍平局则共享胜利。\n\n## Constraints\n\n- 必须按动物、建筑、项目、开放区域的固定顺序计分\n- 条件分值需按相邻或全场对应图标数量正确计算\n- 平局裁决须先比总分，再比动物数量\n\n## Cautions\n\n- 条件分值板块易算错，需核对相邻与全场图标数量\n- 终局标记分值区分 10 分与 5 分两种情形\n\n## Output Contract\n\n- 各玩家总分及胜者（含平局处理结果）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 游戏已结束，需为各玩家结算最终分数\n- Therapist/Output: 按板块、保护成就标记、剩余标记、终局标记顺序累加各玩家总分，宣布最高分者为胜者；若平局则比较动物数量，仍平局则共享胜利。",
+    "asset_type": "macro_protocol",
+    "granularity": "macro",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "准确计算每位玩家最终得分并确定胜者",
+    "domain": "桌游终局规则",
+    "task_family": "终局计分",
+    "method_family": "分项累加与平局裁决",
+    "stage": "最终计分阶段",
+    "applicable_signals": [
+      "游戏已触发终局并完成额外回合",
+      "需要宣布胜者"
+    ],
+    "contraindications": [
+      "游戏尚未结束",
+      "仅需评估单类板块分值"
+    ],
+    "intervention_moves": [
+      "按动物、建筑、项目、开放区域顺序计算板块分数",
+      "累加保护成就标记分数",
+      "每个袋鼠标记与剩余保护标记计 2 分",
+      "加入终局标记分数",
+      "比较总分并以动物数量裁决平局"
+    ],
+    "triggers": [
+      "游戏已触发终局并完成额外回合",
+      "需要宣布胜者",
+      "进入最终计分阶段"
+    ],
+    "workflow_steps": [
+      "累加动物园内板块分数：先动物（黄色），再建筑（蓝色），再项目（紫色），最后开放区域；固定分值直接取，条件分值按相邻或全场对应图标数量计算。",
+      "累加保护板上已放置的保护成就标记分数。",
+      "每个袋鼠标记与每个剩余保护标记各计 2 分。",
+      "若有终局标记，加入其分数（10 或 5）。",
+      "比较各玩家总分，最高者获胜。",
+      "平局时比较动物园中动物数量，多者获胜；仍平局则共享胜利。"
+    ],
+    "constraints": [
+      "必须按动物、建筑、项目、开放区域的固定顺序计分",
+      "条件分值需按相邻或全场对应图标数量正确计算",
+      "平局裁决须先比总分，再比动物数量"
+    ],
+    "cautions": [
+      "条件分值板块易算错，需核对相邻与全场图标数量",
+      "终局标记分值区分 10 分与 5 分两种情形"
+    ],
+    "output_contract": [
+      "各玩家总分及胜者（含平局处理结果）"
+    ],
+    "examples": [
+      {
+        "input": "游戏已结束，需为各玩家结算最终分数",
+        "output": "按板块、保护成就标记、剩余标记、终局标记顺序累加各玩家总分，宣布最高分者为胜者；若平局则比较动物数量，仍平局则共享胜利。",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "终局计分",
+      "分数累加",
+      "平局裁决",
+      "胜负判定"
+    ],
+    "support_ids": [
+      "ff08fd0b-26bc-5e15-b9ab-90b1945766ad"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "3b3ab731-24bb-59df-90f8-fb064629bce6"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "board game endgame rules",
+      "taxonomy_id": "board game endgame rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "board game endgame rules|||macro_protocol|macro|workflow_skill|准确计算每位玩家最终得分并确定胜者|桌游终局规则|终局计分|分项累加与平局裁决|最终计分阶段|终局计分汇总"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

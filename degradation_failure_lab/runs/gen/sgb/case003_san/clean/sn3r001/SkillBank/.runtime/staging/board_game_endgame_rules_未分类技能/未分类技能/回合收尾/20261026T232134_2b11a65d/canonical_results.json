@@ -1,0 +1,162 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "board_game_endgame_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "回合收尾",
+  "run_id": "20261026T232134_2b11a65d",
+  "skills": [
+    {
+      "skill_id": "ffe254f1-45b1-5f1c-be11-a884975ab2f1",
+      "name": "回合结束行政整理",
+      "description": "在回合结束时按固定顺序完成三项收尾整理：手牌上限弃牌、展示区补位与补牌、终局条件检查。用于每回合收尾的固定行政流程，确保回合交接前状态合规。",
+      "skill_body": "当玩家完成主要行动进入回合收尾时，按顺序执行：1) 检查手牌，若超过6张则弃至恰好6张（回合中可超过，回合结束不可）；2) 整理展示区，先将已有板块下移至最低空位消除间隙，再从牌堆正面朝上补满至6张；3) 检查终局条件是否满足，若未满足则顺时针移交下一位玩家。三步须按序完成，不得跳过或调换。\n\n## Objective\n\n规范完成回合收尾的整理动作\n## Applicable Signals\n\n- 玩家已完成本回合主要行动\n- 手牌数超过6张\n- 展示区存在空位或间隙\n- 需要判定是否触发终局\n\n## Contraindications\n\n- 回合进行中，主要行动尚未完成\n- 游戏已结束并进入最终计分阶段\n\n## Intervention Moves\n\n- 手牌超限时弃牌至恰好6张\n- 将展示区板块下移填补间隙\n- 从牌堆补牌至展示区满6张\n- 检查三项终局条件是否满足\n- 未触发终局则顺时针移交下一位玩家\n\n## Workflow Steps\n\n- 检查手牌数量：若超过6张，弃牌至恰好6张；回合中可超过但回合结束不可。\n- 整理展示区：先将已有板块下移至最低空位，消除所有间隙。\n- 补牌：从牌堆正面朝上为每个空位补牌，使展示区恢复为6张。\n- 检查终局：确认三项终局条件中是否至少一项已满足。\n- 若未触发终局，顺时针移交下一位玩家继续。\n\n## Constraints\n\n- 三步须按固定顺序执行：手牌上限→展示区补位补牌→终局检查。\n- 回合结束时手牌必须恰好不超过6张。\n- 展示区补牌后必须满6张。\n- 终局检查须在补牌完成后进行。\n\n## Cautions\n\n- 回合中手牌可超过6张，但回合结束必须弃至6张。\n- 补位时先下移已有板块消除间隙，再补新牌，避免错位。\n- 终局检查结果决定是否移交下一位玩家，不可遗漏。\n\n## Output Contract\n\n- 手牌不超过6张、展示区补满6张、终局检查已完成；若未触发终局则已移交下一位玩家。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 回合开始时从位置2取走板块入手，随后用项目行动取走位置5的板块，回合结束。\n- Therapist/Output: 先将位置3、4、6的板块下移填补间隙，再从牌堆翻开2张新板块放入空出的位置5和6，展示区恢复6张。\n- Notes: 展示区补位与补牌示例",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "规范完成回合收尾的整理动作",
+      "domain": "桌游终局规则",
+      "task_family": "回合收尾",
+      "method_family": "固定顺序整理步骤",
+      "stage": "回合结束行政阶段",
+      "applicable_signals": [
+        "玩家已完成本回合主要行动",
+        "手牌数超过6张",
+        "展示区存在空位或间隙",
+        "需要判定是否触发终局"
+      ],
+      "contraindications": [
+        "回合进行中，主要行动尚未完成",
+        "游戏已结束并进入最终计分阶段"
+      ],
+      "intervention_moves": [
+        "手牌超限时弃牌至恰好6张",
+        "将展示区板块下移填补间隙",
+        "从牌堆补牌至展示区满6张",
+        "检查三项终局条件是否满足",
+        "未触发终局则顺时针移交下一位玩家"
+      ],
+      "triggers": [
+        "玩家完成主要行动进入回合收尾",
+        "展示区出现空位需要补位",
+        "手牌数量超过6张需要弃牌",
+        "回合交接前需要确认终局条件"
+      ],
+      "workflow_steps": [
+        "检查手牌数量：若超过6张，弃牌至恰好6张；回合中可超过但回合结束不可。",
+        "整理展示区：先将已有板块下移至最低空位，消除所有间隙。",
+        "补牌：从牌堆正面朝上为每个空位补牌，使展示区恢复为6张。",
+        "检查终局：确认三项终局条件中是否至少一项已满足。",
+        "若未触发终局，顺时针移交下一位玩家继续。"
+      ],
+      "constraints": [
+        "三步须按固定顺序执行：手牌上限→展示区补位补牌→终局检查。",
+        "回合结束时手牌必须恰好不超过6张。",
+        "展示区补牌后必须满6张。",
+        "终局检查须在补牌完成后进行。"
+      ],
+      "cautions": [
+        "回合中手牌可超过6张，但回合结束必须弃至6张。",
+        "补位时先下移已有板块消除间隙，再补新牌，避免错位。",
+        "终局检查结果决定是否移交下一位玩家，不可遗漏。"
+      ],
+      "output_contract": [
+        "手牌不超过6张、展示区补满6张、终局检查已完成；若未触发终局则已移交下一位玩家。"
+      ],
+      "examples": [
+        {
+          "input": "回合开始时从位置2取走板块入手，随后用项目行动取走位置5的板块，回合结束。",
+          "output": "先将位置3、4、6的板块下移填补间隙，再从牌堆翻开2张新板块放入空出的位置5和6，展示区恢复6张。",
+          "notes": "展示区补位与补牌示例"
+        }
+      ],
+      "tags": [
+        "回合收尾",
+        "行政整理",
+        "手牌上限",
+        "展示区补牌",
+        "终局检查"
+      ],
+      "support_ids": [
+        "38bbf72e-3516-59ef-8028-cc8a1e9c60b2"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "24df2ad6-c9b8-5ae7-a801-2f9722f2f534"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|规范完成回合收尾的整理动作|桌游终局规则|回合收尾|固定顺序整理步骤|回合结束行政阶段|回合结束行政整理",
+        "change_action": "create",
+        "llm_reason": "该候选技能描述的是回合结束时的固定行政整理流程（手牌上限弃牌、展示区补位补牌、终局检查），与同批其他候选（讲解语气、困惑澄清、行动卡结算）无重叠，属于独立且可执行的微技能，支持证据无冲突，予以保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "8627441b-70f9-4df7-8091-164dfa5ab2b0",
+      "entity_type": "skill",
+      "entity_id": "ffe254f1-45b1-5f1c-be11-a884975ab2f1",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选技能描述的是回合结束时的固定行政整理流程（手牌上限弃牌、展示区补位补牌、终局检查），与同批其他候选（讲解语气、困惑澄清、行动卡结算）无重叠，属于独立且可执行的微技能，支持证据无冲突，予以保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "ffe254f1-45b1-5f1c-be11-a884975ab2f1",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "38bbf72e-3516-59ef-8028-cc8a1e9c60b2"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "board_game_endgame_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "多板块打出",
+  "run_id": "20261026T232134_98f7c24f",
+  "skills": [
+    {
+      "skill_id": "da53ac39-2ac7-509c-ab36-ab8cd016ec3e",
+      "name": "升级行动卡双动物顺序打出与配对保护标记结算",
+      "description": "当玩家使用已升级的动物行动卡一次打出两个动物板块时，校验行动强度不低于两板块等级之和、确认栖息地匹配，先完整结算第一个动物再打出第二个，并在同名雌雄动物直接相邻时立即发放1个保护标记。",
+      "skill_body": "当玩家使用升级行动卡一次打出两个动物时，按以下顺序执行：1) 确认行动卡已升级且允许一次打出两个动物；2) 校验行动强度不低于两个动物板块等级之和；3) 确认两个动物均匹配该行动卡的栖息地（或为无定义栖息地，可搭配任意动物行动卡）；4) 先放置第一个动物并完整结算其触发的所有效果（一次性效果、持续效果、放置奖励），再放置第二个动物并结算其效果；5) 若放置后与同名雌雄动物直接相邻，立即发放1个保护标记。\n\n## Objective\n\n正确执行双动物打出并处理配对保护标记奖励\n## Applicable Signals\n\n- 玩家已升级对应栖息地的动物行动卡\n- 玩家手中持有两个可打出的动物板块\n- 行动强度可能满足两板块等级之和\n\n## Contraindications\n\n- 未升级行动卡的单板块打出\n- 打出项目或建筑板块\n\n## Intervention Moves\n\n- 校验行动强度不低于两板块等级之和\n- 确认两动物栖息地匹配同一行动卡或为无定义栖息地\n- 先放置并完整结算第一个动物的所有效果\n- 再放置并结算第二个动物的效果\n- 同名雌雄相邻时立即发放1个保护标记\n\n## Workflow Steps\n\n- 确认行动卡已升级且允许一次打出两个动物\n- 校验行动强度不低于两个动物板块等级之和\n- 确认两动物栖息地匹配该行动卡或为无定义栖息地\n- 放置第一个动物并完整结算其触发的所有效果\n- 放置第二个动物并结算其效果\n- 若与同名雌雄动物直接相邻，立即发放1个保护标记\n\n## Constraints\n\n- 行动强度必须不低于两板块等级之和\n- 两个动物必须匹配同一行动卡的栖息地，无定义栖息地动物可搭配任意动物行动卡\n- 必须先完整结算第一个动物的所有效果再打出第二个\n\n## Cautions\n\n- 若行动强度不足两板块等级之和，不能双打出\n- 栖息地不匹配时不能将两动物与同一行动卡一起打出\n\n## Output Contract\n\n- 两个动物按顺序合法放置，配对奖励已正确发放\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 使用升级的水行动卡（强度4）打出等级2的水生动物与等级2的无定义栖息地动物\n- Therapist/Output: 先放置水生动物并结算其效果，再放置无定义栖息地动物；若与同名雌雄相邻则获得1个保护标记\n- Notes: 强度4满足两板块等级之和2+2",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [
+        "12088cea-5a72-5997-94e9-56794cb7b6dd",
+        "3d06241b-fc3f-5127-a283-9314c77d55cd"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确执行双动物打出并处理配对保护标记奖励",
+      "domain": "桌游终局规则",
+      "task_family": "多板块打出",
+      "method_family": "顺序结算与配对校验",
+      "stage": "板块打出",
+      "applicable_signals": [
+        "玩家已升级对应栖息地的动物行动卡",
+        "玩家手中持有两个可打出的动物板块",
+        "行动强度可能满足两板块等级之和"
+      ],
+      "contraindications": [
+        "未升级行动卡的单板块打出",
+        "打出项目或建筑板块"
+      ],
+      "intervention_moves": [
+        "校验行动强度不低于两板块等级之和",
+        "确认两动物栖息地匹配同一行动卡或为无定义栖息地",
+        "先放置并完整结算第一个动物的所有效果",
+        "再放置并结算第二个动物的效果",
+        "同名雌雄相邻时立即发放1个保护标记"
+      ],
+      "triggers": [
+        "使用升级行动卡一次打出两个动物",
+        "需要判断同名动物相邻是否触发保护标记",
+        "双打出时需确认行动强度是否满足两板块等级之和"
+      ],
+      "workflow_steps": [
+        "确认行动卡已升级且允许一次打出两个动物",
+        "校验行动强度不低于两个动物板块等级之和",
+        "确认两动物栖息地匹配该行动卡或为无定义栖息地",
+        "放置第一个动物并完整结算其触发的所有效果",
+        "放置第二个动物并结算其效果",
+        "若与同名雌雄动物直接相邻，立即发放1个保护标记"
+      ],
+      "constraints": [
+        "行动强度必须不低于两板块等级之和",
+        "两个动物必须匹配同一行动卡的栖息地，无定义栖息地动物可搭配任意动物行动卡",
+        "必须先完整结算第一个动物的所有效果再打出第二个"
+      ],
+      "cautions": [
+        "若行动强度不足两板块等级之和，不能双打出",
+        "栖息地不匹配时不能将两动物与同一行动卡一起打出"
+      ],
+      "output_contract": [
+        "两个动物按顺序合法放置，配对奖励已正确发放"
+      ],
+      "examples": [
+        {
+          "input": "使用升级的水行动卡（强度4）打出等级2的水生动物与等级2的无定义栖息地动物",
+          "output": "先放置水生动物并结算其效果，再放置无定义栖息地动物；若与同名雌雄相邻则获得1个保护标记",
+          "notes": "强度4满足两板块等级之和2+2"
+        }
+      ],
+      "tags": [
+        "双打出",
+        "升级行动卡",
+        "配对奖励",
+        "保护标记",
+        "顺序结算"
+      ],
+      "support_ids": [
+        "7fe62ec7-ac80-5cc4-90e0-9c44bafd98be"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "cea473d0-2f20-5d06-8c57-d55c8110a3a6"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||session_skill|session|micro_skill_node|正确执行双动物打出并处理配对保护标记奖励|桌游终局规则|多板块打出|顺序结算与配对校验|板块打出|升级行动卡双动物顺序打出与配对保护标记结算",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [
+          "12088cea-5a72-5997-94e9-56794cb7b6dd",
+          "3d06241b-fc3f-5127-a283-9314c77d55cd"
+        ],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "fb64bf92-a44d-443d-ba91-e9a889baf088",
+      "entity_type": "skill",
+      "entity_id": "da53ac39-2ac7-509c-ab36-ab8cd016ec3e",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "da53ac39-2ac7-509c-ab36-ab8cd016ec3e",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "7fe62ec7-ac80-5cc4-90e0-9c44bafd98be"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

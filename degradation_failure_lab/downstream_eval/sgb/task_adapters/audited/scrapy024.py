@@ -14,7 +14,8 @@ def verify_assets():
 def score(submission, output, *, expected_sha256=None):
     source, output = Path(submission), Path(output)
     if not source.is_file() or source.is_symlink() or source.stat().st_size > 131072:
-        raise ValueError('Invalid submission')
+        return {'task_success':False, 'infra_ok':True, 'failure_category':'invalid_submission',
+                'task_result':{'tests':0, 'passed':0, 'failed':0, 'errors':0, 'skipped':0}}
     digest = sha256(source)
     if expected_sha256 is not None and digest != expected_sha256:
         raise ValueError('Export hash mismatch')

@@ -253,7 +253,25 @@ class SGBRunner(unittest.TestCase):
         self.assertEqual(read(self.output / 'batch_stop.json')['failed_stage'], 'independent_oracle')
         self.assertEqual(read(self.output / 'batch_stop.json')['error_type'], 'ValueError')
         self.assertNotIn('P1_BUDGET_LEASE', os.environ)
-        self.assertFalse((self.output / 'batch_results.json').exists())
+        self.assertTrue((self.output / 'batch_results.json').exists())
+        row = read(self.output / 'batch_results.json')['results'][0]
+        self.assertEqual(row['failure_kind'], 'infrastructure_failure')
+        self.assertFalse(row['infra_ok'])
+
+    def test_missing_submission_counts_as_task_failure(self):
+        self.config = replace(self.config, unscorable_categories=self.config.unscorable_categories + ('submission_missing',))
+        status, run, _ = self.execute(category='submission_missing', passed=0)
+        self.assertEqual((status, run.await_count), (0, 2))
+        rows = read(self.output / 'batch_results.json')['results']
+        self.assertTrue(all(r['failure_kind'] == 'task_failure' and r['task_success'] is False for r in rows))
+
+    def test_known_budget_stop_is_recorded_without_resetting_ledger(self):
+        from downstream_eval.integration.request_budget import BudgetStop
+        status, run, grade = self.execute(run_error=BudgetStop('Arm HTTP limit 2 reached'))
+        self.assertEqual((status, run.await_count), (0, 2))
+        rows = read(self.output / 'batch_results.json')['results']
+        self.assertTrue(all(r['failure_kind'] == 'budget_exhausted' and r['infra_ok'] for r in rows))
+        grade.assert_not_called()
 
     def test_successful_fixture_is_recorded_without_using_scrapy_assertion_count(self):
         status, run, _ = self.execute()

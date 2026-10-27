@@ -1,0 +1,160 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "board_game_endgame_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "保护目标行动",
+  "run_id": "20261026T232134_cc23b18c",
+  "skills": [
+    {
+      "skill_id": "5acf9459-607e-5779-a2ab-6c33eda50825",
+      "name": "保护目标支持与成就标记放置",
+      "description": "在回合的可选步骤中，检查动物园内与某个未支持保护目标匹配的图标数量，必要时返还保护标记补足图标，然后放置一个未使用的成就标记以支持该目标。",
+      "skill_body": "按以下顺序执行：1) 选择一个尚未支持的保护目标；2) 统计动物园中与该目标匹配的图标数量；3) 如需提高数量，可返还已收集的保护标记，每个返还的标记使图标数+1，但动物园中必须至少保留1个匹配图标，不能全部用标记替代；4) 选择一个未使用的成就标记，其图标数不超过当前匹配图标总数（可用更高图标数的标记，只要图标数满足）；5) 将该成就标记面朝下放在保护板上该目标下方、属于自己颜色的位置。每个目标只能支持一次，每个成就标记只能使用一次。\n\n## Objective\n\n正确支持一个保护目标并放置对应成就标记\n## Applicable Signals\n\n- 玩家拥有匹配图标并希望支持保护目标\n- 需要最大化成就标记得分\n- 该保护目标尚未被支持\n\n## Contraindications\n\n- 该保护目标已被支持\n- 动物园中没有任何匹配图标\n- 没有可用的成就标记\n\n## Intervention Moves\n\n- 选择未支持的保护目标\n- 统计匹配图标数量\n- 按需返还保护标记补足图标数（保留至少1个匹配图标）\n- 选择图标数不超过当前匹配总数的未使用成就标记\n- 将成就标记面朝下放在保护板上自己颜色的位置\n\n## Workflow Steps\n\n- 选择一个尚未支持的保护目标\n- 统计动物园中与该目标匹配的图标数量\n- 如需提高数量，返还保护标记，每个+1，但必须保留至少1个匹配图标\n- 选择一个未使用的成就标记，其图标数不超过当前匹配图标总数\n- 将成就标记面朝下放在保护板上该目标下方自己颜色的位置\n\n## Constraints\n\n- 每个保护目标只能支持一次\n- 每个成就标记只能使用一次\n- 动物园中必须至少保留1个匹配图标，不能全部用保护标记替代\n- 每回合最多支持1个保护目标\n\n## Cautions\n\n- 支持后，之后新增的同类图标不再对该目标有帮助\n- 使用更高图标数的成就标记需要足够的匹配图标总数\n\n## Output Contract\n\n- 在保护板上对应颜色位置放置一个面朝下的成就标记，且该保护目标标记为已支持。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 动物园有3个鸟类图标，已收集2个保护标记，希望支持鸟类保护目标。\n- Therapist/Output: 返还2个保护标记使图标数达到5，放置5图标成就标记（价值14分）于鸟类目标下方自己颜色的位置。\n- Notes: 保留至少1个匹配图标的要求已满足。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确支持一个保护目标并放置对应成就标记",
+      "domain": "桌游终局规则",
+      "task_family": "保护目标行动",
+      "method_family": "图标计数与标记放置",
+      "stage": "回合内可选行动",
+      "applicable_signals": [
+        "玩家拥有匹配图标并希望支持保护目标",
+        "需要最大化成就标记得分",
+        "该保护目标尚未被支持"
+      ],
+      "contraindications": [
+        "该保护目标已被支持",
+        "动物园中没有任何匹配图标",
+        "没有可用的成就标记"
+      ],
+      "intervention_moves": [
+        "选择未支持的保护目标",
+        "统计匹配图标数量",
+        "按需返还保护标记补足图标数（保留至少1个匹配图标）",
+        "选择图标数不超过当前匹配总数的未使用成就标记",
+        "将成就标记面朝下放在保护板上自己颜色的位置"
+      ],
+      "triggers": [
+        "玩家在回合内进入保护目标可选步骤",
+        "玩家拥有与某未支持保护目标匹配的图标",
+        "玩家希望最大化成就标记得分"
+      ],
+      "workflow_steps": [
+        "选择一个尚未支持的保护目标",
+        "统计动物园中与该目标匹配的图标数量",
+        "如需提高数量，返还保护标记，每个+1，但必须保留至少1个匹配图标",
+        "选择一个未使用的成就标记，其图标数不超过当前匹配图标总数",
+        "将成就标记面朝下放在保护板上该目标下方自己颜色的位置"
+      ],
+      "constraints": [
+        "每个保护目标只能支持一次",
+        "每个成就标记只能使用一次",
+        "动物园中必须至少保留1个匹配图标，不能全部用保护标记替代",
+        "每回合最多支持1个保护目标"
+      ],
+      "cautions": [
+        "支持后，之后新增的同类图标不再对该目标有帮助",
+        "使用更高图标数的成就标记需要足够的匹配图标总数"
+      ],
+      "output_contract": [
+        "在保护板上对应颜色位置放置一个面朝下的成就标记，且该保护目标标记为已支持。"
+      ],
+      "examples": [
+        {
+          "input": "动物园有3个鸟类图标，已收集2个保护标记，希望支持鸟类保护目标。",
+          "output": "返还2个保护标记使图标数达到5，放置5图标成就标记（价值14分）于鸟类目标下方自己颜色的位置。",
+          "notes": "保留至少1个匹配图标的要求已满足。"
+        }
+      ],
+      "tags": [
+        "保护目标",
+        "成就标记",
+        "图标计数",
+        "回合行动",
+        "桌游规则"
+      ],
+      "support_ids": [
+        "480e5776-a79b-5a53-a168-130bb1981cb9"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "f94db425-64f5-565a-afa1-7d124c51d23f"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|正确支持一个保护目标并放置对应成就标记|桌游终局规则|保护目标行动|图标计数与标记放置|回合内可选行动|保护目标支持与成就标记放置",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "40922571-0edd-4987-aa64-1c3826b0a9e0",
+      "entity_type": "skill",
+      "entity_id": "5acf9459-607e-5779-a2ab-6c33eda50825",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "5acf9459-607e-5779-a2ab-6c33eda50825",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "480e5776-a79b-5a53-a168-130bb1981cb9"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

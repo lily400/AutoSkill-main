@@ -26,12 +26,17 @@ def execution_config(output, generator_run_id, conditions):
 def trial_config(output, label, mode, config):
     raw = runner.trial_config(output, label, mode, config)
     raw['extra_instruction_paths'] = [str(TASK / 'runtime-note.md')]
-    return raw
+    from downstream_eval.sgb.protocol import apply
+    return apply(LAB, Path(output), raw)
 
 
 def configure(output, label, mode, config):
     from harbor.models.trial.config import TrialConfig
     return TrialConfig.model_validate(trial_config(output,label,mode,config))
+
+
+class SubmissionFailure(ValueError):
+    pass
 
 
 async def export_submission(environment, destination):
@@ -41,10 +46,14 @@ async def export_submission(environment, destination):
     check = await environment.exec(
         "python -B -c \"from pathlib import Path; import hashlib; "
         "p=Path('/workspace/agent_output.py'); "
-        "assert p.is_file() and not p.is_symlink(); print(hashlib.sha256(p.read_bytes()).hexdigest())\"",
+        "import sys; sys.exit(3) if not p.exists() else None; "
+        "sys.exit(4) if not p.is_file() or p.is_symlink() else None; "
+        "print(hashlib.sha256(p.read_bytes()).hexdigest())\"",
         timeout_sec=10)
+    if check.return_code in (3, 4):
+        raise SubmissionFailure('submission_missing' if check.return_code == 3 else 'invalid_submission')
     if check.return_code:
-        raise ValueError('No regular task submission')
+        raise RuntimeError('Submission export command failed')
     observed = check.stdout.strip()
     await environment.download_file(source_path='/workspace/agent_output.py', target_path=path)
     found, failure = runner.collect_submission(destination, 'agent_output.py')
@@ -69,8 +78,11 @@ async def native_trial(config, fixture=None, probe_hook=None):
             await self.agent_environment.upload_file(source_path=fixture, target_path='/workspace/agent_output.py')
             if probe_hook:
                 await probe_hook(self)
-        self._scrapy041_export = await export_submission(
-            self.agent_environment, self.paths.trial_dir / 'submission-export')
+        try:
+            self._scrapy041_export = await export_submission(
+                self.agent_environment, self.paths.trial_dir / 'submission-export')
+        except SubmissionFailure as error:
+            self._scrapy041_export = (None, str(error))
         return result
     with ExitStack() as stack:
         stack.enter_context(patch.object(Trial, '_run_agent_phase', phase))
@@ -82,6 +94,9 @@ async def native_trial(config, fixture=None, probe_hook=None):
 
 def grade_export(trial, output):
     path, digest = trial._scrapy041_export
+    if path is None:
+        return {'task_success':False, 'infra_ok':True, 'failure_category':digest,
+                'task_result':{'tests':0, 'passed':0, 'failed':0, 'errors':0, 'skipped':0}}
     if sha256(path) != digest:
         raise ValueError('Export changed after container stop')
     return score(path, Path(output) / 'score', expected_sha256=digest)

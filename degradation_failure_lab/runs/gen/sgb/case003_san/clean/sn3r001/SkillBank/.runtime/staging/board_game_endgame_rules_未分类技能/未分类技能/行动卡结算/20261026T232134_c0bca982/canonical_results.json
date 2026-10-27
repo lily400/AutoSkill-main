@@ -1,0 +1,448 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "board_game_endgame_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "行动卡结算",
+  "run_id": "20261026T232134_c0bca982",
+  "skills": [
+    {
+      "skill_id": "fb1d37ac-7490-572e-9f53-7133ac87cf1a",
+      "name": "行动卡执行与强度位移结算",
+      "description": "在回合中执行一张行动卡（获取板块或打出板块），按当前强度判定可行性，结算触发效果，随后将用过的行动卡移至最左并右移其余卡以更新各卡强度。",
+      "skill_body": "当玩家要执行某张行动卡时：1) 确认所选行动卡及其当前强度；2) 让玩家选择该卡两种动作之一（获取板块或打出板块）；3) 若为打出板块，校验强度是否不低于板块等级（升级后打两只动物时强度需不低于两只等级之和）；4) 执行动作并结算触发的效果；5) 将该行动卡移至最左槽位，其余位于其左侧的卡依次右移一格，更新各卡强度；若使用的是最左卡则不移动任何卡。\n\n## Objective\n\n正确执行行动卡动作并完成卡牌位移与强度更新\n## Applicable Signals\n\n- 玩家宣布使用某张行动卡\n- 玩家询问某板块能否打出\n- 玩家需要知道用卡后各卡强度如何变化\n\n## Contraindications\n\n- 仅询问建造或升级步骤\n- 询问回合结束管理\n\n## Intervention Moves\n\n- 确认所选行动卡与当前强度\n- 让玩家在获取板块与打出板块之间二选一\n- 校验强度与板块等级（或两只动物等级之和）\n- 结算触发效果\n- 将用过的卡移至最左并右移其余卡，更新强度\n\n## Workflow Steps\n\n- 确认所选行动卡及其当前强度\n- 让玩家选择该卡两种动作之一：获取板块或打出板块\n- 若打出板块，校验强度不低于板块等级；升级后打两只动物时强度需不低于两只等级之和\n- 执行动作并结算触发的效果\n- 将用过的行动卡移至最左槽位，其余左侧卡依次右移一格并更新强度；若使用最左卡则不移动\n\n## Constraints\n\n- 行动卡只能用于打出动物或项目，不能用于建造\n- 获取板块时不受“范围内”限制，可取任意位置\n- 打两只动物时须先结算第一只触发的全部效果再打第二只\n\n## Cautions\n\n- 升级后打两只动物时强度需覆盖两只等级之和，易被忽略\n- 使用最左卡时不发生任何卡牌位移\n\n## Output Contract\n\n- 动作已执行，用过的行动卡移至最左，其余卡右移，各卡强度已更新\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 玩家用强度3的项目行动卡打出项目后询问卡位变化\n- Therapist/Output: 项目行动卡移至最左，其间各卡右移一格，岩石与森林动物行动强度各+1，项目行动下回合强度为1，水域动物行动不变\n- Notes: 使用最左卡时不移动任何卡",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确执行行动卡动作并完成卡牌位移与强度更新",
+      "domain": "桌游规则",
+      "task_family": "行动卡结算",
+      "method_family": "强度判定与卡位更新",
+      "stage": "行动执行",
+      "applicable_signals": [
+        "玩家宣布使用某张行动卡",
+        "玩家询问某板块能否打出",
+        "玩家需要知道用卡后各卡强度如何变化"
+      ],
+      "contraindications": [
+        "仅询问建造或升级步骤",
+        "询问回合结束管理"
+      ],
+      "intervention_moves": [
+        "确认所选行动卡与当前强度",
+        "让玩家在获取板块与打出板块之间二选一",
+        "校验强度与板块等级（或两只动物等级之和）",
+        "结算触发效果",
+        "将用过的卡移至最左并右移其余卡，更新强度"
+      ],
+      "triggers": [
+        "玩家要执行某张行动卡",
+        "需要确认强度是否足够打出板块",
+        "需要更新行动卡位置与强度"
+      ],
+      "workflow_steps": [
+        "确认所选行动卡及其当前强度",
+        "让玩家选择该卡两种动作之一：获取板块或打出板块",
+        "若打出板块，校验强度不低于板块等级；升级后打两只动物时强度需不低于两只等级之和",
+        "执行动作并结算触发的效果",
+        "将用过的行动卡移至最左槽位，其余左侧卡依次右移一格并更新强度；若使用最左卡则不移动"
+      ],
+      "constraints": [
+        "行动卡只能用于打出动物或项目，不能用于建造",
+        "获取板块时不受“范围内”限制，可取任意位置",
+        "打两只动物时须先结算第一只触发的全部效果再打第二只"
+      ],
+      "cautions": [
+        "升级后打两只动物时强度需覆盖两只等级之和，易被忽略",
+        "使用最左卡时不发生任何卡牌位移"
+      ],
+      "output_contract": [
+        "动作已执行，用过的行动卡移至最左，其余卡右移，各卡强度已更新"
+      ],
+      "examples": [
+        {
+          "input": "玩家用强度3的项目行动卡打出项目后询问卡位变化",
+          "output": "项目行动卡移至最左，其间各卡右移一格，岩石与森林动物行动强度各+1，项目行动下回合强度为1，水域动物行动不变",
+          "notes": "使用最左卡时不移动任何卡"
+        }
+      ],
+      "tags": [
+        "桌游规则",
+        "行动卡",
+        "强度判定",
+        "卡位更新",
+        "回合流程"
+      ],
+      "support_ids": [
+        "0c6ad6f1-ad1a-5a9f-935f-506deb744b41"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "5af95eb7-3ee8-5c2b-b67d-f6086f0454dd"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.88,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|正确执行行动卡动作并完成卡牌位移与强度更新|桌游规则|行动卡结算|强度判定与卡位更新|行动执行|行动卡执行与强度位移结算",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "1a94c411-a41d-5b24-bda9-e02446fe785f",
+      "name": "行动卡强度结算与左移更新",
+      "description": "在回合中执行一张行动卡的两个动作之一（取板块或打出板块），按当前强度校验并结算，随后将用过的行动卡移至最左槽并右移其余卡以更新强度。",
+      "skill_body": "当玩家选择执行某张行动卡时，按以下顺序结算：\n1. 确认所选行动卡当前强度，并确认要执行的两个动作之一（取板块或打出板块）。\n2. 若打出板块，校验动作强度是否≥板块等级；取板块时按卡面说明取牌（升级后可取2张）。\n3. 结算动作并处理触发的效果（可自选顺序）。\n4. 将用过的行动卡移至最左空槽，其余位于其左侧的卡右移一格以关闭空位；若使用最左卡则不移动。\n5. 更新各行动卡的新强度，供下回合使用。\n\n## Objective\n\n正确结算一次行动卡动作并更新行动卡强度布局\n## Applicable Signals\n\n- 玩家选择执行某张行动卡的动作\n- 需要确认动作强度是否满足板块等级要求\n\n## Contraindications\n\n- 仅进行建造或支持保护目标等非行动卡步骤时\n\n## Intervention Moves\n\n- 确认所选行动卡当前强度\n- 校验强度是否≥板块等级\n- 结算动作并处理触发效果\n- 将用过的行动卡移至最左槽并右移其余卡\n- 更新各行动卡新强度\n\n## Workflow Steps\n\n- 确认所选行动卡当前强度及要执行的动作（取板块或打出板块）\n- 若打出板块，校验动作强度≥板块等级；取板块按卡面说明取牌\n- 结算动作并处理触发的效果（可自选顺序）\n- 将用过的行动卡移至最左空槽，其余左侧卡右移一格；若用最左卡则不移动\n- 更新各行动卡新强度\n\n## Constraints\n\n- 打出板块时动作强度必须≥板块等级\n- 升级后的行动卡可执行增强动作（如取2张或打出2个动物，强度需≥等级之和）\n- 使用最左卡时不移动任何卡\n\n## Cautions\n\n- 打出2个动物时须先完成第一个动物的全部触发效果再打出第二个\n- 行动卡只能用于打出动物或项目，不能用于建造\n\n## Output Contract\n\n- 动作按强度完成，行动卡已移至最左槽，其余卡强度已相应更新\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 以强度3执行项目行动卡\n- Therapist/Output: 将项目行动卡移至最左槽，中间卡右移一格，岩石与森林动物行动强度各+1，项目行动下回合强度为1\n- Notes: 使用最左卡时不移动",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确结算一次行动卡动作并更新行动卡强度布局",
+      "domain": "桌游终局规则",
+      "task_family": "行动卡结算",
+      "method_family": "卡槽滑动与强度校验",
+      "stage": "行动执行",
+      "applicable_signals": [
+        "玩家选择执行某张行动卡的动作",
+        "需要确认动作强度是否满足板块等级要求"
+      ],
+      "contraindications": [
+        "仅进行建造或支持保护目标等非行动卡步骤时"
+      ],
+      "intervention_moves": [
+        "确认所选行动卡当前强度",
+        "校验强度是否≥板块等级",
+        "结算动作并处理触发效果",
+        "将用过的行动卡移至最左槽并右移其余卡",
+        "更新各行动卡新强度"
+      ],
+      "triggers": [
+        "玩家选择执行某张行动卡的动作",
+        "需要确认动作强度是否满足板块等级要求",
+        "需要更新行动卡强度布局"
+      ],
+      "workflow_steps": [
+        "确认所选行动卡当前强度及要执行的动作（取板块或打出板块）",
+        "若打出板块，校验动作强度≥板块等级；取板块按卡面说明取牌",
+        "结算动作并处理触发的效果（可自选顺序）",
+        "将用过的行动卡移至最左空槽，其余左侧卡右移一格；若用最左卡则不移动",
+        "更新各行动卡新强度"
+      ],
+      "constraints": [
+        "打出板块时动作强度必须≥板块等级",
+        "升级后的行动卡可执行增强动作（如取2张或打出2个动物，强度需≥等级之和）",
+        "使用最左卡时不移动任何卡"
+      ],
+      "cautions": [
+        "打出2个动物时须先完成第一个动物的全部触发效果再打出第二个",
+        "行动卡只能用于打出动物或项目，不能用于建造"
+      ],
+      "output_contract": [
+        "动作按强度完成，行动卡已移至最左槽，其余卡强度已相应更新"
+      ],
+      "examples": [
+        {
+          "input": "以强度3执行项目行动卡",
+          "output": "将项目行动卡移至最左槽，中间卡右移一格，岩石与森林动物行动强度各+1，项目行动下回合强度为1",
+          "notes": "使用最左卡时不移动"
+        }
+      ],
+      "tags": [
+        "行动卡",
+        "强度结算",
+        "卡槽移动",
+        "回合流程"
+      ],
+      "support_ids": [
+        "fa5853de-8b20-5fae-b5bd-dbcc8c23c6f1"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "078497dd-d145-5e31-a40a-b78eb947683a"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.88,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|正确结算一次行动卡动作并更新行动卡强度布局|桌游终局规则|行动卡结算|卡槽滑动与强度校验|行动执行|行动卡强度结算与左移更新",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "b8ff6944-a54b-5b89-a5f2-40807f4a1f99",
+      "name": "行动卡强度与滑轨结算",
+      "description": "结算一次行动卡行动：按行动卡当前强度判定可取/可放的牌，行动完成后将用过的行动卡移到最左槽、其余卡右移一格，并据此更新各行动卡的新强度。用于玩家询问行动卡强度如何计算，或完成行动后不确定卡牌如何移动。",
+      "skill_body": "当玩家询问行动卡强度如何计算，或完成一次行动后不确定行动卡如何移动时，使用本技能。步骤：1) 确认所选行动卡及其当前强度；2) 按强度判定该行动可取/可放的牌（取牌或放牌须满足强度≥牌等级等条件）；3) 执行该行动并结算其触发效果；4) 将该行动卡从槽位移出，把其左侧的卡右移一格补位，再把用过的卡放入最左空槽；若用的是最左卡则不移动任何卡；5) 报告各行动卡更新后的新强度。仅处理行动卡强度判定与滑轨移动这一小序列，不涉及建筑或保护目标的放置条件。\n\n## Objective\n\n正确结算一次行动卡行动并更新滑轨上的行动卡位置与强度。\n## Applicable Signals\n\n- 玩家询问行动卡强度如何计算\n- 玩家完成行动后不确定卡牌如何移动\n- 玩家需要判断当前强度能否取牌或放牌\n\n## Contraindications\n\n- 玩家询问建筑或保护目标的放置条件\n- 问题涉及回合开始取牌或行政阶段的其他步骤\n\n## Intervention Moves\n\n- 确认所选行动卡及其当前强度\n- 按强度判定可取/可放的牌\n- 执行行动并结算触发效果\n- 将用过的行动卡移到最左槽并右移其余卡\n- 报告各行动卡更新后的新强度\n\n## Workflow Steps\n\n- 确认所选行动卡及其当前强度。\n- 按强度判定该行动可取/可放的牌（强度须满足取牌或放牌条件）。\n- 执行该行动并结算其触发效果。\n- 将该行动卡从槽位移出，把其左侧的卡右移一格补位，再把用过的卡放入最左空槽；若用的是最左卡则不移动任何卡。\n- 报告各行动卡更新后的新强度。\n\n## Constraints\n\n- 强度判定以行动卡当前强度为准。\n- 用过的行动卡必须移到最左槽，其余卡右移一格。\n- 若使用的是最左卡，则不移动任何卡。\n\n## Cautions\n\n- 仅处理行动卡强度判定与滑轨移动，不扩展到建筑或保护目标的放置条件。\n\n## Output Contract\n\n- 用过的行动卡置于最左槽，其余卡右移一格，各行动卡新强度确定并已向玩家说明。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 我用强度3的项目行动卡完成行动后，卡牌怎么移动？\n- Therapist/Output: 把项目行动卡移到最左槽，原本在它左侧的卡右移一格补位；项目行动卡下回合强度变为1，被右移的卡强度相应提高。\n- Notes: 示例说明滑轨移动与强度更新。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确结算一次行动卡行动并更新滑轨上的行动卡位置与强度。",
+      "domain": "桌游规则",
+      "task_family": "行动卡结算",
+      "method_family": "滑轨位置更新",
+      "stage": "行动阶段",
+      "applicable_signals": [
+        "玩家询问行动卡强度如何计算",
+        "玩家完成行动后不确定卡牌如何移动",
+        "玩家需要判断当前强度能否取牌或放牌"
+      ],
+      "contraindications": [
+        "玩家询问建筑或保护目标的放置条件",
+        "问题涉及回合开始取牌或行政阶段的其他步骤"
+      ],
+      "intervention_moves": [
+        "确认所选行动卡及其当前强度",
+        "按强度判定可取/可放的牌",
+        "执行行动并结算触发效果",
+        "将用过的行动卡移到最左槽并右移其余卡",
+        "报告各行动卡更新后的新强度"
+      ],
+      "triggers": [
+        "玩家询问行动卡强度如何计算",
+        "玩家完成行动后不确定卡牌如何移动",
+        "需要确认某行动当前强度是否足以取牌或放牌"
+      ],
+      "workflow_steps": [
+        "确认所选行动卡及其当前强度。",
+        "按强度判定该行动可取/可放的牌（强度须满足取牌或放牌条件）。",
+        "执行该行动并结算其触发效果。",
+        "将该行动卡从槽位移出，把其左侧的卡右移一格补位，再把用过的卡放入最左空槽；若用的是最左卡则不移动任何卡。",
+        "报告各行动卡更新后的新强度。"
+      ],
+      "constraints": [
+        "强度判定以行动卡当前强度为准。",
+        "用过的行动卡必须移到最左槽，其余卡右移一格。",
+        "若使用的是最左卡，则不移动任何卡。"
+      ],
+      "cautions": [
+        "仅处理行动卡强度判定与滑轨移动，不扩展到建筑或保护目标的放置条件。"
+      ],
+      "output_contract": [
+        "用过的行动卡置于最左槽，其余卡右移一格，各行动卡新强度确定并已向玩家说明。"
+      ],
+      "examples": [
+        {
+          "input": "我用强度3的项目行动卡完成行动后，卡牌怎么移动？",
+          "output": "把项目行动卡移到最左槽，原本在它左侧的卡右移一格补位；项目行动卡下回合强度变为1，被右移的卡强度相应提高。",
+          "notes": "示例说明滑轨移动与强度更新。"
+        }
+      ],
+      "tags": [
+        "行动卡",
+        "强度",
+        "滑轨",
+        "结算",
+        "桌游规则"
+      ],
+      "support_ids": [
+        "94440a31-1844-5a1f-8a64-2d71cc8f4e7e"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "5aa2ab1d-8052-5ad1-b892-59dcaa31f450"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "board game endgame rules",
+        "taxonomy_id": "board game endgame rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "board_game_endgame_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|正确结算一次行动卡行动并更新滑轨上的行动卡位置与强度。|桌游规则|行动卡结算|滑轨位置更新|行动阶段|行动卡强度与滑轨结算",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "88d18054-1356-418c-b1fe-7b22ec64de63",
+      "entity_type": "skill",
+      "entity_id": "fb1d37ac-7490-572e-9f53-7133ac87cf1a",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "fb1d37ac-7490-572e-9f53-7133ac87cf1a",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "0c6ad6f1-ad1a-5a9f-935f-506deb744b41"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "210a60a0-e0dc-42a0-93f3-c980ecb7a470",
+      "entity_type": "skill",
+      "entity_id": "1a94c411-a41d-5b24-bda9-e02446fe785f",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "1a94c411-a41d-5b24-bda9-e02446fe785f",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "fa5853de-8b20-5fae-b5bd-dbcc8c23c6f1"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "7934cc74-4522-4906-b578-4f131e465d9b",
+      "entity_type": "skill",
+      "entity_id": "b8ff6944-a54b-5b89-a5f2-40807f4a1f99",
+      "action": "create",
+      "changed_at": "2026-10-26T15:21:26+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "b8ff6944-a54b-5b89-a5f2-40807f4a1f99",
+        "doc_ids": [
+          "269dfbc5-7bb7-57d5-a905-cecbb60ed17a"
+        ],
+        "support_added": [
+          "94440a31-1844-5a1f-8a64-2d71cc8f4e7e"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

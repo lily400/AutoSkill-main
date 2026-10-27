@@ -1,0 +1,119 @@
+{
+  "skill_id": "1a94c411-a41d-5b24-bda9-e02446fe785f",
+  "name": "行动卡强度结算与左移更新",
+  "description": "在回合中执行一张行动卡的两个动作之一（取板块或打出板块），按当前强度校验并结算，随后将用过的行动卡移至最左槽并右移其余卡以更新强度。",
+  "skill_body": "当玩家选择执行某张行动卡时，按以下顺序结算：\n1. 确认所选行动卡当前强度，并确认要执行的两个动作之一（取板块或打出板块）。\n2. 若打出板块，校验动作强度是否≥板块等级；取板块时按卡面说明取牌（升级后可取2张）。\n3. 结算动作并处理触发的效果（可自选顺序）。\n4. 将用过的行动卡移至最左空槽，其余位于其左侧的卡右移一格以关闭空位；若使用最左卡则不移动。\n5. 更新各行动卡的新强度，供下回合使用。\n\n## Objective\n\n正确结算一次行动卡动作并更新行动卡强度布局\n## Applicable Signals\n\n- 玩家选择执行某张行动卡的动作\n- 需要确认动作强度是否满足板块等级要求\n\n## Contraindications\n\n- 仅进行建造或支持保护目标等非行动卡步骤时\n\n## Intervention Moves\n\n- 确认所选行动卡当前强度\n- 校验强度是否≥板块等级\n- 结算动作并处理触发效果\n- 将用过的行动卡移至最左槽并右移其余卡\n- 更新各行动卡新强度\n\n## Workflow Steps\n\n- 确认所选行动卡当前强度及要执行的动作（取板块或打出板块）\n- 若打出板块，校验动作强度≥板块等级；取板块按卡面说明取牌\n- 结算动作并处理触发的效果（可自选顺序）\n- 将用过的行动卡移至最左空槽，其余左侧卡右移一格；若用最左卡则不移动\n- 更新各行动卡新强度\n\n## Constraints\n\n- 打出板块时动作强度必须≥板块等级\n- 升级后的行动卡可执行增强动作（如取2张或打出2个动物，强度需≥等级之和）\n- 使用最左卡时不移动任何卡\n\n## Cautions\n\n- 打出2个动物时须先完成第一个动物的全部触发效果再打出第二个\n- 行动卡只能用于打出动物或项目，不能用于建造\n\n## Output Contract\n\n- 动作按强度完成，行动卡已移至最左槽，其余卡强度已相应更新\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 以强度3执行项目行动卡\n- Therapist/Output: 将项目行动卡移至最左槽，中间卡右移一格，岩石与森林动物行动强度各+1，项目行动下回合强度为1\n- Notes: 使用最左卡时不移动",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "正确结算一次行动卡动作并更新行动卡强度布局",
+  "domain": "桌游终局规则",
+  "task_family": "行动卡结算",
+  "method_family": "卡槽滑动与强度校验",
+  "stage": "行动执行",
+  "applicable_signals": [
+    "玩家选择执行某张行动卡的动作",
+    "需要确认动作强度是否满足板块等级要求"
+  ],
+  "contraindications": [
+    "仅进行建造或支持保护目标等非行动卡步骤时"
+  ],
+  "intervention_moves": [
+    "确认所选行动卡当前强度",
+    "校验强度是否≥板块等级",
+    "结算动作并处理触发效果",
+    "将用过的行动卡移至最左槽并右移其余卡",
+    "更新各行动卡新强度"
+  ],
+  "triggers": [
+    "玩家选择执行某张行动卡的动作",
+    "需要确认动作强度是否满足板块等级要求",
+    "需要更新行动卡强度布局"
+  ],
+  "workflow_steps": [
+    "确认所选行动卡当前强度及要执行的动作（取板块或打出板块）",
+    "若打出板块，校验动作强度≥板块等级；取板块按卡面说明取牌",
+    "结算动作并处理触发的效果（可自选顺序）",
+    "将用过的行动卡移至最左空槽，其余左侧卡右移一格；若用最左卡则不移动",
+    "更新各行动卡新强度"
+  ],
+  "constraints": [
+    "打出板块时动作强度必须≥板块等级",
+    "升级后的行动卡可执行增强动作（如取2张或打出2个动物，强度需≥等级之和）",
+    "使用最左卡时不移动任何卡"
+  ],
+  "cautions": [
+    "打出2个动物时须先完成第一个动物的全部触发效果再打出第二个",
+    "行动卡只能用于打出动物或项目，不能用于建造"
+  ],
+  "output_contract": [
+    "动作按强度完成，行动卡已移至最左槽，其余卡强度已相应更新"
+  ],
+  "examples": [
+    {
+      "input": "以强度3执行项目行动卡",
+      "output": "将项目行动卡移至最左槽，中间卡右移一格，岩石与森林动物行动强度各+1，项目行动下回合强度为1",
+      "notes": "使用最左卡时不移动"
+    }
+  ],
+  "tags": [
+    "行动卡",
+    "强度结算",
+    "卡槽移动",
+    "回合流程"
+  ],
+  "support_ids": [
+    "fa5853de-8b20-5fae-b5bd-dbcc8c23c6f1"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "078497dd-d145-5e31-a40a-b78eb947683a"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.88,
+    "domain_type": "board game endgame rules",
+    "taxonomy_id": "board game endgame rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "board_game_endgame_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "board game endgame rules|||micro_skill|micro|micro_skill_node|正确结算一次行动卡动作并更新行动卡强度布局|桌游终局规则|行动卡结算|卡槽滑动与强度校验|行动执行|行动卡强度结算与左移更新",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

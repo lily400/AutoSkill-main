@@ -45,6 +45,9 @@ def main():
     q.add_argument('--admission-csv')
     q.add_argument('--rule-map-csv')
     commands.add_parser('audit')
+    q = commands.add_parser('cohort', help='Zero-model formal ten-task result index')
+    q.add_argument('--config', required=True)
+    q.add_argument('--output', required=True)
     for name in ('list','plan','prepare','aggregate'):
         q = commands.add_parser(name)
         q.add_argument('--task', nargs='+')
@@ -57,6 +60,11 @@ def main():
         if args.sgb_command == 'import':
             result = import_snapshot(root,args.snapshot,args.audit_id,args.admission_csv,args.rule_map_csv)
         elif args.sgb_command == 'audit':result = audit_registry(root)
+        elif args.sgb_command == 'cohort':
+            import sys
+            sys.path.insert(0, str(root))
+            from downstream_eval.sgb.cohort import export
+            result = export(root, args.config, args.output)
         elif args.sgb_command == 'list':
             _,rows = selected_tasks(root,args.task)
             result = [{k:r[k] for k in ('task_key','source_type','original_task_id','source_status',

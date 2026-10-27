@@ -272,7 +272,9 @@ class StandardTaskContract(unittest.TestCase):
                 status, _, grade, _ = self.run_fixture(**options)
                 self.assertEqual(status, 2)
                 self.assertEqual(read(self.output / 'batch_stop.json')['failed_stage'], stage)
-                self.assertFalse((self.output / 'batch_results.json').exists())
+                row = read(self.output / 'batch_results.json')['results'][0]
+                self.assertEqual(row['failure_kind'], 'infrastructure_failure')
+                self.assertIs(row['real_agent_outcome'], False)
                 if name == 'execution':
                     grade.assert_not_called()
 

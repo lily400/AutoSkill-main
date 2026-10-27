@@ -89,6 +89,11 @@ def load_binding(root, selector):
     return _validate_binding(root, rows[0], read(path))
 
 
+def adapter_for(root, task):
+    module = importlib.import_module(task['adapter'])
+    return module.for_task(root, task) if callable(getattr(module, 'for_task', None)) else module
+
+
 def output_path(root, task, experiment):
     if not runner._identifier(experiment):
         raise ValueError('Safe experiment ID required')
@@ -188,7 +193,7 @@ def prepare(root, task, generator, experiment):
     output = output_path(root, task, experiment)
     if (output / 'budget.sqlite3').exists() or (output / 'batch.started').exists():
         raise RuntimeError('Existing pilot budget must never be reset')
-    adapter = importlib.import_module(task['adapter'])
+    adapter = adapter_for(root, task)
     for hook in ('verify_assets', 'execution_config', 'configure', 'native_trial', 'grade_export', 'paid_batch'):
         if not callable(getattr(adapter, hook, None)):
             raise ValueError('Task needs an explicit adapter hook: ' + hook)
@@ -222,7 +227,8 @@ def prepare(root, task, generator, experiment):
                'model': template['model'], 'budget': template['budget'],
                'price_usd_per_million_tokens': None, 'frozen_agent_image_id': runtime['agent_image_id'],
                'approval_environment_variable': task['approval_environment_variable'],
-               'authorization': 'RUN_REQUIRES_EXPLICIT_INVOCATION'}
+               'authorization': 'RUN_REQUIRES_EXPLICIT_INVOCATION', 'protocol_id': 'clean-pair-v1',
+               'task_config_sha256': sha256(output / 'task_config.json')}
     limit = profile['budget']['max_requests']
     profile['hard_http_budget'] = {'database': str(output / 'budget.sqlite3'),
         'per_arm_limit': limit, 'global_limit': limit * len(task['conditions']), 'order': list(task['conditions'])}
@@ -230,12 +236,13 @@ def prepare(root, task, generator, experiment):
     write(output / 'runtime_versions.json', versions)
     _stage(output, packages, generator, task['conditions'])
     configs = {label: adapter.configure(output, label, 'paid', config) for label in task['conditions']}
-    identities = {label: fairness_identity(c.model_dump(mode='json', exclude_none=True)) for label, c in configs.items()}
-    if len(set(identities.values())) != 1:
-        raise ValueError('Trial conditions differ beyond Skill treatment')
+    from .protocol import validate as validate_protocol
+    protocol = validate_protocol(root, profile, {label: c.model_dump(mode='json', exclude_none=True)
+                                               for label, c in configs.items()})
+    identities = protocol['configuration_hashes']
     for label, c in configs.items():
         write(output / 'configs' / (label + '.json'), c.model_dump(mode='json', exclude_none=True))
-    write(output / 'fairness.json', {'status': 'PASS', 'configuration_hashes': identities, 'runtime': runtime})
+    write(output / 'fairness.json', {'status': 'PASS', **protocol, 'runtime': runtime})
     try:
         reports = _probe(output, task, adapter, config, packages, attempt)
     except BaseException as error:
@@ -245,7 +252,9 @@ def prepare(root, task, generator, experiment):
     frozen = {}
     for prefix in ('downstream_eval/integration', 'downstream_eval/sgb', task['task_path']):
         frozen.update({prefix + '/' + name: digest for name, digest in inventory(root / prefix).items()})
-    for name in ('scripts/sgb/pilot.py', 'scripts/sgb/Invoke-Pilot.ps1',
+    for name in ('configs/sgb/clean_pair_protocol.json', 'downstream_eval/sgb/clean_skill_read.md',
+                 'downstream_eval/p1.py', 'downstream_eval/scoring/results.py',
+                 'scripts/sgb/pilot.py', 'scripts/sgb/Invoke-Pilot.ps1',
                  'configs/downstream_runtime.json', task['profile_template'], task['runtime_lock'],
                  'configs/datasets/sgb.json', 'data/manifests/sgb/tasks.jsonl',
                  'downstream_eval/configs/runner.lock.json', *task.get('freeze_files', [])):
@@ -275,7 +284,7 @@ def run(root, task, experiment):
     versions = {n: importlib.metadata.version(n) for n in ('harbor', 'litellm', 'openai', 'httpx')}
     if versions != read(output / 'runtime_versions.json'):
         raise ValueError('Prepared runtime package versions changed')
-    return importlib.import_module(task['adapter']).paid_batch(output)
+    return adapter_for(root, task).paid_batch(output)
 
 
 def status(root, task, experiment):
@@ -306,6 +315,7 @@ def analyze(root, task, experiment, destination):
         outcome = read(path) if path.is_file() else {}
         reports.append({'label': label, 'task_success': outcome.get('task_success'),
                         'infra_ok': outcome.get('infra_ok'), 'http_attempts': outcome.get('http_attempts'),
+                        'failure_kind': outcome.get('failure_kind'), 'failure_category': outcome.get('failure_category'),
                         'oracle': outcome.get('oracle'), 'skill_usage': usage})
     manifest_path = output / 'skills_manifest.json'
     if manifest_path.is_file():
@@ -319,11 +329,11 @@ def analyze(root, task, experiment, destination):
     result = {'experiment_id': experiment, 'status': status(root, task, experiment),
               'results': reports, 'behavioral_use': 'UNKNOWN unless separately assessed from rule/action evidence'}
     write(destination / 'analysis.json', result)
-    lines = ['# Pilot result and Skill usage', '', '| Condition | Task pass | Skill evidence | Body reads | Full body in context |',
-             '|---|---|---|---:|---:|']
+    lines = ['# Pilot result and Skill usage', '', '| Condition | Task pass | Failure class | Skill evidence | Body reads | Full body in context |',
+             '|---|---|---|---|---:|---:|']
     for row in reports:
         u = row['skill_usage']
-        lines.append(f"| {row['label']} | {row['task_success']} | {u['status']} | "
+        lines.append(f"| {row['label']} | {row['task_success']} | {row['failure_kind']} | {u['status']} | "
                      f"{u['counts']['model_file_access_observed']} | {u['counts']['full_body_in_successful_model_request']} |")
     lines += ['', 'Reading/context delivery does not prove behavioral reliance. Missing logs remain unknown.',
               'This analysis writes only to its destination; original runs, scores and ledgers are not modified.']

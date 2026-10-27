@@ -12,7 +12,7 @@ import time
 from degradation_lab.io import inventory, read, sha256, write
 from downstream_eval.integration.request_budget import Ledger
 from downstream_eval.integration.network_isolation import environment_config
-from downstream_eval.scoring.results import trial_record
+from downstream_eval.scoring.results import trial_record, failure_kind
 
 
 def _identifier(value):
@@ -165,6 +165,12 @@ def execute_batch(root, output, config, *, run_trial, grade, exposure, task_succ
         raise ValueError('Offline fixture cannot reuse HTTP attempt history')
     configs = {label:(configure_trial or configure)(output, label, 'probe' if fixture else 'paid', config)
                for label in config.conditions}
+    if profile.get('protocol_id'):
+        from .protocol import validate as validate_protocol
+        raw = {label: c.model_dump(mode='json', exclude_none=True) for label, c in configs.items()}
+        validate_protocol(root, profile, raw)
+        if any(raw[label] != read(output / 'configs' / (label + '.json')) for label in raw):
+            raise ValueError('Execution differs from frozen paired configuration')
     with (output / 'batch.started').open('x') as stream:
         stream.write('One frozen batch; do not restart or resend.\n')
     ledger = Ledger(output / 'budget.sqlite3')
@@ -174,6 +180,7 @@ def execute_batch(root, output, config, *, run_trial, grade, exposure, task_succ
         os.environ['P1_BUDGET_LEASE'] = lease
         start = time.monotonic()
         stage = 'agent_setup_or_execution'
+        score = {}
         try:
             trial, native = asyncio.run(run_trial(native_config))
             write(output / 'outcomes' / label / 'native.json', native)
@@ -184,13 +191,15 @@ def execute_batch(root, output, config, *, run_trial, grade, exposure, task_succ
             from downstream_eval.integration.skill_usage import save_skill_usage
             usage_report = save_skill_usage(output, label, trial.paths.trial_dir,
                 output / 'outcomes' / label / 'skill_usage.json')
-            infra = not native.get('exception_info') and score.get('failure_category') not in config.unscorable_categories
-            success = task_success(score)
             attempts = [a for a in ledger.snapshot()['attempts'] if a['arm'] == label]
+            kind = failure_kind(dict(score, task_success=task_success(score)), native.get('exception_info'), attempts=attempts)
+            infra = kind != 'infrastructure_failure'
+            success = bool(task_success(score)) if infra and kind != 'budget_exhausted' else False
             tools = trial.paths.trial_dir / 'p1-observer/p1-tool-actions.jsonl'
             tool_calls = sum(json.loads(line).get('stage') == 'submitted' for line in tools.read_text().splitlines()) if tools.exists() else 0
             record = {'label':label, 'condition':config.conditions[label],
                       'task_success':success, 'infra_ok':infra, 'oracle':score, 'exposure':observed,
+                      'outcome_schema':2, 'failure_kind':kind,
                       'elapsed_seconds':time.monotonic() - start, 'model_api_results':True,
                       'failure_category':score.get('failure_category') if not native.get('exception_info') else 'agent_environment_or_execution',
                       'native_exception':native.get('exception_info'), 'tool_calls':tool_calls,
@@ -216,9 +225,31 @@ def execute_batch(root, output, config, *, run_trial, grade, exposure, task_succ
             if not proceed:
                 break
         except BaseException as error:
-            write(output / 'batch_stop.json', {'label':label, 'failed_stage':stage, 'error_type':type(error).__name__,
-                                              'elapsed_seconds':time.monotonic() - start, 'ledger':ledger.snapshot()})
-            return 2
+            attempts = [a for a in ledger.snapshot()['attempts'] if a['arm'] == label]
+            kind = failure_kind({}, error=error, stage=stage, attempts=attempts)
+            infra = kind != 'infrastructure_failure'
+            record = {'label':label, 'condition':config.conditions[label], 'outcome_schema':2,
+                      'task_success':False if infra else None, 'infra_ok':infra, 'failure_kind':kind,
+                      'failure_category':kind, 'failed_stage':stage, 'error_type':type(error).__name__,
+                      'elapsed_seconds':time.monotonic() - start, 'model_api_results':not fixture,
+                      'oracle':score, 'http_attempts':len(attempts),
+                      'token_usage':{k:sum(a.get(k) or 0 for a in attempts)
+                                     for k in ('input_tokens','cached_tokens','output_tokens')},
+                      'unknown_usage_attempts':sum(a.get('input_tokens') is None for a in attempts)}
+            if fixture:
+                record.update(run_kind='offline_fixture', real_agent_outcome=False, task_success=None,
+                              fixture_task_success=False, model_calls=0, actual_http_attempts=0)
+            results.append(record)
+            write(output / 'outcomes' / label / 'result.json', record)
+            proceed = ledger.finish(label, native_config.trial_name, lease,
+                                    {'infra_ok':infra, 'task_success':False, 'skill_read':False})
+            write(output / 'batch_results.json', {'results':results, 'ledger':ledger.snapshot()})
+            stop = {'label':label, 'failed_stage':stage, 'error_type':type(error).__name__,
+                    'failure_kind':kind, 'elapsed_seconds':time.monotonic() - start, 'ledger':ledger.snapshot()}
+            write(output / 'outcomes' / label / 'stop.json', stop)
+            if not proceed:
+                write(output / 'batch_stop.json', stop)
+                return 2
         finally:
             os.environ.pop('P1_BUDGET_LEASE', None)
     return 0 if len(results) == len(config.conditions) else 2

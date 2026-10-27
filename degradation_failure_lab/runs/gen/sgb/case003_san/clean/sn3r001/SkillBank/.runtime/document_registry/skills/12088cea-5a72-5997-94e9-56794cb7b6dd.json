@@ -1,0 +1,132 @@
+{
+  "skill_id": "12088cea-5a72-5997-94e9-56794cb7b6dd",
+  "name": "终局触发与额外回合结算",
+  "description": "在每名玩家回合结束的行政阶段之后检查三项终局条件，按触发者与条件类型发放终局标记并安排额外回合，随后移交终局计分。用于游戏进入收尾阶段、需要判定何时结束与如何补偿其他玩家时。",
+  "skill_body": "在每名玩家回合结束的行政阶段之后，依次检查三项终局条件：1) 该玩家已支持4个保护目标（4个保护成就标记均已放上保护板）；2) 该玩家已完全覆盖动物园地图（无空格）；3) 面朝下板块堆已抽空。若条件1和/或2被满足，由该玩家取10分终局标记，其余玩家各获得最后一回合（触发者不再行动），随后进入终局计分。若条件3先于条件1或2被满足，则在该玩家回合结束后立即结束游戏，直接进入终局计分。若其他玩家触发终局后，某玩家在其最后一回合也满足条件1和/或2，该玩家取5分终局标记。若触发终局后板块堆为空，洗混弃置板块组成新堆。记录触发者、终局标记归属与最后一轮安排后移交终局计分。\n\n## Objective\n\n正确判定终局触发、发放终局标记并安排最后一轮，使游戏平稳过渡到终局计分。\n## Applicable Signals\n\n- 回合结束行政阶段完成，需检查终局\n- 玩家已放满4个保护成就标记\n- 玩家动物园地图已无空格\n- 面朝下板块堆已空\n\n## Contraindications\n\n- 游戏尚在开局或中盘、无人接近终局条件\n- 仅需计算单个板块得分\n\n## Intervention Moves\n\n- 逐项核对三项终局条件\n- 按触发者身份发放10分或5分终局标记\n- 为其余玩家安排最后一回合\n- 板块堆为空时洗混弃置板块组成新堆\n- 记录触发信息并移交终局计分\n\n## Workflow Steps\n\n- 在回合结束行政阶段后，检查条件1：该玩家是否已支持4个保护目标。\n- 检查条件2：该玩家动物园地图是否已完全覆盖、无空格。\n- 检查条件3：面朝下板块堆是否已抽空。\n- 若条件1和/或2满足：由该玩家取10分终局标记，其余玩家各获得最后一回合（触发者不再行动）。\n- 若条件3先于条件1或2满足：该玩家回合结束后立即结束游戏，直接进入终局计分。\n- 若其他玩家触发终局后，某玩家在最后一回合也满足条件1和/或2：该玩家取5分终局标记。\n- 若触发终局后板块堆为空：洗混弃置板块组成新堆。\n- 记录触发者、终局标记归属与最后一轮安排，移交终局计分。\n\n## Constraints\n\n- 终局条件仅在回合结束时检查。\n- 触发者本人不参与额外回合。\n- 条件3单独触发时无额外回合，立即进入终局计分。\n- 同一玩家不得同时持有10分与5分终局标记。\n\n## Cautions\n\n- 注意区分条件1/2触发（有额外回合）与条件3触发（立即结束）的不同处理。\n- 确认终局标记分值归属，避免误发或重复发放。\n\n## Output Contract\n\n- 明确记录终局触发者、终局标记归属（10分或5分）及剩余玩家最后一轮安排。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某玩家回合结束时已支持4个保护目标，其余玩家尚未行动。\n- Therapist/Output: 该玩家取10分终局标记，其余玩家各获得最后一回合，随后进入终局计分。\n- Notes: 条件1触发，触发者不再行动。\n\n### Example 2\n\n- Client/Input: 某玩家回合结束时面朝下板块堆已抽空，无人满足条件1或2。\n- Therapist/Output: 该玩家回合结束后立即结束游戏，直接进入终局计分，无额外回合。\n- Notes: 条件3单独触发。",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "正确判定终局触发、发放终局标记并安排最后一轮，使游戏平稳过渡到终局计分。",
+  "domain": "桌游终局规则",
+  "task_family": "终局判定与收尾",
+  "method_family": "条件检查与回合补偿",
+  "stage": "终局触发",
+  "applicable_signals": [
+    "回合结束行政阶段完成，需检查终局",
+    "玩家已放满4个保护成就标记",
+    "玩家动物园地图已无空格",
+    "面朝下板块堆已空"
+  ],
+  "contraindications": [
+    "游戏尚在开局或中盘、无人接近终局条件",
+    "仅需计算单个板块得分"
+  ],
+  "intervention_moves": [
+    "逐项核对三项终局条件",
+    "按触发者身份发放10分或5分终局标记",
+    "为其余玩家安排最后一回合",
+    "板块堆为空时洗混弃置板块组成新堆",
+    "记录触发信息并移交终局计分"
+  ],
+  "triggers": [
+    "某玩家回合结束需检查是否满足终局条件",
+    "有人已覆盖完整动物园地图或支持满4个保护目标",
+    "面朝下板块堆已抽空"
+  ],
+  "workflow_steps": [
+    "在回合结束行政阶段后，检查条件1：该玩家是否已支持4个保护目标。",
+    "检查条件2：该玩家动物园地图是否已完全覆盖、无空格。",
+    "检查条件3：面朝下板块堆是否已抽空。",
+    "若条件1和/或2满足：由该玩家取10分终局标记，其余玩家各获得最后一回合（触发者不再行动）。",
+    "若条件3先于条件1或2满足：该玩家回合结束后立即结束游戏，直接进入终局计分。",
+    "若其他玩家触发终局后，某玩家在最后一回合也满足条件1和/或2：该玩家取5分终局标记。",
+    "若触发终局后板块堆为空：洗混弃置板块组成新堆。",
+    "记录触发者、终局标记归属与最后一轮安排，移交终局计分。"
+  ],
+  "constraints": [
+    "终局条件仅在回合结束时检查。",
+    "触发者本人不参与额外回合。",
+    "条件3单独触发时无额外回合，立即进入终局计分。",
+    "同一玩家不得同时持有10分与5分终局标记。"
+  ],
+  "cautions": [
+    "注意区分条件1/2触发（有额外回合）与条件3触发（立即结束）的不同处理。",
+    "确认终局标记分值归属，避免误发或重复发放。"
+  ],
+  "output_contract": [
+    "明确记录终局触发者、终局标记归属（10分或5分）及剩余玩家最后一轮安排。"
+  ],
+  "examples": [
+    {
+      "input": "某玩家回合结束时已支持4个保护目标，其余玩家尚未行动。",
+      "output": "该玩家取10分终局标记，其余玩家各获得最后一回合，随后进入终局计分。",
+      "notes": "条件1触发，触发者不再行动。"
+    },
+    {
+      "input": "某玩家回合结束时面朝下板块堆已抽空，无人满足条件1或2。",
+      "output": "该玩家回合结束后立即结束游戏，直接进入终局计分，无额外回合。",
+      "notes": "条件3单独触发。"
+    }
+  ],
+  "tags": [
+    "桌游",
+    "终局判定",
+    "回合补偿",
+    "终局标记",
+    "收尾流程"
+  ],
+  "support_ids": [
+    "9b7a5fa8-71c4-502c-87e6-097732603db1"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "33e295ee-acfc-5fb6-9938-e65c217d02f8"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.9,
+    "domain_type": "board game endgame rules",
+    "taxonomy_id": "board game endgame rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "board_game_endgame_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "board game endgame rules|||session_skill|session|workflow_skill|正确判定终局触发、发放终局标记并安排最后一轮，使游戏平稳过渡到终局计分。|桌游终局规则|终局判定与收尾|条件检查与回合补偿|终局触发|终局触发与额外回合结算",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

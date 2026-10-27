@@ -1,0 +1,115 @@
+{
+  "skill_id": "63edf28c-b31d-5775-a3bc-87f37230e0c5",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选技能与同批次的“回合执行顺序流程”和“终局触发与额外回合结算”高度重叠：前者已覆盖回合结束管理（板块上限、补充展示区、检查结束条件），后者已详细覆盖终局条件检查与结算，因此该候选技能属于冗余拆分，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "63edf28c-b31d-5775-a3bc-87f37230e0c5",
+    "name": "回合末行政整理流程",
+    "description": "在玩家回合结束时依次执行三步行政操作：手牌上限弃牌、补满展示区、检查终局条件。用于每回合收尾的标准行政流程。",
+    "skill_body": "当玩家完成主要行动进入回合末时，按顺序执行：1) 检查手牌，若超过6张则弃至恰好6张（回合中可超过，回合末不可）；2) 补满展示区，先将已有板块下移至最低空位消除间隙，再从牌堆翻面补入每个空位，使展示区恢复6张；3) 检查是否满足任一终局条件。若未触发终局，则顺时针下一位玩家行动。\n\n## Objective\n\n规范完成回合末的手牌整理、展示区补充与终局检查\n## Applicable Signals\n\n- 玩家完成主要行动进入回合末\n- 展示区出现空位需要补充\n- 需要确认手牌是否超过上限\n\n## Contraindications\n\n- 回合进行中尚未结束\n- 仅需处理终局计分而非回合收尾\n\n## Intervention Moves\n\n- 检查手牌数量并弃至6张\n- 将展示区板块下移消除间隙\n- 从牌堆翻面补满展示区至6张\n- 检查终局条件是否满足\n\n## Workflow Steps\n\n- 手牌上限：若手牌超过6张，弃牌至恰好6张；回合中可超过6张，但回合末不可。\n- 补满展示区：先将展示区已有板块下移至最低空位，消除间隙。\n- 补满展示区：再从牌堆翻面补入每个空位，使展示区恢复6张。\n- 检查终局：确认是否满足任一终局条件。\n- 若未触发终局，顺时针下一位玩家行动。\n\n## Constraints\n\n- 三步须按顺序执行：手牌上限→补满展示区→检查终局\n- 回合末手牌不得超过6张\n- 展示区须补满至6张\n\n## Cautions\n\n- 回合中手牌可超过6张，仅回合末受限\n- 补展示区须先下移消除间隙再翻新板块\n\n## Output Contract\n\n- 手牌不超过6张、展示区补满6张、终局条件已检查\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 回合开始时从位置2取走板块，用Projects行动又取走位置5的板块，回合末展示区出现空位。\n- Therapist/Output: 先将位置3、4、6的板块下移，再从牌堆翻面补入空位5和6，展示区恢复6张。\n- Notes: 展示区补充示例",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "规范完成回合末的手牌整理、展示区补充与终局检查",
+    "domain": "桌游终局规则",
+    "task_family": "回合收尾",
+    "method_family": "顺序化行政步骤",
+    "stage": "回合结束",
+    "applicable_signals": [
+      "玩家完成主要行动进入回合末",
+      "展示区出现空位需要补充",
+      "需要确认手牌是否超过上限"
+    ],
+    "contraindications": [
+      "回合进行中尚未结束",
+      "仅需处理终局计分而非回合收尾"
+    ],
+    "intervention_moves": [
+      "检查手牌数量并弃至6张",
+      "将展示区板块下移消除间隙",
+      "从牌堆翻面补满展示区至6张",
+      "检查终局条件是否满足"
+    ],
+    "triggers": [
+      "玩家完成主要行动进入回合末",
+      "展示区出现空位需要补充",
+      "需要确认手牌是否超过上限"
+    ],
+    "workflow_steps": [
+      "手牌上限：若手牌超过6张，弃牌至恰好6张；回合中可超过6张，但回合末不可。",
+      "补满展示区：先将展示区已有板块下移至最低空位，消除间隙。",
+      "补满展示区：再从牌堆翻面补入每个空位，使展示区恢复6张。",
+      "检查终局：确认是否满足任一终局条件。",
+      "若未触发终局，顺时针下一位玩家行动。"
+    ],
+    "constraints": [
+      "三步须按顺序执行：手牌上限→补满展示区→检查终局",
+      "回合末手牌不得超过6张",
+      "展示区须补满至6张"
+    ],
+    "cautions": [
+      "回合中手牌可超过6张，仅回合末受限",
+      "补展示区须先下移消除间隙再翻新板块"
+    ],
+    "output_contract": [
+      "手牌不超过6张、展示区补满6张、终局条件已检查"
+    ],
+    "examples": [
+      {
+        "input": "回合开始时从位置2取走板块，用Projects行动又取走位置5的板块，回合末展示区出现空位。",
+        "output": "先将位置3、4、6的板块下移，再从牌堆翻面补入空位5和6，展示区恢复6张。",
+        "notes": "展示区补充示例"
+      }
+    ],
+    "tags": [
+      "回合收尾",
+      "行政整理",
+      "手牌上限",
+      "展示区补充",
+      "终局检查"
+    ],
+    "support_ids": [
+      "4eb4326c-330b-551d-8303-f6f7537c175d"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "251eeef9-d075-5fe1-9baf-4fc5cf7b6738"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "board game endgame rules",
+      "taxonomy_id": "board game endgame rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "board game endgame rules|||session_skill|session|workflow_skill|规范完成回合末的手牌整理、展示区补充与终局检查|桌游终局规则|回合收尾|顺序化行政步骤|回合结束|回合末行政整理流程"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

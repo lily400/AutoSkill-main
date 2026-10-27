@@ -192,9 +192,13 @@ def _load_trial(files, ref, task_id):
     candidate = next((p for p in candidate_files if sha256(p) == candidate_digest), None)
     if candidate:
         files.track(candidate)
-    if candidate_files and candidate is None:
+    if candidate_files and candidate_digest and candidate is None:
         issues.append('Submitted bytes disagree with Oracle candidate hash')
-    if oracle.get('candidate_binding_verified') is False:
+    expected_candidate_failure = (outcome.get('outcome_schema') == 2
+        and outcome.get('infra_ok') is True and outcome.get('task_success') is False
+        and outcome.get('failure_kind') == 'task_failure' and native.get('finished_at') is not None
+        and oracle.get('failure_category') in ('submission_missing','invalid_submission','candidate_timeout'))
+    if oracle.get('candidate_binding_verified') is False and not expected_candidate_failure:
         issues.append('Oracle explicitly rejected candidate binding')
     if oracle.get('loading_errors') or oracle.get('environment_errors'):
         issues.append('Oracle reported loading or environment errors')
@@ -252,17 +256,31 @@ def _load_trial(files, ref, task_id):
     else:
         missing = None
     counts = oracle.get('task_result', {})
+    terminal = files.json(run / 'outcomes' / label / 'stop.json', {})
+    classified_failure = (outcome.get('outcome_schema') == 2 and outcome.get('infra_ok') is True
+        and outcome.get('task_success') is False
+        and (outcome.get('failure_kind') == 'budget_exhausted' or
+             outcome.get('failure_kind') == 'task_failure' and counts.get('tests',0) == 0
+             and oracle.get('failure_category') in ('submission_missing','invalid_submission',
+                                                   'candidate_timeout'))
+        and (native.get('finished_at') is not None or
+             terminal.get('failure_kind') == outcome.get('failure_kind')
+             and terminal.get('label') == label and terminal.get('failed_stage') == 'agent_setup_or_execution'))
     scorable = (type(outcome.get('task_success')) is bool and outcome.get('infra_ok') is True
         and not native.get('exception_info') and oracle.get('infra_ok', True) is True
         and counts.get('tests', 0) > 0 and counts.get('errors', 0) == 0 and counts.get('skipped', 0) == 0
         and candidate is not None and assertions is not None and not issues)
-    if scorable and outcome['task_success'] != (counts.get('passed') == counts.get('tests')):
+    if classified_failure and not issues and outcome.get('model_api_results') is True:
+        scorable = True
+        assertion_error = None  # A resource/no-submission failure does not claim an executed Verifier.
+    if scorable and not classified_failure and outcome['task_success'] != (counts.get('passed') == counts.get('tests')):
         issues.append('Task success disagrees with all-test success')
         scorable = False
-    if outcome.get('model_api_results') is not True or native.get('finished_at') is None:
+    if outcome.get('model_api_results') is not True or (native.get('finished_at') is None and not classified_failure):
         scorable = False
         missing = missing or 'No completed observed Agent execution'
-    execution_state = ('scored_completion' if scorable else 'budget_stop_unresolved'
+    execution_state = (outcome.get('failure_kind') if classified_failure and scorable else
+        'scored_completion' if scorable else 'budget_stop_unresolved'
         if stopped and 'budget' in json.dumps(stopped).lower() else 'execution_error_unresolved'
         if native.get('exception_info') else 'incomplete_or_invalid_evidence')
     generator_id = arm.get('generator_run_id') or package.get('generator_run_id') or profile.get('generator_run_id')
@@ -277,6 +295,7 @@ def _load_trial(files, ref, task_id):
         extra_hashes.append(manifest.get(key))
     fairness = files.json(run / 'fairness.json', {})
     runtime = fairness.get('runtime') or {}
+    frozen_oracle = next((v for k,v in task_assets.items() if k.endswith('/oracle/eval.py')), None)
     controls = {
         'task_id': profile.get('task_id'), 'task_checksum': native.get('task_checksum'),
         'task_assets': task_assets or None, 'model': profile.get('model'), 'budget': profile.get('budget'),
@@ -285,7 +304,8 @@ def _load_trial(files, ref, task_id):
         'agent_image': profile.get('frozen_agent_image_id') or fairness.get('image_id'),
         'runtime': runtime or None, 'extra_instruction_hashes': extra_hashes if all(extra_hashes) else None,
         'configuration': _normalized_config(config) if config else None,
-        'oracle_hash': oracle.get('oracle_sha256') or oracle.get('oracle_original_sha256'),
+        'oracle_hash': oracle.get('oracle_sha256') or oracle.get('oracle_original_sha256')
+                       or (frozen_oracle if classified_failure else None),
         'assertion_set': sorted(assertions) if assertions else None,
     }
     # A complete task checksum covers task inputs and environment recipe; no host filesystem guess.
@@ -298,6 +318,8 @@ def _load_trial(files, ref, task_id):
         'case_id': package.get('case_id'), 'generator_run_id': generator_id,
         'document_condition': None if condition == 'NoSkill' else package.get('condition', 'unknown'),
         'controls': controls, 'scorable': scorable, 'integrity_issues': issues,
+        'classified_failure': classified_failure,
+        'declared_agent': config.get('agent', {}).get('import_path'),
         'execution_state': execution_state,
         'missing_evidence': [x for x in (missing, assertion_error) if x],
         'task_success': outcome.get('task_success'), 'oracle': oracle, 'assertions': assertions,
@@ -344,6 +366,17 @@ def audit_pair(root, spec):
         loading_intervention = (spec['comparison_kind'] == 'intervention' and len(spec['interventions']) == 1
                                 and spec['interventions'][0]['scope'] == 'loading_protocol')
         for key in left['controls']:
+            # Resource/no-submission outcomes are failures of an admitted attempt, not missing JUnit passes.
+            terminal_pair = left.get('classified_failure') or right.get('classified_failure')
+            if terminal_pair and key == 'assertion_set':
+                check('declared_oracle_contract', left['controls']['oracle_hash'], right['controls']['oracle_hash'])
+                continue
+            if terminal_pair and key == 'task_checksum' and any(t['controls'][key] is None for t in (left,right)):
+                check('frozen_task_assets', left['controls']['task_assets'], right['controls']['task_assets'])
+                continue
+            if terminal_pair and key == 'agent_info' and any(t['controls'][key] is None for t in (left,right)):
+                check('declared_agent_with_frozen_code', left['declared_agent'], right['declared_agent'])
+                continue
             if loading_intervention and key == 'extra_instruction_hashes':
                 continue
             if loading_intervention and key == 'configuration':

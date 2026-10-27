@@ -1,0 +1,34 @@
+.......F...........                                                      [100%]
+=================================== FAILURES ===================================
+_ TestFeedExportOverwriteBehavior.test_supported_backends[ftp://server/export.json-True] _
+
+self = <eval.TestFeedExportOverwriteBehavior object at 0x74439ed00350>
+uri = 'ftp://server/export.json', expected = True
+
+    @pytest.mark.parametrize(
+        ("uri", "expected"),
+        [
+            ("file:///tmp/export.json", False),
+            ("file:///tmp/export.csv", False),
+            ("/tmp/export.json", False),   # local absolute path without scheme
+            ("ftp://server/export.json", True),
+            ("s3://bucket/export.json", True),
+            ("gs://bucket/export.json", True),
+            ("stdout:", False),
+        ],
+    )
+    def test_supported_backends(self, uri, expected):
+        module = load_agent_module()
+        func = get_target_function(module)
+        result = func(uri)
+    
+        assert isinstance(result, bool), f"Expected bool for {uri}, got {type(result).__name__}"
+>       assert result is expected, f"Incorrect default overwrite for {uri}: expected {expected}, got {result}"
+E       AssertionError: Incorrect default overwrite for ftp://server/export.json: expected True, got False
+E       assert False is True
+
+oracle/eval.py:103: AssertionError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED oracle/eval.py::TestFeedExportOverwriteBehavior::test_supported_backends[ftp://server/export.json-True]
+1 failed, 18 passed in 0.48s
