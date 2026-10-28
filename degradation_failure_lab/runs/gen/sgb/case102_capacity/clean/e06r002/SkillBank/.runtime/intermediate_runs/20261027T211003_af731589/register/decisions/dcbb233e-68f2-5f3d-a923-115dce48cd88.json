@@ -1,0 +1,110 @@
+{
+  "skill_id": "dcbb233e-68f2-5f3d-a923-115dce48cd88",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“准入失败回退为等待”(0a48dfe7) 高度重复，且其回退逻辑已被“边容量准入校验”技能覆盖，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "dcbb233e-68f2-5f3d-a923-115dce48cd88",
+    "name": "准入失败回退为等待",
+    "description": "当车辆的 ENTER_EDGE 请求未满足 R27 任一准入条件时，将车辆回退为在当前节点执行 WAIT，而不是进入目标边。用于移动执行阶段准入被拒后的状态回退处理。",
+    "skill_body": "在移动执行阶段，对每个请求 ENTER_EDGE 的车辆检查其是否满足 R27 全部准入条件（边状态为 OPEN、进入后占用不超过 MaxVehicles(edge)、下游节点的信号或交叉口规则允许进入）。若任一条件不满足，则不要进入目标边，而是令该车辆在当前节点执行 WAIT，并保持其当前节点位置不变。\n\n## Objective\n\n将准入失败的车辆回退为当前节点等待状态\n## Applicable Signals\n\n- ENTER_EDGE 请求被拒\n- 车辆无法进入目标边\n\n## Contraindications\n\n- 准入请求已通过\n- 车辆不在节点上\n\n## Intervention Moves\n\n- 检查 R27 准入条件是否全部满足\n- 对未满足条件的车辆取消进入动作\n- 令车辆在当前节点执行 WAIT\n\n## Workflow Steps\n\n- 识别请求 ENTER_EDGE 的车辆\n- 核验 R27 三项准入条件（边 OPEN、占用不超 MaxVehicles、下游信号/交叉口规则允许）\n- 若任一条件不满足，则取消进入目标边\n- 将车辆状态更新为当前节点 WAIT\n\n## Constraints\n\n- 仅在移动执行阶段应用\n- 回退后车辆位置保持在当前节点\n- 不得在准入条件全部满足时触发回退\n\n## Cautions\n\n- 容量判定需基于进入后占用是否超过 MaxVehicles(edge)\n- 信号或交叉口规则由下游节点决定\n\n## Output Contract\n\n- 车辆状态更新为当前节点 WAIT，且未进入目标边。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆请求 ENTER_EDGE，但目标边占用已达 MaxVehicles(edge)\n- Therapist/Output: 车辆不进入目标边，在当前节点执行 WAIT\n- Notes: 容量条件不满足触发回退",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "将准入失败的车辆回退为当前节点等待状态",
+    "domain": "交通仿真规则",
+    "task_family": "车辆移动执行",
+    "method_family": "状态回退",
+    "stage": "movement_execution",
+    "applicable_signals": [
+      "ENTER_EDGE 请求被拒",
+      "车辆无法进入目标边"
+    ],
+    "contraindications": [
+      "准入请求已通过",
+      "车辆不在节点上"
+    ],
+    "intervention_moves": [
+      "检查 R27 准入条件是否全部满足",
+      "对未满足条件的车辆取消进入动作",
+      "令车辆在当前节点执行 WAIT"
+    ],
+    "triggers": [
+      "车辆请求 ENTER_EDGE 但被拒绝",
+      "车辆无法进入目标边（边关闭、容量超限或信号/交叉口规则不允许）"
+    ],
+    "workflow_steps": [
+      "识别请求 ENTER_EDGE 的车辆",
+      "核验 R27 三项准入条件（边 OPEN、占用不超 MaxVehicles、下游信号/交叉口规则允许）",
+      "若任一条件不满足，则取消进入目标边",
+      "将车辆状态更新为当前节点 WAIT"
+    ],
+    "constraints": [
+      "仅在移动执行阶段应用",
+      "回退后车辆位置保持在当前节点",
+      "不得在准入条件全部满足时触发回退"
+    ],
+    "cautions": [
+      "容量判定需基于进入后占用是否超过 MaxVehicles(edge)",
+      "信号或交叉口规则由下游节点决定"
+    ],
+    "output_contract": [
+      "车辆状态更新为当前节点 WAIT，且未进入目标边。"
+    ],
+    "examples": [
+      {
+        "input": "车辆请求 ENTER_EDGE，但目标边占用已达 MaxVehicles(edge)",
+        "output": "车辆不进入目标边，在当前节点执行 WAIT",
+        "notes": "容量条件不满足触发回退"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "移动执行",
+      "状态回退",
+      "准入控制"
+    ],
+    "support_ids": [
+      "08e90dc1-dfd4-5948-9bc3-f70256d8c3f6"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "0442942b-b878-524d-b566-5eece74441c3"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|将准入失败的车辆回退为当前节点等待状态|交通仿真规则|车辆移动执行|状态回退|movement_execution|准入失败回退为等待"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

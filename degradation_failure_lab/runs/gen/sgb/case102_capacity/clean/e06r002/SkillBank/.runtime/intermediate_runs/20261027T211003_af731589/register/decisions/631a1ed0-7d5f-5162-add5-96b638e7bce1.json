@@ -1,0 +1,110 @@
+{
+  "skill_id": "631a1ed0-7d5f-5162-add5-96b638e7bce1",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "候选技能与同批 peer 技能“有向路网对象建模规范”(26513158) 高度重叠，后者已完整覆盖有向图节点/边定义、枚举取值与双向道路拆分规则，本候选内容更泛化且无新增可执行信息，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "631a1ed0-7d5f-5162-add5-96b638e7bce1",
+    "name": "有向图路网建模",
+    "description": "将交通仿真场景建模为有向图，定义节点（交叉口、仓库、客户点、枢纽）与有向边（from_node, to_node）及其属性；适用于需要构建或校验仿真路网拓扑时。",
+    "skill_body": "依据仿真规则文档，将场景路网表示为有向图：先列出节点集合（交叉口、仓库、客户点、枢纽等），再为每条有向边记录有序对 (from_node, to_node)。仅使用文档中已定义的规则；若某情形未被规则覆盖，标记为未定义，不要自行补充规则。\n\n## Objective\n\n建立符合规则的有向图路网结构\n## Applicable Signals\n\n- 需要定义仿真中的节点与边\n- 需要校验路网拓扑合法性\n\n## Contraindications\n\n- 仅需分析已有仿真结果\n- 不涉及路网结构定义\n\n## Intervention Moves\n\n- 枚举节点集合，标注节点类型（交叉口、仓库、客户点、枢纽）\n- 为每条边记录有序对 (from_node, to_node)\n- 对规则未覆盖的情形标记为未定义\n\n## Workflow Steps\n\n- 确认场景中涉及的节点类型与位置\n- 构建节点集合\n- 构建有向边集合，每条边以 (from_node, to_node) 有序对表示\n- 校验拓扑是否仅依赖文档已定义规则，未覆盖处标注未定义\n\n## Constraints\n\n- 所有行为必须遵循仿真规则文档\n- 边必须为有向且以有序对 (from_node, to_node) 表示\n- 规则未覆盖的情形视为未定义，不得自行扩展规则\n\n## Cautions\n\n- 不要将无向关系误建为有向边\n- 不要为未定义情形臆造规则\n\n## Output Contract\n\n- 包含节点集合与有向边集合的合法路网图\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要为仿真场景定义路网结构\n- Therapist/Output: 节点集合（交叉口、仓库、客户点、枢纽）与有向边集合，每条边为 (from_node, to_node) 有序对\n- Notes: 未覆盖情形标注为未定义",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "建立符合规则的有向图路网结构",
+    "domain": "交通仿真",
+    "task_family": "路网建模",
+    "method_family": "有向图建模",
+    "stage": "场景初始化",
+    "applicable_signals": [
+      "需要定义仿真中的节点与边",
+      "需要校验路网拓扑合法性"
+    ],
+    "contraindications": [
+      "仅需分析已有仿真结果",
+      "不涉及路网结构定义"
+    ],
+    "intervention_moves": [
+      "枚举节点集合，标注节点类型（交叉口、仓库、客户点、枢纽）",
+      "为每条边记录有序对 (from_node, to_node)",
+      "对规则未覆盖的情形标记为未定义"
+    ],
+    "triggers": [
+      "需要定义仿真中的节点与边",
+      "需要校验路网拓扑合法性"
+    ],
+    "workflow_steps": [
+      "确认场景中涉及的节点类型与位置",
+      "构建节点集合",
+      "构建有向边集合，每条边以 (from_node, to_node) 有序对表示",
+      "校验拓扑是否仅依赖文档已定义规则，未覆盖处标注未定义"
+    ],
+    "constraints": [
+      "所有行为必须遵循仿真规则文档",
+      "边必须为有向且以有序对 (from_node, to_node) 表示",
+      "规则未覆盖的情形视为未定义，不得自行扩展规则"
+    ],
+    "cautions": [
+      "不要将无向关系误建为有向边",
+      "不要为未定义情形臆造规则"
+    ],
+    "output_contract": [
+      "包含节点集合与有向边集合的合法路网图"
+    ],
+    "examples": [
+      {
+        "input": "需要为仿真场景定义路网结构",
+        "output": "节点集合（交叉口、仓库、客户点、枢纽）与有向边集合，每条边为 (from_node, to_node) 有序对",
+        "notes": "未覆盖情形标注为未定义"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "路网建模",
+      "有向图",
+      "场景初始化"
+    ],
+    "support_ids": [
+      "6bc0ab4a-1ffd-552f-b358-9e57dbab1a10"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "8d3c4b69-2191-5cc4-b3f2-82a647b0d11b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|建立符合规则的有向图路网结构|交通仿真|路网建模|有向图建模|场景初始化|有向图路网建模"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

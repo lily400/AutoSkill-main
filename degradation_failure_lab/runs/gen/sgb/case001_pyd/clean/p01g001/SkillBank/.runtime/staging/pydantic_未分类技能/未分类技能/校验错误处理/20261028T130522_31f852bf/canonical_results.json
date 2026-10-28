@@ -1,0 +1,145 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "校验错误处理",
+  "run_id": "20261028T130522_31f852bf",
+  "skills": [
+    {
+      "skill_id": "6f6dd4cb-79fc-53a5-a853-3cf312474f21",
+      "name": "Pydantic 校验错误抛出与校验器顺序控制",
+      "description": "在 Pydantic 自定义校验器中按规范抛出结构化校验错误，并依据校验器执行顺序安排依赖关系，确保多校验器编排与失败处理正确。",
+      "skill_body": "当自定义校验失败需要返回结构化错误，或多个校验器之间存在执行顺序依赖时使用本技能。步骤：1) 确认当前校验器是否应抛出错误而非静默返回；2) 使用 Pydantic 规范方式抛出校验错误（如 ValueError/AssertionError 或 PydanticCustomError），确保错误类型与信息结构化；3) 若存在多校验器依赖，明确各校验器的执行顺序（字段校验器与模型校验器的先后、同字段多校验器的顺序），据此安排依赖；4) 验证失败时输出包含字段路径、错误类型与输入值的结构化错误。不要用于没有自定义校验失败路径的场景。\n\n## Objective\n\n正确抛出校验错误并控制校验器执行顺序\n## Applicable Signals\n\n- 校验失败需返回结构化错误\n- 多个校验器存在执行顺序依赖\n\n## Contraindications\n\n- 无自定义校验失败路径时\n\n## Intervention Moves\n\n- 在校验器中以规范方式抛出校验错误\n- 明确并安排多校验器的执行顺序以满足依赖\n- 确认失败输出包含字段路径、错误类型与输入值\n\n## Workflow Steps\n\n- 确认校验器应抛出错误而非静默返回\n- 使用规范方式抛出结构化校验错误\n- 梳理字段校验器与模型校验器的执行顺序\n- 按依赖关系安排多校验器顺序\n- 验证失败输出为结构化错误\n\n## Constraints\n\n- 仅在存在自定义校验失败路径或顺序依赖时使用\n- 错误信息需结构化并包含字段路径与错误类型\n\n## Cautions\n\n- 忽略校验器执行顺序可能导致依赖失效或错误信息不准确\n\n## Output Contract\n\n- 符合规范的校验错误输出（含字段路径、错误类型、输入值）与明确的校验器执行顺序",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确抛出校验错误并控制校验器执行顺序",
+      "domain": "pydantic",
+      "task_family": "校验错误处理",
+      "method_family": "错误抛出与顺序控制",
+      "stage": "校验执行",
+      "applicable_signals": [
+        "校验失败需返回结构化错误",
+        "多个校验器存在执行顺序依赖"
+      ],
+      "contraindications": [
+        "无自定义校验失败路径时"
+      ],
+      "intervention_moves": [
+        "在校验器中以规范方式抛出校验错误",
+        "明确并安排多校验器的执行顺序以满足依赖",
+        "确认失败输出包含字段路径、错误类型与输入值"
+      ],
+      "triggers": [
+        "校验失败需返回结构化错误",
+        "多个校验器存在执行顺序依赖",
+        "需要自定义校验失败处理"
+      ],
+      "workflow_steps": [
+        "确认校验器应抛出错误而非静默返回",
+        "使用规范方式抛出结构化校验错误",
+        "梳理字段校验器与模型校验器的执行顺序",
+        "按依赖关系安排多校验器顺序",
+        "验证失败输出为结构化错误"
+      ],
+      "constraints": [
+        "仅在存在自定义校验失败路径或顺序依赖时使用",
+        "错误信息需结构化并包含字段路径与错误类型"
+      ],
+      "cautions": [
+        "忽略校验器执行顺序可能导致依赖失效或错误信息不准确"
+      ],
+      "output_contract": [
+        "符合规范的校验错误输出（含字段路径、错误类型、输入值）与明确的校验器执行顺序"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "validation",
+        "error-handling",
+        "validator-ordering"
+      ],
+      "support_ids": [
+        "d5ee8998-95c2-5be0-990d-a3a218461c30"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "0c0800b3-f149-55b7-9355-4d24b9a74270"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.65,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|正确抛出校验错误并控制校验器执行顺序|pydantic|校验错误处理|错误抛出与顺序控制|校验执行|pydantic 校验错误抛出与校验器顺序控制",
+        "change_action": "create",
+        "llm_reason": "候选技能聚焦于校验错误抛出与校验器执行顺序控制，与同批候选（错误抛出+ValidationInfo、before 预处理）在方法家族和干预动作上存在差异，具备独立可执行价值，且无冲突证据，予以保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "f4886b4d-e95e-4f82-9e16-3c1a2b766cce",
+      "entity_type": "skill",
+      "entity_id": "6f6dd4cb-79fc-53a5-a853-3cf312474f21",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能聚焦于校验错误抛出与校验器执行顺序控制，与同批候选（错误抛出+ValidationInfo、before 预处理）在方法家族和干预动作上存在差异，具备独立可执行价值，且无冲突证据，予以保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "6f6dd4cb-79fc-53a5-a853-3cf312474f21",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "d5ee8998-95c2-5be0-990d-a3a218461c30"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

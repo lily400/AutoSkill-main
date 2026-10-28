@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"3350a33c-d6b2-5fdf-8f8e-c122b1618d1f\", \"name\": \"语义匹配结果抽样质量检查\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"通过抽样抽查确认语义匹配质量\", \"applicable_signals\": [\"语义匹配输出已生成\", \"进入交付前质量抽检环节\", \"需要快速判断匹配准确性是否达标\"], \"contraindications\": [\"语义匹配尚未执行\", \"需要全量逐条核验而非抽样\"], \"workflow_steps\": [\"确认语义匹配已完成并取得匹配输出\", \"抽取样本进行抽查\", \"逐条核对样本的匹配合理性\", \"记录抽查发现\", \"给出质量判定结论\"], \"constraints\": [\"仅做抽样抽查，不替代全量核验\", \"须在语义匹配完成后执行\"], \"triggers\": [\"语义匹配已完成\", \"需要快速评估匹配准确性\", \"正式交付前的质量抽检环节\"], \"output_contract\": [\"抽样检查记录及质量判定结论\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0\", \"name\": \"SKU计数逻辑一致性校验\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"验证SKU计数结果的逻辑合理性并标记疑似错误\", \"applicable_signals\": [\"已生成按SKU的评论计数结果\", \"计数结果需要在下游使用前确认可信度\"], \"workflow_steps\": [\"确认输入为已完成的按SKU评论计数聚合结果\", \"检查总量：各SKU计数总和不应超过过滤后评论总数，因评论可对应多个SKU，总量可超出但量级应合理\", \"检查分布：同类别SKU的计数范围应相近，除非描述可解释显著差异\", \"检查非零性：至少部分SKU应有非零计数；若全部SKU为零，则疑似语义匹配错误\", \"对疑似异常项进行语义质量抽查\", \"汇总并标注异常项，输出校验结论\"], \"output_contract\": [\"一份标注了异常项（总量失衡、分布异常、全零）的校验结论\"], \"score\": 0.6770769329658437}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

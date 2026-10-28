@@ -1,0 +1,123 @@
+{
+  "skill_id": "19fd8d56-4789-5286-b8c0-cd0bd0f60cc5",
+  "name": "按SKU生成四类情感计数并输出JSON",
+  "description": "基于产品目录与已处理评论，为每个SKU统计四类情感计数，并输出固定长度JSON数组及含评论统计的SUCCESS状态消息。适用于已提供产品目录与评论数据、需要按SKU交付情感计数的场景。",
+  "skill_body": "读取产品目录与已处理评论数据，按SKU分组统计四类情感计数，输出固定长度JSON数组（每个SKU一个对象，含sku_id与四个整数计数字段），并附标准SUCCESS状态消息及评论统计。若输入存在瑕疵，在状态消息中说明但仍需完成计数交付。\n\n## Objective\n\n为每个SKU产出四类情感整数计数并交付标准JSON与状态消息\n## Applicable Signals\n\n- 已提供product_catalog.json与processed_reviews.csv\n- 需要按SKU输出四类情感计数\n- 需要固定长度JSON数组交付\n\n## Contraindications\n\n- 缺少产品目录或评论数据\n- 需要主观语义判断而非计数\n\n## Intervention Moves\n\n- 读取产品目录确定SKU清单\n- 读取已处理评论并按SKU分组\n- 对每个SKU统计四类情感计数\n- 组装固定长度JSON数组\n- 生成含评论统计的SUCCESS状态消息\n\n## Workflow Steps\n\n- 校验product_catalog.json与processed_reviews.csv是否可用\n- 从产品目录提取SKU清单\n- 按SKU对已处理评论分组\n- 统计每个SKU的四类情感整数计数\n- 输出每个SKU一个对象的JSON数组（含sku_id与四个整数计数字段）\n- 生成标准SUCCESS状态消息并附评论统计\n- 若输入不完美，在状态消息中注明但仍完成交付\n\n## Constraints\n\n- JSON数组长度须与SKU数量一致（每个SKU一个对象）\n- 计数字段须为整数\n- 即使输入存在瑕疵也需完成计数交付并在状态中说明\n\n## Cautions\n\n- 输入不完美时不得静默忽略，须在状态消息中注明\n- 避免将主观语义判断混入计数流程\n\n## Output Contract\n\n- 含每个SKU一个对象的JSON数组（sku_id与四个整数计数字段）及带评论统计的SUCCESS状态消息\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 已提供product_catalog.json与processed_reviews.csv，需按SKU输出四类情感计数\n- Therapist/Output: JSON数组（每个SKU一个对象，含sku_id与四个整数计数字段）及含评论统计的SUCCESS状态消息\n- Notes: 输入不完美时在状态消息中注明但仍交付计数",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "为每个SKU产出四类情感整数计数并交付标准JSON与状态消息",
+  "domain": "运营数据处理",
+  "task_family": "评论情感聚合",
+  "method_family": "按SKU分组计数",
+  "stage": "任务执行与交付",
+  "applicable_signals": [
+    "已提供product_catalog.json与processed_reviews.csv",
+    "需要按SKU输出四类情感计数",
+    "需要固定长度JSON数组交付"
+  ],
+  "contraindications": [
+    "缺少产品目录或评论数据",
+    "需要主观语义判断而非计数"
+  ],
+  "intervention_moves": [
+    "读取产品目录确定SKU清单",
+    "读取已处理评论并按SKU分组",
+    "对每个SKU统计四类情感计数",
+    "组装固定长度JSON数组",
+    "生成含评论统计的SUCCESS状态消息"
+  ],
+  "triggers": [
+    "已提供product_catalog.json与processed_reviews.csv",
+    "需要按SKU输出四类情感计数",
+    "需要交付固定长度JSON数组与SUCCESS状态消息"
+  ],
+  "workflow_steps": [
+    "校验product_catalog.json与processed_reviews.csv是否可用",
+    "从产品目录提取SKU清单",
+    "按SKU对已处理评论分组",
+    "统计每个SKU的四类情感整数计数",
+    "输出每个SKU一个对象的JSON数组（含sku_id与四个整数计数字段）",
+    "生成标准SUCCESS状态消息并附评论统计",
+    "若输入不完美，在状态消息中注明但仍完成交付"
+  ],
+  "constraints": [
+    "JSON数组长度须与SKU数量一致（每个SKU一个对象）",
+    "计数字段须为整数",
+    "即使输入存在瑕疵也需完成计数交付并在状态中说明"
+  ],
+  "cautions": [
+    "输入不完美时不得静默忽略，须在状态消息中注明",
+    "避免将主观语义判断混入计数流程"
+  ],
+  "output_contract": [
+    "含每个SKU一个对象的JSON数组（sku_id与四个整数计数字段）及带评论统计的SUCCESS状态消息"
+  ],
+  "examples": [
+    {
+      "input": "已提供product_catalog.json与processed_reviews.csv，需按SKU输出四类情感计数",
+      "output": "JSON数组（每个SKU一个对象，含sku_id与四个整数计数字段）及含评论统计的SUCCESS状态消息",
+      "notes": "输入不完美时在状态消息中注明但仍交付计数"
+    }
+  ],
+  "tags": [
+    "情感计数",
+    "按SKU聚合",
+    "JSON输出",
+    "运营数据处理"
+  ],
+  "support_ids": [
+    "afea2fe6-ad8e-5275-883c-26a387904c82"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "a087cbb6-ea9c-57aa-ab42-b8b205524629"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|为每个sku产出四类情感整数计数并交付标准json与状态消息|运营数据处理|评论情感聚合|按sku分组计数|任务执行与交付|按sku生成四类情感计数并输出json",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

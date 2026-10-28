@@ -1,0 +1,58 @@
+test_all_bindings_keep_original_instructions_and_oracles (test_clean_five.CleanFive.test_all_bindings_keep_original_instructions_and_oracles) ... ok
+test_exact_grants_support_both_reviewed_adapters_and_reject_others (test_clean_five.CleanFive.test_exact_grants_support_both_reviewed_adapters_and_reject_others) ... ok
+test_generation_never_receives_tests_fixtures_or_interface_addenda (test_clean_five.CleanFive.test_generation_never_receives_tests_fixtures_or_interface_addenda) ... ERROR
+test_new_generation_gates_block_before_any_credentials (test_clean_five.CleanFive.test_new_generation_gates_block_before_any_credentials) ... ERROR
+test_package_sources_are_absent_from_agent_image (test_clean_five.CleanFive.test_package_sources_are_absent_from_agent_image) ... ok
+test_positive_negative_fixture_contracts_are_complete (test_clean_five.CleanFive.test_positive_negative_fixture_contracts_are_complete) ... ok
+
+======================================================================
+ERROR: test_generation_never_receives_tests_fixtures_or_interface_addenda (test_clean_five.CleanFive.test_generation_never_receives_tests_fixtures_or_interface_addenda)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/tests/test_clean_five.py", line 50, in test_generation_never_receives_tests_fixtures_or_interface_addenda
+    task=load_binding(ROOT,tid);bundle=CaseManager(ROOT).load(task['case_id'])
+                                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/catalog.py", line 56, in load
+    rules = check('rules', read(base / 'rules.json'))
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/schema.py", line 112, in check
+    return validate(value, SCHEMAS[kind])
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/schema.py", line 96, in validate
+    if k in value: validate(value[k], s, path + '.' + k)
+                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/schema.py", line 94, in validate
+    raise ValueError(f'{path}: missing={sorted(missing)}, unknown={sorted(extra)}')
+ValueError: $.provenance: missing=[], unknown=['scope']
+
+======================================================================
+ERROR: test_new_generation_gates_block_before_any_credentials (test_clean_five.CleanFive.test_new_generation_gates_block_before_any_credentials)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/tests/test_clean_five.py", line 33, in test_new_generation_gates_block_before_any_credentials
+    runner=ExperimentRunner(root)
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/runner.py", line 57, in __init__
+    self.cases = cases or CaseManager(root)
+                          ~~~~~~~~~~~^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/catalog.py", line 48, in __init__
+    self.sources = SourceManager(root)
+                   ~~~~~~~~~~~~~^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/catalog.py", line 10, in __init__
+    self.catalog = check('catalog', read(self.root / 'data/catalog.json'))
+                                    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/io.py", line 9, in read
+    return json.loads(Path(path).read_text(encoding='utf-8'))
+                      ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/pathlib/_local.py", line 546, in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/pathlib/_abc.py", line 632, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/pathlib/_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpq4b_xro5/data/catalog.json'
+
+----------------------------------------------------------------------
+Ran 6 tests in 41.670s
+
+FAILED (errors=2)

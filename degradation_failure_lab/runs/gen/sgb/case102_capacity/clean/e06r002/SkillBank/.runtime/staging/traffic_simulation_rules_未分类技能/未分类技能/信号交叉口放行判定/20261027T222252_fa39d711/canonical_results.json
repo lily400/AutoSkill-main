@@ -1,0 +1,155 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "信号交叉口放行判定",
+  "run_id": "20261027T222252_fa39d711",
+  "skills": [
+    {
+      "skill_id": "0693600c-9b20-5996-8e38-1b1d384e424d",
+      "name": "信号交叉口绿灯放行与FIFO排队判定",
+      "description": "在信号化下游节点，按入边信号组的当前相位判定车辆本tick能否进入交叉口，并按到达队列的FIFO顺序确定同一入边多车的放行顺序。",
+      "skill_body": "给定信号化下游节点、各入边的信号组与当前相位、以及各入边节点队列的到达顺序，执行以下判定：\n1. 确认下游节点为信号化节点，且车辆已到达该节点队列；否则不适用本规则。\n2. 对每条入边，检查其信号组当前是否处于GREEN相位。\n3. 仅对处于GREEN相位的入边，按到达节点队列的先后顺序（FIFO）依次放行车辆进入交叉口。\n4. 非GREEN相位入边上的车辆本tick不放行。\n5. 输出本tick可放行车辆列表，按入边分组并保持FIFO顺序。\n\n## Objective\n\n按信号相位与FIFO顺序正确判定交叉口车辆放行\n## Applicable Signals\n\n- 下游节点为信号化节点\n- 入边配置了信号组\n- 车辆已到达节点队列并请求进入下游边\n\n## Contraindications\n\n- 下游节点无信号控制\n- 车辆尚未到达节点队列\n\n## Intervention Moves\n\n- 检查入边信号组当前相位是否为GREEN\n- 对GREEN相位入边按到达队列FIFO顺序放行\n- 对非GREEN相位入边本tick不放行\n\n## Workflow Steps\n\n- 确认下游节点为信号化节点且车辆已到达节点队列\n- 读取各入边信号组及当前相位\n- 筛选处于GREEN相位的入边\n- 对每条GREEN入边按到达队列FIFO顺序放行车辆\n- 汇总本tick可放行车辆列表及顺序\n\n## Constraints\n\n- 仅GREEN相位信号组的入边可释放新车辆进入交叉口\n- 同一入边放行顺序必须为到达队列的FIFO顺序\n\n## Cautions\n\n- 本规则仅覆盖信号放行判定，不处理进入失败后的回退行为\n- 相位判定以当前tick为准\n\n## Output Contract\n\n- 输出本tick可放行车辆列表，按入边分组并保持FIFO顺序\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 下游节点为信号化节点，入边A信号组处于GREEN，队列到达顺序为v1、v2；入边B信号组处于RED。\n- Therapist/Output: 本tick可放行：入边A按FIFO顺序放行v1、v2；入边B不放行。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "按信号相位与FIFO顺序正确判定交叉口车辆放行",
+      "domain": "交通仿真",
+      "task_family": "信号交叉口放行判定",
+      "method_family": "规则判定",
+      "stage": "车辆移动更新",
+      "applicable_signals": [
+        "下游节点为信号化节点",
+        "入边配置了信号组",
+        "车辆已到达节点队列并请求进入下游边"
+      ],
+      "contraindications": [
+        "下游节点无信号控制",
+        "车辆尚未到达节点队列"
+      ],
+      "intervention_moves": [
+        "检查入边信号组当前相位是否为GREEN",
+        "对GREEN相位入边按到达队列FIFO顺序放行",
+        "对非GREEN相位入边本tick不放行"
+      ],
+      "triggers": [
+        "需要判定某入边车辆本tick能否进入信号交叉口",
+        "需要确定同一入边多车的放行顺序",
+        "逐tick更新信号交叉口车辆移动"
+      ],
+      "workflow_steps": [
+        "确认下游节点为信号化节点且车辆已到达节点队列",
+        "读取各入边信号组及当前相位",
+        "筛选处于GREEN相位的入边",
+        "对每条GREEN入边按到达队列FIFO顺序放行车辆",
+        "汇总本tick可放行车辆列表及顺序"
+      ],
+      "constraints": [
+        "仅GREEN相位信号组的入边可释放新车辆进入交叉口",
+        "同一入边放行顺序必须为到达队列的FIFO顺序"
+      ],
+      "cautions": [
+        "本规则仅覆盖信号放行判定，不处理进入失败后的回退行为",
+        "相位判定以当前tick为准"
+      ],
+      "output_contract": [
+        "输出本tick可放行车辆列表，按入边分组并保持FIFO顺序"
+      ],
+      "examples": [
+        {
+          "input": "下游节点为信号化节点，入边A信号组处于GREEN，队列到达顺序为v1、v2；入边B信号组处于RED。",
+          "output": "本tick可放行：入边A按FIFO顺序放行v1、v2；入边B不放行。",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "信号交叉口",
+        "绿灯相位",
+        "FIFO",
+        "车辆放行"
+      ],
+      "support_ids": [
+        "21e5e7c6-4950-5727-9217-9305aac07fc6"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "7434841c-7398-58fa-b46a-046b61502103"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|按信号相位与fifo顺序正确判定交叉口车辆放行|交通仿真|信号交叉口放行判定|规则判定|车辆移动更新|信号交叉口绿灯放行与fifo排队判定",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "6c516b3e-f466-45fc-93ab-53559a3d18fd",
+      "entity_type": "skill",
+      "entity_id": "0693600c-9b20-5996-8e38-1b1d384e424d",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "0693600c-9b20-5996-8e38-1b1d384e424d",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "21e5e7c6-4950-5727-9217-9305aac07fc6"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,864 @@
+{
+  "schema": "autoskill.document.staging.raw_candidates.v1",
+  "profile_id": "scrapy::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "settings_configuration",
+  "run_id": "20261028T130948_ac8494b6",
+  "documents": [
+    {
+      "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+      "source_type": "document",
+      "title": "input002\\settings.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# Settings — Scrapy 2.14.1 documentation\n\n- Settings\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/settings.rst)\n\n---\n\n# Settings\n\nThe Scrapy settings allows you to customize the behaviour of all Scrapy\ncomponents, including the core, extensions, pipelines and spiders themselves.\n\nThe infrastructure of the settings provides a global namespace of key-value mappings\nthat the code can use to pull configuration values from. The settings can be\npopulated through different mechanisms, which are described below.\n\nThe settings are also the mechanism for selecting the currently active Scrapy\nproject (in case you have many).\n\nFor a list of available built-in settings see: Built-in settings reference.\n\n## Designating the settings\n\nWhen you use Scrapy, you have to tell it which settings you’re using. You can\ndo this by using an environment variable, `SCRAPY_SETTINGS_MODULE`.\n\nThe value of `SCRAPY_SETTINGS_MODULE` should be in Python path syntax, e.g.\n`myproject.settings`. Note that the settings module should be on the\nPython [import search path](https://docs.python.org/3/tutorial/modules.html#tut-searchpath).\n\n## Populating the settings\n\nSettings can be populated using different mechanisms, each of which has a\ndifferent precedence:\n\n> 1. Command-line settings (highest precedence)\n> 2. Spider settings\n> 3. Project settings\n> 4. Add-on settings\n> 5. Command-specific default settings\n> 6. Global default settings (lowest precedence)\n\n### 1. Command-line settings\n\nSettings set in the command line have the highest precedence, overriding any\nother settings.\n\nYou can explicitly override one or more settings using the `-s` (or\n`--set`) command-line option.\n\nExample:\n\n```\nscrapy crawl myspider -s LOG_LEVEL=INFO -s LOG_FILE=scrapy.log\n```\n\n### 2. Spider settings\n\n[Spiders](spiders.html#topics-spiders) can define their own settings that will take\nprecedence and override the project ones.\n\nPre-crawler settings cannot be defined\nper spider, and reactor settings should not have\na different value per spider when [running multiple spiders in the\nsame process](practices.html#run-multiple-spiders).\n\nOne way to do so is by setting their [`custom_settings`](spiders.html#scrapy.Spider.custom_settings)\nattribute:\n\n```\nimport scrapy\n\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n\n    custom_settings = {\n        \"SOME_SETTING\": \"some value\",\n    }\n```\n\nIt’s often better to implement [`update_settings()`](spiders.html#scrapy.Spider.update_settings) instead,\nand settings set there should use the `\"spider\"` priority explicitly:\n\n```\nimport scrapy\n\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n\n    @classmethod\n    def update_settings(cls, settings):\n        super().update_settings(settings)\n        settings.set(\"SOME_SETTING\", \"some value\", priority=\"spider\")\n```\n\nAdded in version 2.11.\n\nIt’s also possible to modify the settings in the\n[`from_crawler()`](spiders.html#scrapy.Spider.from_crawler) method, e.g. based on [spider\narguments](spiders.html#spiderargs) or other logic:\n\n```\nimport scrapy\n\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n\n    @classmethod\n    def from_crawler(cls, crawler, *args, **kwargs):\n        spider = super().from_crawler(crawler, *args, **kwargs)\n        if \"some_argument\" in kwargs:\n            spider.settings.set(\n                \"SOME_SETTING\", kwargs[\"some_argument\"], priority=\"spider\"\n            )\n        return spider\n```\n\n### 3. Project settings\n\nScrapy projects include a settings module, usually a file called\n`settings.py`, where you should populate most settings that apply to all your\nspiders.\n\nDesignating the settings\n\n### 4. Add-on settings\n\n[Add-ons](addons.html#topics-addons) can modify settings. They should do this with\n`\"addon\"` priority where possible.\n\n### 5. Command-specific default settings\n\nEach [Scrapy command](commands.html#topics-commands) can have its own default settings,\nwhich override the global default settings.\n\nThose command-specific default settings are specified in the\n`default_settings` attribute of each command class.\n\n### 6. Default global settings\n\nThe `scrapy.settings.default_settings` module defines global default values\nfor some built-in settings.\n\n[`startproject`](commands.html#std-command-startproject) generates a `settings.py` file that sets\nsome settings to different values.\n\nThe reference documentation of settings indicates the default value if one\nexists. If [`startproject`](commands.html#std-command-startproject) sets a value, that value is documented\nas default, and the value from `scrapy.settings.default_settings` is\ndocumented as “fallback”.\n\n## Compatibility with pickle\n\nSetting values must be [picklable](https://docs.python.org/3/library/pickle.html#pickle-picklable).\n\n## Import paths and classes\n\nWhen a setting references a callable object to be imported by Scrapy, such as a\nclass or a function, there are two different ways you can specify that object:\n\n- As a string containing the import path of that object\n- As the object itself\n\nFor example:\n\n```\nfrom mybot.pipelines.validate import ValidateMyItem\n\nITEM_PIPELINES = {\n    # passing the classname...\n    ValidateMyItem: 300,\n    # ...equals passing the class path\n    \"mybot.pipelines.validate.ValidateMyItem\": 300,\n}\n```\n\nPassing non-callable objects is not supported.\n\n## How to access settings\n\nIn a spider, settings are available through `self.settings`:\n\n```\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n    start_urls = [\"http://example.com\"]\n\n    def parse(self, response):\n        print(f\"Existing settings: {self.settings.attributes.keys()}\")\n```\n\nThe `settings` attribute is set in the base Spider class after the spider\nis initialized. If you want to use settings before the initialization\n(e.g., in your spider’s `__init__()` method), you’ll need to override the\n[`from_crawler()`](spiders.html#scrapy.Spider.from_crawler) method.\n\n[Components](components.html#topics-components) can also [access settings](components.html#component-settings).\n\nThe `settings` object can be used like a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) (e.g.\n`settings[\"LOG_ENABLED\"]`). However, to support non-string setting values,\nwhich may be passed from the command line as strings, it is recommended to use\none of the methods provided by the [`Settings`](api.html#scrapy.settings.Settings) API.\n\n## Component priority dictionaries\n\nA **component priority dictionary** is a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) where keys are\n[components](components.html#topics-components) and values are component priorities. For\nexample:\n\n```\n{\n    \"path.to.ComponentA\": None,\n    ComponentB: 100,\n}\n```\n\nA component can be specified either as a class object or through an import\npath.\n\nComponent priority dictionaries are regular [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) objects.\nBe careful not to define the same component more than once, e.g. with\ndifferent import path strings or defining both an import path and a\n[`type`](https://docs.python.org/3/library/functions.html#type) object.\n\nA priority can be an [`int`](https://docs.python.org/3/library/functions.html#int) or [`None`](https://docs.python.org/3/library/constants.html#None).\n\nA component with priority 1 goes *before* a component with priority 2. What\ngoing before entails, however, depends on the corresponding setting. For\nexample, in the `DOWNLOADER_MIDDLEWARES` setting, components have\ntheir\n[`process_request()`](downloader-middleware.html#scrapy.downloadermiddlewares.DownloaderMiddleware.process_request)\nmethod executed before that of later components, but have their\n[`process_response()`](downloader-middleware.html#scrapy.downloadermiddlewares.DownloaderMiddleware.process_response)\nmethod executed after that of later components.\n\nA component with priority [`None`](https://docs.python.org/3/library/constants.html#None) is disabled.\n\nSome component priority dictionaries get merged with some built-in value. For\nexample, `DOWNLOADER_MIDDLEWARES` is merged with\n`DOWNLOADER_MIDDLEWARES_BASE`. This is where [`None`](https://docs.python.org/3/library/constants.html#None) comes in\nhandy, allowing you to disable a component from the base setting in the regular\nsetting:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"scrapy.downloadermiddlewares.offsite.OffsiteMiddleware\": None,\n}\n```\n\n## Special settings\n\nThe following settings work slightly differently than all other settings.\n\n### Pre-crawler settings\n\n**Pre-crawler settings** are settings used before the\n[`Crawler`](api.html#scrapy.crawler.Crawler) object is created.\n\nThese settings cannot be set from a spider.\n\nThese settings are `SPIDER_LOADER_CLASS` and settings used by the\ncorresponding [component](components.html#topics-components), e.g.\n`SPIDER_MODULES` and `SPIDER_LOADER_WARN_ONLY` for the\ndefault component.\n\n### Reactor settings\n\n**Reactor settings** are settings tied to the [Twisted reactor](https://docs.twisted.org/en/stable/core/howto/reactor-basics.html).\n\nThese settings can be defined from a spider. However, because only 1 reactor\ncan be used per process, these settings cannot use a different value per spider\nwhen [running multiple spiders in the same process](practices.html#run-multiple-spiders).\n\nIn general, if different spiders define different values, the first defined\nvalue is used. However, if two spiders request a different reactor, an\nexception is raised.\n\nThese settings are:\n\n- `ASYNCIO_EVENT_LOOP` (not possible to set per-spider when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n- `DNS_RESOLVER` and settings used by the corresponding\ncomponent, e.g. `DNSCACHE_ENABLED`, `DNSCACHE_SIZE`\nand `DNS_TIMEOUT` for the default one.\n- `REACTOR_THREADPOOL_MAXSIZE`\n- `TWISTED_REACTOR` (ignored when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n\n`ASYNCIO_EVENT_LOOP` and `TWISTED_REACTOR` are used upon\ninstalling the reactor. The rest of the settings are applied when starting\nthe reactor.\n\nThere is an additional restriction for `TWISTED_REACTOR` and\n`ASYNCIO_EVENT_LOOP` when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess): when this class is instantiated,\nit installs [`AsyncioSelectorReactor`](https://docs.twisted.org/en/stable/api/twisted.internet.asyncioreactor.AsyncioSelectorReactor.html),\nignoring the value of `TWISTED_REACTOR` and using the value of\n`ASYNCIO_EVENT_LOOP` that was passed to\n`AsyncCrawlerProcess.__init__()`. If a different value for\n`TWISTED_REACTOR` or `ASYNCIO_EVENT_LOOP` is provided later,\ne.g. in per-spider settings, an exception will be\nraised.\n\n## Built-in settings reference\n\nHere’s a list of all available Scrapy settings, in alphabetical order, along\nwith their default values and the scope where they apply.\n\nThe scope, where available, shows where the setting is being used, if it’s tied\nto any particular component. In that case the module of that component will be\nshown, typically an extension, middleware or pipeline. It also means that the\ncomponent must be enabled in order for the setting to have any effect.\n\n### ADDONS\n\nDefault: `{}`\n\nA dict containing paths to the add-ons enabled in your project and their\npriorities. For more information, see [Add-ons](addons.html#topics-addons).\n\n### AWS_ACCESS_KEY_ID\n\nDefault: `None`\n\nThe AWS access key used by code that requires access to [Amazon Web services](https://aws.amazon.com/),\nsuch as the [S3 feed storage backend](feed-exports.html#topics-feed-storage-s3).\n\n### AWS_SECRET_ACCESS_KEY\n\nDefault: `None`\n\nThe AWS secret key used by code that requires access to [Amazon Web services](https://aws.amazon.com/),\nsuch as the [S3 feed storage backend](feed-exports.html#topics-feed-storage-s3).\n\n### AWS_SESSION_TOKEN\n\nDefault: `None`\n\nThe AWS security token used by code that requires access to [Amazon Web services](https://aws.amazon.com/),\nsuch as the [S3 feed storage backend](feed-exports.html#topics-feed-storage-s3), when using\n[temporary security credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html).\n\n### AWS_ENDPOINT_URL\n\nDefault: `None`\n\nEndpoint URL used for S3-like storage, for example Minio or s3.scality.\n\n### AWS_USE_SSL\n\nDefault: `None`\n\nUse this option if you want to disable SSL connection for communication with\nS3 or S3-like storage. By default SSL will be used.\n\n### AWS_VERIFY\n\nDefault: `None`\n\nVerify SSL connection between Scrapy and S3 or S3-like storage. By default\nSSL verification will occur.\n\n### AWS_REGION_NAME\n\nDefault: `None`\n\nThe name of the region associated with the AWS client.\n\n### ASYNCIO_EVENT_LOOP\n\nDefault: `None`\n\nImport path of a given `asyncio` event loop class.\n\nIf the asyncio reactor is enabled (see `TWISTED_REACTOR`) this setting can be used to specify the\nasyncio event loop to be used with it. Set the setting to the import path of the\ndesired asyncio event loop class. If the setting is set to `None` the default asyncio\nevent loop will be used.\n\nIf you are installing the asyncio reactor manually using the `install_reactor()`\nfunction, you can use the `event_loop_path` parameter to indicate the import path of the event loop\nclass to be used.\n\nNote that the event loop class must inherit from [`asyncio.AbstractEventLoop`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.AbstractEventLoop).\n\nPlease be aware that, when using a non-default event loop\n(either defined via `ASYNCIO_EVENT_LOOP` or installed with\n`install_reactor()`), Scrapy will call\n[`asyncio.set_event_loop()`](https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.set_event_loop), which will set the specified event loop\nas the current loop for the current OS thread.\n\n### BOT_NAME\n\nDefault: `<project name>` (fallback: `'scrapybot'`)\n\nThe name of the bot implemented by this Scrapy project (also known as the\nproject name). This name will be used for the logging too.\n\nIt’s automatically populated with your project name when you create your\nproject with the [`startproject`](commands.html#std-command-startproject) command.\n\n### CONCURRENT_ITEMS\n\nDefault: `100`\n\nMaximum number of concurrent items (per response) to process in parallel in\n[item pipelines](item-pipeline.html#topics-item-pipeline).\n\n### CONCURRENT_REQUESTS\n\nDefault: `16`\n\nThe maximum number of concurrent (i.e. simultaneous) requests that will be\nperformed by the Scrapy downloader.\n\n### CONCURRENT_REQUESTS_PER_DOMAIN\n\nDefault: `1` (fallback: `8`)\n\nThe maximum number of concurrent (i.e. simultaneous) requests that will be\nperformed to any single domain.\n\nSee also: [AutoThrottle extension](autothrottle.html#topics-autothrottle) and its\n[`AUTOTHROTTLE_TARGET_CONCURRENCY`](autothrottle.html#std-setting-AUTOTHROTTLE_TARGET_CONCURRENCY) option.\n\n### DEFAULT_DROPITEM_LOG_LEVEL\n\nDefault: `\"WARNING\"`\n\nDefault [log level](https://docs.python.org/3/library/logging.html#levels) of messages about dropped items.\n\nWhen an item is dropped by raising [`scrapy.exceptions.DropItem`](exceptions.html#scrapy.exceptions.DropItem) from the\n[`process_item()`](item-pipeline.html#process_item) method of an [item pipeline](item-pipeline.html#topics-item-pipeline),\na message is logged, and by default its log level is the one configured in this\nsetting.\n\nYou may specify this log level as an integer (e.g. `20`), as a log level\nconstant (e.g. `logging.INFO`) or as a string with the name of a log level\nconstant (e.g. `\"INFO\"`).\n\nWhen writing an item pipeline, you can force a different log level by setting\n`scrapy.exceptions.DropItem.log_level` in your\n[`scrapy.exceptions.DropItem`](exceptions.html#scrapy.exceptions.DropItem) exception. For example:\n\n```\nfrom scrapy.exceptions import DropItem\n\nclass MyPipeline:\n    def process_item(self, item):\n        if not item.get(\"price\"):\n            raise DropItem(\"Missing price data\", log_level=\"INFO\")\n        return item\n```\n\n### DEFAULT_ITEM_CLASS\n\nDefault: `'scrapy.Item'`\n\nThe default class that will be used for instantiating items in the [the\nScrapy shell](shell.html#topics-shell).\n\n### DEFAULT_REQUEST_HEADERS\n\nDefault:\n\n```\n{\n    \"Accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\",\n    \"Accept-Language\": \"en\",\n}\n```\n\nThe default headers used for Scrapy HTTP Requests. They’re populated in the\n[`DefaultHeadersMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware).\n\nCookies set via the `Cookie` header are not considered by the\n[CookiesMiddleware](downloader-middleware.html#cookies-mw). If you need to set cookies for a request, use the\n[`Request.cookies`](request-response.html#scrapy.Request) parameter. This is a known\ncurrent limitation that is being worked on.\n\n### DEPTH_LIMIT\n\nDefault: `0`\n\nScope: `scrapy.spidermiddlewares.depth.DepthMiddleware`\n\nThe maximum depth that will be allowed to crawl for any site. If zero, no limit\nwill be imposed.\n\n### DEPTH_PRIORITY\n\nDefault: `0`\n\nScope: `scrapy.spidermiddlewares.depth.DepthMiddleware`\n\nAn integer that is used to adjust the [`priority`](request-response.html#scrapy.Request.priority) of\na [`Request`](request-response.html#scrapy.Request) based on its depth.\n\nThe priority of a request is adjusted as follows:\n\n```\nrequest.priority = request.priority - (depth * DEPTH_PRIORITY)\n```\n\nAs depth increases, positive values of `DEPTH_PRIORITY` decrease request\npriority (BFO), while negative values increase request priority (DFO). See\nalso [Does Scrapy crawl in breadth-first or depth-first order?](../faq.html#faq-bfo-dfo).\n\nThis setting adjusts priority **in the opposite way** compared to\nother priority settings `REDIRECT_PRIORITY_ADJUST`\nand [`RETRY_PRIORITY_ADJUST`](downloader-middleware.html#std-setting-RETRY_PRIORITY_ADJUST).\n\n### DEPTH_STATS_VERBOSE\n\nDefault: `False`\n\nScope: `scrapy.spidermiddlewares.depth.DepthMiddleware`\n\nWhether to collect verbose depth stats. If this is enabled, the number of\nrequests for each depth is collected in the stats.\n\n### DNSCACHE_ENABLED\n\nDefault: `True`\n\nWhether to enable DNS in-memory cache.\n\n### DNSCACHE_SIZE\n\nDefault: `10000`\n\nDNS in-memory cache size.\n\n### DNS_RESOLVER\n\nDefault: `'scrapy.resolver.CachingThreadedResolver'`\n\nThe class to be used to resolve DNS names. The default `scrapy.resolver.CachingThreadedResolver`\nsupports specifying a timeout for DNS requests via the `DNS_TIMEOUT` setting,\nbut works only with IPv4 addresses. Scrapy provides an alternative resolver,\n`scrapy.resolver.CachingHostnameResolver`, which supports IPv4/IPv6 addresses but does not\ntake the `DNS_TIMEOUT` setting into account.\n\n### DNS_TIMEOUT\n\nDefault: `60`\n\nTimeout for processing of DNS queries in seconds. Float is supported.\n\n### DOWNLOADER\n\nDefault: `'scrapy.core.downloader.Downloader'`\n\nThe downloader to use for crawling.\n\n### DOWNLOADER_CLIENTCONTEXTFACTORY\n\nDefault: `'scrapy.core.downloader.contextfactory.ScrapyClientContextFactory'`\n\nRepresents the classpath to the ContextFactory to use.\n\nHere, “ContextFactory” is a Twisted term for SSL/TLS contexts, defining\nthe TLS/SSL protocol version to use, whether to do certificate verification,\nor even enable client-side authentication (and various other things).\n\nScrapy default context factory **does NOT perform remote server\ncertificate verification**. This is usually fine for web scraping.\n\nIf you do need remote server certificate verification enabled,\nScrapy also has another context factory class that you can set,\n`'scrapy.core.downloader.contextfactory.BrowserLikeContextFactory'`,\nwhich uses the platform’s certificates to validate remote endpoints.\n\nIf you do use a custom ContextFactory, make sure its `__init__` method\naccepts a `method` parameter (this is the `OpenSSL.SSL` method mapping\n`DOWNLOADER_CLIENT_TLS_METHOD`), a `tls_verbose_logging`\nparameter (`bool`) and a `tls_ciphers` parameter (see\n`DOWNLOADER_CLIENT_TLS_CIPHERS`).\n\nThis setting is specific to the built-in Twisted-based download handlers:\n[`scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler) and\n[`scrapy.core.downloader.handlers.http2.H2DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http2.H2DownloadHandler).\n\n### DOWNLOADER_CLIENT_TLS_CIPHERS\n\nDefault: `'DEFAULT'`\n\nUse this setting to customize the TLS/SSL ciphers used by the HTTPS download\nhandler.\n\nThe setting should contain a string in the [OpenSSL cipher list format](https://docs.openssl.org/master/man1/openssl-ciphers/#cipher-list-format),\nthese ciphers will be used as client ciphers. Changing this setting may be\nnecessary to access certain HTTPS websites: for example, you may need to use\n`'DEFAULT:!DH'` for a website with weak DH parameters or enable a\nspecific cipher that is not included in `DEFAULT` if a website requires it.\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers. Moreover, for the built-in Twisted-based\ndownload handlers\n([`scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler) and\n[`scrapy.core.downloader.handlers.http2.H2DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http2.H2DownloadHandler)) it needs\nto be implemented in the `DOWNLOADER_CLIENTCONTEXTFACTORY` class.\n\n### DOWNLOADER_CLIENT_TLS_METHOD\n\nDefault: `'TLS'`\n\nUse this setting to customize the TLS/SSL method used by the HTTPS download\nhandler.\n\nThis setting must be one of these string values:\n\n- `'TLS'`: maps to OpenSSL’s `TLS_method()` (a.k.a `SSLv23_method()`),\nwhich allows protocol negotiation, starting from the highest supported\nby the platform; **default, recommended**\n- `'TLSv1.0'`: this value forces HTTPS connections to use TLS version 1.0 ;\nset this if you want the behavior of Scrapy<1.1\n- `'TLSv1.1'`: forces TLS version 1.1\n- `'TLSv1.2'`: forces TLS version 1.2\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers. Moreover, for the built-in Twisted-based\ndownload handlers\n([`scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler) and\n[`scrapy.core.downloader.handlers.http2.H2DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http2.H2DownloadHandler)) it needs\nto be implemented in the `DOWNLOADER_CLIENTCONTEXTFACTORY` class.\n\n### DOWNLOADER_CLIENT_TLS_VERBOSE_LOGGING\n\nDefault: `False`\n\nSetting this to `True` will enable DEBUG level messages about TLS connection\nparameters after establishing HTTPS connections. The kind of information logged\ndepends on the implementation of the download handler and the versions of\nthe TLS-related libraries.\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers. Moreover, for the built-in Twisted-based\ndownload handlers\n([`scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler) and\n[`scrapy.core.downloader.handlers.http2.H2DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http2.H2DownloadHandler)) it needs\nto be implemented in the `DOWNLOADER_CLIENTCONTEXTFACTORY` class.\n\n### DOWNLOADER_MIDDLEWARES\n\nDefault:: `{}`\n\nA dict containing the downloader middlewares enabled in your project, and their\norders. For more info see [Activating a downloader middleware](downloader-middleware.html#topics-downloader-middleware-setting).\n\n### DOWNLOADER_MIDDLEWARES_BASE\n\nDefault:\n\n```\n{\n    \"scrapy.downloadermiddlewares.offsite.OffsiteMiddleware\": 50,\n    \"scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware\": 100,\n    \"scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware\": 300,\n    \"scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware\": 350,\n    \"scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware\": 400,\n    \"scrapy.downloadermiddlewares.useragent.UserAgentMiddleware\": 500,\n    \"scrapy.downloadermiddlewares.retry.RetryMiddleware\": 550,\n    \"scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware\": 560,\n    \"scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware\": 580,\n    \"scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware\": 590,\n    \"scrapy.downloadermiddlewares.redirect.RedirectMiddleware\": 600,\n    \"scrapy.downloadermiddlewares.cookies.CookiesMiddleware\": 700,\n    \"scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware\": 750,\n    \"scrapy.downloadermiddlewares.stats.DownloaderStats\": 850,\n    \"scrapy.downloadermiddlewares.httpcache.HttpCacheMiddleware\": 900,\n}\n```\n\nA dict containing the downloader middlewares enabled by default in Scrapy. Low\norders are closer to the engine, high orders are closer to the downloader. You\nshould never modify this setting in your project, modify\n`DOWNLOADER_MIDDLEWARES` instead. For more info see\n[Activating a downloader middleware](downloader-middleware.html#topics-downloader-middleware-setting).\n\n### DOWNLOADER_STATS\n\nDefault: `True`\n\nWhether to enable downloader stats collection.\n\n### DOWNLOAD_DELAY\n\nDefault: `1` (fallback: `0`)\n\nMinimum seconds to wait between 2 consecutive requests to the same domain.\n\nUse `DOWNLOAD_DELAY` to throttle your crawling speed, to avoid hitting\nservers too hard.\n\nDecimal numbers are supported. For example, to send a maximum of 4 requests\nevery 10 seconds:\n\n```\nDOWNLOAD_DELAY = 2.5\n```\n\nThis setting is also affected by the `RANDOMIZE_DOWNLOAD_DELAY`\nsetting, which is enabled by default.\n\nNote that `DOWNLOAD_DELAY` can lower the effective per-domain\nconcurrency below `CONCURRENT_REQUESTS_PER_DOMAIN`. If the response\ntime of a domain is lower than `DOWNLOAD_DELAY`, the effective\nconcurrency for that domain is 1. When testing throttling configurations, it\nusually makes sense to lower `CONCURRENT_REQUESTS_PER_DOMAIN` first,\nand only increase `DOWNLOAD_DELAY` once\n`CONCURRENT_REQUESTS_PER_DOMAIN` is 1 but a higher throttling is\ndesired.\n\nThis delay can be set per spider using `download_delay` spider attribute.\n\nIt is also possible to change this setting per domain, although it requires\nnon-trivial code. See the implementation of the [AutoThrottle](autothrottle.html#topics-autothrottle) extension for an example.\n\n### DOWNLOAD_HANDLERS\n\nDefault: `{}`\n\nA dict containing the [download handlers](download-handlers.html#topics-download-handlers)\nenabled in your project.\n\nSee `DOWNLOAD_HANDLERS_BASE` for example format.\n\n### DOWNLOAD_HANDLERS_BASE\n\nDefault:\n\n```\n{\n    \"data\": \"scrapy.core.downloader.handlers.datauri.DataURIDownloadHandler\",\n    \"file\": \"scrapy.core.downloader.handlers.file.FileDownloadHandler\",\n    \"http\": \"scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler\",\n    \"https\": \"scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler\",\n    \"s3\": \"scrapy.core.downloader.handlers.s3.S3DownloadHandler\",\n    \"ftp\": \"scrapy.core.downloader.handlers.ftp.FTPDownloadHandler\",\n}\n```\n\nA dict containing the [download handlers](download-handlers.html#topics-download-handlers)\nenabled by default in Scrapy. You should never modify this setting in your\nproject, modify `DOWNLOAD_HANDLERS` instead.\n\nYou can disable any of these download handlers by assigning `None` to their\nURI scheme in `DOWNLOAD_HANDLERS`. E.g., to disable the built-in FTP\nhandler (without replacement), place this in your `settings.py`:\n\n```\nDOWNLOAD_HANDLERS = {\n    \"ftp\": None,\n}\n```\n\n### DOWNLOAD_SLOTS\n\nDefault: `{}`\n\nAllows to define concurrency/delay parameters on per slot (domain) basis:\n\n> ```\n> DOWNLOAD_SLOTS = {\n>     \"quotes.toscrape.com\": {\"concurrency\": 1, \"delay\": 2, \"randomize_delay\": False},\n>     \"books.toscrape.com\": {\"delay\": 3, \"randomize_delay\": False},\n> }\n> ```\n\nFor other downloader slots default settings values will be used:\n\n- `DOWNLOAD_DELAY`: `delay`\n- `CONCURRENT_REQUESTS_PER_DOMAIN`: `concurrency`\n- `RANDOMIZE_DOWNLOAD_DELAY`: `randomize_delay`\n\n### DOWNLOAD_TIMEOUT\n\nDefault: `180`\n\nThe amount of time (in secs) that the downloader will wait before timing out.\n\nThis timeout can be per-request using the [`download_timeout`](request-response.html#std-reqmeta-download_timeout)\n[`Request.meta`](request-response.html#scrapy.Request.meta) key.\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers.\n\n### DOWNLOAD_MAXSIZE\n\nDefault: `1073741824` (1 GiB)\n\nThe maximum response body size (in bytes) allowed. Bigger responses are\naborted and ignored.\n\nThis applies both before and after compression. If decompressing a response\nbody would exceed this limit, decompression is aborted and the response is\nignored.\n\nUse `0` to disable this limit.\n\nThis limit can be set per-request using the `download_maxsize`\n[`Request.meta`](request-response.html#scrapy.Request.meta) key.\n\nChecking responses before decompressing them needs to be implemented inside\nthe [download handler](download-handlers.html#topics-download-handlers), so it’s not\nguaranteed to be supported by all 3rd-party handlers.\n\n### DOWNLOAD_WARNSIZE\n\nDefault: `33554432` (32 MiB)\n\nIf the size of a response exceeds this value, before or after compression, a\nwarning will be logged about it.\n\nUse `0` to disable this limit.\n\nThis limit can be set per-request using the `download_warnsize`\n[`Request.meta`](request-response.html#scrapy.Request.meta) key.\n\nChecking responses before decompressing them needs to be implemented inside\nthe [download handler](download-handlers.html#topics-download-handlers), so it’s not\nguaranteed to be supported by all 3rd-party handlers.\n\n### DOWNLOAD_FAIL_ON_DATALOSS\n\nDefault: `True`\n\nWhether or not to fail on broken responses, that is, declared\n`Content-Length` does not match content sent by the server or chunked\nresponse was not properly finish. If `True`, these responses raise a\n`ResponseFailed([_DataLoss])` error. If `False`, these responses\nare passed through and the flag `dataloss` is added to the response, i.e.:\n`'dataloss' in response.flags` is `True`.\n\nOptionally, this can be set per-request basis by using the\n[`download_fail_on_dataloss`](request-response.html#std-reqmeta-download_fail_on_dataloss) Request.meta key to `False`.\n\nA broken response, or data loss error, may happen under several\ncircumstances, from server misconfiguration to network errors to data\ncorruption. It is up to the user to decide if it makes sense to process\nbroken responses considering they may contain partial or incomplete content.\nIf [`RETRY_ENABLED`](downloader-middleware.html#std-setting-RETRY_ENABLED) is `True` and this setting is set to `True`,\nthe `ResponseFailed([_DataLoss])` failure will be retried as usual.\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers.\n\nThis setting is ignored by the\n[`H2DownloadHandler`](download-handlers.html#scrapy.core.downloader.handlers.http2.H2DownloadHandler)\n[download handler](download-handlers.html#topics-download-handlers). In case of a data loss\nerror, the corresponding HTTP/2 connection may be corrupted, affecting other\nrequests that use the same connection; hence, a `ResponseFailed([InvalidBodyLengthError])`\nfailure is always raised for every request that was using that connection.\n\n### DUPEFILTER_CLASS\n\nDefault: `'scrapy.dupefilters.RFPDupeFilter'`\n\nThe class used to detect and filter duplicate requests.\n\nThe default, `RFPDupeFilter`, filters based on the\n[`REQUEST_FINGERPRINTER_CLASS`](request-response.html#std-setting-REQUEST_FINGERPRINTER_CLASS) setting.\n\nTo change how duplicates are checked, you can point `DUPEFILTER_CLASS`\nto a custom subclass of `RFPDupeFilter` that\noverrides its `__init__` method to use a [different request\nfingerprinting class](request-response.html#custom-request-fingerprinter). For example:\n\n```\nfrom scrapy.dupefilters import RFPDupeFilter\nfrom scrapy.utils.request import fingerprint\n\nclass CustomRequestFingerprinter:\n    def fingerprint(self, request):\n        return fingerprint(request, include_headers=[\"X-ID\"])\n\nclass CustomDupeFilter(RFPDupeFilter):\n\n    def __init__(self, path=None, debug=False, *, fingerprinter=None):\n        super().__init__(\n            path=path, debug=debug, fingerprinter=CustomRequestFingerprinter()\n        )\n```\n\nTo disable duplicate request filtering set `DUPEFILTER_CLASS` to\n`'scrapy.dupefilters.BaseDupeFilter'`. Note that not filtering out duplicate\nrequests may cause crawling loops. It is usually better to set\nthe `dont_filter` parameter to `True` on the `__init__` method of a\nspecific [`Request`](request-response.html#scrapy.Request) object that should not be filtered out.\n\nA class assigned to `DUPEFILTER_CLASS` must implement the following\ninterface:\n\n```\nclass MyDupeFilter:\n\n    @classmethod\n    def from_crawler(cls, crawler):\n        \"\"\"Returns an instance of this duplicate request filtering class\n        based on the current Crawler instance.\"\"\"\n        return cls()\n\n    def request_seen(self, request):\n        \"\"\"Returns ``True`` if *request* is a duplicate of another request\n        seen in a previous call to :meth:`request_seen`, or ``False``\n        otherwise.\"\"\"\n        return False\n\n    def open(self):\n        \"\"\"Called before the spider opens. It may return a deferred.\"\"\"\n        pass\n\n    def close(self, reason):\n        \"\"\"Called before the spider closes. It may return a deferred.\"\"\"\n        pass\n\n    def log(self, request, spider):\n        \"\"\"Logs that a request has been filtered out.\n\n        It is called right after a call to :meth:`request_seen` that\n        returns ``True``.\n\n        If :meth:`request_seen` always returns ``False``, such as in the\n        case of :class:`~scrapy.dupefilters.BaseDupeFilter`, this method\n        may be omitted.\n        \"\"\"\n        pass\n```\n\n***class*scrapy.dupefilters.BaseDupeFilter[[source]](../_modules/scrapy/dupefilters.html#BaseDupeFilter)**\n\nDummy duplicate request filtering class (`DUPEFILTER_CLASS`)\nthat does not filter out any request.\n\n***class*scrapy.dupefilters.RFPDupeFilter(*path: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*, *debug: [bool](https://docs.python.org/3/library/functions.html#bool) = False*, ***, *fingerprinter: RequestFingerprinterProtocol | [None](https://docs.python.org/3/library/constants.html#None) = None*)[[source]](../_modules/scrapy/dupefilters.html#RFPDupeFilter)**\n\nDuplicate request filtering class (`DUPEFILTER_CLASS`) that\nfilters out requests with the canonical\n([`w3lib.url.canonicalize_url()`](https://w3lib.readthedocs.io/en/latest/w3lib.html#w3lib.url.canonicalize_url)) `url`,\n`method` and `body`.\n\n### DUPEFILTER_DEBUG\n\nDefault: `False`\n\nBy default, `RFPDupeFilter` only logs the first duplicate request.\nSetting `DUPEFILTER_DEBUG` to `True` will make it log all duplicate requests.\n\n### EDITOR\n\nDefault: `vi` (on Unix systems) or the IDLE editor (on Windows)\n\nThe editor to use for editing spiders with the [`edit`](commands.html#std-command-edit) command.\nAdditionally, if the `EDITOR` environment variable is set, the [`edit`](commands.html#std-command-edit)\ncommand will prefer it over the default setting.\n\n### EXTENSIONS\n\nDefault:: `{}`\n\nComponent priority dictionary of\nenabled extensions. See [Extensions](extensions.html#topics-extensions).\n\n### EXTENSIONS_BASE\n\nDefault:\n\n```\n{\n    \"scrapy.extensions.corestats.CoreStats\": 0,\n    \"scrapy.extensions.telnet.TelnetConsole\": 0,\n    \"scrapy.extensions.memusage.MemoryUsage\": 0,\n    \"scrapy.extensions.memdebug.MemoryDebugger\": 0,\n    \"scrapy.extensions.closespider.CloseSpider\": 0,\n    \"scrapy.extensions.feedexport.FeedExporter\": 0,\n    \"scrapy.extensions.logstats.LogStats\": 0,\n    \"scrapy.extensions.spiderstate.SpiderState\": 0,\n    \"scrapy.extensions.throttle.AutoThrottle\": 0,\n}\n```\n\nA dict containing the extensions available by default in Scrapy, and their\norders. This setting contains all stable built-in extensions. Keep in mind that\nsome of them need to be enabled through a setting.\n\nFor more information See the [extensions user guide](extensions.html#topics-extensions)\nand the [list of available extensions](extensions.html#topics-extensions-ref).\n\n### FEED_TEMPDIR\n\nThe Feed Temp dir allows you to set a custom folder to save crawler\ntemporary files before uploading with [FTP feed storage](feed-exports.html#topics-feed-storage-ftp) and\n[Amazon S3](feed-exports.html#topics-feed-storage-s3).\n\n### FEED_STORAGE_GCS_ACL\n\nThe Access Control List (ACL) used when storing items to [Google Cloud Storage](feed-exports.html#topics-feed-storage-gcs).\nFor more information on how to set this value, please refer to the column *JSON API* in [Google Cloud documentation](https://cloud.google.com/storage/docs/access-control/lists).\n\n### FORCE_CRAWLER_PROCESS\n\nDefault: `False`\n\nIf `False`, [Scrapy commands that need a CrawlerProcess](commands.html#topics-commands-crawlerprocess) will decide between using\n[`scrapy.crawler.AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess) and\n[`scrapy.crawler.CrawlerProcess`](api.html#scrapy.crawler.CrawlerProcess) based on the value of the\n`TWISTED_REACTOR` setting, but ignoring its value in per-spider\nsettings.\n\nIf `True`, these commands will always use\n[`CrawlerProcess`](api.html#scrapy.crawler.CrawlerProcess).\n\nSet this to `True` if you want to set `TWISTED_REACTOR` to a\nnon-default value in per-spider settings.\n\n### FTP_PASSIVE_MODE\n\nDefault: `True`\n\nWhether or not to use passive mode when initiating FTP transfers.\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers.\n\n### FTP_PASSWORD\n\nDefault: `\"guest\"`\n\nThe password to use for FTP connections when there is no `\"ftp_password\"`\nin `Request` meta.\n\nParaphrasing [RFC 1635](https://datatracker.ietf.org/doc/html/rfc1635), although it is common to use either the password\n“guest” or one’s e-mail address for anonymous FTP,\nsome FTP servers explicitly ask for the user’s e-mail address\nand will not allow login with the “guest” password.\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers.\n\n### FTP_USER\n\nDefault: `\"anonymous\"`\n\nThe username to use for FTP connections when there is no `\"ftp_user\"`\nin `Request` meta.\n\nHandling of this setting needs to be implemented inside the [download\nhandler](download-handlers.html#topics-download-handlers), so it’s not guaranteed to be supported\nby all 3rd-party handlers.\n\n### GCS_PROJECT_ID\n\nDefault: `None`\n\nThe Project ID that will be used when storing data on [Google Cloud Storage](https://cloud.google.com/storage/).\n\n### ITEM_PIPELINES\n\nDefault: `{}`\n\nA dict containing the item pipelines to use, and their orders. Order values are\narbitrary, but it is customary to define them in the 0-1000 range. Lower orders\nprocess before higher orders.\n\nExample:\n\n```\nITEM_PIPELINES = {\n    \"mybot.pipelines.validate.ValidateMyItem\": 300,\n    \"mybot.pipelines.validate.StoreMyItem\": 800,\n}\n```\n\n### ITEM_PIPELINES_BASE\n\nDefault: `{}`\n\nA dict containing the pipelines enabled by default in Scrapy. You should never\nmodify this setting in your project, modify `ITEM_PIPELINES` instead.\n\n### JOBDIR\n\nDefault: `None`\n\nA string indicating the directory for storing the state of a crawl when\n[pausing and resuming crawls](jobs.html#topics-jobs).\n\n### LOG_ENABLED\n\nDefault: `True`\n\nWhether to enable logging.\n\n### LOG_ENCODING\n\nDefault: `'utf-8'`\n\nThe encoding to use for logging.\n\n### LOG_FILE\n\nDefault: `None`\n\nFile name to use for logging output. If `None`, standard error will be used.\n\n### LOG_FILE_APPEND\n\nDefault: `True`\n\nIf `False`, the log file specified with `LOG_FILE` will be\noverwritten (discarding the output from previous runs, if any).\n\n### LOG_FORMAT\n\nDefault: `'%(asctime)s [%(name)s] %(levelname)s: %(message)s'`\n\nString for formatting log messages. Refer to the\n[Python logging documentation](https://docs.python.org/3/library/logging.html#logrecord-attributes) for the whole\nlist of available placeholders.\n\n### LOG_DATEFORMAT\n\nDefault: `'%Y-%m-%d %H:%M:%S'`\n\nString for formatting date/time, expansion of the `%(asctime)s` placeholder\nin `LOG_FORMAT`. Refer to the\n[Python datetime documentation](https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior) for the\nwhole list of available directives.\n\n### LOG_FORMATTER\n\nDefault: [`scrapy.logformatter.LogFormatter`](logging.html#scrapy.logformatter.LogFormatter)\n\nThe class to use for [formatting log messages](logging.html#custom-log-formats) for different actions.\n\n### LOG_LEVEL\n\nDefault: `'DEBUG'`\n\nMinimum level to log. Available levels are: CRITICAL, ERROR, WARNING,\nINFO, DEBUG. For more info see [Logging](logging.html#topics-logging).\n\n### LOG_STDOUT\n\nDefault: `False`\n\nIf `True`, all standard output (and error) of your process will be redirected\nto the log. For example if you `print('hello')` it will appear in the Scrapy\nlog.\n\n### LOG_SHORT_NAMES\n\nDefault: `False`\n\nIf `True`, the logs will just contain the root path. If it is set to `False`\nthen it displays the component responsible for the log output\n\n### LOG_VERSIONS\n\nDefault: `[\"lxml\", \"libxml2\", \"cssselect\", \"parsel\", \"w3lib\", \"Twisted\", \"Python\", \"pyOpenSSL\", \"cryptography\", \"Platform\"]`\n\nLogs the installed versions of the specified items.\n\nAn item can be any installed Python package.\n\nThe following special items are also supported:\n\n- `libxml2`\n- `Platform` ([`platform.platform()`](https://docs.python.org/3/library/platform.html#platform.platform))\n- `Python`\n\n### LOGSTATS_INTERVAL\n\nDefault: `60.0`\n\nThe interval (in seconds) between each logging printout of the stats\nby [`LogStats`](extensions.html#scrapy.extensions.logstats.LogStats).\n\n### MEMDEBUG_ENABLED\n\nDefault: `False`\n\nWhether to enable memory debugging.\n\n### MEMDEBUG_NOTIFY\n\nDefault: `[]`\n\nWhen memory debugging is enabled a memory report will be sent to the specified\naddresses if this setting is not empty, otherwise the report will be written to\nthe log.\n\nExample:\n\n```\nMEMDEBUG_NOTIFY = ['user@example.com']\n```\n\n### MEMUSAGE_ENABLED\n\nDefault: `True`\n\nScope: `scrapy.extensions.memusage`\n\nWhether to enable the memory usage extension. This extension keeps track of\na peak memory used by the process (it writes it to stats). It can also\noptionally shutdown the Scrapy process when it exceeds a memory limit\n(see `MEMUSAGE_LIMIT_MB`), and notify by email when that happened\n(see `MEMUSAGE_NOTIFY_MAIL`).\n\nSee [Memory usage extension](extensions.html#topics-extensions-ref-memusage).\n\n### MEMUSAGE_LIMIT_MB\n\nDefault: `0`\n\nScope: `scrapy.extensions.memusage`\n\nThe maximum amount of memory to allow (in megabytes) before shutting down\nScrapy (if MEMUSAGE_ENABLED is True). If zero, no check will be performed.\n\nSee [Memory usage extension](extensions.html#topics-extensions-ref-memusage).\n\n### MEMUSAGE_CHECK_INTERVAL_SECONDS\n\nDefault: `60.0`\n\nScope: `scrapy.extensions.memusage`\n\nThe [Memory usage extension](extensions.html#topics-extensions-ref-memusage)\nchecks the current memory usage, versus the limits set by\n`MEMUSAGE_LIMIT_MB` and `MEMUSAGE_WARNING_MB`,\nat fixed time intervals.\n\nThis sets the length of these intervals, in seconds.\n\nSee [Memory usage extension](extensions.html#topics-extensions-ref-memusage).\n\n### MEMUSAGE_NOTIFY_MAIL\n\nDefault: `False`\n\nScope: `scrapy.extensions.memusage`\n\nA list of emails to notify if the memory limit has been reached.\n\nExample:\n\n```\nMEMUSAGE_NOTIFY_MAIL = ['user@example.com']\n```\n\nSee [Memory usage extension](extensions.html#topics-extensions-ref-memusage).\n\n### MEMUSAGE_WARNING_MB\n\nDefault: `0`\n\nScope: `scrapy.extensions.memusage`\n\nThe maximum amount of memory to allow (in megabytes) before sending a warning\nemail notifying about it. If zero, no warning will be produced.\n\n### NEWSPIDER_MODULE\n\nDefault: `\"<project name>.spiders\"` (fallback: `\"\"`)\n\nModule where to create new spiders using the [`genspider`](commands.html#std-command-genspider) command.\n\nExample:\n\n```\nNEWSPIDER_MODULE = 'mybot.spiders_dev'\n```\n\n### RANDOMIZE_DOWNLOAD_DELAY\n\nDefault: `True`\n\nIf enabled, Scrapy will wait a random amount of time (between 0.5 * `DOWNLOAD_DELAY` and 1.5 * `DOWNLOAD_DELAY`) while fetching requests from the same\nwebsite.\n\nThis randomization decreases the chance of the crawler being detected (and\nsubsequently blocked) by sites which analyze requests looking for statistically\nsignificant similarities in the time between their requests.\n\nThe randomization policy is the same used by [wget](https://www.gnu.org/software/wget/manual/wget.html) `--random-wait` option.\n\nIf `DOWNLOAD_DELAY` is zero (default) this option has no effect.\n\n### REACTOR_THREADPOOL_MAXSIZE\n\nDefault: `10`\n\nThe maximum limit for Twisted Reactor thread pool size. This is common\nmulti-purpose thread pool used by various Scrapy components. Threaded\nDNS Resolver, BlockingFeedStorage, S3FilesStore just to name a few. Increase\nthis value if you’re experiencing problems with insufficient blocking IO.\n\n### REDIRECT_PRIORITY_ADJUST\n\nDefault: `+2`\n\nScope: `scrapy.downloadermiddlewares.redirect.RedirectMiddleware`\n\nAdjust redirect request priority relative to original request:\n\n- **a positive priority adjust (default) means higher priority.**\n- a negative priority adjust means lower priority.\n\n### ROBOTSTXT_OBEY\n\nDefault: `True` (fallback: `False`)\n\nIf enabled, Scrapy will respect robots.txt policies. For more information see\n[RobotsTxtMiddleware](downloader-middleware.html#topics-dlmw-robots).\n\nWhile the default value is `False` for historical reasons,\nthis option is enabled by default in settings.py file generated\nby `scrapy startproject` command.\n\n### ROBOTSTXT_PARSER\n\nDefault: `'scrapy.robotstxt.ProtegoRobotParser'`\n\nThe parser backend to use for parsing `robots.txt` files. For more information see\n[RobotsTxtMiddleware](downloader-middleware.html#topics-dlmw-robots).\n\n#### ROBOTSTXT_USER_AGENT\n\nDefault: `None`\n\nThe user agent string to use for matching in the robots.txt file. If `None`,\nthe User-Agent header you are sending with the request or the\n`USER_AGENT` setting (in that order) will be used for determining\nthe user agent to use in the robots.txt file.\n\n### SCHEDULER\n\nDefault: `'scrapy.core.scheduler.Scheduler'`\n\nThe scheduler class to be used for crawling.\nSee the [Scheduler](scheduler.html#topics-scheduler) topic for details.\n\n### SCHEDULER_DEBUG\n\nDefault: `False`\n\nSetting to `True` will log debug information about the requests scheduler.\nThis currently logs (only once) if the requests cannot be serialized to disk.\nStats counter (`scheduler/unserializable`) tracks the number of times this happens.\n\nExample entry in logs:\n\n```\n1956-01-31 00:00:00+0800 [scrapy.core.scheduler] ERROR: Unable to serialize request:\n<GET http://example.com> - reason: cannot serialize <Request at 0x9a7c7ec>\n(type Request)> - no more unserializable requests will be logged\n(see 'scheduler/unserializable' stats counter)\n```\n\n### SCHEDULER_DISK_QUEUE\n\nDefault: `'scrapy.squeues.PickleLifoDiskQueue'`\n\nType of disk queue that will be used by the scheduler. Other available types\nare `scrapy.squeues.PickleFifoDiskQueue`,\n`scrapy.squeues.MarshalFifoDiskQueue`,\n`scrapy.squeues.MarshalLifoDiskQueue`.\n\n### SCHEDULER_MEMORY_QUEUE\n\nDefault: `'scrapy.squeues.LifoMemoryQueue'`\n\nType of in-memory queue used by the scheduler. Other available type is:\n`scrapy.squeues.FifoMemoryQueue`.\n\n### SCHEDULER_PRIORITY_QUEUE\n\nDefault: `'scrapy.pqueues.DownloaderAwarePriorityQueue'`\n\nType of priority queue used by the scheduler. Another available type is\n`scrapy.pqueues.ScrapyPriorityQueue`.\n`scrapy.pqueues.DownloaderAwarePriorityQueue` works better than\n`scrapy.pqueues.ScrapyPriorityQueue` when you crawl many different\ndomains in parallel.\n\n### SCHEDULER_START_DISK_QUEUE\n\nDefault: `'scrapy.squeues.PickleFifoDiskQueue'`\n\nType of disk queue (see `JOBDIR`) that the [scheduler](scheduler.html#topics-scheduler) uses for [start requests](spiders.html#start-requests).\n\nFor available choices, see `SCHEDULER_DISK_QUEUE`.\n\nUse `None` or `\"\"` to disable these separate queues entirely, and instead\nhave start requests share the same queues as other requests.\n\nDisabling separate start request queues makes [start request order](scheduler.html#start-request-order) unintuitive: start requests will be sent in order\nonly until `CONCURRENT_REQUESTS` is reached, then remaining start\nrequests will be sent in reverse order.\n\n### SCHEDULER_START_MEMORY_QUEUE\n\nDefault: `'scrapy.squeues.FifoMemoryQueue'`\n\nType of in-memory queue that the [scheduler](scheduler.html#topics-scheduler) uses for\n[start requests](spiders.html#start-requests).\n\nFor available choices, see `SCHEDULER_MEMORY_QUEUE`.\n\nUse `None` or `\"\"` to disable these separate queues entirely, and instead\nhave start requests share the same queues as other requests.\n\nDisabling separate start request queues makes [start request order](scheduler.html#start-request-order) unintuitive: start requests will be sent in order\nonly until `CONCURRENT_REQUESTS` is reached, then remaining start\nrequests will be sent in reverse order.\n\n### SCRAPER_SLOT_MAX_ACTIVE_SIZE\n\nDefault: `5_000_000`\n\nSoft limit (in bytes) for response data being processed.\n\nWhile the sum of the sizes of all responses being processed is above this value,\nScrapy does not process new requests.\n\n### SPIDER_CONTRACTS\n\nDefault:: `{}`\n\nA dict containing the spider contracts enabled in your project, used for\ntesting spiders. For more info see [Spiders Contracts](contracts.html#topics-contracts).\n\n### SPIDER_CONTRACTS_BASE\n\nDefault:\n\n```\n{\n    \"scrapy.contracts.default.UrlContract\": 1,\n    \"scrapy.contracts.default.ReturnsContract\": 2,\n    \"scrapy.contracts.default.ScrapesContract\": 3,\n}\n```\n\nA dict containing the Scrapy contracts enabled by default in Scrapy. You should\nnever modify this setting in your project, modify `SPIDER_CONTRACTS`\ninstead. For more info see [Spiders Contracts](contracts.html#topics-contracts).\n\nYou can disable any of these contracts by assigning `None` to their class\npath in `SPIDER_CONTRACTS`. E.g., to disable the built-in\n`ScrapesContract`, place this in your `settings.py`:\n\n```\nSPIDER_CONTRACTS = {\n    \"scrapy.contracts.default.ScrapesContract\": None,\n}\n```\n\n### SPIDER_LOADER_CLASS\n\nDefault: `'scrapy.spiderloader.SpiderLoader'`\n\nThe class that will be used for loading spiders, which must implement the\n[SpiderLoader API](api.html#topics-api-spiderloader).\n\n### SPIDER_LOADER_WARN_ONLY\n\nDefault: `False`\n\nBy default, when Scrapy tries to import spider classes from `SPIDER_MODULES`,\nit will fail loudly if there is any `ImportError` or `SyntaxError` exception.\nBut you can choose to silence this exception and turn it into a simple\nwarning by setting `SPIDER_LOADER_WARN_ONLY = True`.\n\n### SPIDER_MIDDLEWARES\n\nDefault:: `{}`\n\nA dict containing the spider middlewares enabled in your project, and their\norders. For more info see [Activating a spider middleware](spider-middleware.html#topics-spider-middleware-setting).\n\n### SPIDER_MIDDLEWARES_BASE\n\nDefault:\n\n```\n{\n    \"scrapy.spidermiddlewares.httperror.HttpErrorMiddleware\": 50,\n    \"scrapy.spidermiddlewares.referer.RefererMiddleware\": 700,\n    \"scrapy.spidermiddlewares.urllength.UrlLengthMiddleware\": 800,\n    \"scrapy.spidermiddlewares.depth.DepthMiddleware\": 900,\n}\n```\n\nA dict containing the spider middlewares enabled by default in Scrapy, and\ntheir orders. Low orders are closer to the engine, high orders are closer to\nthe spider. For more info see [Activating a spider middleware](spider-middleware.html#topics-spider-middleware-setting).\n\n### SPIDER_MODULES\n\nDefault: `[\"<project name>.spiders\"]` (fallback: `[]`)\n\nA list of modules where Scrapy will look for spiders.\n\nExample:\n\n```\nSPIDER_MODULES = [\"mybot.spiders_prod\", \"mybot.spiders_dev\"]\n```\n\n### STATS_CLASS\n\nDefault: `'scrapy.statscollectors.MemoryStatsCollector'`\n\nThe class to use for collecting stats, who must implement the\n[Stats Collector API](api.html#topics-api-stats).\n\n### STATS_DUMP\n\nDefault: `True`\n\nDump the [Scrapy stats](stats.html#topics-stats) (to the Scrapy log) once the spider\nfinishes.\n\nFor more info see: [Stats Collection](stats.html#topics-stats).\n\n### STATSMAILER_RCPTS\n\nDefault: `[]` (empty list)\n\nSend Scrapy stats after spiders finish scraping. See\n[`StatsMailer`](extensions.html#scrapy.extensions.statsmailer.StatsMailer) for more info.\n\n### TELNETCONSOLE_ENABLED\n\nDefault: `True`\n\nA boolean which specifies if the [telnet console](telnetconsole.html#topics-telnetconsole)\nwill be enabled (provided its extension is also enabled).\n\n### TEMPLATES_DIR\n\nDefault: `templates` dir inside scrapy module\n\nThe directory where to look for templates when creating new projects with\n[`startproject`](commands.html#std-command-startproject) command and new spiders with [`genspider`](commands.html#std-command-genspider)\ncommand.\n\nThe project name must not conflict with the name of custom files or directories\nin the `project` subdirectory.\n\n### TWISTED_REACTOR\n\nDefault: `\"twisted.internet.asyncioreactor.AsyncioSelectorReactor\"`\n\nImport path of a given [`reactor`](https://docs.twisted.org/en/stable/api/twisted.internet.reactor.html).\n\nScrapy will install this reactor if no other reactor is installed yet, such as\nwhen the `scrapy` CLI program is invoked or when using the\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess) class or the\n[`CrawlerProcess`](api.html#scrapy.crawler.CrawlerProcess) class.\n\nIf you are using the [`AsyncCrawlerRunner`](api.html#scrapy.crawler.AsyncCrawlerRunner) class or the\n[`CrawlerRunner`](api.html#scrapy.crawler.CrawlerRunner) class, you also\nneed to install the correct reactor manually. You can do that using\n`install_reactor()`:\n\n**scrapy.utils.reactor.install_reactor(*reactor_path: [str](https://docs.python.org/3/library/stdtypes.html#str)*, *event_loop_path: [str](https://docs.python.org/3/library/stdtypes.html#str) | [None](https://docs.python.org/3/library/constants.html#None) = None*) → [None](https://docs.python.org/3/library/constants.html#None)[[source]](../_modules/scrapy/utils/reactor.html#install_reactor)**\n\nInstalls the [`reactor`](https://docs.twisted.org/en/stable/api/twisted.internet.reactor.html) with the specified\nimport path. Also installs the asyncio event loop with the specified import\npath if the asyncio reactor is enabled\n\nIf a reactor is already installed,\n`install_reactor()` has no effect.\n\n[`AsyncCrawlerRunner`](api.html#scrapy.crawler.AsyncCrawlerRunner) and other similar classes raise an\nexception if the installed reactor does not match the\n`TWISTED_REACTOR` setting; therefore, having top-level\n[`reactor`](https://docs.twisted.org/en/stable/api/twisted.internet.reactor.html) imports in project files and imported\nthird-party libraries will make Scrapy raise an exception when it checks which\nreactor is installed.\n\nIn order to use the reactor installed by Scrapy:\n\n```\nimport scrapy\nfrom twisted.internet import reactor\n\nclass QuotesSpider(scrapy.Spider):\n    name = \"quotes\"\n\n    def __init__(self, *args, **kwargs):\n        self.timeout = int(kwargs.pop(\"timeout\", \"60\"))\n        super(QuotesSpider, self).__init__(*args, **kwargs)\n\n    async def start(self):\n        reactor.callLater(self.timeout, self.stop)\n\n        urls = [\"https://quotes.toscrape.com/page/1\"]\n        for url in urls:\n            yield scrapy.Request(url=url, callback=self.parse)\n\n    def parse(self, response):\n        for quote in response.css(\"div.quote\"):\n            yield {\"text\": quote.css(\"span.text::text\").get()}\n\n    def stop(self):\n        self.crawler.engine.close_spider(self, \"timeout\")\n```\n\nwhich raises an exception, becomes:\n\n```\nimport scrapy\n\nclass QuotesSpider(scrapy.Spider):\n    name = \"quotes\"\n\n    def __init__(self, *args, **kwargs):\n        self.timeout = int(kwargs.pop(\"timeout\", \"60\"))\n        super(QuotesSpider, self).__init__(*args, **kwargs)\n\n    async def start(self):\n        from twisted.internet import reactor\n\n        reactor.callLater(self.timeout, self.stop)\n\n        urls = [\"https://quotes.toscrape.com/page/1\"]\n        for url in urls:\n            yield scrapy.Request(url=url, callback=self.parse)\n\n    def parse(self, response):\n        for quote in response.css(\"div.quote\"):\n            yield {\"text\": quote.css(\"span.text::text\").get()}\n\n    def stop(self):\n        self.crawler.engine.close_spider(self, \"timeout\")\n```\n\nIf this setting is set `None`, Scrapy will use the existing reactor if one is\nalready installed, or install the default reactor defined by Twisted for the\ncurrent platform.\n\nChanged in version 2.13: The default value was changed from `None` to\n`\"twisted.internet.asyncioreactor.AsyncioSelectorReactor\"`.\n\nFor additional information, see [Choosing a Reactor and GUI Toolkit Integration](https://docs.twisted.org/en/stable/core/howto/choosing-reactor.html).\n\n### URLLENGTH_LIMIT\n\nDefault: `2083`\n\nScope: `spidermiddlewares.urllength`\n\nThe maximum URL length to allow for crawled URLs.\n\nThis setting can act as a stopping condition in case of URLs of ever-increasing\nlength, which may be caused for example by a programming error either in the\ntarget server or in your code. See also [`REDIRECT_MAX_TIMES`](downloader-middleware.html#std-setting-REDIRECT_MAX_TIMES) and\n`DEPTH_LIMIT`.\n\nUse `0` to allow URLs of any length.\n\nThe default value is copied from the [Microsoft Internet Explorer maximum URL\nlength](https://support.microsoft.com/en-us/topic/maximum-url-length-is-2-083-characters-in-internet-explorer-174e7c8a-6666-f4e0-6fd6-908b53c12246), even though this setting exists for different reasons.\n\n### USER_AGENT\n\nDefault: `\"Scrapy/VERSION (+https://scrapy.org)\"`\n\nThe default User-Agent to use when crawling, unless overridden. This user agent is\nalso used by [`RobotsTxtMiddleware`](downloader-middleware.html#scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware)\nif `ROBOTSTXT_USER_AGENT` setting is `None` and\nthere is no overriding User-Agent header specified for the request.\n\n### WARN_ON_GENERATOR_RETURN_VALUE\n\nDefault: `True`\n\nWhen enabled, Scrapy will warn if generator-based callback methods (like\n`parse`) contain return statements with non-`None` values. This helps detect\npotential mistakes in spider development.\n\nDisable this setting to prevent syntax errors that may occur when dynamically\nmodifying generator function source code during runtime, skip AST parsing of\ncallback functions, or improve performance in auto-reloading development\nenvironments.\n\n### Settings documented elsewhere:\n\nThe following settings are documented elsewhere, please check each specific\ncase to see how to enable and use them.\n\n- [AUTOTHROTTLE_DEBUG](autothrottle.html#std-setting-AUTOTHROTTLE_DEBUG)\n- [AUTOTHROTTLE_ENABLED](autothrottle.html#std-setting-AUTOTHROTTLE_ENABLED)\n- [AUTOTHROTTLE_MAX_DELAY](autothrottle.html#std-setting-AUTOTHROTTLE_MAX_DELAY)\n- [AUTOTHROTTLE_START_DELAY](autothrottle.html#std-setting-AUTOTHROTTLE_START_DELAY)\n- [AUTOTHROTTLE_TARGET_CONCURRENCY](autothrottle.html#std-setting-AUTOTHROTTLE_TARGET_CONCURRENCY)\n- [CLOSESPIDER_ERRORCOUNT](extensions.html#std-setting-CLOSESPIDER_ERRORCOUNT)\n- [CLOSESPIDER_ITEMCOUNT](extensions.html#std-setting-CLOSESPIDER_ITEMCOUNT)\n- [CLOSESPIDER_PAGECOUNT](extensions.html#std-setting-CLOSESPIDER_PAGECOUNT)\n- [CLOSESPIDER_PAGECOUNT_NO_ITEM](extensions.html#std-setting-CLOSESPIDER_PAGECOUNT_NO_ITEM)\n- [CLOSESPIDER_TIMEOUT](extensions.html#std-setting-CLOSESPIDER_TIMEOUT)\n- [CLOSESPIDER_TIMEOUT_NO_ITEM](extensions.html#std-setting-CLOSESPIDER_TIMEOUT_NO_ITEM)\n- [COMMANDS_MODULE](commands.html#std-setting-COMMANDS_MODULE)\n- [COMPRESSION_ENABLED](downloader-middleware.html#std-setting-COMPRESSION_ENABLED)\n- [COOKIES_DEBUG](downloader-middleware.html#std-setting-COOKIES_DEBUG)\n- [COOKIES_ENABLED](downloader-middleware.html#std-setting-COOKIES_ENABLED)\n- [FEEDS](feed-exports.html#std-setting-FEEDS)\n- [FEED_EXPORTERS](feed-exports.html#std-setting-FEED_EXPORTERS)\n- [FEED_EXPORTERS_BASE](feed-exports.html#std-setting-FEED_EXPORTERS_BASE)\n- [FEED_EXPORT_BATCH_ITEM_COUNT](feed-exports.html#std-setting-FEED_EXPORT_BATCH_ITEM_COUNT)\n- [FEED_EXPORT_ENCODING](feed-exports.html#std-setting-FEED_EXPORT_ENCODING)\n- [FEED_EXPORT_FIELDS](feed-exports.html#std-setting-FEED_EXPORT_FIELDS)\n- [FEED_EXPORT_INDENT](feed-exports.html#std-setting-FEED_EXPORT_INDENT)\n- [FEED_STORAGES](feed-exports.html#std-setting-FEED_STORAGES)\n- [FEED_STORAGES_BASE](feed-exports.html#std-setting-FEED_STORAGES_BASE)\n- [FEED_STORAGE_FTP_ACTIVE](feed-exports.html#std-setting-FEED_STORAGE_FTP_ACTIVE)\n- [FEED_STORAGE_S3_ACL](feed-exports.html#std-setting-FEED_STORAGE_S3_ACL)\n- [FEED_STORE_EMPTY](feed-exports.html#std-setting-FEED_STORE_EMPTY)\n- [FEED_URI_PARAMS](feed-exports.html#std-setting-FEED_URI_PARAMS)\n- [FILES_EXPIRES](media-pipeline.html#std-setting-FILES_EXPIRES)\n- [FILES_RESULT_FIELD](media-pipeline.html#std-setting-FILES_RESULT_FIELD)\n- [FILES_STORE](media-pipeline.html#std-setting-FILES_STORE)\n- [FILES_STORE_GCS_ACL](media-pipeline.html#std-setting-FILES_STORE_GCS_ACL)\n- [FILES_STORE_S3_ACL](media-pipeline.html#std-setting-FILES_STORE_S3_ACL)\n- [FILES_URLS_FIELD](media-pipeline.html#std-setting-FILES_URLS_FIELD)\n- [HTTPCACHE_ALWAYS_STORE](downloader-middleware.html#std-setting-HTTPCACHE_ALWAYS_STORE)\n- [HTTPCACHE_DBM_MODULE](downloader-middleware.html#std-setting-HTTPCACHE_DBM_MODULE)\n- [HTTPCACHE_DIR](downloader-middleware.html#std-setting-HTTPCACHE_DIR)\n- [HTTPCACHE_ENABLED](downloader-middleware.html#std-setting-HTTPCACHE_ENABLED)\n- [HTTPCACHE_EXPIRATION_SECS](downloader-middleware.html#std-setting-HTTPCACHE_EXPIRATION_SECS)\n- [HTTPCACHE_GZIP](downloader-middleware.html#std-setting-HTTPCACHE_GZIP)\n- [HTTPCACHE_IGNORE_HTTP_CODES](downloader-middleware.html#std-setting-HTTPCACHE_IGNORE_HTTP_CODES)\n- [HTTPCACHE_IGNORE_MISSING](downloader-middleware.html#std-setting-HTTPCACHE_IGNORE_MISSING)\n- [HTTPCACHE_IGNORE_RESPONSE_CACHE_CONTROLS](downloader-middleware.html#std-setting-HTTPCACHE_IGNORE_RESPONSE_CACHE_CONTROLS)\n- [HTTPCACHE_IGNORE_SCHEMES](downloader-middleware.html#std-setting-HTTPCACHE_IGNORE_SCHEMES)\n- [HTTPCACHE_POLICY](downloader-middleware.html#std-setting-HTTPCACHE_POLICY)\n- [HTTPCACHE_STORAGE](downloader-middleware.html#std-setting-HTTPCACHE_STORAGE)\n- [HTTPERROR_ALLOWED_CODES](spider-middleware.html#std-setting-HTTPERROR_ALLOWED_CODES)\n- [HTTPERROR_ALLOW_ALL](spider-middleware.html#std-setting-HTTPERROR_ALLOW_ALL)\n- [HTTPPROXY_AUTH_ENCODING](downloader-middleware.html#std-setting-HTTPPROXY_AUTH_ENCODING)\n- [HTTPPROXY_ENABLED](downloader-middleware.html#std-setting-HTTPPROXY_ENABLED)\n- [IMAGES_EXPIRES](media-pipeline.html#std-setting-IMAGES_EXPIRES)\n- [IMAGES_MIN_HEIGHT](media-pipeline.html#std-setting-IMAGES_MIN_HEIGHT)\n- [IMAGES_MIN_WIDTH](media-pipeline.html#std-setting-IMAGES_MIN_WIDTH)\n- [IMAGES_RESULT_FIELD](media-pipeline.html#std-setting-IMAGES_RESULT_FIELD)\n- [IMAGES_STORE](media-pipeline.html#std-setting-IMAGES_STORE)\n- [IMAGES_STORE_GCS_ACL](media-pipeline.html#std-setting-IMAGES_STORE_GCS_ACL)\n- [IMAGES_STORE_S3_ACL](media-pipeline.html#std-setting-IMAGES_STORE_S3_ACL)\n- [IMAGES_THUMBS](media-pipeline.html#std-setting-IMAGES_THUMBS)\n- [IMAGES_URLS_FIELD](media-pipeline.html#std-setting-IMAGES_URLS_FIELD)\n- [MAIL_FROM](email.html#std-setting-MAIL_FROM)\n- [MAIL_HOST](email.html#std-setting-MAIL_HOST)\n- [MAIL_PASS](email.html#std-setting-MAIL_PASS)\n- [MAIL_PORT](email.html#std-setting-MAIL_PORT)\n- [MAIL_SSL](email.html#std-setting-MAIL_SSL)\n- [MAIL_TLS](email.html#std-setting-MAIL_TLS)\n- [MAIL_USER](email.html#std-setting-MAIL_USER)\n- [MEDIA_ALLOW_REDIRECTS](media-pipeline.html#std-setting-MEDIA_ALLOW_REDIRECTS)\n- [METAREFRESH_ENABLED](downloader-middleware.html#std-setting-METAREFRESH_ENABLED)\n- [METAREFRESH_IGNORE_TAGS](downloader-middleware.html#std-setting-METAREFRESH_IGNORE_TAGS)\n- [METAREFRESH_MAXDELAY](downloader-middleware.html#std-setting-METAREFRESH_MAXDELAY)\n- [PERIODIC_LOG_DELTA](extensions.html#std-setting-PERIODIC_LOG_DELTA)\n- [PERIODIC_LOG_STATS](extensions.html#std-setting-PERIODIC_LOG_STATS)\n- [PERIODIC_LOG_TIMING_ENABLED](extensions.html#std-setting-PERIODIC_LOG_TIMING_ENABLED)\n- [REDIRECT_ENABLED](downloader-middleware.html#std-setting-REDIRECT_ENABLED)\n- [REDIRECT_MAX_TIMES](downloader-middleware.html#std-setting-REDIRECT_MAX_TIMES)\n- [REFERER_ENABLED](spider-middleware.html#std-setting-REFERER_ENABLED)\n- [REFERRER_POLICY](spider-middleware.html#std-setting-REFERRER_POLICY)\n- [REQUEST_FINGERPRINTER_CLASS](request-response.html#std-setting-REQUEST_FINGERPRINTER_CLASS)\n- [RETRY_ENABLED](downloader-middleware.html#std-setting-RETRY_ENABLED)\n- [RETRY_EXCEPTIONS](downloader-middleware.html#std-setting-RETRY_EXCEPTIONS)\n- [RETRY_HTTP_CODES](downloader-middleware.html#std-setting-RETRY_HTTP_CODES)\n- [RETRY_PRIORITY_ADJUST](downloader-middleware.html#std-setting-RETRY_PRIORITY_ADJUST)\n- [RETRY_TIMES](downloader-middleware.html#std-setting-RETRY_TIMES)\n- [TELNETCONSOLE_HOST](telnetconsole.html#std-setting-TELNETCONSOLE_HOST)\n- [TELNETCONSOLE_PASSWORD](telnetconsole.html#std-setting-TELNETCONSOLE_PASSWORD)\n- [TELNETCONSOLE_PORT](telnetconsole.html#std-setting-TELNETCONSOLE_PORT)\n- [TELNETCONSOLE_USERNAME](telnetconsole.html#std-setting-TELNETCONSOLE_USERNAME)",
+      "sections": [
+        {
+          "heading": "input002\\settings.md",
+          "text": "# Settings — Scrapy 2.14.1 documentation\n\n- Settings\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/settings.rst)\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 149
+          },
+          "metadata": {
+            "heading_path": [
+              "input002\\settings.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# Settings — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "Settings"
+            ]
+          }
+        },
+        {
+          "heading": "Settings",
+          "text": "The Scrapy settings allows you to customize the behaviour of all Scrapy\ncomponents, including the core, extensions, pipelines and spiders themselves.\n\nThe infrastructure of the settings provides a global namespace of key-value mappings\nthat the code can use to pull configuration values from. The settings can be\npopulated through different mechanisms, which are described below.\n\nThe settings are also the mechanism for selecting the currently active Scrapy\nproject (in case you have many).\n\nFor a list of available built-in settings see: Built-in settings reference.",
+          "level": 1,
+          "span": {
+            "start": 160,
+            "end": 731
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+            "sibling_headings": [
+              "input002\\settings.md"
+            ]
+          }
+        },
+        {
+          "heading": "Designating the settings",
+          "text": "When you use Scrapy, you have to tell it which settings you’re using. You can\ndo this by using an environment variable, `SCRAPY_SETTINGS_MODULE`.\n\nThe value of `SCRAPY_SETTINGS_MODULE` should be in Python path syntax, e.g.\n`myproject.settings`. Note that the settings module should be on the\nPython [import search path](https://docs.python.org/3/tutorial/modules.html#tut-searchpath).",
+          "level": 2,
+          "span": {
+            "start": 759,
+            "end": 1146
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Designating the settings"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "When you use Scrapy, you have to tell it which settings you’re using. You can",
+            "sibling_headings": [
+              "Populating the settings",
+              "Compatibility with pickle",
+              "Import paths and classes",
+              "How to access settings",
+              "Component priority dictionaries",
+              "Special settings",
+              "Built-in settings reference"
+            ]
+          }
+        },
+        {
+          "heading": "Populating the settings",
+          "text": "Settings can be populated using different mechanisms, each of which has a\ndifferent precedence:\n\n> 1. Command-line settings (highest precedence)\n> 2. Spider settings\n> 3. Project settings\n> 4. Add-on settings\n> 5. Command-specific default settings\n> 6. Global default settings (lowest precedence)",
+          "level": 2,
+          "span": {
+            "start": 1173,
+            "end": 1472
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Populating the settings"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Settings can be populated using different mechanisms, each of which has a",
+            "sibling_headings": [
+              "Designating the settings",
+              "Compatibility with pickle",
+              "Import paths and classes",
+              "How to access settings",
+              "Component priority dictionaries",
+              "Special settings",
+              "Built-in settings reference"
+            ]
+          }
+        },
+        {
+          "heading": "1. Command-line settings",
+          "text": "Settings set in the command line have the highest precedence, overriding any\nother settings.\n\nYou can explicitly override one or more settings using the `-s` (or\n`--set`) command-line option.\n\nExample:\n\n```\nscrapy crawl myspider -s LOG_LEVEL=INFO -s LOG_FILE=scrapy.log\n```",
+          "level": 3,
+          "span": {
+            "start": 1501,
+            "end": 1777
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Populating the settings",
+              "1. Command-line settings"
+            ],
+            "parent_heading": "Populating the settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Settings set in the command line have the highest precedence, overriding any",
+            "sibling_headings": [
+              "2. Spider settings",
+              "3. Project settings",
+              "4. Add-on settings",
+              "5. Command-specific default settings",
+              "6. Default global settings"
+            ]
+          }
+        },
+        {
+          "heading": "2. Spider settings",
+          "text": "[Spiders](spiders.html#topics-spiders) can define their own settings that will take\nprecedence and override the project ones.\n\nPre-crawler settings cannot be defined\nper spider, and reactor settings should not have\na different value per spider when [running multiple spiders in the\nsame process](practices.html#run-multiple-spiders).\n\nOne way to do so is by setting their [`custom_settings`](spiders.html#scrapy.Spider.custom_settings)\nattribute:\n\n```\nimport scrapy\n\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n\n    custom_settings = {\n        \"SOME_SETTING\": \"some value\",\n    }\n```\n\nIt’s often better to implement [`update_settings()`](spiders.html#scrapy.Spider.update_settings) instead,\nand settings set there should use the `\"spider\"` priority explicitly:\n\n```\nimport scrapy\n\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n\n    @classmethod\n    def update_settings(cls, settings):\n        super().update_settings(settings)\n        settings.set(\"SOME_SETTING\", \"some value\", priority=\"spider\")\n```\n\nAdded in version 2.11.\n\nIt’s also possible to modify the settings in the\n[`from_crawler()`](spiders.html#scrapy.Spider.from_crawler) method, e.g. based on [spider\narguments](spiders.html#spiderargs) or other logic:\n\n```\nimport scrapy\n\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n\n    @classmethod\n    def from_crawler(cls, crawler, *args, **kwargs):\n        spider = super().from_crawler(crawler, *args, **kwargs)\n        if \"some_argument\" in kwargs:\n            spider.settings.set(\n                \"SOME_SETTING\", kwargs[\"some_argument\"], priority=\"spider\"\n            )\n        return spider\n```",
+          "level": 3,
+          "span": {
+            "start": 1800,
+            "end": 3429
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Populating the settings",
+              "2. Spider settings"
+            ],
+            "parent_heading": "Populating the settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "[Spiders](spiders.html#topics-spiders) can define their own settings that will take",
+            "sibling_headings": [
+              "1. Command-line settings",
+              "3. Project settings",
+              "4. Add-on settings",
+              "5. Command-specific default settings",
+              "6. Default global settings"
+            ]
+          }
+        },
+        {
+          "heading": "3. Project settings",
+          "text": "Scrapy projects include a settings module, usually a file called\n`settings.py`, where you should populate most settings that apply to all your\nspiders.\n\nDesignating the settings",
+          "level": 3,
+          "span": {
+            "start": 3453,
+            "end": 3633
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Populating the settings",
+              "3. Project settings"
+            ],
+            "parent_heading": "Populating the settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Scrapy projects include a settings module, usually a file called",
+            "sibling_headings": [
+              "1. Command-line settings",
+              "2. Spider settings",
+              "4. Add-on settings",
+              "5. Command-specific default settings",
+              "6. Default global settings"
+            ]
+          }
+        },
+        {
+          "heading": "4. Add-on settings",
+          "text": "[Add-ons](addons.html#topics-addons) can modify settings. They should do this with\n`\"addon\"` priority where possible.",
+          "level": 3,
+          "span": {
+            "start": 3656,
+            "end": 3776
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Populating the settings",
+              "4. Add-on settings"
+            ],
+            "parent_heading": "Populating the settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "[Add-ons](addons.html#topics-addons) can modify settings. They should do this with",
+            "sibling_headings": [
+              "1. Command-line settings",
+              "2. Spider settings",
+              "3. Project settings",
+              "5. Command-specific default settings",
+              "6. Default global settings"
+            ]
+          }
+        },
+        {
+          "heading": "5. Command-specific default settings",
+          "text": "Each [Scrapy command](commands.html#topics-commands) can have its own default settings,\nwhich override the global default settings.\n\nThose command-specific default settings are specified in the\n`default_settings` attribute of each command class.",
+          "level": 3,
+          "span": {
+            "start": 3817,
+            "end": 4065
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Populating the settings",
+              "5. Command-specific default settings"
+            ],
+            "parent_heading": "Populating the settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Each [Scrapy command](commands.html#topics-commands) can have its own default settings,",
+            "sibling_headings": [
+              "1. Command-line settings",
+              "2. Spider settings",
+              "3. Project settings",
+              "4. Add-on settings",
+              "6. Default global settings"
+            ]
+          }
+        },
+        {
+          "heading": "6. Default global settings",
+          "text": "The `scrapy.settings.default_settings` module defines global default values\nfor some built-in settings.\n\n[`startproject`](commands.html#std-command-startproject) generates a `settings.py` file that sets\nsome settings to different values.\n\nThe reference documentation of settings indicates the default value if one\nexists. If [`startproject`](commands.html#std-command-startproject) sets a value, that value is documented\nas default, and the value from `scrapy.settings.default_settings` is\ndocumented as “fallback”.",
+          "level": 3,
+          "span": {
+            "start": 4096,
+            "end": 4614
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Populating the settings",
+              "6. Default global settings"
+            ],
+            "parent_heading": "Populating the settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The `scrapy.settings.default_settings` module defines global default values",
+            "sibling_headings": [
+              "1. Command-line settings",
+              "2. Spider settings",
+              "3. Project settings",
+              "4. Add-on settings",
+              "5. Command-specific default settings"
+            ]
+          }
+        },
+        {
+          "heading": "Compatibility with pickle",
+          "text": "Setting values must be [picklable](https://docs.python.org/3/library/pickle.html#pickle-picklable).",
+          "level": 2,
+          "span": {
+            "start": 4643,
+            "end": 4745
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Compatibility with pickle"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Setting values must be [picklable](https://docs.python.org/3/library/pickle.html#pickle-picklable).",
+            "sibling_headings": [
+              "Designating the settings",
+              "Populating the settings",
+              "Import paths and classes",
+              "How to access settings",
+              "Component priority dictionaries",
+              "Special settings",
+              "Built-in settings reference"
+            ]
+          }
+        },
+        {
+          "heading": "Import paths and classes",
+          "text": "When a setting references a callable object to be imported by Scrapy, such as a\nclass or a function, there are two different ways you can specify that object:\n\n- As a string containing the import path of that object\n- As the object itself\n\nFor example:\n\n```\nfrom mybot.pipelines.validate import ValidateMyItem\n\nITEM_PIPELINES = {\n    # passing the classname...\n    ValidateMyItem: 300,\n    # ...equals passing the class path\n    \"mybot.pipelines.validate.ValidateMyItem\": 300,\n}\n```\n\nPassing non-callable objects is not supported.",
+          "level": 2,
+          "span": {
+            "start": 4773,
+            "end": 5306
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Import paths and classes"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "When a setting references a callable object to be imported by Scrapy, such as a",
+            "sibling_headings": [
+              "Designating the settings",
+              "Populating the settings",
+              "Compatibility with pickle",
+              "How to access settings",
+              "Component priority dictionaries",
+              "Special settings",
+              "Built-in settings reference"
+            ]
+          }
+        },
+        {
+          "heading": "How to access settings",
+          "text": "In a spider, settings are available through `self.settings`:\n\n```\nclass MySpider(scrapy.Spider):\n    name = \"myspider\"\n    start_urls = [\"http://example.com\"]\n\n    def parse(self, response):\n        print(f\"Existing settings: {self.settings.attributes.keys()}\")\n```\n\nThe `settings` attribute is set in the base Spider class after the spider\nis initialized. If you want to use settings before the initialization\n(e.g., in your spider’s `__init__()` method), you’ll need to override the\n[`from_crawler()`](spiders.html#scrapy.Spider.from_crawler) method.\n\n[Components](components.html#topics-components) can also [access settings](components.html#component-settings).\n\nThe `settings` object can be used like a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) (e.g.\n`settings[\"LOG_ENABLED\"]`). However, to support non-string setting values,\nwhich may be passed from the command line as strings, it is recommended to use\none of the methods provided by the [`Settings`](api.html#scrapy.settings.Settings) API.",
+          "level": 2,
+          "span": {
+            "start": 5332,
+            "end": 6353
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "How to access settings"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "In a spider, settings are available through `self.settings`:",
+            "sibling_headings": [
+              "Designating the settings",
+              "Populating the settings",
+              "Compatibility with pickle",
+              "Import paths and classes",
+              "Component priority dictionaries",
+              "Special settings",
+              "Built-in settings reference"
+            ]
+          }
+        },
+        {
+          "heading": "Component priority dictionaries",
+          "text": "A **component priority dictionary** is a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) where keys are\n[components](components.html#topics-components) and values are component priorities. For\nexample:\n\n```\n{\n    \"path.to.ComponentA\": None,\n    ComponentB: 100,\n}\n```\n\nA component can be specified either as a class object or through an import\npath.\n\nComponent priority dictionaries are regular [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) objects.\nBe careful not to define the same component more than once, e.g. with\ndifferent import path strings or defining both an import path and a\n[`type`](https://docs.python.org/3/library/functions.html#type) object.\n\nA priority can be an [`int`](https://docs.python.org/3/library/functions.html#int) or [`None`](https://docs.python.org/3/library/constants.html#None).\n\nA component with priority 1 goes *before* a component with priority 2. What\ngoing before entails, however, depends on the corresponding setting. For\nexample, in the `DOWNLOADER_MIDDLEWARES` setting, components have\ntheir\n[`process_request()`](downloader-middleware.html#scrapy.downloadermiddlewares.DownloaderMiddleware.process_request)\nmethod executed before that of later components, but have their\n[`process_response()`](downloader-middleware.html#scrapy.downloadermiddlewares.DownloaderMiddleware.process_response)\nmethod executed after that of later components.\n\nA component with priority [`None`](https://docs.python.org/3/library/constants.html#None) is disabled.\n\nSome component priority dictionaries get merged with some built-in value. For\nexample, `DOWNLOADER_MIDDLEWARES` is merged with\n`DOWNLOADER_MIDDLEWARES_BASE`. This is where [`None`](https://docs.python.org/3/library/constants.html#None) comes in\nhandy, allowing you to disable a component from the base setting in the regular\nsetting:\n\n```\nDOWNLOADER_MIDDLEWARES = {\n    \"scrapy.downloadermiddlewares.offsite.OffsiteMiddleware\": None,\n}\n```",
+          "level": 2,
+          "span": {
+            "start": 6388,
+            "end": 8347
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Component priority dictionaries"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "A **component priority dictionary** is a [`dict`](https://docs.python.org/3/library/stdtypes.html#dict) where keys are",
+            "sibling_headings": [
+              "Designating the settings",
+              "Populating the settings",
+              "Compatibility with pickle",
+              "Import paths and classes",
+              "How to access settings",
+              "Special settings",
+              "Built-in settings reference"
+            ]
+          }
+        },
+        {
+          "heading": "Special settings",
+          "text": "The following settings work slightly differently than all other settings.",
+          "level": 2,
+          "span": {
+            "start": 8367,
+            "end": 8443
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Special settings"
+            ],
+            "parent_heading": "Settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "The following settings work slightly differently than all other settings.",
+            "sibling_headings": [
+              "Designating the settings",
+              "Populating the settings",
+              "Compatibility with pickle",
+              "Import paths and classes",
+              "How to access settings",
+              "Component priority dictionaries",
+              "Built-in settings reference"
+            ]
+          }
+        },
+        {
+          "heading": "Pre-crawler settings",
+          "text": "**Pre-crawler settings** are settings used before the\n[`Crawler`](api.html#scrapy.crawler.Crawler) object is created.\n\nThese settings cannot be set from a spider.\n\nThese settings are `SPIDER_LOADER_CLASS` and settings used by the\ncorresponding [component](components.html#topics-components), e.g.\n`SPIDER_MODULES` and `SPIDER_LOADER_WARN_ONLY` for the\ndefault component.",
+          "level": 3,
+          "span": {
+            "start": 8468,
+            "end": 8841
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Special settings",
+              "Pre-crawler settings"
+            ],
+            "parent_heading": "Special settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "**Pre-crawler settings** are settings used before the",
+            "sibling_headings": [
+              "Reactor settings"
+            ]
+          }
+        },
+        {
+          "heading": "Reactor settings",
+          "text": "**Reactor settings** are settings tied to the [Twisted reactor](https://docs.twisted.org/en/stable/core/howto/reactor-basics.html).\n\nThese settings can be defined from a spider. However, because only 1 reactor\ncan be used per process, these settings cannot use a different value per spider\nwhen [running multiple spiders in the same process](practices.html#run-multiple-spiders).\n\nIn general, if different spiders define different values, the first defined\nvalue is used. However, if two spiders request a different reactor, an\nexception is raised.\n\nThese settings are:\n\n- `ASYNCIO_EVENT_LOOP` (not possible to set per-spider when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n- `DNS_RESOLVER` and settings used by the corresponding\ncomponent, e.g. `DNSCACHE_ENABLED`, `DNSCACHE_SIZE`\nand `DNS_TIMEOUT` for the default one.\n- `REACTOR_THREADPOOL_MAXSIZE`\n- `TWISTED_REACTOR` (ignored when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n\n`ASYNCIO_EVENT_LOOP` and `TWISTED_REACTOR` are used upon\ninstalling the reactor. The rest of the settings are applied when starting\nthe reactor.\n\nThere is an additional restriction for `TWISTED_REACTOR` and\n`ASYNCIO_EVENT_LOOP` when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess): when this class is instantiated,\nit installs [`AsyncioSelectorReactor`](https://docs.twisted.org/en/stable/api/twisted.internet.asyncioreactor.AsyncioSelectorReactor.html),\nignoring the value of `TWISTED_REACTOR` and using the value of\n`ASYNCIO_EVENT_LOOP` that was passed to\n`AsyncCrawlerProcess.__init__()`. If a different value for\n`TWISTED_REACTOR` or `ASYNCIO_EVENT_LOOP` is provided later,\ne.g. in per-spider settings, an exception will be\nraised.",
+          "level": 3,
+          "span": {
+            "start": 8862,
+            "end": 10645
+          },
+          "metadata": {
+            "heading_path": [
+              "Settings",
+              "Special settings",
+              "Reactor settings"
+            ],
+            "parent_heading": "Special settings",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "**Reactor settings** are settings tied to the [Twisted reactor](https://docs.twisted.org/en/stable/core/howto/reactor-basics.html).",
+            "sibling_headings": [
+              "Pre-crawler settings"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case050_scrapy",
+        "condition_id": "clean",
+        "lab_run_id": "s50g001",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case050_scrapy",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-6b74bf9a7222bcaa",
+              "source_sha256": "96e60bee5903c18a77068b2ea35a35b6d1c0edba6ec3fefcdabf10dd0c56941b",
+              "path": "inputs/input001/depth.md",
+              "sha256": "96e60bee5903c18a77068b2ea35a35b6d1c0edba6ec3fefcdabf10dd0c56941b",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/96e60bee5903c18a/depth.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-130f17a8b0fc43d9",
+              "source_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+              "path": "inputs/input002/settings.md",
+              "sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/fae2beedb6998e96/settings.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "4dc8f3f2e7fea9c0345e0ad103f5428c35cc8fe7d2514cbb7e27665ce568245e",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "ccd82bf432a852ed8247f5df67d673db3c109fd5",
+      "content_hash": "ccd82bf432a852ed8247f5df67d673db3c109fd5",
+      "imported_at": "2026-10-28T05:06:31+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "14f5584c-6a31-554c-b43a-ec7e57bfbae1",
+      "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+      "skill_id": "423bfbee-0434-5ec6-916a-8eebdbe713ad",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "section": "Settings",
+      "span": {
+        "start": 4702,
+        "end": 4979
+      },
+      "excerpt": "Import paths and classes\nWhen a setting references a callable object to be imported by Scrapy, such as a\nclass or a function, there are two different ways you can specify that object:\n\n- As a string containing the import path of that object\n- As the object itself\n\nFor example:",
+      "relation_type": "support",
+      "confidence": 0.6,
+      "metadata": {
+        "document_title": "input002\\settings.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Scrapy 可调用对象导入路径配置",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "正确指定 Scrapy 设置中可调用对象的引用方式",
+        "task_family": "settings_configuration",
+        "method_family": "import_path_specification",
+        "stage": "configuration",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "899bebcd-04a4-5384-96a3-e4395c075105",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 36,
+        "paragraph_end": 38,
+        "heading_path": [
+          "Settings"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\settings.md"
+        ],
+        "subsection_headings": [
+          "Designating the settings",
+          "Populating the settings",
+          "1. Command-line settings",
+          "2. Spider settings",
+          "3. Project settings",
+          "4. Add-on settings",
+          "5. Command-specific default settings",
+          "6. Default global settings",
+          "Compatibility with pickle",
+          "Import paths and classes",
+          "How to access settings",
+          "Component priority dictionaries",
+          "Special settings",
+          "Pre-crawler settings",
+          "Reactor settings"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy"
+      },
+      "created_at": "2026-10-28T05:07:45+00:00"
+    },
+    {
+      "support_id": "5ab480d4-bc8e-5d60-beaf-8675dd26b01d",
+      "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+      "skill_id": "b8eb69db-0a6a-5752-a165-55c26d41304c",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "section": "Settings",
+      "span": {
+        "start": 9344,
+        "end": 9956
+      },
+      "excerpt": "These settings are:\n\n- `ASYNCIO_EVENT_LOOP` (not possible to set per-spider when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n- `DNS_RESOLVER` and settings used by the corresponding\ncomponent, e.g. `DNSCACHE_ENABLED`, `DNSCACHE_SIZE`\nand `DNS_TIMEOUT` for the default one.\n- `REACTOR_THREADPOOL_MAXSIZE`\n- `TWISTED_REACTOR` (ignored when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n\n`ASYNCIO_EVENT_LOOP` and `TWISTED_REACTOR` are used upon\ninstalling the reactor. The rest of the settings are applied when starting\nthe reactor.",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input002\\settings.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "预爬虫阶段设置配置",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "正确配置预爬虫阶段设置，使 reactor 安装和启动时使用指定的异步事件循环、DNS 解析器和线程池大小。",
+        "task_family": "settings_configuration",
+        "method_family": "pre_crawler_settings",
+        "stage": "pre_crawl",
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "candidate_slot": 1,
+        "window_id": "79dfca8a-4b20-5c6b-b849-aa2bcbc62e6e",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 64,
+        "paragraph_end": 66,
+        "heading_path": [
+          "Settings"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\settings.md"
+        ],
+        "subsection_headings": [
+          "Designating the settings",
+          "Populating the settings",
+          "1. Command-line settings",
+          "2. Spider settings",
+          "3. Project settings",
+          "4. Add-on settings",
+          "5. Command-specific default settings",
+          "6. Default global settings",
+          "Compatibility with pickle",
+          "Import paths and classes",
+          "How to access settings",
+          "Component priority dictionaries",
+          "Special settings",
+          "Pre-crawler settings",
+          "Reactor settings"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy"
+      },
+      "created_at": "2026-10-28T05:07:50+00:00"
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "423bfbee-0434-5ec6-916a-8eebdbe713ad",
+      "name": "Scrapy 可调用对象导入路径配置",
+      "description": "说明在 Scrapy 设置中引用类或函数等可调用对象时，可用导入路径字符串或对象本身两种方式指定；用于配置需要延迟导入或按路径解析的组件设置。",
+      "skill_body": "当某个 Scrapy 设置项需要引用类或函数等可调用对象时，确认该设置项确实期望可调用对象而非普通标量值；然后选择两种指定方式之一：提供包含该对象导入路径的字符串，或直接提供对象本身。确保字符串形式的导入路径可被正确解析。\n\n## Objective\n\n正确指定 Scrapy 设置中可调用对象的引用方式\n## Applicable Signals\n\n- 设置项需要引用类或函数对象\n- 需要以字符串导入路径延迟加载组件\n\n## Contraindications\n\n- 设置项为普通标量值而非可调用对象\n\n## Intervention Moves\n\n- 确认设置项期望的是可调用对象\n- 以导入路径字符串指定对象\n- 或直接以对象本身指定\n\n## Workflow Steps\n\n- 确认该设置项引用的是类或函数等可调用对象。\n- 选择指定方式：使用包含对象导入路径的字符串，或直接使用对象本身。\n- 若使用字符串，确保导入路径可被 Scrapy 正确解析。\n\n## Constraints\n\n- 仅在设置项确实引用可调用对象时适用\n- 字符串形式必须是合法的导入路径\n\n## Cautions\n\n- 普通标量值设置不适用此引用方式\n\n## Output Contract\n\n- 设置项以合法导入路径字符串或对象本身正确指定。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确指定 Scrapy 设置中可调用对象的引用方式",
+      "domain": "scrapy",
+      "task_family": "settings_configuration",
+      "method_family": "import_path_specification",
+      "stage": "configuration",
+      "applicable_signals": [
+        "设置项需要引用类或函数对象",
+        "需要以字符串导入路径延迟加载组件"
+      ],
+      "contraindications": [
+        "设置项为普通标量值而非可调用对象"
+      ],
+      "intervention_moves": [
+        "确认设置项期望的是可调用对象",
+        "以导入路径字符串指定对象",
+        "或直接以对象本身指定"
+      ],
+      "triggers": [
+        "设置项需要引用类或函数对象",
+        "需要以字符串导入路径延迟加载组件"
+      ],
+      "workflow_steps": [
+        "确认该设置项引用的是类或函数等可调用对象。",
+        "选择指定方式：使用包含对象导入路径的字符串，或直接使用对象本身。",
+        "若使用字符串，确保导入路径可被 Scrapy 正确解析。"
+      ],
+      "constraints": [
+        "仅在设置项确实引用可调用对象时适用",
+        "字符串形式必须是合法的导入路径"
+      ],
+      "cautions": [
+        "普通标量值设置不适用此引用方式"
+      ],
+      "output_contract": [
+        "设置项以合法导入路径字符串或对象本身正确指定。"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "settings",
+        "import_path",
+        "callable",
+        "configuration"
+      ],
+      "support_ids": [
+        "14f5584c-6a31-554c-b43a-ec7e57bfbae1"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "e427ab89-4745-50c7-8f0c-1d6108b909de"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.6,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|正确指定 scrapy 设置中可调用对象的引用方式|scrapy|settings_configuration|import_path_specification|configuration|scrapy 可调用对象导入路径配置"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "b8eb69db-0a6a-5752-a165-55c26d41304c",
+      "name": "预爬虫阶段设置配置",
+      "description": "在安装或启动 reactor 之前，配置 Scrapy 的预爬虫阶段特殊设置（ASYNCIO_EVENT_LOOP、TWISTED_REACTOR、DNS_RESOLVER 及相关 DNS 设置、REACTOR_THREADPOOL_MAXSIZE），以确保爬虫启动时使用正确的异步事件循环、DNS 解析器和线程池容量。",
+      "skill_body": "当需要自定义异步事件循环、Twisted reactor、DNS 解析器或 reactor 线程池容量时，使用本技能。先确认当前是否使用 AsyncCrawlerProcess，以及 reactor 是否已安装；据此判断哪些设置可配置、在何时生效。输出一份预爬虫阶段设置清单，标明每项设置的生效时机（安装 reactor 时或启动 reactor 时）。\n\n## Objective\n\n正确配置预爬虫阶段设置，使 reactor 安装和启动时使用指定的异步事件循环、DNS 解析器和线程池大小。\n## Applicable Signals\n\n- 需要自定义异步事件循环或 Twisted reactor\n- 需要调整 DNS 解析器或 DNS 缓存相关参数\n- 需要设置 reactor 线程池最大容量\n\n## Contraindications\n\n- 使用 AsyncCrawlerProcess 时尝试按 spider 设置 ASYNCIO_EVENT_LOOP 或 TWISTED_REACTOR\n- 在 reactor 已安装后尝试修改这些设置\n\n## Intervention Moves\n\n- 识别预爬虫阶段设置项：ASYNCIO_EVENT_LOOP、TWISTED_REACTOR、DNS_RESOLVER 及对应 DNS 设置（如 DNSCACHE_ENABLED、DNSCACHE_SIZE、DNS_TIMEOUT）、REACTOR_THREADPOOL_MAXSIZE\n- 区分生效时机：ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 在安装 reactor 时生效，其余设置在启动 reactor 时生效\n- 确认是否使用 AsyncCrawlerProcess，以判断 ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 是否可按 spider 设置\n\n## Workflow Steps\n\n- 确认运行方式：是否使用 AsyncCrawlerProcess\n- 确认 reactor 是否已安装\n- 列出需要调整的预爬虫阶段设置项\n- 标注每项设置的生效时机（安装 reactor 时或启动 reactor 时）\n- 输出配置清单\n\n## Constraints\n\n- ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 在安装 reactor 时生效\n- DNS_RESOLVER 及相关 DNS 设置、REACTOR_THREADPOOL_MAXSIZE 在启动 reactor 时生效\n- 使用 AsyncCrawlerProcess 时，ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 无法按 spider 设置，TWISTED_REACTOR 被忽略\n\n## Cautions\n\n- 这些设置必须在 reactor 安装或启动之前确定，安装后修改无效\n\n## Output Contract\n\n- 一份明确列出预爬虫阶段设置项及其生效时机的配置说明或配置清单。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确配置预爬虫阶段设置，使 reactor 安装和启动时使用指定的异步事件循环、DNS 解析器和线程池大小。",
+      "domain": "scrapy",
+      "task_family": "settings_configuration",
+      "method_family": "pre_crawler_settings",
+      "stage": "pre_crawl",
+      "applicable_signals": [
+        "需要自定义异步事件循环或 Twisted reactor",
+        "需要调整 DNS 解析器或 DNS 缓存相关参数",
+        "需要设置 reactor 线程池最大容量"
+      ],
+      "contraindications": [
+        "使用 AsyncCrawlerProcess 时尝试按 spider 设置 ASYNCIO_EVENT_LOOP 或 TWISTED_REACTOR",
+        "在 reactor 已安装后尝试修改这些设置"
+      ],
+      "intervention_moves": [
+        "识别预爬虫阶段设置项：ASYNCIO_EVENT_LOOP、TWISTED_REACTOR、DNS_RESOLVER 及对应 DNS 设置（如 DNSCACHE_ENABLED、DNSCACHE_SIZE、DNS_TIMEOUT）、REACTOR_THREADPOOL_MAXSIZE",
+        "区分生效时机：ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 在安装 reactor 时生效，其余设置在启动 reactor 时生效",
+        "确认是否使用 AsyncCrawlerProcess，以判断 ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 是否可按 spider 设置"
+      ],
+      "triggers": [
+        "需要自定义异步事件循环或 Twisted reactor",
+        "需要调整 DNS 解析器或 DNS 缓存相关参数",
+        "需要设置 reactor 线程池最大容量"
+      ],
+      "workflow_steps": [
+        "确认运行方式：是否使用 AsyncCrawlerProcess",
+        "确认 reactor 是否已安装",
+        "列出需要调整的预爬虫阶段设置项",
+        "标注每项设置的生效时机（安装 reactor 时或启动 reactor 时）",
+        "输出配置清单"
+      ],
+      "constraints": [
+        "ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 在安装 reactor 时生效",
+        "DNS_RESOLVER 及相关 DNS 设置、REACTOR_THREADPOOL_MAXSIZE 在启动 reactor 时生效",
+        "使用 AsyncCrawlerProcess 时，ASYNCIO_EVENT_LOOP 与 TWISTED_REACTOR 无法按 spider 设置，TWISTED_REACTOR 被忽略"
+      ],
+      "cautions": [
+        "这些设置必须在 reactor 安装或启动之前确定，安装后修改无效"
+      ],
+      "output_contract": [
+        "一份明确列出预爬虫阶段设置项及其生效时机的配置说明或配置清单。"
+      ],
+      "examples": [],
+      "tags": [
+        "scrapy",
+        "settings",
+        "pre-crawl",
+        "reactor",
+        "dns"
+      ],
+      "support_ids": [
+        "5ab480d4-bc8e-5d60-beaf-8675dd26b01d"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "96b3de69-324d-551d-80d3-d9de7dc1d8ee"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "scrapy",
+        "taxonomy_id": "scrapy",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "scrapy::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|正确配置预爬虫阶段设置，使 reactor 安装和启动时使用指定的异步事件循环、dns 解析器和线程池大小。|scrapy|settings_configuration|pre_crawler_settings|pre_crawl|预爬虫阶段设置配置"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ]
+}

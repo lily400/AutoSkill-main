@@ -127,6 +127,10 @@ class ExperimentRunner:
                 raise ValueError('Resume case/condition mismatch')
             bundle, config = {'case':read(parent/'case.json')}, read(parent/'config.json')
             validate_config(config)
+            for key, value in (resume_budget or {}).items():
+                if key not in ('max_http_calls', 'max_observed_total_tokens') or type(value) is not int or value < config[key]:
+                    raise ValueError('Resume budget must be an explicit nondecreasing integer limit')
+                config[key] = value
         else:
             bundle, _, _, config = self.resolve(case_id, condition_id)
         gate_path = bundle['case'].get('execution_gate')
@@ -143,7 +147,8 @@ class ExperimentRunner:
                         or request.get('configuration') != configuration
                         or request.get('configuration_sha256') != sha256(inside(self.root, configuration))
                         or any(request.get(k) != config[k] for k in ('max_http_calls','max_observed_total_tokens'))
-                        or resume_from is not None):
+                        or request.get('resume_from') != resume_from
+                        or request.get('parent_manifest_sha256') != (sha256(parent/'artifact_manifest.json') if resume_from else None)):
                     raise RuntimeError('BLOCKED: exact generation identity/configuration/budget is not authorized')
         if not os.environ.get(config['credential_env']):
             raise RuntimeError('BLOCKED: set environment variable ' + config['credential_env'])

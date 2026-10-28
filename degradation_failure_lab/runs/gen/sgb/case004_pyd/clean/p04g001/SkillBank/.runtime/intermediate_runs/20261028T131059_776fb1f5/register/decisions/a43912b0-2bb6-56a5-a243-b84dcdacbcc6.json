@@ -1,0 +1,105 @@
+{
+  "skill_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+    "name": "Callable Discriminator Returns None for Unknown Tags",
+    "description": "When writing a callable Discriminator for a Pydantic union, explicitly return None for input types not covered by known branches so that a union_tag_not_found error is raised, and ensure the caller handles that error.",
+    "skill_body": "When writing a callable discriminator for a Pydantic union, cover all known input types and return their corresponding tags. For any input type not covered, explicitly return None in an else branch rather than raising another exception or returning an arbitrary default tag. Expect that returning None raises a union_tag_not_found error, and ensure the calling code anticipates and handles that error.\n\n## Objective\n\nReturn None from a callable discriminator for unknown input types and expect a union_tag_not_found error\n## Applicable Signals\n\n- 判别函数遇到未覆盖的输入类型\n- 需要明确未知判别值的失败行为\n\n## Contraindications\n\n- 判别逻辑已保证覆盖所有输入类型时\n\n## Intervention Moves\n\n- 在判别函数末尾添加返回 None 的分支\n- 确认已知类型分支返回对应标签\n- 调用方捕获 union_tag_not_found 错误\n\n## Workflow Steps\n\n- 检查判别函数是否覆盖所有已知输入类型并返回对应标签\n- 为未覆盖的输入类型添加显式返回 None 的分支\n- 在调用方预期并捕获 union_tag_not_found 错误\n\n## Constraints\n\n- 判别函数在无法确定标签时必须返回 None，而非抛出其他异常或返回任意默认标签\n\n## Cautions\n\n- 返回 None 会触发 union_tag_not_found 错误，需确保调用方已处理该错误\n\n## Output Contract\n\n- 判别函数在未知分支返回 None，调用方捕获 union_tag_not_found 错误\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 判别函数仅处理 int 与 dict/BaseModel，其他类型未覆盖\n- Therapist/Output: 在 else 分支返回 None，触发 union_tag_not_found 错误\n- Notes: 显式处理未知类型分支",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "Return None from a callable discriminator for unknown input types and expect a union_tag_not_found error",
+    "domain": "pydantic",
+    "task_family": "联合类型校验",
+    "method_family": "错误处理",
+    "stage": "校验失败处理",
+    "applicable_signals": [
+      "判别函数遇到未覆盖的输入类型",
+      "需要明确未知判别值的失败行为"
+    ],
+    "contraindications": [
+      "判别逻辑已保证覆盖所有输入类型时"
+    ],
+    "intervention_moves": [
+      "在判别函数末尾添加返回 None 的分支",
+      "确认已知类型分支返回对应标签",
+      "调用方捕获 union_tag_not_found 错误"
+    ],
+    "triggers": [
+      "判别函数遇到未覆盖的输入类型",
+      "需要明确未知判别值的失败行为"
+    ],
+    "workflow_steps": [
+      "检查判别函数是否覆盖所有已知输入类型并返回对应标签",
+      "为未覆盖的输入类型添加显式返回 None 的分支",
+      "在调用方预期并捕获 union_tag_not_found 错误"
+    ],
+    "constraints": [
+      "判别函数在无法确定标签时必须返回 None，而非抛出其他异常或返回任意默认标签"
+    ],
+    "cautions": [
+      "返回 None 会触发 union_tag_not_found 错误，需确保调用方已处理该错误"
+    ],
+    "output_contract": [
+      "判别函数在未知分支返回 None，调用方捕获 union_tag_not_found 错误"
+    ],
+    "examples": [
+      {
+        "input": "判别函数仅处理 int 与 dict/BaseModel，其他类型未覆盖",
+        "output": "在 else 分支返回 None，触发 union_tag_not_found 错误",
+        "notes": "显式处理未知类型分支"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "union",
+      "discriminator",
+      "error-handling"
+    ],
+    "support_ids": [
+      "a80204c1-b5b6-5b69-a620-e3cf7b420ba2"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "1eed385c-5adf-541a-b7c4-d188099c3111"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|return none from a callable discriminator for unknown input types and expect a union_tag_not_found error|pydantic|联合类型校验|错误处理|校验失败处理|callable discriminator returns none for unknown tags"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

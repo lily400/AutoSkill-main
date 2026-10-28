@@ -43,7 +43,7 @@ def score(submission, output, *, expected_sha256=None, task=TASK, task_id=TASK_I
         image = read(task / 'runtime.lock.json')['scorer_image_id']
         oracle_hash = manifest['files']['oracle/eval.py']
         bundle = read(task / 'oracle/testcases.json')
-        if bundle.get('setup_code', '').strip() != setup_code:
+        if bundle.get('setup_code', '').strip() != setup_code.strip():
             raise ValueError('Released task setup code changed')
         if len(bundle['test_cases']) != expected_tests:
             raise ValueError('Released task case count changed')

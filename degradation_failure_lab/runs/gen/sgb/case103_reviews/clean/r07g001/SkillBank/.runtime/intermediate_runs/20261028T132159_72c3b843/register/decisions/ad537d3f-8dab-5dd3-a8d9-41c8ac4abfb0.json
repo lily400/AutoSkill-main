@@ -1,0 +1,106 @@
+{
+  "skill_id": "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能是独立的产出后逻辑一致性校验能力，与同批的语义匹配、情感计数、约束优化选品技能在阶段与目标上均不重叠，且支持证据明确、无冲突，应保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0",
+    "name": "SKU计数逻辑一致性校验",
+    "description": "对按SKU聚合的评论计数结果执行逻辑一致性检查，识别总量异常、同类别SKU计数分布失衡或全零计数等疑似语义匹配错误；用于计数结果产出后的质量把关阶段。",
+    "skill_body": "在已获得按SKU的评论计数聚合结果后，执行逻辑一致性校验：检查总量量级是否合理、同类别SKU计数分布是否失衡、是否存在全零计数，并输出标注异常项的校验结论。\n\n## Objective\n\n验证SKU计数结果的逻辑合理性并标记疑似错误\n## Applicable Signals\n\n- 已生成按SKU的评论计数结果\n- 计数结果需要在下游使用前确认可信度\n\n## Contraindications\n\n- 尚未生成任何计数结果\n- 仅需做语义相似度判断而非计数校验\n\n## Intervention Moves\n\n- 核对各SKU计数总和与过滤后评论总数的量级关系\n- 比较同类别SKU之间的计数范围是否相近\n- 检查是否存在全部SKU计数为零的情况\n- 对疑似异常项进行语义质量抽查\n\n## Workflow Steps\n\n- 确认输入为已完成的按SKU评论计数聚合结果\n- 检查总量：各SKU计数总和不应超过过滤后评论总数，因评论可对应多个SKU，总量可超出但量级应合理\n- 检查分布：同类别SKU的计数范围应相近，除非描述可解释显著差异\n- 检查非零性：至少部分SKU应有非零计数；若全部SKU为零，则疑似语义匹配错误\n- 对疑似异常项进行语义质量抽查\n- 汇总并标注异常项，输出校验结论\n\n## Constraints\n\n- 校验对象必须是已产出的计数结果\n- 总量超出评论总数本身不构成错误，需结合量级合理性判断\n\n## Cautions\n\n- 全部SKU计数为零是语义匹配错误的强信号\n- 同类别计数差异需结合SKU描述判断是否合理，不可仅凭差异直接判错\n\n## Output Contract\n\n- 一份标注了异常项（总量失衡、分布异常、全零）的校验结论",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "验证SKU计数结果的逻辑合理性并标记疑似错误",
+    "domain": "运营数据处理",
+    "task_family": "结果质量校验",
+    "method_family": "逻辑一致性检查",
+    "stage": "产出后校验",
+    "applicable_signals": [
+      "已生成按SKU的评论计数结果",
+      "计数结果需要在下游使用前确认可信度"
+    ],
+    "contraindications": [
+      "尚未生成任何计数结果",
+      "仅需做语义相似度判断而非计数校验"
+    ],
+    "intervention_moves": [
+      "核对各SKU计数总和与过滤后评论总数的量级关系",
+      "比较同类别SKU之间的计数范围是否相近",
+      "检查是否存在全部SKU计数为零的情况",
+      "对疑似异常项进行语义质量抽查"
+    ],
+    "triggers": [
+      "已完成按SKU的评论计数聚合",
+      "需要判断计数结果是否可信"
+    ],
+    "workflow_steps": [
+      "确认输入为已完成的按SKU评论计数聚合结果",
+      "检查总量：各SKU计数总和不应超过过滤后评论总数，因评论可对应多个SKU，总量可超出但量级应合理",
+      "检查分布：同类别SKU的计数范围应相近，除非描述可解释显著差异",
+      "检查非零性：至少部分SKU应有非零计数；若全部SKU为零，则疑似语义匹配错误",
+      "对疑似异常项进行语义质量抽查",
+      "汇总并标注异常项，输出校验结论"
+    ],
+    "constraints": [
+      "校验对象必须是已产出的计数结果",
+      "总量超出评论总数本身不构成错误，需结合量级合理性判断"
+    ],
+    "cautions": [
+      "全部SKU计数为零是语义匹配错误的强信号",
+      "同类别计数差异需结合SKU描述判断是否合理，不可仅凭差异直接判错"
+    ],
+    "output_contract": [
+      "一份标注了异常项（总量失衡、分布异常、全零）的校验结论"
+    ],
+    "examples": [],
+    "tags": [
+      "计数校验",
+      "逻辑一致性",
+      "质量把关",
+      "SKU聚合"
+    ],
+    "support_ids": [
+      "dd1f2b7a-de86-5fce-b1aa-a202d201a5ec"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "e8b36531-c363-582a-bac9-2593259b29c0"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|验证sku计数结果的逻辑合理性并标记疑似错误|运营数据处理|结果质量校验|逻辑一致性检查|产出后校验|sku计数逻辑一致性校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

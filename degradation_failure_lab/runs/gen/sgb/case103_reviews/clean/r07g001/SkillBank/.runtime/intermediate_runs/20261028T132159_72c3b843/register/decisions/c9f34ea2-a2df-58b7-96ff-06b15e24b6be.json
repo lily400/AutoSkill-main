@@ -1,0 +1,113 @@
+{
+  "skill_id": "c9f34ea2-a2df-58b7-96ff-06b15e24b6be",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“评论与SKU适用性判定”高度重叠：后者已完整覆盖品类门控与属性语义匹配，本候选仅为其子步骤，缺乏独立可执行价值，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "c9f34ea2-a2df-58b7-96ff-06b15e24b6be",
+    "name": "评论属性语义匹配分析",
+    "description": "在评论品类已匹配SKU的前提下，提取评论中明示或隐含的属性/特征，并判断这些属性是否与SKU特征相关，从而给出语义相关性判断及依据。",
+    "skill_body": "仅当评论品类已确认与SKU匹配时执行。先提取评论中提到的属性或特征（包括明示与隐含含义），再逐项判断其是否与SKU自身特征相关，最后输出相关性判断及依据。若品类不匹配，不要执行本技能。\n\n## Objective\n\n评估评论内容与SKU特征的语义相关性\n## Applicable Signals\n\n- 评论品类已通过匹配门控\n- 评论包含可识别的产品属性或特征描述\n- 需要区分评论是否真正涉及该SKU\n\n## Contraindications\n\n- 评论品类与SKU不匹配\n- 品类匹配尚未确认\n\n## Intervention Moves\n\n- 提取评论中明示的属性/特征\n- 识别评论中隐含的属性含义\n- 将提取属性与SKU特征逐项对照\n- 给出相关性判断并说明依据\n\n## Workflow Steps\n\n- 确认评论品类已匹配SKU，否则终止\n- 从评论中提取明示提及的属性/特征\n- 识别评论中隐含的属性含义\n- 判断各属性是否与SKU特征相关\n- 输出相关性判断及依据\n\n## Constraints\n\n- 必须先完成品类匹配门控\n- 需同时考虑明示提及与隐含含义\n\n## Cautions\n\n- 隐含含义需谨慎推断，避免过度解读\n- 品类不匹配时不得进入语义分析\n\n## Output Contract\n\n- 输出评论属性与SKU特征的相关性判断及依据\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论品类已匹配SKU，评论提及某产品属性\n- Therapist/Output: 提取该属性，判断其与SKU特征相关，并说明依据\n- Notes: 同时考虑明示与隐含含义",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "评估评论内容与SKU特征的语义相关性",
+    "domain": "商品评论分析",
+    "task_family": "语义相似度判断",
+    "method_family": "属性提取与语义匹配",
+    "stage": "语义分析",
+    "applicable_signals": [
+      "评论品类已通过匹配门控",
+      "评论包含可识别的产品属性或特征描述",
+      "需要区分评论是否真正涉及该SKU"
+    ],
+    "contraindications": [
+      "评论品类与SKU不匹配",
+      "品类匹配尚未确认"
+    ],
+    "intervention_moves": [
+      "提取评论中明示的属性/特征",
+      "识别评论中隐含的属性含义",
+      "将提取属性与SKU特征逐项对照",
+      "给出相关性判断并说明依据"
+    ],
+    "triggers": [
+      "评论品类已匹配SKU",
+      "需要判断评论属性是否与SKU特征相关",
+      "需要评估评论与SKU的语义相似度"
+    ],
+    "workflow_steps": [
+      "确认评论品类已匹配SKU，否则终止",
+      "从评论中提取明示提及的属性/特征",
+      "识别评论中隐含的属性含义",
+      "判断各属性是否与SKU特征相关",
+      "输出相关性判断及依据"
+    ],
+    "constraints": [
+      "必须先完成品类匹配门控",
+      "需同时考虑明示提及与隐含含义"
+    ],
+    "cautions": [
+      "隐含含义需谨慎推断，避免过度解读",
+      "品类不匹配时不得进入语义分析"
+    ],
+    "output_contract": [
+      "输出评论属性与SKU特征的相关性判断及依据"
+    ],
+    "examples": [
+      {
+        "input": "评论品类已匹配SKU，评论提及某产品属性",
+        "output": "提取该属性，判断其与SKU特征相关，并说明依据",
+        "notes": "同时考虑明示与隐含含义"
+      }
+    ],
+    "tags": [
+      "语义匹配",
+      "属性提取",
+      "评论分析",
+      "SKU相关性"
+    ],
+    "support_ids": [
+      "2b2b23f5-5f0e-562c-a699-e39e836f0926"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "f623cb93-e12d-5e1c-bdbc-eb072a8cb222"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|评估评论内容与sku特征的语义相关性|商品评论分析|语义相似度判断|属性提取与语义匹配|语义分析|评论属性语义匹配分析"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

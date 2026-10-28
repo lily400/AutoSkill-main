@@ -1,0 +1,111 @@
+{
+  "skill_id": "1400a57c-d4c3-5ed4-b57d-a080d4e9e674",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 388f332f-588f-55a1-871d-61edd45ed0ce（车辆类型行驶时间乘数计算）高度重复，后者约束更完整，保留该候选即可，本候选冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "1400a57c-d4c3-5ed4-b57d-a080d4e9e674",
+    "name": "车辆行驶时间计算",
+    "description": "依据车辆类型速度乘数与路段基础时间计算车辆在边上的行驶时间，用于推进车辆移动或估算到达时间。",
+    "skill_body": "当车辆进入或位于某条边、需要计算其行驶时间或剩余行驶时间时使用本技能。步骤：1) 确认车辆状态为 MOVING 或即将进入边，排除 IDLE_AT_NODE、LOADING、UNLOADING、OFFLINE 状态；2) 读取车辆 VehicleType；3) 按类型取速度乘数：BIKE=1.5，VAN=1.0，MINI_TRUCK=1.0，TRUCK=0.8；4) 结合该边的基础行驶时间，按乘数计算车辆在该边上的行驶时间；5) 输出该车辆在该边上的行驶时间值，供移动推进或到达时间估算使用。若规则未给出边基础时间的计算方式，仅输出乘数与计算式，不臆造数值。\n\n## Objective\n\n按车辆类型乘数计算边上的行驶时间\n## Applicable Signals\n\n- 车辆状态为 MOVING 或即将进入边\n- 需要该车辆在该边上的行驶时间值\n\n## Contraindications\n\n- 车辆处于装卸或离线状态（LOADING、UNLOADING、OFFLINE）\n- 仅需实体字段定义而非计算\n\n## Intervention Moves\n\n- 读取 VehicleType\n- 查表取速度乘数（BIKE 1.5 / VAN 1.0 / MINI_TRUCK 1.0 / TRUCK 0.8）\n- 结合边基础时间按乘数计算行驶时间\n- 输出行驶时间值\n\n## Workflow Steps\n\n- 确认车辆状态允许移动计算\n- 读取车辆 VehicleType\n- 按类型取速度乘数\n- 结合边基础时间计算行驶时间\n- 输出该车辆在该边上的行驶时间值\n\n## Constraints\n\n- 速度乘数须严格按车辆类型取值\n- 仅在车辆处于移动相关状态时计算\n\n## Cautions\n\n- 若边基础时间未定义，不得臆造数值，仅输出乘数与计算式\n\n## Output Contract\n\n- 该车辆在该边上的行驶时间值（含所用乘数与计算依据）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆类型为 TRUCK，位于某条边，需要计算行驶时间\n- Therapist/Output: 使用乘数 0.8，结合该边基础时间计算得出该车辆的行驶时间值\n- Notes: 乘数按类型查表取得",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按车辆类型乘数计算边上的行驶时间",
+    "domain": "交通仿真规则",
+    "task_family": "移动推进",
+    "method_family": "乘数计算",
+    "stage": "仿真推进",
+    "applicable_signals": [
+      "车辆状态为 MOVING 或即将进入边",
+      "需要该车辆在该边上的行驶时间值"
+    ],
+    "contraindications": [
+      "车辆处于装卸或离线状态（LOADING、UNLOADING、OFFLINE）",
+      "仅需实体字段定义而非计算"
+    ],
+    "intervention_moves": [
+      "读取 VehicleType",
+      "查表取速度乘数（BIKE 1.5 / VAN 1.0 / MINI_TRUCK 1.0 / TRUCK 0.8）",
+      "结合边基础时间按乘数计算行驶时间",
+      "输出行驶时间值"
+    ],
+    "triggers": [
+      "车辆进入或位于某条边",
+      "需要计算剩余行驶时间",
+      "需要推进车辆移动或估算到达时间"
+    ],
+    "workflow_steps": [
+      "确认车辆状态允许移动计算",
+      "读取车辆 VehicleType",
+      "按类型取速度乘数",
+      "结合边基础时间计算行驶时间",
+      "输出该车辆在该边上的行驶时间值"
+    ],
+    "constraints": [
+      "速度乘数须严格按车辆类型取值",
+      "仅在车辆处于移动相关状态时计算"
+    ],
+    "cautions": [
+      "若边基础时间未定义，不得臆造数值，仅输出乘数与计算式"
+    ],
+    "output_contract": [
+      "该车辆在该边上的行驶时间值（含所用乘数与计算依据）"
+    ],
+    "examples": [
+      {
+        "input": "车辆类型为 TRUCK，位于某条边，需要计算行驶时间",
+        "output": "使用乘数 0.8，结合该边基础时间计算得出该车辆的行驶时间值",
+        "notes": "乘数按类型查表取得"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "行驶时间",
+      "速度乘数",
+      "车辆移动"
+    ],
+    "support_ids": [
+      "5d12b335-e08a-5c49-aadb-7fe74813e903"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "4964c8a1-8bd3-5731-91a9-75cb1d873f44"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|按车辆类型乘数计算边上的行驶时间|交通仿真规则|移动推进|乘数计算|仿真推进|车辆行驶时间计算"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

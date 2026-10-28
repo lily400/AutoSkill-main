@@ -1,0 +1,113 @@
+{
+  "skill_id": "abcdd505-af46-547b-ab28-ef5fd68f2e3a",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "abcdd505-af46-547b-ab28-ef5fd68f2e3a",
+    "name": "CLOSE_EDGE Entry Restriction Rule",
+    "description": "Enforces that while a CLOSE_EDGE incident is active on an edge, vehicles already on the edge continue to travel normally but no new vehicles may enter. Use when routing or admitting vehicles onto an edge under an active closure.",
+    "skill_body": "Before admitting any vehicle onto a target edge, check whether a CLOSE_EDGE incident is active on that edge for the current tick (StartTick <= t < EndTick). If active, block all new vehicle entries while allowing vehicles already on the edge to continue traveling as normal. If the incident window has expired (t >= EndTick) or the incident is REDUCE_CAPACITY rather than CLOSE_EDGE, do not apply this restriction.\n\n## Objective\n\nPrevent new vehicle entry onto closed edges while allowing existing traffic to proceed.\n## Applicable Signals\n\n- CLOSE_EDGE incident active on the target edge\n- Vehicle attempting to enter an edge\n- Current tick within incident window (StartTick <= t < EndTick)\n\n## Contraindications\n\n- Incident is REDUCE_CAPACITY rather than CLOSE_EDGE\n- Incident window has expired (t >= EndTick)\n\n## Intervention Moves\n\n- Check active incidents on the target edge before admitting a vehicle\n- Block new entries while CLOSE_EDGE is active\n- Allow vehicles already on the edge to continue traveling normally\n\n## Workflow Steps\n\n- Identify the target edge for the vehicle entry.\n- Determine whether a CLOSE_EDGE incident is active on that edge for the current tick (StartTick <= t < EndTick).\n- If active, deny new vehicle entry to the edge.\n- Leave vehicles already on the edge unaffected so they continue traveling as normal.\n- If the incident window has expired or the effect is not CLOSE_EDGE, do not apply this restriction.\n\n## Constraints\n\n- Restriction applies only while StartTick <= t < EndTick.\n- Only CLOSE_EDGE incidents trigger this admission block.\n- Vehicles already on the edge must not be stopped by this rule.\n\n## Cautions\n\n- Do not confuse CLOSE_EDGE with REDUCE_CAPACITY; capacity reduction does not block entry.\n- Re-evaluate each tick since the incident window is exclusive at EndTick.\n\n## Output Contract\n\n- No new vehicles admitted to a closed edge; on-edge vehicles unaffected and continue traveling normally.\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: A CLOSE_EDGE incident is active on edge E5 for the current tick; a vehicle requests entry to E5.\n- Therapist/Output: Entry denied; the vehicle is not admitted to E5, while vehicles already on E5 continue traveling.\n- Notes: Applies only while StartTick <= t < EndTick.",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "Prevent new vehicle entry onto closed edges while allowing existing traffic to proceed.",
+    "domain": "traffic simulation",
+    "task_family": "incident_handling",
+    "method_family": "constraint_enforcement",
+    "stage": "vehicle_entry_admission",
+    "applicable_signals": [
+      "CLOSE_EDGE incident active on the target edge",
+      "Vehicle attempting to enter an edge",
+      "Current tick within incident window (StartTick <= t < EndTick)"
+    ],
+    "contraindications": [
+      "Incident is REDUCE_CAPACITY rather than CLOSE_EDGE",
+      "Incident window has expired (t >= EndTick)"
+    ],
+    "intervention_moves": [
+      "Check active incidents on the target edge before admitting a vehicle",
+      "Block new entries while CLOSE_EDGE is active",
+      "Allow vehicles already on the edge to continue traveling normally"
+    ],
+    "triggers": [
+      "A CLOSE_EDGE incident is active on a target edge",
+      "A vehicle is about to enter an edge"
+    ],
+    "workflow_steps": [
+      "Identify the target edge for the vehicle entry.",
+      "Determine whether a CLOSE_EDGE incident is active on that edge for the current tick (StartTick <= t < EndTick).",
+      "If active, deny new vehicle entry to the edge.",
+      "Leave vehicles already on the edge unaffected so they continue traveling as normal.",
+      "If the incident window has expired or the effect is not CLOSE_EDGE, do not apply this restriction."
+    ],
+    "constraints": [
+      "Restriction applies only while StartTick <= t < EndTick.",
+      "Only CLOSE_EDGE incidents trigger this admission block.",
+      "Vehicles already on the edge must not be stopped by this rule."
+    ],
+    "cautions": [
+      "Do not confuse CLOSE_EDGE with REDUCE_CAPACITY; capacity reduction does not block entry.",
+      "Re-evaluate each tick since the incident window is exclusive at EndTick."
+    ],
+    "output_contract": [
+      "No new vehicles admitted to a closed edge; on-edge vehicles unaffected and continue traveling normally."
+    ],
+    "examples": [
+      {
+        "input": "A CLOSE_EDGE incident is active on edge E5 for the current tick; a vehicle requests entry to E5.",
+        "output": "Entry denied; the vehicle is not admitted to E5, while vehicles already on E5 continue traveling.",
+        "notes": "Applies only while StartTick <= t < EndTick."
+      }
+    ],
+    "tags": [
+      "traffic_simulation",
+      "incident_handling",
+      "constraint_enforcement",
+      "edge_closure",
+      "vehicle_admission"
+    ],
+    "support_ids": [
+      "0670df18-5dfb-58db-82bf-f755cbdd00f3"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "1a577586-2843-56a2-897d-5b696d785bfc"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|prevent new vehicle entry onto closed edges while allowing existing traffic to proceed.|traffic simulation|incident_handling|constraint_enforcement|vehicle_entry_admission|close_edge entry restriction rule"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

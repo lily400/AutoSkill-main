@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="16" time="0.271" timestamp="2026-10-28T06:07:10.843343+00:00" hostname="2e18583611fa"><testcase classname="eval.TestValidatorOrdering" name="test_model_exists" time="0.000" /><testcase classname="eval.TestValidatorOrdering" name="test_value_field_uses_annotated" time="0.001" /><testcase classname="eval.TestValidatorOrdering" name="test_required_validator_kinds_present" time="0.000" /><testcase classname="eval.TestValidatorOrdering" name="test_input_10_produces_output_30" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 10}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbdd8180&gt;
+
+    def test_input_10_produces_output_30(self):
+&gt;       instance = agent_output.MyModel(value=10)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...ueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 10}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 10}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[0-10]" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 0}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbdb0830&gt;, input_val = 0
+expected = 10
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+&gt;       instance = agent_output.MyModel(value=input_val)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...lueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 0}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 0}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[3-16]" time="0.001"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 3}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbdc85a0&gt;, input_val = 3
+expected = 16
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+&gt;       instance = agent_output.MyModel(value=input_val)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...lueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 3}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 3}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[5-20]" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 5}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbdc86b0&gt;, input_val = 5
+expected = 20
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+&gt;       instance = agent_output.MyModel(value=input_val)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...lueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 5}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 5}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[10-30]" time="0.001"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 10}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbed6750&gt;, input_val = 10
+expected = 30
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+&gt;       instance = agent_output.MyModel(value=input_val)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...ueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 10}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 10}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[12-34]" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 12}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbed6850&gt;, input_val = 12
+expected = 34
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+&gt;       instance = agent_output.MyModel(value=input_val)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...ueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 12}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 12}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[-5-0]" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': -5}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbeca8a0&gt;, input_val = -5
+expected = 0
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+&gt;       instance = agent_output.MyModel(value=input_val)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:116: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...ueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': -5}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': -5}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_log_is_structured_and_nontrivial" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 10}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbeca990&gt;
+
+    def test_log_is_structured_and_nontrivial(self):
+&gt;       instance = agent_output.MyModel(value=10)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...ueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 10}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 10}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_wrap_sees_raw_input" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 10}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbdd73f0&gt;
+
+    def test_wrap_sees_raw_input(self):
+&gt;       instance = agent_output.MyModel(value=10)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...ueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 10}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 10}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_order_matches_documented_pipeline_semantics" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': 10}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbdd7690&gt;
+
+    def test_order_matches_documented_pipeline_semantics(self):
+        """
+        We do not require exact event names, but we require a sequence that demonstrates:
+        1) wrap starts first
+        2) before runs during inner validation
+        3) wrap resumes after handler returns
+        4) after occurs after inner validation result is available
+    
+        Pydantic docs state that with Annotated, before and wrap validators run
+        right-to-left, then after validators run left-to-right.
+        """
+&gt;       instance = agent_output.MyModel(value=10)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:159: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...ueError('"MyModel" object has no field "validation_log"')}, 'input': {'value': 10}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': 10}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_not_hardcoded_for_single_value" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Value error, &quot;MyModel&quot; object has no field &quot;validation_log&quot; [type=value_error, input_value={'value': -11}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/value_error">self = &lt;eval.TestValidatorOrdering object at 0x7a42dbb946d0&gt;
+
+    def test_not_hardcoded_for_single_value(self):
+        vals = [-11, -1, 1, 7, 19]
+&gt;       outputs = [agent_output.MyModel(value=v).value for v in vals]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:196: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:67: in init
+    value=replay('construct',name,kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for MyModel\n  Value error, "MyModel" object has no field "validation_log" [type=value...eError('"MyModel" object has no field "validation_log"')}, 'input': {'value': -11}, 'loc': [], 'type': 'value_error'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Value error, "MyModel" object has no field "validation_log" [type=value_error, input_value={'value': -11}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_model_instantiation_uses_pydantic_validation" time="0.000" /><testcase classname="eval.TestValidatorOrdering" name="test_no_decorator_based_field_validator_requirement" time="0.002" /></testsuite></testsuites>

@@ -20,7 +20,8 @@ def verify_assets(root):
     for name,digest in manifest['files'].items():
         if sha256(inside(task,name))!=digest:raise ValueError('Task asset drift: '+name)
     _,rows=selected_tasks(root,['pydantic-task-001']);row=rows[0]
-    if row['generation_case_id']!=CASE_ID or row['downstream_task_path']!=TASK_PATH:
+    # The pinned engineering demo survives registration of a separate formal adapter.
+    if row['generation_case_id']!=CASE_ID:
         raise ValueError('Task/case binding drift')
     official=inside(root,read(inside(root,'configs/datasets/sgb.json'))['snapshot'])
     prefix='skill_evaluation/code_doc/pydantic/pydantic-task-001/'

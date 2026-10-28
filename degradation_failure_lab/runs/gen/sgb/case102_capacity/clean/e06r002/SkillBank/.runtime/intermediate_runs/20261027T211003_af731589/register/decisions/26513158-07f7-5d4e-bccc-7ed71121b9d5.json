@@ -1,0 +1,111 @@
+{
+  "skill_id": "26513158-07f7-5d4e-bccc-7ed71121b9d5",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批候选“有向路网节点与边建模”（132b9cc1）几乎完全重复：目标、工作流、约束与注意事项均一致，属于同批冗余，无需保留为独立技能。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "26513158-07f7-5d4e-bccc-7ed71121b9d5",
+    "name": "有向路网对象建模规范",
+    "description": "按有向图定义或校验交通仿真路网的节点与边对象结构，包括节点类型、边属性（长度、基准通行时间、车道数、每车道容量、道路等级、信号类型）以及双向道路拆分为两条有向边的规则。",
+    "skill_body": "依据有向图规范定义或校验路网对象：\n1. 将网络视为有向图，每条边为有序对 (from_node, to_node)。\n2. 为每个节点定义唯一 NodeID、NodeType（INTERSECTION/DEPOT/CUSTOMER/HUB）、停车位数量与入边队列。\n3. 为每条边定义唯一 EdgeID、FromNode、ToNode、长度、BaseTravelTime（自由流基准通行时间，单位 tick）、LaneCount（正整数）、CapacityPerLane（每车道最大在场车辆数）、RoadClass（LOCAL/ARTERIAL/RING）、下游节点 SignalType（SIGNALIZED/UNSIGNALIZED）。\n4. 双向道路拆分为两条独立的有向边。\n5. 输出符合规范的节点与边对象定义清单，并标注任何缺失或不合规字段。\n\n## Objective\n\n提供可复用的路网节点与边对象定义规范，确保仿真场景数据结构一致\n## Applicable Signals\n\n- 需要定义或校验仿真路网的节点与边结构\n- 需要将双向道路转换为有向边表示\n- 需要为交通仿真场景构建路网数据模型\n\n## Contraindications\n\n- 需要执行仿真推进或冲突裁决逻辑时\n- 仅需描述车辆行为而非路网结构时\n\n## Intervention Moves\n\n- 将网络建模为有向图，边为有序对 (from_node, to_node)\n- 为节点定义 NodeID、NodeType、停车位与入边队列\n- 为边定义 EdgeID、端点、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass、SignalType\n- 将双向道路拆分为两条独立有向边\n- 校验字段完整性与取值合法性\n\n## Workflow Steps\n\n- 确认网络为有向图，边以有序对 (from_node, to_node) 表示\n- 定义节点对象：唯一 NodeID、NodeType 取值于 {INTERSECTION, DEPOT, CUSTOMER, HUB}、停车位、入边队列\n- 定义边对象：唯一 EdgeID、FromNode、ToNode、长度、BaseTravelTime、LaneCount（正整数）、CapacityPerLane、RoadClass 取值于 {LOCAL, ARTERIAL, RING}、下游节点 SignalType 取值于 {SIGNALIZED, UNSIGNALIZED}\n- 对概念上的双向道路拆分为两条独立有向边\n- 输出节点与边对象定义清单并标注缺失或不合规字段\n\n## Constraints\n\n- 网络必须为有向图，边为有序对 (from_node, to_node)\n- LaneCount 必须为正整数\n- NodeType、RoadClass、SignalType 必须取规定枚举值\n- 双向道路必须拆分为两条独立有向边\n\n## Cautions\n\n- 本规范仅覆盖静态数据结构定义，不涉及仿真推进、冲突裁决或车辆行为逻辑\n- 文档未覆盖的情形视为未定义，需补充规则后再使用\n\n## Output Contract\n\n- 符合规范的节点与边对象定义清单，包含每个节点的 NodeID、NodeType、停车位与入边队列，以及每条边的 EdgeID、端点、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass、SignalType，并标注缺失或不合规字段。",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "提供可复用的路网节点与边对象定义规范，确保仿真场景数据结构一致",
+    "domain": "交通仿真",
+    "task_family": "路网建模",
+    "method_family": "有向图对象定义",
+    "stage": "场景构建",
+    "applicable_signals": [
+      "需要定义或校验仿真路网的节点与边结构",
+      "需要将双向道路转换为有向边表示",
+      "需要为交通仿真场景构建路网数据模型"
+    ],
+    "contraindications": [
+      "需要执行仿真推进或冲突裁决逻辑时",
+      "仅需描述车辆行为而非路网结构时"
+    ],
+    "intervention_moves": [
+      "将网络建模为有向图，边为有序对 (from_node, to_node)",
+      "为节点定义 NodeID、NodeType、停车位与入边队列",
+      "为边定义 EdgeID、端点、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass、SignalType",
+      "将双向道路拆分为两条独立有向边",
+      "校验字段完整性与取值合法性"
+    ],
+    "triggers": [
+      "需要定义或校验仿真路网的节点与边结构",
+      "需要将双向道路转换为有向边表示",
+      "需要为交通仿真场景构建路网数据模型"
+    ],
+    "workflow_steps": [
+      "确认网络为有向图，边以有序对 (from_node, to_node) 表示",
+      "定义节点对象：唯一 NodeID、NodeType 取值于 {INTERSECTION, DEPOT, CUSTOMER, HUB}、停车位、入边队列",
+      "定义边对象：唯一 EdgeID、FromNode、ToNode、长度、BaseTravelTime、LaneCount（正整数）、CapacityPerLane、RoadClass 取值于 {LOCAL, ARTERIAL, RING}、下游节点 SignalType 取值于 {SIGNALIZED, UNSIGNALIZED}",
+      "对概念上的双向道路拆分为两条独立有向边",
+      "输出节点与边对象定义清单并标注缺失或不合规字段"
+    ],
+    "constraints": [
+      "网络必须为有向图，边为有序对 (from_node, to_node)",
+      "LaneCount 必须为正整数",
+      "NodeType、RoadClass、SignalType 必须取规定枚举值",
+      "双向道路必须拆分为两条独立有向边"
+    ],
+    "cautions": [
+      "本规范仅覆盖静态数据结构定义，不涉及仿真推进、冲突裁决或车辆行为逻辑",
+      "文档未覆盖的情形视为未定义，需补充规则后再使用"
+    ],
+    "output_contract": [
+      "符合规范的节点与边对象定义清单，包含每个节点的 NodeID、NodeType、停车位与入边队列，以及每条边的 EdgeID、端点、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass、SignalType，并标注缺失或不合规字段。"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "路网建模",
+      "有向图",
+      "数据结构",
+      "场景构建"
+    ],
+    "support_ids": [
+      "63127bfb-b412-5569-8c9d-b1059fc3c543"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "b967f5c0-8cec-52f6-a2f5-af4edde793a4"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|提供可复用的路网节点与边对象定义规范，确保仿真场景数据结构一致|交通仿真|路网建模|有向图对象定义|场景构建|有向路网对象建模规范"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

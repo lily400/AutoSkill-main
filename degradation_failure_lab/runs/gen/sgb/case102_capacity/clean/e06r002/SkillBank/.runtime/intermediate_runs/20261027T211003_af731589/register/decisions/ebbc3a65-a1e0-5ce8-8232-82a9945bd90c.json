@@ -1,0 +1,113 @@
+{
+  "skill_id": "ebbc3a65-a1e0-5ce8-8232-82a9945bd90c",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能定义了有向路网静态对象（节点、边）的必填字段与取值约束，与同批次的车辆、货物、容量计算技能互补而非重复，且无冲突证据，应保留为独立能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "ebbc3a65-a1e0-5ce8-8232-82a9945bd90c",
+    "name": "有向路网静态对象建模规范",
+    "description": "按规范定义或校验交通仿真中的静态路网对象（节点、边、车辆、货物）的必填字段与取值约束，用于构建或检查仿真初始数据结构。",
+    "skill_body": "依据本规范逐类定义或校验仿真对象：先确认对象类型（节点、边、车辆、货物），再为每个对象补齐必填字段并检查取值约束。路网为有向图，每条边由有序节点对 (from_node, to_node) 表示；双向道路应拆分为两条独立的有向边。若遇到规范未覆盖的情形，标记为未定义，不要自行臆造规则。\n\n## Objective\n\n按规范定义节点、边、车辆、货物的必填字段与取值约束\n## Applicable Signals\n\n- 需要定义或校验节点与边的字段\n- 需要确认对象类型与属性约束\n- 需要建立有向图形式的路网结构\n\n## Contraindications\n\n- 需要执行逐tick更新逻辑\n- 需要处理信号或事故动态行为\n\n## Intervention Moves\n\n- 识别四类主要对象：节点、边、车辆、货物\n- 为节点补齐 NodeID、NodeType 及停车位与队列属性\n- 为边补齐 EdgeID、FromNode/ToNode、长度、基础通行时间、车道数、每车道容量、道路等级、下游信号类型\n- 将双向道路拆分为两条独立有向边\n- 对规范未覆盖情形标记为未定义\n\n## Workflow Steps\n\n- 确认待建模或校验的对象类型（节点、边、车辆、货物）\n- 按有向图结构确定每条边的有序节点对 (from_node, to_node)\n- 为节点填写唯一标识 NodeID、NodeType（INTERSECTION/DEPOT/CUSTOMER/HUB）、停车位与入边队列\n- 为边填写唯一标识 EdgeID、FromNode、ToNode、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass（LOCAL/ARTERIAL/RING）、SignalType（SIGNALIZED/UNSIGNALIZED）\n- 检查双向道路是否已拆分为两条独立有向边\n- 对规范未覆盖的情形标记为未定义，不自行补充规则\n\n## Constraints\n\n- 所有行为必须遵循规范文档中的规则\n- 路网为有向图，每条边为有序节点对\n- LaneCount 为正整数\n- NodeType 取值限于 INTERSECTION、DEPOT、CUSTOMER、HUB\n- RoadClass 取值限于 LOCAL、ARTERIAL、RING\n- SignalType 取值限于 SIGNALIZED、UNSIGNALIZED\n\n## Cautions\n\n- 规范未覆盖的情形视为未定义，需等待补充规则，不得臆造\n- 本规范仅覆盖静态数据结构，不涉及动态更新与冲突处理\n\n## Output Contract\n\n- 符合字段与取值约束的路网对象定义，包含节点、边、车辆、货物的完整属性，且未覆盖情形被明确标记为未定义。",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按规范定义节点、边、车辆、货物的必填字段与取值约束",
+    "domain": "交通仿真",
+    "task_family": "仿真建模",
+    "method_family": "数据结构规范",
+    "stage": "建模",
+    "applicable_signals": [
+      "需要定义或校验节点与边的字段",
+      "需要确认对象类型与属性约束",
+      "需要建立有向图形式的路网结构"
+    ],
+    "contraindications": [
+      "需要执行逐tick更新逻辑",
+      "需要处理信号或事故动态行为"
+    ],
+    "intervention_moves": [
+      "识别四类主要对象：节点、边、车辆、货物",
+      "为节点补齐 NodeID、NodeType 及停车位与队列属性",
+      "为边补齐 EdgeID、FromNode/ToNode、长度、基础通行时间、车道数、每车道容量、道路等级、下游信号类型",
+      "将双向道路拆分为两条独立有向边",
+      "对规范未覆盖情形标记为未定义"
+    ],
+    "triggers": [
+      "需要定义或校验节点与边的字段",
+      "需要确认对象类型与属性约束",
+      "构建仿真初始路网数据结构"
+    ],
+    "workflow_steps": [
+      "确认待建模或校验的对象类型（节点、边、车辆、货物）",
+      "按有向图结构确定每条边的有序节点对 (from_node, to_node)",
+      "为节点填写唯一标识 NodeID、NodeType（INTERSECTION/DEPOT/CUSTOMER/HUB）、停车位与入边队列",
+      "为边填写唯一标识 EdgeID、FromNode、ToNode、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass（LOCAL/ARTERIAL/RING）、SignalType（SIGNALIZED/UNSIGNALIZED）",
+      "检查双向道路是否已拆分为两条独立有向边",
+      "对规范未覆盖的情形标记为未定义，不自行补充规则"
+    ],
+    "constraints": [
+      "所有行为必须遵循规范文档中的规则",
+      "路网为有向图，每条边为有序节点对",
+      "LaneCount 为正整数",
+      "NodeType 取值限于 INTERSECTION、DEPOT、CUSTOMER、HUB",
+      "RoadClass 取值限于 LOCAL、ARTERIAL、RING",
+      "SignalType 取值限于 SIGNALIZED、UNSIGNALIZED"
+    ],
+    "cautions": [
+      "规范未覆盖的情形视为未定义，需等待补充规则，不得臆造",
+      "本规范仅覆盖静态数据结构，不涉及动态更新与冲突处理"
+    ],
+    "output_contract": [
+      "符合字段与取值约束的路网对象定义，包含节点、边、车辆、货物的完整属性，且未覆盖情形被明确标记为未定义。"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "路网建模",
+      "数据结构规范",
+      "有向图"
+    ],
+    "support_ids": [
+      "8eeec535-57d0-5f8c-817d-737621f6c15e"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "bf8a931d-ce49-5701-a1cd-1cc256f9dc98"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|按规范定义节点、边、车辆、货物的必填字段与取值约束|交通仿真|仿真建模|数据结构规范|建模|有向路网静态对象建模规范"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

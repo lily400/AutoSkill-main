@@ -1,0 +1,468 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "71f1f3fb-eeeb-57fc-ad5c-44e97781b79b",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "8eeec535-57d0-5f8c-817d-737621f6c15e",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 3100,
+        "end": 4365
+      },
+      "excerpt": "R4. All behavior in the simulation must follow the rules in this document. If a situation is not covered, it is considered undefined until additional rules are added.\n\nR5. The simulation tracks four primary object types:\n- Nodes (intersections, depots, customer locations, hubs)\n- Edges (directed road segments between nodes)\n- Vehicles (mobile units that carry packages)\n- Consignments (packages to be transported)\n\n2. Nodes and Edges\nR6. The network is a directed graph. Every edge has an ordered pair (from_node, to_node)\n\nR7. Each node has:\n- A unique identifier NodeID\n- A NodeType in {INTERSECTION, DEPOT, CUSTOMER, HUB}\n- Zero or more parking bays where vehicles can wait and load/unload\n- Zero or more queues at incoming edges\n\nR8. Each edge has:\n- A unique identifier EdgeID.\n- FromNode, ToNode.\n- Length in abstract distance units.\n- BaseTravelTime in ticks, representing the travel time for a reference vehicle under free flow.\n- LaneCount (positive integer).\n- CapacityPerLane: maximum number of vehicles that can be present on that edge at any time per lane.\n- RoadClass in {LOCAL, ARTERIAL, RING}.\n- SignalType at the downstream node in {SIGNALIZED, UNSIGNALIZED}.\n\nR9. If an edge is conceptually two way, it is modeled as two separate directed edges.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "有向路网对象建模规范",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "按规范定义节点、边、车辆、货物的必填字段与取值约束",
+        "task_family": "仿真建模",
+        "method_family": "数据结构规范",
+        "stage": "建模",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "71f1f3fb-eeeb-57fc-ad5c-44e97781b79b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 3,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:12:48+00:00"
+    },
+    {
+      "support_id": "fc696875-416f-5eea-98ca-b35267517b66",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 3100,
+        "end": 4365
+      },
+      "excerpt": "R4. All behavior in the simulation must follow the rules in this document. If a situation is not covered, it is considered undefined until additional rules are added.\n\nR5. The simulation tracks four primary object types:\n- Nodes (intersections, depots, customer locations, hubs)\n- Edges (directed road segments between nodes)\n- Vehicles (mobile units that carry packages)\n- Consignments (packages to be transported)\n\n2. Nodes and Edges\nR6. The network is a directed graph. Every edge has an ordered pair (from_node, to_node)\n\nR7. Each node has:\n- A unique identifier NodeID\n- A NodeType in {INTERSECTION, DEPOT, CUSTOMER, HUB}\n- Zero or more parking bays where vehicles can wait and load/unload\n- Zero or more queues at incoming edges\n\nR8. Each edge has:\n- A unique identifier EdgeID.\n- FromNode, ToNode.\n- Length in abstract distance units.\n- BaseTravelTime in ticks, representing the travel time for a reference vehicle under free flow.\n- LaneCount (positive integer).\n- CapacityPerLane: maximum number of vehicles that can be present on that edge at any time per lane.\n- RoadClass in {LOCAL, ARTERIAL, RING}.\n- SignalType at the downstream node in {SIGNALIZED, UNSIGNALIZED}.\n\nR9. If an edge is conceptually two way, it is modeled as two separate directed edges.",
+      "relation_type": "constraint",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "未定义情形保守处理规则",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "在规则未覆盖时避免臆造行为，保持未定义状态",
+        "task_family": "规则合规",
+        "method_family": "边界保护",
+        "stage": "全流程",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 2,
+        "window_id": "71f1f3fb-eeeb-57fc-ad5c-44e97781b79b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 3,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:12:48+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "bf8a931d-ce49-5701-a1cd-1cc256f9dc98",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "有向路网对象建模规范",
+      "description": "按规范定义或校验交通仿真中的静态路网对象（节点、边、车辆、货物）的必填字段与取值约束，用于构建或检查仿真初始数据结构。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按规范定义节点、边、车辆、货物的必填字段与取值约束",
+      "domain": "交通仿真",
+      "task_family": "仿真建模",
+      "method_family": "数据结构规范",
+      "stage": "建模",
+      "applicable_signals": [
+        "需要定义或校验节点与边的字段",
+        "需要确认对象类型与属性约束",
+        "需要建立有向图形式的路网结构"
+      ],
+      "contraindications": [
+        "需要执行逐tick更新逻辑",
+        "需要处理信号或事故动态行为"
+      ],
+      "intervention_moves": [
+        "识别四类主要对象：节点、边、车辆、货物",
+        "为节点补齐 NodeID、NodeType 及停车位与队列属性",
+        "为边补齐 EdgeID、FromNode/ToNode、长度、基础通行时间、车道数、每车道容量、道路等级、下游信号类型",
+        "将双向道路拆分为两条独立有向边",
+        "对规范未覆盖情形标记为未定义"
+      ],
+      "workflow_steps": [
+        "确认待建模或校验的对象类型（节点、边、车辆、货物）",
+        "按有向图结构确定每条边的有序节点对 (from_node, to_node)",
+        "为节点填写唯一标识 NodeID、NodeType（INTERSECTION/DEPOT/CUSTOMER/HUB）、停车位与入边队列",
+        "为边填写唯一标识 EdgeID、FromNode、ToNode、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass（LOCAL/ARTERIAL/RING）、SignalType（SIGNALIZED/UNSIGNALIZED）",
+        "检查双向道路是否已拆分为两条独立有向边",
+        "对规范未覆盖的情形标记为未定义，不自行补充规则"
+      ],
+      "triggers": [
+        "需要定义或校验节点与边的字段",
+        "需要确认对象类型与属性约束",
+        "构建仿真初始路网数据结构"
+      ],
+      "constraints": [
+        "所有行为必须遵循规范文档中的规则",
+        "路网为有向图，每条边为有序节点对",
+        "LaneCount 为正整数",
+        "NodeType 取值限于 INTERSECTION、DEPOT、CUSTOMER、HUB",
+        "RoadClass 取值限于 LOCAL、ARTERIAL、RING",
+        "SignalType 取值限于 SIGNALIZED、UNSIGNALIZED"
+      ],
+      "cautions": [
+        "规范未覆盖的情形视为未定义，需等待补充规则，不得臆造",
+        "本规范仅覆盖静态数据结构，不涉及动态更新与冲突处理"
+      ],
+      "output_contract": [
+        "符合字段与取值约束的路网对象定义，包含节点、边、车辆、货物的完整属性，且未覆盖情形被明确标记为未定义。"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "8eeec535-57d0-5f8c-817d-737621f6c15e"
+      ],
+      "metadata": {
+        "prompt": "依据本规范逐类定义或校验仿真对象：先确认对象类型（节点、边、车辆、货物），再为每个对象补齐必填字段并检查取值约束。路网为有向图，每条边由有序节点对 (from_node, to_node) 表示；双向道路应拆分为两条独立的有向边。若遇到规范未覆盖的情形，标记为未定义，不要自行臆造规则。",
+        "tags": [
+          "交通仿真",
+          "路网建模",
+          "数据结构规范",
+          "有向图"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "71f1f3fb-eeeb-57fc-ad5c-44e97781b79b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 3,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "428f2c7d-67de-5889-b228-fe21f49385cd",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "未定义情形保守处理规则",
+      "description": "当交通仿真遇到文档未覆盖或规则冲突的情形时，将其标记为未定义并停止推断，等待补充规则，避免臆造仿真行为。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在规则未覆盖时避免臆造行为，保持未定义状态",
+      "domain": "交通仿真",
+      "task_family": "规则合规",
+      "method_family": "边界保护",
+      "stage": "全流程",
+      "applicable_signals": [
+        "当前情形在文档规则中找不到对应条款",
+        "多条规则对同一情形给出冲突指引",
+        "规则存在明显空白需要补充"
+      ],
+      "contraindications": [
+        "情形已被明确规则覆盖时不应套用本规则",
+        "不得以本规则为由跳过已有明确规则"
+      ],
+      "intervention_moves": [
+        "核对情形是否被明确规则覆盖",
+        "将未覆盖情形标记为未定义",
+        "记录触发判断的情形与相关规则引用",
+        "暂停该情形的推断并等待补充规则"
+      ],
+      "workflow_steps": [
+        "识别当前仿真情形及其涉及的对象与动作",
+        "检索文档规则，确认是否存在明确覆盖条款",
+        "若存在明确覆盖，按规则执行并结束本规则",
+        "若未覆盖或存在冲突/空白，标记为未定义",
+        "记录情形描述与相关规则引用，暂停推断，等待补充规则"
+      ],
+      "triggers": [
+        "遇到文档未描述的仿真情形",
+        "规则之间存在冲突或空白",
+        "需要判断某行为是否有规则依据"
+      ],
+      "constraints": [
+        "未定义情形不得被推断为某种具体行为",
+        "所有仿真行为必须依据文档规则",
+        "仅在规则未覆盖或冲突时触发"
+      ],
+      "cautions": [
+        "避免将规则空白误判为已覆盖而擅自补全",
+        "记录需可追溯，便于后续补充规则时对齐"
+      ],
+      "output_contract": [
+        "输出一条未定义处理记录：包含被判定为未定义的情形描述、相关规则引用或缺失说明，以及暂停推断的状态标记。"
+      ],
+      "examples": [
+        {
+          "input": "某仿真情形在文档规则中找不到对应条款。",
+          "output": "标记该情形为未定义，记录情形描述与缺失说明，暂停推断并等待补充规则。",
+          "notes": "规则未覆盖时保持未定义状态。"
+        }
+      ],
+      "risk_class": "medium",
+      "confidence": 0.75,
+      "support_ids": [
+        "fc696875-416f-5eea-98ca-b35267517b66"
+      ],
+      "metadata": {
+        "prompt": "在执行或解释仿真行为前，先核对当前情形是否被文档规则明确覆盖。若情形未被覆盖，或规则之间存在冲突、空白，则不要推断或补全行为：将其标记为未定义，记录触发该判断的情形与相关规则引用，并暂停该情形的后续推断，等待补充规则。若情形已被明确规则覆盖，则按规则正常执行，不适用本规则。",
+        "tags": [
+          "交通仿真",
+          "规则合规",
+          "边界保护",
+          "未定义情形"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "71f1f3fb-eeeb-57fc-ad5c-44e97781b79b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 3,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

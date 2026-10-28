@@ -195,7 +195,7 @@ def prepare(root, task, generator, experiment):
         raise RuntimeError('Existing pilot budget must never be reset')
     from . import downstream_authorization as authorization
     grant = (authorization.load_authorization(root, task, generator, experiment)
-             if task['adapter'] == authorization.ADAPTER else None)
+             if task['adapter'] in authorization.ADAPTERS else None)
     adapter = adapter_for(root, task)
     for hook in ('verify_assets', 'execution_config', 'configure', 'native_trial', 'grade_export', 'paid_batch'):
         if not callable(getattr(adapter, hook, None)):

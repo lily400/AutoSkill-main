@@ -1,0 +1,164 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "输入数据校验",
+  "run_id": "20261028T135030_92890397",
+  "skills": [
+    {
+      "skill_id": "07a1c597-7956-5d8e-aed6-d14736bd7484",
+      "name": "产品目录JSON结构校验",
+      "description": "对产品目录JSON数组执行结构与字段校验，确认每个对象含唯一sku_id、合法category枚举与非空silhouette_description；用于接收或清洗产品目录输入、进入后续匹配流程之前。",
+      "skill_body": "在执行任何产品目录匹配或分类任务前，先校验输入是否为JSON数组，且每个对象均含sku_id（字符串、唯一）、category（仅限\"tops\"、\"bottoms\"、\"outerwear\"）、silhouette_description（非空字符串）。逐项检查并记录缺失或非法字段；若校验不通过，标记失败并列出问题项，不进入后续流程。\n\n## Objective\n\n确保产品目录输入满足必需结构与字段约束，拦截无效数据\n## Applicable Signals\n\n- 产品目录JSON即将进入匹配或分类流程\n- category字段取值需确认是否在允许枚举内\n- sku_id或silhouette_description存在缺失或重复风险\n\n## Contraindications\n\n- 输入不是产品目录JSON\n- 仅需语义相似度判断而无需结构校验\n\n## Intervention Moves\n\n- 确认输入为JSON数组\n- 逐对象检查sku_id为字符串且唯一\n- 检查category属于\"tops\"、\"bottoms\"、\"outerwear\"\n- 检查silhouette_description为非空字符串\n- 汇总缺失或非法字段并给出通过/失败结论\n\n## Workflow Steps\n\n- 确认输入为JSON数组，每个元素为对象\n- 校验sku_id：存在、为字符串、在数组内唯一\n- 校验category：存在且取值属于\"tops\"、\"bottoms\"、\"outerwear\"\n- 校验silhouette_description：存在且为非空字符串\n- 记录所有缺失或非法字段，输出通过或失败结论\n\n## Constraints\n\n- category仅允许\"tops\"、\"bottoms\"、\"outerwear\"三个取值\n- sku_id必须唯一\n- silhouette_description不得为空\n- 校验不通过时不得进入后续匹配流程\n\n## Cautions\n\n- 仅做结构与字段校验，不承担语义相似度或情感分类判断\n- 对部分缺失的输入应明确标记而非静默补全\n\n## Output Contract\n\n- 通过或标记失败的校验结果，列出缺失或非法字段\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 产品目录JSON数组，其中某对象category为\"accessories\"\n- Therapist/Output: 校验失败：category取值非法（应为tops/bottoms/outerwear）\n- Notes: 枚举校验拦截\n\n### Example 2\n\n- Client/Input: 产品目录JSON数组，某对象silhouette_description为空字符串\n- Therapist/Output: 校验失败：silhouette_description为空\n- Notes: 非空校验拦截",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "确保产品目录输入满足必需结构与字段约束，拦截无效数据",
+      "domain": "运营流程",
+      "task_family": "输入数据校验",
+      "method_family": "结构校验",
+      "stage": "输入验证",
+      "applicable_signals": [
+        "产品目录JSON即将进入匹配或分类流程",
+        "category字段取值需确认是否在允许枚举内",
+        "sku_id或silhouette_description存在缺失或重复风险"
+      ],
+      "contraindications": [
+        "输入不是产品目录JSON",
+        "仅需语义相似度判断而无需结构校验"
+      ],
+      "intervention_moves": [
+        "确认输入为JSON数组",
+        "逐对象检查sku_id为字符串且唯一",
+        "检查category属于\"tops\"、\"bottoms\"、\"outerwear\"",
+        "检查silhouette_description为非空字符串",
+        "汇总缺失或非法字段并给出通过/失败结论"
+      ],
+      "triggers": [
+        "收到产品目录JSON需进入后续匹配流程",
+        "需确认category取值合法",
+        "需确认sku_id唯一性与silhouette_description非空"
+      ],
+      "workflow_steps": [
+        "确认输入为JSON数组，每个元素为对象",
+        "校验sku_id：存在、为字符串、在数组内唯一",
+        "校验category：存在且取值属于\"tops\"、\"bottoms\"、\"outerwear\"",
+        "校验silhouette_description：存在且为非空字符串",
+        "记录所有缺失或非法字段，输出通过或失败结论"
+      ],
+      "constraints": [
+        "category仅允许\"tops\"、\"bottoms\"、\"outerwear\"三个取值",
+        "sku_id必须唯一",
+        "silhouette_description不得为空",
+        "校验不通过时不得进入后续匹配流程"
+      ],
+      "cautions": [
+        "仅做结构与字段校验，不承担语义相似度或情感分类判断",
+        "对部分缺失的输入应明确标记而非静默补全"
+      ],
+      "output_contract": [
+        "通过或标记失败的校验结果，列出缺失或非法字段"
+      ],
+      "examples": [
+        {
+          "input": "产品目录JSON数组，其中某对象category为\"accessories\"",
+          "output": "校验失败：category取值非法（应为tops/bottoms/outerwear）",
+          "notes": "枚举校验拦截"
+        },
+        {
+          "input": "产品目录JSON数组，某对象silhouette_description为空字符串",
+          "output": "校验失败：silhouette_description为空",
+          "notes": "非空校验拦截"
+        }
+      ],
+      "tags": [
+        "输入校验",
+        "结构校验",
+        "产品目录",
+        "JSON",
+        "合规守卫"
+      ],
+      "support_ids": [
+        "24c21e3f-4bec-59ad-aabb-23a7526baea4"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "3d7abcf1-46a9-5107-836d-12753afaad36"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|确保产品目录输入满足必需结构与字段约束，拦截无效数据|运营流程|输入数据校验|结构校验|输入验证|产品目录json结构校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "be924853-fb1e-4df7-94df-43b2fb853a94",
+      "entity_type": "skill",
+      "entity_id": "07a1c597-7956-5d8e-aed6-d14736bd7484",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "07a1c597-7956-5d8e-aed6-d14736bd7484",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "24c21e3f-4bec-59ad-aabb-23a7526baea4"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

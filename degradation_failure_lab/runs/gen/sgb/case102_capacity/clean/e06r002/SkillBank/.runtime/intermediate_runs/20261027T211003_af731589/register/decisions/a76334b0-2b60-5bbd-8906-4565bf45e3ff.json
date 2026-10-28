@@ -1,0 +1,112 @@
+{
+  "skill_id": "a76334b0-2b60-5bbd-8906-4565bf45e3ff",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“信号相位进入判定”高度重叠，均为基于tick取模映射相位并判定入边绿灯放行，属重复能力，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a76334b0-2b60-5bbd-8906-4565bf45e3ff",
+    "name": "信号相位放行判定",
+    "description": "根据固定信号周期与有序相位列表计算当前 tick 的活动相位，并判定某入边车辆是否被允许进入交叉口；用于逐步推进仿真时确定信号放行状态。",
+    "skill_body": "在给定 tick 下，先按 PhaseIndex = (t mod CycleLength) 将时间投影到相位列表得到活动相位，再检查目标入边是否属于该相位的 GreenEdges：属于则放行，否则禁止。仅处理已配置信号周期与相位列表的信号化节点。\n\n## Objective\n\n在给定 tick 下正确判定信号化节点各入边的放行资格\n## Applicable Signals\n\n- 节点已配置 CycleLength 与有序 Phases 列表\n- 需要判断某入边车辆在当前tick能否进入交叉口\n- 需要计算当前活动相位\n\n## Contraindications\n\n- 节点未配置信号周期或相位列表\n- 需要处理非信号化节点\n\n## Intervention Moves\n\n- 读取节点的 CycleLength 与有序相位列表\n- 计算 PhaseIndex = (t mod CycleLength) 并投影到相位列表得到活动相位\n- 检查目标入边是否在活动相位的 GreenEdges 中\n- 输出放行或禁止结论\n\n## Workflow Steps\n\n- 确认目标节点为信号化节点且具备 CycleLength 与有序 Phases 列表\n- 计算 PhaseIndex = (t mod CycleLength)\n- 将 PhaseIndex 投影到相位列表，确定当前 tick 的活动相位\n- 对每条待判定入边，检查其是否属于活动相位的 GreenEdges\n- 输出活动相位及每条入边的放行/禁止结论\n\n## Constraints\n\n- 相位列表为重复有序列表，投影须落在列表范围内\n- 仅当入边属于活动相位的 GreenEdges 时才允许进入交叉口\n\n## Cautions\n\n- 本技能只做相位映射与放行判定，不处理节点到达/离开顺序规则\n- 若节点缺少信号配置，应转交其他规则处理而非默认放行\n\n## Output Contract\n\n- 输出当前活动相位及每条入边的放行/禁止结论\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: CycleLength=10，相位列表为 [PhaseA(0-4, GreenEdges={E1}), PhaseB(5-9, GreenEdges={E2})]，t=7，待判定入边 E1\n- Therapist/Output: 活动相位为 PhaseB；E1 不在 GreenEdges 中，判定为禁止进入交叉口\n- Notes: PhaseIndex = 7 mod 10 = 7，投影到 PhaseB",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在给定 tick 下正确判定信号化节点各入边的放行资格",
+    "domain": "交通仿真规则",
+    "task_family": "信号控制判定",
+    "method_family": "周期相位映射",
+    "stage": "每tick状态更新",
+    "applicable_signals": [
+      "节点已配置 CycleLength 与有序 Phases 列表",
+      "需要判断某入边车辆在当前tick能否进入交叉口",
+      "需要计算当前活动相位"
+    ],
+    "contraindications": [
+      "节点未配置信号周期或相位列表",
+      "需要处理非信号化节点"
+    ],
+    "intervention_moves": [
+      "读取节点的 CycleLength 与有序相位列表",
+      "计算 PhaseIndex = (t mod CycleLength) 并投影到相位列表得到活动相位",
+      "检查目标入边是否在活动相位的 GreenEdges 中",
+      "输出放行或禁止结论"
+    ],
+    "triggers": [
+      "需要判断某入边车辆在当前tick能否进入交叉口",
+      "需要计算当前活动相位"
+    ],
+    "workflow_steps": [
+      "确认目标节点为信号化节点且具备 CycleLength 与有序 Phases 列表",
+      "计算 PhaseIndex = (t mod CycleLength)",
+      "将 PhaseIndex 投影到相位列表，确定当前 tick 的活动相位",
+      "对每条待判定入边，检查其是否属于活动相位的 GreenEdges",
+      "输出活动相位及每条入边的放行/禁止结论"
+    ],
+    "constraints": [
+      "相位列表为重复有序列表，投影须落在列表范围内",
+      "仅当入边属于活动相位的 GreenEdges 时才允许进入交叉口"
+    ],
+    "cautions": [
+      "本技能只做相位映射与放行判定，不处理节点到达/离开顺序规则",
+      "若节点缺少信号配置，应转交其他规则处理而非默认放行"
+    ],
+    "output_contract": [
+      "输出当前活动相位及每条入边的放行/禁止结论"
+    ],
+    "examples": [
+      {
+        "input": "CycleLength=10，相位列表为 [PhaseA(0-4, GreenEdges={E1}), PhaseB(5-9, GreenEdges={E2})]，t=7，待判定入边 E1",
+        "output": "活动相位为 PhaseB；E1 不在 GreenEdges 中，判定为禁止进入交叉口",
+        "notes": "PhaseIndex = 7 mod 10 = 7，投影到 PhaseB"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "信号控制",
+      "相位映射",
+      "放行判定"
+    ],
+    "support_ids": [
+      "ef517d41-79a6-54c8-9fb9-99ffc3aac86f"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "29a33448-6250-53ed-82fd-8ed7baa672dd"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|在给定 tick 下正确判定信号化节点各入边的放行资格|交通仿真规则|信号控制判定|周期相位映射|每tick状态更新|信号相位放行判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

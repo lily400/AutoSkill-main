@@ -1,0 +1,68 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-28T05:21:15+00:00",
+  "family_name": "未分类技能",
+  "skill_id": "3df5f979-7629-5c57-8c24-746c21770722",
+  "skill_name": "联合类型从左到右校验顺序控制",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "146cba65-2453-529b-a463-e35a98f44942",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "document_title": "input002\\unions.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 3637,
+        "end": 4111
+      },
+      "relation_type": "support",
+      "confidence": 0.75,
+      "quote": "print(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nUnion with left to right - unexpected results\n```\nfrom pydantic import BaseModel, Field",
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "联合类型从左到右校验顺序控制",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱",
+        "task_family": "联合类型校验",
+        "method_family": "顺序校验规则",
+        "stage": "模型设计",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "e91ba773-ce3c-569b-9374-ea0a917b89cb",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 28,
+        "paragraph_end": 30,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    }
+  ]
+}

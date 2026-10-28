@@ -1,0 +1,1054 @@
+[
+  {
+    "window_id": "d903145f-e0c5-5a1c-b936-de0e81914723",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "input001\\type_adapter.md",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 0,
+    "anchor_hits": [],
+    "text": "# TypeAdapter - Pydantic Validation",
+    "span": {
+      "start": 0,
+      "end": 35
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "input001\\type_adapter.md",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "input001\\type_adapter.md"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "# TypeAdapter"
+      ],
+      "subsection_headings": [],
+      "heading_number": "",
+      "heading_kind": "",
+      "section_summary": "# TypeAdapter - Pydantic Validation",
+      "section_chunk_index": 0,
+      "section_chunk_count": 0,
+      "section_chunk_span": {},
+      "original_section_span": {}
+    }
+  },
+  {
+    "window_id": "48ce8e45-1cd8-5985-91f4-e88d35530bdc",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "# TypeAdapter",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 30,
+    "anchor_hits": [],
+    "text": "Bases: `Generic[T]`\n\n[`TypeAdapter`](../../concepts/type_adapter/)\n\nType adapters provide a flexible way to perform validation and serialization based on a Python type.\n\nA `TypeAdapter` instance exposes some of the functionality from `BaseModel` instance methods\nfor types that do not have such methods (such as dataclasses, primitive types, and more).\n\n**Note:** `TypeAdapter` instances are not types, and cannot be used as type annotations for fields.\n\nParameters:\n\nAttributes:\n\nCompatibility with `mypy`\n\nDepending on the type used, `mypy` might raise an error when instantiating a `TypeAdapter`. As a workaround, you can explicitly\nannotate your variable:\n\n```\nfrom typing import Union\n\nfrom pydantic import TypeAdapter\n\nta: TypeAdapter[Union[str, int]] = TypeAdapter(Union[str, int])  # type: ignore[arg-type]\n```\n\nNamespace management nuances and implementation details\n\nHere, we collect some notes on namespace management, and subtle differences from `BaseModel`:\n\nIt is expected that the `ns_resolver` passed to this function will have the correct\nnamespace for the type we're adapting. See the source code for `TypeAdapter.__init__`\nand `TypeAdapter.rebuild` for various ways to construct this namespace.\n\nThis works for the case where this function is called in a module that\nhas the target of forward references in its scope, but\ndoes not always work for more complex cases.\n\nFor example, take the following:\n\na.py\n```\nIntList = list[int]\nOuterDict = dict[str, 'IntList']\n```\n\nb.py\n```\nfrom a import OuterDict\n\nfrom pydantic import TypeAdapter\n\nIntList = int  # replaces the symbol the forward reference is looking for\nv = TypeAdapter(OuterDict)\nv({'x': 1})  # should fail but doesn't\n```\n\nIf `OuterDict` were a `BaseModel`, this would work because it would resolve\nthe forward reference within the `a.py` namespace.\nBut `TypeAdapter(OuterDict)` can't determine what module `OuterDict` came from.\n\nBut at the very least this behavior is *subtly* different from `BaseModel`'s.\n\nSource code in `pydantic/type_adapter.py`\n\n## rebuild\n```\nrebuild(\n    *,\n    force: bool = False,\n    raise_errors: bool = True,\n    _parent_namespace_depth: int = 2,\n    _types_namespace: MappingNamespace | None = None\n) -> bool | None\n```\n\nTry to rebuild the pydantic-core schema for the adapter's type.",
+    "span": {
+      "start": 51,
+      "end": 7502
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# TypeAdapter",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "# TypeAdapter"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\type_adapter.md"
+      ],
+      "subsection_headings": [
+        "## rebuild"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Bases: `Generic[T]`",
+      "section_chunk_index": 1,
+      "section_chunk_count": 6,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 8753
+      },
+      "original_section_span": {
+        "start": 51,
+        "end": 46970
+      }
+    }
+  },
+  {
+    "window_id": "9734afd5-3279-5c49-8aff-cba8d56b5dd4",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "# TypeAdapter",
+    "section_level": 1,
+    "paragraph_start": 31,
+    "paragraph_end": 36,
+    "anchor_hits": [],
+    "text": "This may be necessary when one of the annotations is a ForwardRef which could not be resolved during\nthe initial attempt to build the schema, and automatic rebuilding fails.\n\nParameters:\n\nReturns:\n\n| Type | Description |\n| --- | --- |\n| `bool \\| None` | Returns `None` if the schema is already \"complete\" and rebuilding was not required. |\n| `bool \\| None` | If rebuilding *was* required, returns `True` if rebuilding was successful, otherwise `False`. |\n\nSource code in `pydantic/type_adapter.py`",
+    "span": {
+      "start": 7504,
+      "end": 8804
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# TypeAdapter",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "# TypeAdapter"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\type_adapter.md"
+      ],
+      "subsection_headings": [
+        "## rebuild"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Bases: `Generic[T]`",
+      "section_chunk_index": 1,
+      "section_chunk_count": 6,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 8753
+      },
+      "original_section_span": {
+        "start": 51,
+        "end": 46970
+      }
+    }
+  },
+  {
+    "window_id": "2f3dab57-e790-540f-84ae-ccca1bae3999",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "# TypeAdapter",
+    "section_level": 1,
+    "paragraph_start": 1,
+    "paragraph_end": 19,
+    "anchor_hits": [],
+    "text": "## validate_python\n\nValidate a Python object against the model.\n\nParameters:\n\nWhen using `TypeAdapter` with a Pydantic `dataclass`, the use of the `from_attributes`\nargument is not supported.\n\nReturns:\n\n| Type | Description |\n| --- | --- |\n| `T` | The validated object. |\n\nSource code in `pydantic/type_adapter.py`\n\n## validate_json\n\n[JSON Parsing](../../concepts/json/#json-parsing)\n\nValidate a JSON string or bytes against the model.\n\nParameters:\n\nReturns:\n\n| Type | Description |\n| --- | --- |\n| `T` | The validated object. |\n\nSource code in `pydantic/type_adapter.py`",
+    "span": {
+      "start": 11256,
+      "end": 17512
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# TypeAdapter",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "# TypeAdapter"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\type_adapter.md"
+      ],
+      "subsection_headings": [
+        "## rebuild"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Bases: `Generic[T]`",
+      "section_chunk_index": 2,
+      "section_chunk_count": 6,
+      "section_chunk_span": {
+        "start": 8755,
+        "end": 17461
+      },
+      "original_section_span": {
+        "start": 51,
+        "end": 46970
+      }
+    }
+  },
+  {
+    "window_id": "667007c2-0758-509f-95cd-4eae4744746a",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "# TypeAdapter",
+    "section_level": 1,
+    "paragraph_start": 1,
+    "paragraph_end": 26,
+    "anchor_hits": [],
+    "text": "## validate_strings\n\nValidate object contains string data against the model.\n\nParameters:\n\nReturns:\n\n| Type | Description |\n| --- | --- |\n| `T` | The validated object. |\n\nSource code in `pydantic/type_adapter.py`\n\n## get_default_value\n\n```\nget_default_value(\n    *,\n    strict: bool | None = None,\n    context: Any | None = None\n) -> Some[T] | None\n```\n\nGet the default value for the wrapped type.\n\nParameters:\n\n| Name | Type | Description | Default |\n| --- | --- | --- | --- |\n| `strict` | `bool \\| None` | Whether to strictly check types. | `None` |\n| `context` | `Any \\| None` | Additional context to pass to the validator. | `None` |\n\nReturns:\n\n| Type | Description |\n| --- | --- |\n| `Some[T] \\| None` | The default value wrapped in a `Some` if there is one or None if not. |\n\nSource code in `pydantic/type_adapter.py`\n\n## dump_python\n\nDump an instance of the adapted type to a Python object.\n\nParameters:\n\nReturns:\n\n| Type | Description |\n| --- | --- |\n| `Any` | The serialized object. |\n\nSource code in `pydantic/type_adapter.py`",
+    "span": {
+      "start": 19768,
+      "end": 27331
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# TypeAdapter",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "# TypeAdapter"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\type_adapter.md"
+      ],
+      "subsection_headings": [
+        "## rebuild"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Bases: `Generic[T]`",
+      "section_chunk_index": 3,
+      "section_chunk_count": 6,
+      "section_chunk_span": {
+        "start": 17463,
+        "end": 27280
+      },
+      "original_section_span": {
+        "start": 51,
+        "end": 46970
+      }
+    }
+  },
+  {
+    "window_id": "40d86d96-7ac7-50a4-8868-74c84487c4e8",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "# TypeAdapter",
+    "section_level": 1,
+    "paragraph_start": 1,
+    "paragraph_end": 14,
+    "anchor_hits": [],
+    "text": "## dump_json\n\n[JSON Serialization](../../concepts/json/#json-serialization)\n\nSerialize an instance of the adapted type to JSON.\n\nParameters:\n\nReturns:\n\n| Type | Description |\n| --- | --- |\n| `bytes` | The JSON representation of the given instance as bytes. |\n\nSource code in `pydantic/type_adapter.py`\n\n## json_schema\n\nGenerate a JSON schema for the adapted type.\n\nParameters:",
+    "span": {
+      "start": 30165,
+      "end": 36602
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# TypeAdapter",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "# TypeAdapter"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\type_adapter.md"
+      ],
+      "subsection_headings": [
+        "## rebuild"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Bases: `Generic[T]`",
+      "section_chunk_index": 4,
+      "section_chunk_count": 6,
+      "section_chunk_span": {
+        "start": 27282,
+        "end": 36551
+      },
+      "original_section_span": {
+        "start": 51,
+        "end": 46970
+      }
+    }
+  },
+  {
+    "window_id": "5384f948-968b-5158-9b1f-8224365adf52",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "# TypeAdapter",
+    "section_level": 1,
+    "paragraph_start": 1,
+    "paragraph_end": 13,
+    "anchor_hits": [],
+    "text": "Returns:\n\n| Type | Description |\n| --- | --- |\n| `dict[str, Any]` | The JSON schema for the model as a dictionary. |\n\nSource code in `pydantic/type_adapter.py`\n\n## json_schemas\n\n`staticmethod`\n\nGenerate a JSON schema including definitions from multiple type adapters.\n\nParameters:\n\nReturns:\n\nSource code in `pydantic/type_adapter.py`",
+    "span": {
+      "start": 38018,
+      "end": 43207
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# TypeAdapter",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "# TypeAdapter"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\type_adapter.md"
+      ],
+      "subsection_headings": [
+        "## rebuild"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Bases: `Generic[T]`",
+      "section_chunk_index": 5,
+      "section_chunk_count": 6,
+      "section_chunk_span": {
+        "start": 36553,
+        "end": 43156
+      },
+      "original_section_span": {
+        "start": 51,
+        "end": 46970
+      }
+    }
+  },
+  {
+    "window_id": "a5c53a3d-8ac5-591f-9832-2e5c67d1dc66",
+    "doc_id": "2711be4d-ec1e-5d09-9bf2-85e12adf27a6",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+    "unit_title": "input001\\type_adapter.md",
+    "section_heading": "# TypeAdapter",
+    "section_level": 1,
+    "paragraph_start": 1,
+    "paragraph_end": 4,
+    "anchor_hits": [],
+    "text": "Was this page helpful?\n\nThanks for your feedback!\n\nThanks for your feedback!\n\nBack to top",
+    "span": {
+      "start": 46876,
+      "end": 46968
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# TypeAdapter",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md",
+      "heading_path": [
+        "# TypeAdapter"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\type_adapter.md"
+      ],
+      "subsection_headings": [
+        "## rebuild"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Bases: `Generic[T]`",
+      "section_chunk_index": 6,
+      "section_chunk_count": 6,
+      "section_chunk_span": {
+        "start": 43158,
+        "end": 46917
+      },
+      "original_section_span": {
+        "start": 51,
+        "end": 46970
+      }
+    }
+  },
+  {
+    "window_id": "5abd065d-7c15-50cd-8513-1316001e538a",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "input002\\unions.md",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 0,
+    "anchor_hits": [],
+    "text": "# Unions - Pydantic Validation",
+    "span": {
+      "start": 0,
+      "end": 30
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "input002\\unions.md",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "input002\\unions.md"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "# Unions"
+      ],
+      "subsection_headings": [],
+      "heading_number": "",
+      "heading_kind": "",
+      "section_summary": "# Unions - Pydantic Validation",
+      "section_chunk_index": 0,
+      "section_chunk_count": 0,
+      "section_chunk_span": {},
+      "original_section_span": {}
+    }
+  },
+  {
+    "window_id": "9dda6482-ed2e-5a14-b7a9-e7bcc84b5108",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 1,
+    "paragraph_end": 3,
+    "anchor_hits": [],
+    "text": "This leads to some nuance around how to validate unions:\n\n- which member(s) of the union should you validate data against, and in which order?\n- which errors to raise when validation fails?\n\nValidating unions feels like adding another orthogonal dimension to the validation process.",
+    "span": {
+      "start": 219,
+      "end": 501
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9724
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "1fd81aeb-7fbb-5dc8-8a05-baace0d30dc2",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 4,
+    "paragraph_end": 6,
+    "anchor_hits": [],
+    "text": "To solve these problems, Pydantic supports three fundamental approaches to validating unions:\n\n1. left to right mode - the simplest approach, each member of the union is tried in order and the first match is returned\n2. smart mode - similar to \"left to right mode\" members are tried in order; however, validation will proceed past the first match to attempt to find a better match, this is the default mode for most union validation\n3. discriminated unions - only one member of the union is tried, based on a discriminator\n\nIn general, we recommend using discriminated unions. They are both more performant and more predictable than untagged unions, as they allow you to control which member of the union to validate against.",
+    "span": {
+      "start": 503,
+      "end": 1228
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9724
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "e91ba773-ce3c-569b-9374-ea0a917b89cb",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 28,
+    "paragraph_end": 30,
+    "anchor_hits": [],
+    "text": "print(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nUnion with left to right - unexpected results\n```\nfrom pydantic import BaseModel, Field",
+    "span": {
+      "start": 3637,
+      "end": 4111
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9724
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "df6bfb68-7696-554f-9d10-430d689bc05a",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 32,
+    "paragraph_end": 34,
+    "anchor_hits": [],
+    "text": "print(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nSmart Mode\nBecause of the potentially surprising results of `union_mode='left_to_right'`, in Pydantic >=2 the default mode for `Union` validation is `union_mode='smart'`.",
+    "span": {
+      "start": 4191,
+      "end": 4748
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9724
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "8204eafa-3ed2-52f0-b15a-bd2395f4a405",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 38,
+    "paragraph_end": 40,
+    "anchor_hits": [],
+    "text": "The smart mode algorithm uses two metrics to determine the best match for the input:\n\n1. The number of valid fields set (relevant for models, dataclasses, and typed dicts)\n2. The exactness of the match (relevant for all types)\n\n#### Number of valid fields set",
+    "span": {
+      "start": 5220,
+      "end": 5479
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9724
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "0b0e5e47-09fd-5f29-b888-21bc0b6d4a76",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 46,
+    "paragraph_end": 48,
+    "anchor_hits": [],
+    "text": "For `exactness`, Pydantic scores a match of a union member into one of the following three groups (from highest score to lowest score):\n\n- An exact type match, for example an `int` input to a `float | int` union validation is an exact type match for the `int` member\n- Validation would have succeeded in [`strict` mode](../strict_mode/)\n- Validation would have succeeded in lax mode\n\nThe union match which produced the highest exactness score will be considered the best match.",
+    "span": {
+      "start": 6097,
+      "end": 6574
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9724
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "c31eb8ef-1fc4-533b-b875-c9110a66b1a5",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 50,
+    "paragraph_end": 53,
+    "anchor_hits": [],
+    "text": "`BaseModel`, `dataclass`, and `TypedDict`All other data types\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,\nwith the valid fields set count also tallied.\n2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned.\n3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned.\n4. If validation failed on all the members, return all the errors.\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above.\n  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted.\n2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned.\n3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned.\n4. Validation failed on all the members, return all the errors.\n\nPython 3.9 and abovePython 3.10 and above",
+    "span": {
+      "start": 6669,
+      "end": 7864
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 1,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9724
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 1,
+    "paragraph_end": 23,
+    "anchor_hits": [],
+    "text": "To validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nDiscriminated Unions with callable `Discriminator`\nAPI Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above",
+    "span": {
+      "start": 10151,
+      "end": 13211
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9726,
+        "end": 19649
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 24,
+    "paragraph_end": 46,
+    "anchor_hits": [],
+    "text": "```\nfrom typing import Annotated, Any, Literal, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        Union[\n            Annotated[ApplePie, Tag('apple')],\n            Annotated[PumpkinPie, Tag('pumpkin')],\n        ],\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n```\nfrom typing import Annotated, Any, Literal\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        (\n            Annotated[ApplePie, Tag('apple')] |\n            Annotated[PumpkinPie, Tag('pumpkin')]\n        ),\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n`Discriminator`s can also be used to validate `Union` types with combinations of models and primitive types.\n\nFor example:\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError",
+    "span": {
+      "start": 13213,
+      "end": 16127
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9726,
+        "end": 19649
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 47,
+    "paragraph_end": 66,
+    "anchor_hits": [],
+    "text": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+    "span": {
+      "start": 16129,
+      "end": 19225
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9726,
+        "end": 19649
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "d37a8c2c-fa2b-54d9-b7a6-e89c97c846c9",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 67,
+    "paragraph_end": 70,
+    "anchor_hits": [],
+    "text": "For callable `Discriminator`s:\n\n```\nsome_field: Union[...] = Field(discriminator=Discriminator(...))\nsome_field: Annotated[Union[...], Discriminator(...)]\nsome_field: Annotated[Union[...], Field(discriminator=Discriminator(...))]\n```\n\nDiscriminated unions cannot be used with only a single variant, such as `Union[Cat]`.\n\nPython changes `Union[T]` into `T` at interpretation time, so it is not possible for `pydantic` to\ndistinguish fields of `Union[T]` from `T`.",
+    "span": {
+      "start": 19227,
+      "end": 19690
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 2,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 9726,
+        "end": 19649
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "e202d0a5-4f50-5cc5-a2e4-74bfd73327b8",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 24,
+    "anchor_hits": [],
+    "text": "Nested Discriminated Unions\nOnly one discriminator can be set for a field but sometimes you want to combine multiple discriminators.\nYou can do it by creating nested `Annotated` types, e.g.:\n\n```\nfrom typing import Annotated, Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass BlackCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['black']\n    black_name: str\n\nclass WhiteCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['white']\n    white_name: str\n\nCat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    name: str\n\nPet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n\nclass Model(BaseModel):\n    pet: Pet\n    n: int\n\nIf you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`.\n\nIn the context of the previous example, we have the following:\n\n```\ntype_adapter = TypeAdapter(Pet)\n\npet = type_adapter.validate_python(\n    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}\n)\nprint(repr(pet))\n#> BlackCat(pet_type='cat', color='black', black_name='felix')\n```\n\nYou can also customize the error type, message, and context for a `Discriminator` by passing\nthese specifications as parameters to the `Discriminator` constructor, as seen in the example below.\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\n# Errors are quite verbose with a normal Union:\nclass Model(BaseModel):\n    x: Union[str, 'Model']\n\n# Errors are much simpler with a discriminated union:\ndef model_x_discriminator(v):\n    if isinstance(v, str):\n        return 'str'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x\n      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x.model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"",
+    "span": {
+      "start": 19692,
+      "end": 25009
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 3,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 19651,
+        "end": 27163
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  },
+  {
+    "window_id": "2d0633a0-c6e0-532f-8b22-a588d81ab3fd",
+    "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+    "unit_title": "input002\\unions.md",
+    "section_heading": "# Unions",
+    "section_level": 1,
+    "paragraph_start": 25,
+    "paragraph_end": 38,
+    "anchor_hits": [],
+    "text": "# The data is still handled properly when valid:\ndata = {'x': {'x': {'x': 'a'}}}\nm = DiscriminatedModel.model_validate(data)\nprint(m.model_dump())\n#> {'x': {'x': {'x': 'a'}}}\n```\n\n1. `custom_error_type` is the `type` attribute of the `ValidationError` raised when validation fails.\n2. `custom_error_message` is the `msg` attribute of the `ValidationError` raised when validation fails.\n3. `custom_error_context` is the `ctx` attribute of the `ValidationError` raised when validation fails.\n\nYou can also simplify error messages by labeling each case with a [`Tag`](../../api/types/#pydantic.types.Tag).\nThis is especially useful when you have complex types like those in this example:\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import AfterValidator, Tag, TypeAdapter, ValidationError\n\nDoubledList = Annotated[list[int], AfterValidator(lambda x: x * 2)]\nStringsMap = dict[str, str]\n\n# Not using any `Tag`s for each union case, the errors are not so nice to look at\nadapter = TypeAdapter(Union[DoubledList, StringsMap])\n\ntag_adapter = TypeAdapter(\n    Union[\n        Annotated[DoubledList, Tag('DoubledList')],\n        Annotated[StringsMap, Tag('StringsMap')],\n    ]\n)\n\nWas this page helpful?\n\nThanks for your feedback!\n\nThanks for your feedback!\n\nBack to top",
+    "span": {
+      "start": 25011,
+      "end": 27204
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Unions",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "heading_path": [
+        "# Unions"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\unions.md"
+      ],
+      "subsection_headings": [
+        "### Left to Right Mode",
+        "Smart Mode",
+        "Discriminated Unions",
+        "Discriminated Unions with `str` discriminators",
+        "Discriminated Unions with callable `Discriminator`",
+        "Nested Discriminated Unions",
+        "Union Validation Errors"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+      "section_chunk_index": 3,
+      "section_chunk_count": 3,
+      "section_chunk_span": {
+        "start": 19651,
+        "end": 27163
+      },
+      "original_section_span": {
+        "start": 41,
+        "end": 27250
+      }
+    }
+  }
+]

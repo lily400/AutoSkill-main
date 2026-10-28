@@ -1,0 +1,729 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "union_validation",
+  "run_id": "20261028T132115_9bffda9d",
+  "skills": [
+    {
+      "skill_id": "437b622a-24b1-5afd-9dbd-23b939ad5556",
+      "name": "Union 智能模式最佳匹配选择",
+      "description": "在 Pydantic 校验 Union 类型时，依据有效字段设置数量与匹配精确度两项指标，判断输入应归属哪个候选成员类型。适用于需要解释或预测智能模式下成员选择结果的场景。",
+      "skill_body": "当需要判断 Union 输入在智能模式下匹配到哪个成员时：1) 确认当前为智能模式而非从左到右模式；2) 对每个候选成员评估有效字段设置数量（适用于模型、dataclass、typed dict）；3) 评估匹配精确度（适用于所有类型）；4) 综合两项指标确定最佳匹配成员；5) 说明所选成员及依据。若输入与所有成员均不匹配，则不属于本技能范围，应转入错误处理。\n\n## Objective\n\n依据有效字段数与匹配精确度两项指标确定 Union 的最佳成员匹配\n## Applicable Signals\n\n- Union 校验存在多个候选成员\n- 需要解释智能模式成员选择结果\n\n## Contraindications\n\n- 使用从左到右模式而非智能模式\n- 输入与所有成员均不匹配需要报错处理\n\n## Intervention Moves\n\n- 确认处于智能模式\n- 统计各候选成员的有效字段设置数量\n- 评估各候选成员的匹配精确度\n- 综合两项指标选出最佳匹配成员\n\n## Workflow Steps\n\n- 确认当前为智能模式\n- 对每个候选成员评估有效字段设置数量（模型、dataclass、typed dict）\n- 对每个候选成员评估匹配精确度（所有类型）\n- 综合两项指标确定最佳匹配成员\n- 说明所选成员及依据\n\n## Constraints\n\n- 仅在智能模式下适用\n- 有效字段数量指标仅对模型、dataclass、typed dict 有意义\n- 匹配精确度指标适用于所有类型\n\n## Cautions\n\n- 若输入与所有成员均不匹配，应转入 Union 校验错误处理而非本技能\n\n## Output Contract\n\n- 确定并说明 Union 输入匹配到的具体成员类型及依据",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "依据有效字段数与匹配精确度两项指标确定 Union 的最佳成员匹配",
+      "domain": "pydantic",
+      "task_family": "union_validation",
+      "method_family": "smart_mode_matching",
+      "stage": "type_resolution",
+      "applicable_signals": [
+        "Union 校验存在多个候选成员",
+        "需要解释智能模式成员选择结果"
+      ],
+      "contraindications": [
+        "使用从左到右模式而非智能模式",
+        "输入与所有成员均不匹配需要报错处理"
+      ],
+      "intervention_moves": [
+        "确认处于智能模式",
+        "统计各候选成员的有效字段设置数量",
+        "评估各候选成员的匹配精确度",
+        "综合两项指标选出最佳匹配成员"
+      ],
+      "triggers": [
+        "校验 Union 类型且存在多个候选成员",
+        "需要解释或预测智能模式下的成员选择结果"
+      ],
+      "workflow_steps": [
+        "确认当前为智能模式",
+        "对每个候选成员评估有效字段设置数量（模型、dataclass、typed dict）",
+        "对每个候选成员评估匹配精确度（所有类型）",
+        "综合两项指标确定最佳匹配成员",
+        "说明所选成员及依据"
+      ],
+      "constraints": [
+        "仅在智能模式下适用",
+        "有效字段数量指标仅对模型、dataclass、typed dict 有意义",
+        "匹配精确度指标适用于所有类型"
+      ],
+      "cautions": [
+        "若输入与所有成员均不匹配，应转入 Union 校验错误处理而非本技能"
+      ],
+      "output_contract": [
+        "确定并说明 Union 输入匹配到的具体成员类型及依据"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "union",
+        "smart_mode",
+        "type_resolution"
+      ],
+      "support_ids": [
+        "46ea5522-f7ee-5042-8e3a-6ac681520ecc"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "6f035678-6bc5-5e9b-b471-bc49795ea59c"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|依据有效字段数与匹配精确度两项指标确定 union 的最佳成员匹配|pydantic|union_validation|smart_mode_matching|type_resolution|union 智能模式最佳匹配选择",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+      "name": "Union 智能模式成员选择",
+      "description": "按 Pydantic Smart Mode 规则在联合类型成员间选择最佳匹配：先按精确度评分，再以有效字段数决胜，平局用精确度打破。用于需要从多个候选模型/类型中确定唯一有效解析结果的场景。",
+      "skill_body": "当联合类型需要从多个候选成员中确定唯一最佳匹配时，按 Smart Mode 流程执行：从左到右尝试各成员，记录成功匹配的精确度类别与有效字段数；全部评估后返回有效字段数最高的成员；若并列，则用精确度评分打破平局；若全部失败，返回所有错误。不要在此流程中改用左到右短路或判别联合策略。\n\n## Objective\n\n在联合类型校验中按有效字段数与精确度评分选出唯一最佳成员\n## Applicable Signals\n\n- 联合成员为 BaseModel、dataclass 或 TypedDict 等结构化类型\n- 多个成员可能同时部分匹配，需要评分决胜\n- 需要返回单一最佳成员而非首个成功匹配\n\n## Contraindications\n\n- 仅需左到右首个成功匹配即可（应使用 Left to Right Mode）\n- 存在可用的判别字段（应优先使用 Discriminated Unions）\n\n## Intervention Moves\n\n- 从左到右尝试每个联合成员\n- 将成功匹配归入精确度类别并统计有效字段数\n- 全部评估后按有效字段数选出最高者\n- 平局时用精确度评分打破\n- 全部失败时汇总所有错误\n\n## Workflow Steps\n\n- 从左到右依次尝试每个联合成员，记录成功匹配的精确度类别与有效字段数。\n- 全部成员评估完成后，返回有效字段数最高的成员。\n- 若有效字段数并列，使用精确度评分作为决胜，返回精确度最高的成员。\n- 若所有成员均校验失败，返回全部错误。\n\n## Constraints\n\n- 必须评估全部成员后再做选择，不得在首个成功匹配处短路\n- 平局决胜必须使用精确度评分\n- 全部失败时必须返回所有错误而非单一错误\n\n## Cautions\n\n- Smart Mode 与 Left to Right Mode 行为不同，勿混用\n- 若存在判别字段，应优先考虑 Discriminated Unions 以获得更确定的解析\n\n## Output Contract\n\n- 返回有效字段数最高、平局时精确度最高的单一成员结果；若全部失败则返回所有错误。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合成员 A 与 B 均部分匹配，A 有效字段数更高\n- Therapist/Output: 返回成员 A 的解析结果\n- Notes: 有效字段数优先\n\n### Example 2\n\n- Client/Input: 联合成员 A 与 B 有效字段数相同，A 精确度更高\n- Therapist/Output: 返回成员 A 的解析结果\n- Notes: 平局用精确度打破\n\n### Example 3\n\n- Client/Input: 所有联合成员校验均失败\n- Therapist/Output: 返回全部成员的错误集合\n- Notes: 失败时汇总所有错误",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "4af0a451-fa59-56c0-b498-7eb801ffbcd2"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "在联合类型校验中按有效字段数与精确度评分选出唯一最佳成员",
+      "domain": "pydantic",
+      "task_family": "union_validation",
+      "method_family": "scoring_selection",
+      "stage": "validation",
+      "applicable_signals": [
+        "联合成员为 BaseModel、dataclass 或 TypedDict 等结构化类型",
+        "多个成员可能同时部分匹配，需要评分决胜",
+        "需要返回单一最佳成员而非首个成功匹配"
+      ],
+      "contraindications": [
+        "仅需左到右首个成功匹配即可（应使用 Left to Right Mode）",
+        "存在可用的判别字段（应优先使用 Discriminated Unions）"
+      ],
+      "intervention_moves": [
+        "从左到右尝试每个联合成员",
+        "将成功匹配归入精确度类别并统计有效字段数",
+        "全部评估后按有效字段数选出最高者",
+        "平局时用精确度评分打破",
+        "全部失败时汇总所有错误"
+      ],
+      "triggers": [
+        "需要从多个候选 BaseModel/dataclass/TypedDict 中确定最佳匹配",
+        "联合成员可能同时部分匹配，需要评分决胜"
+      ],
+      "workflow_steps": [
+        "从左到右依次尝试每个联合成员，记录成功匹配的精确度类别与有效字段数。",
+        "全部成员评估完成后，返回有效字段数最高的成员。",
+        "若有效字段数并列，使用精确度评分作为决胜，返回精确度最高的成员。",
+        "若所有成员均校验失败，返回全部错误。"
+      ],
+      "constraints": [
+        "必须评估全部成员后再做选择，不得在首个成功匹配处短路",
+        "平局决胜必须使用精确度评分",
+        "全部失败时必须返回所有错误而非单一错误"
+      ],
+      "cautions": [
+        "Smart Mode 与 Left to Right Mode 行为不同，勿混用",
+        "若存在判别字段，应优先考虑 Discriminated Unions 以获得更确定的解析"
+      ],
+      "output_contract": [
+        "返回有效字段数最高、平局时精确度最高的单一成员结果；若全部失败则返回所有错误。"
+      ],
+      "examples": [
+        {
+          "input": "联合成员 A 与 B 均部分匹配，A 有效字段数更高",
+          "output": "返回成员 A 的解析结果",
+          "notes": "有效字段数优先"
+        },
+        {
+          "input": "联合成员 A 与 B 有效字段数相同，A 精确度更高",
+          "output": "返回成员 A 的解析结果",
+          "notes": "平局用精确度打破"
+        },
+        {
+          "input": "所有联合成员校验均失败",
+          "output": "返回全部成员的错误集合",
+          "notes": "失败时汇总所有错误"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "smart_mode",
+        "validation",
+        "scoring"
+      ],
+      "support_ids": [
+        "669f10d7-4f10-5d1d-a9ec-179c080cf030"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "7d945828-339d-57a0-9ec0-ce9383e083a4"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|在联合类型校验中按有效字段数与精确度评分选出唯一最佳成员|pydantic|union_validation|scoring_selection|validation|union 智能模式成员选择",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "4af0a451-fa59-56c0-b498-7eb801ffbcd2"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "f1170955-d056-5735-832a-aa7b2c338b88",
+      "name": "Union 左到右短路匹配",
+      "description": "按 Left to Right Mode 依次尝试联合成员：精确类型匹配立即返回，否则取最左的 strict 匹配，再退到最左的 lax 匹配；全部失败时返回所有错误。用于成员顺序具有优先级语义、希望精确匹配时快速短路的场景。",
+      "skill_body": "当联合成员顺序具有优先级语义、且希望在精确匹配时立即短路时使用本技能。执行时按声明顺序从左到右尝试每个成员：若某成员以精确类型匹配成功，立即返回该成员并停止评估后续成员；否则记录 strict 与 lax 匹配结果。全部评估后，若存在 strict 匹配则返回最左的 strict 匹配；否则若存在 lax 匹配则返回最左的 lax 匹配；若所有成员均失败，则返回全部错误。不要在此流程中引入基于有效字段数的评分选择（那属于 Smart Mode），也不要用于成员间存在明确判别字段的场景。\n\n## Objective\n\n按成员顺序与匹配严格度短路返回首个可接受结果\n## Applicable Signals\n\n- 联合成员顺序具有优先级语义\n- 希望精确匹配时立即返回而不评估后续成员\n\n## Contraindications\n\n- 需要基于有效字段数评分选择（应使用 Smart Mode）\n- 成员间存在明确判别字段（应使用判别联合）\n\n## Intervention Moves\n\n- 按声明顺序从左到右尝试每个联合成员\n- 精确类型匹配成功时立即返回该成员并停止评估\n- 记录 strict 与 lax 匹配结果用于回退\n- 全部评估后优先返回最左的 strict 匹配，其次返回最左的 lax 匹配\n- 全部成员失败时返回所有错误\n\n## Workflow Steps\n\n- 按声明顺序从左到右尝试每个联合成员\n- 若某成员以精确类型匹配成功，立即返回该成员并停止评估后续成员\n- 否则记录 strict 与 lax 匹配结果\n- 全部评估后，若存在 strict 匹配则返回最左的 strict 匹配\n- 否则若存在 lax 匹配则返回最左的 lax 匹配\n- 若所有成员均失败，返回全部错误\n\n## Constraints\n\n- 严格遵循成员声明顺序\n- 精确匹配必须立即短路，不评估后续成员\n- 回退顺序固定为 strict 优先于 lax，且均取最左匹配\n\n## Cautions\n\n- 成员顺序会直接影响结果，调整顺序可能改变返回的成员\n- 若需要基于有效字段数评分选择，应改用 Smart Mode\n\n## Output Contract\n\n- 返回首个精确/strict/lax 匹配成员，或全部失败时返回所有错误",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [
+        "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+        "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按成员顺序与匹配严格度短路返回首个可接受结果",
+      "domain": "pydantic",
+      "task_family": "union_validation",
+      "method_family": "ordered_short_circuit",
+      "stage": "validation",
+      "applicable_signals": [
+        "联合成员顺序具有优先级语义",
+        "希望精确匹配时立即返回而不评估后续成员"
+      ],
+      "contraindications": [
+        "需要基于有效字段数评分选择（应使用 Smart Mode）",
+        "成员间存在明确判别字段（应使用判别联合）"
+      ],
+      "intervention_moves": [
+        "按声明顺序从左到右尝试每个联合成员",
+        "精确类型匹配成功时立即返回该成员并停止评估",
+        "记录 strict 与 lax 匹配结果用于回退",
+        "全部评估后优先返回最左的 strict 匹配，其次返回最左的 lax 匹配",
+        "全部成员失败时返回所有错误"
+      ],
+      "triggers": [
+        "联合成员顺序具有优先级语义",
+        "希望精确匹配时立即返回而不评估后续成员",
+        "需要按 strict/lax 严格度回退选择联合成员"
+      ],
+      "workflow_steps": [
+        "按声明顺序从左到右尝试每个联合成员",
+        "若某成员以精确类型匹配成功，立即返回该成员并停止评估后续成员",
+        "否则记录 strict 与 lax 匹配结果",
+        "全部评估后，若存在 strict 匹配则返回最左的 strict 匹配",
+        "否则若存在 lax 匹配则返回最左的 lax 匹配",
+        "若所有成员均失败，返回全部错误"
+      ],
+      "constraints": [
+        "严格遵循成员声明顺序",
+        "精确匹配必须立即短路，不评估后续成员",
+        "回退顺序固定为 strict 优先于 lax，且均取最左匹配"
+      ],
+      "cautions": [
+        "成员顺序会直接影响结果，调整顺序可能改变返回的成员",
+        "若需要基于有效字段数评分选择，应改用 Smart Mode"
+      ],
+      "output_contract": [
+        "返回首个精确/strict/lax 匹配成员，或全部失败时返回所有错误"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "union",
+        "left-to-right",
+        "short-circuit",
+        "validation"
+      ],
+      "support_ids": [
+        "0bda87d1-74c3-5ec5-93ff-8f7fb6885c97"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "0505693c-c870-51e8-8563-c35fc18bed72"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|micro_skill_node|按成员顺序与匹配严格度短路返回首个可接受结果|pydantic|union_validation|ordered_short_circuit|validation|union 左到右短路匹配",
+        "change_action": "create",
+        "llm_reason": "候选技能描述了 Pydantic Union 的 Left to Right Mode 短路匹配语义，与同批次的 Smart Mode 评分选择、判别联合路由在方法族上明确不同，属于独立可执行能力，且无冲突证据，应保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [
+          "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+          "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2"
+        ],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2",
+      "name": "判别联合校验",
+      "description": "使用判别字段（含 str 判别器、可调用 Discriminator 及嵌套判别联合）将联合类型路由到唯一成员进行校验；适用于成员可由判别字段明确区分的场景。",
+      "skill_body": "当联合类型的成员可由一个判别字段唯一区分时，使用本技能：先确认判别字段存在且取值能唯一映射到某个成员，再按判别值选中唯一成员并执行该成员的校验，返回其校验结果。若判别值无法匹配任何成员或成员间无可靠判别字段，则不要使用本技能，改用顺序或评分选择策略。\n\n## Objective\n\n依据判别字段将输入路由到唯一联合成员并校验\n## Applicable Signals\n\n- 联合成员可由一个判别字段唯一区分\n- 需要支持 str 判别器、可调用 Discriminator 或嵌套判别联合\n\n## Contraindications\n\n- 成员间无可靠判别字段\n- 仅需按顺序或评分选择成员\n\n## Intervention Moves\n\n- 识别并确认判别字段\n- 按判别值路由到唯一成员\n- 对选中成员执行校验并返回结果\n\n## Workflow Steps\n\n- 确认联合成员可由一个判别字段唯一区分。\n- 确定判别器形式：str 判别器、可调用 Discriminator 或嵌套判别联合。\n- 读取判别字段取值并映射到唯一成员。\n- 对选中成员执行校验。\n- 返回该成员的校验结果。\n\n## Constraints\n\n- 仅在成员可由判别字段唯一区分时使用\n- 判别值必须能唯一映射到某个成员\n\n## Cautions\n\n- 判别值无法匹配任何成员时应报错而非回退到顺序选择\n- 嵌套判别联合需逐层解析判别字段\n\n## Output Contract\n\n- 按判别值选中唯一成员并返回其校验结果",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "依据判别字段将输入路由到唯一联合成员并校验",
+      "domain": "pydantic",
+      "task_family": "union_validation",
+      "method_family": "discriminated_routing",
+      "stage": "validation",
+      "applicable_signals": [
+        "联合成员可由一个判别字段唯一区分",
+        "需要支持 str 判别器、可调用 Discriminator 或嵌套判别联合"
+      ],
+      "contraindications": [
+        "成员间无可靠判别字段",
+        "仅需按顺序或评分选择成员"
+      ],
+      "intervention_moves": [
+        "识别并确认判别字段",
+        "按判别值路由到唯一成员",
+        "对选中成员执行校验并返回结果"
+      ],
+      "triggers": [
+        "联合成员可由一个判别字段唯一区分",
+        "需要支持 str 判别器",
+        "需要使用可调用 Discriminator",
+        "需要处理嵌套判别联合"
+      ],
+      "workflow_steps": [
+        "确认联合成员可由一个判别字段唯一区分。",
+        "确定判别器形式：str 判别器、可调用 Discriminator 或嵌套判别联合。",
+        "读取判别字段取值并映射到唯一成员。",
+        "对选中成员执行校验。",
+        "返回该成员的校验结果。"
+      ],
+      "constraints": [
+        "仅在成员可由判别字段唯一区分时使用",
+        "判别值必须能唯一映射到某个成员"
+      ],
+      "cautions": [
+        "判别值无法匹配任何成员时应报错而非回退到顺序选择",
+        "嵌套判别联合需逐层解析判别字段"
+      ],
+      "output_contract": [
+        "按判别值选中唯一成员并返回其校验结果"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "union_validation",
+        "discriminated_union",
+        "routing"
+      ],
+      "support_ids": [
+        "d5df299a-9107-5b50-9977-9f0ae3517455"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "8c6b1a67-06f1-5959-b0b6-96eeef24bdeb"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|依据判别字段将输入路由到唯一联合成员并校验|pydantic|union_validation|discriminated_routing|validation|判别联合校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "4af0a451-fa59-56c0-b498-7eb801ffbcd2",
+      "name": "联合校验错误聚合",
+      "description": "当联合类型的所有成员均校验失败时，收集并返回全部成员的错误信息，而非仅返回首个错误，用于向调用方提供完整诊断反馈。",
+      "skill_body": "在联合校验流程中，当所有成员均校验失败时，遍历各成员产生的错误并聚合为完整错误集合返回；不要只返回首个错误，也不要在已有成员成功时触发聚合。\n\n## Objective\n\n在所有联合成员失败时聚合返回全部错误\n## Applicable Signals\n\n- 联合所有成员均校验失败\n- 需要向调用方提供完整错误集合以诊断\n\n## Contraindications\n\n- 已有成员校验成功\n- 仅需返回单一错误\n\n## Intervention Moves\n\n- 确认所有联合成员均已尝试且失败\n- 收集每个成员产生的错误\n- 将全部错误聚合为单一结果返回\n\n## Workflow Steps\n\n- 确认联合校验在所有成员上均失败\n- 收集各成员的错误信息\n- 聚合全部错误并返回给调用方\n\n## Constraints\n\n- 仅在所有成员均失败时执行聚合\n- 不得丢弃任何成员的错误\n\n## Cautions\n\n- 若存在成功成员则不应进入聚合路径\n\n## Output Contract\n\n- 返回包含所有成员错误的聚合错误结果",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+      "parent_candidate_ids": [
+        "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+        "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.9,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在所有联合成员失败时聚合返回全部错误",
+      "domain": "pydantic",
+      "task_family": "union_validation",
+      "method_family": "error_aggregation",
+      "stage": "error_reporting",
+      "applicable_signals": [
+        "联合所有成员均校验失败",
+        "需要向调用方提供完整错误集合以诊断"
+      ],
+      "contraindications": [
+        "已有成员校验成功",
+        "仅需返回单一错误"
+      ],
+      "intervention_moves": [
+        "确认所有联合成员均已尝试且失败",
+        "收集每个成员产生的错误",
+        "将全部错误聚合为单一结果返回"
+      ],
+      "triggers": [
+        "联合类型校验失败",
+        "需要完整诊断反馈"
+      ],
+      "workflow_steps": [
+        "确认联合校验在所有成员上均失败",
+        "收集各成员的错误信息",
+        "聚合全部错误并返回给调用方"
+      ],
+      "constraints": [
+        "仅在所有成员均失败时执行聚合",
+        "不得丢弃任何成员的错误"
+      ],
+      "cautions": [
+        "若存在成功成员则不应进入聚合路径"
+      ],
+      "output_contract": [
+        "返回包含所有成员错误的聚合错误结果"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "union",
+        "error_aggregation",
+        "validation"
+      ],
+      "support_ids": [
+        "4ab62e87-1ea5-5ae8-af9f-eeb711787c41"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "69939a10-1a96-5f9f-83f0-15a512adf9c5"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在所有联合成员失败时聚合返回全部错误|pydantic|union_validation|error_aggregation|error_reporting|联合校验错误聚合",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+        "parent_candidate_ids": [
+          "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+          "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2"
+        ],
+        "hierarchy_confidence": 0.9,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "4d51b5b9-b671-4264-baf0-8ebb88542927",
+      "entity_type": "skill",
+      "entity_id": "437b622a-24b1-5afd-9dbd-23b939ad5556",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "437b622a-24b1-5afd-9dbd-23b939ad5556",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "46ea5522-f7ee-5042-8e3a-6ac681520ecc"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "64551472-4926-4920-86d9-a0d5c5927ec8",
+      "entity_type": "skill",
+      "entity_id": "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "669f10d7-4f10-5d1d-a9ec-179c080cf030"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "fef9620e-fac9-4896-907e-64c4c849a40a",
+      "entity_type": "skill",
+      "entity_id": "f1170955-d056-5735-832a-aa7b2c338b88",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能描述了 Pydantic Union 的 Left to Right Mode 短路匹配语义，与同批次的 Smart Mode 评分选择、判别联合路由在方法族上明确不同，属于独立可执行能力，且无冲突证据，应保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "f1170955-d056-5735-832a-aa7b2c338b88",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "0bda87d1-74c3-5ec5-93ff-8f7fb6885c97"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "0b673b4d-3947-4be0-b11a-2ec777c7a602",
+      "entity_type": "skill",
+      "entity_id": "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "d5df299a-9107-5b50-9977-9f0ae3517455"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "2e118995-70ae-42b8-bbd3-8a008badea73",
+      "entity_type": "skill",
+      "entity_id": "4af0a451-fa59-56c0-b498-7eb801ffbcd2",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "4af0a451-fa59-56c0-b498-7eb801ffbcd2",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "4ab62e87-1ea5-5ae8-af9f-eeb711787c41"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

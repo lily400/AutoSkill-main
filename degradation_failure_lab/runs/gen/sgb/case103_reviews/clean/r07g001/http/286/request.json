@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"7c03ea42-1b70-58a2-826a-114facfe94ec\", \"name\": \"保守语义匹配阈值判定\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在弱关联时抑制过度匹配，确保仅强语义关系被判定为适用\", \"applicable_signals\": [\"语义关联模糊或较弱\", \"存在过度计数风险\", \"仅靠个别关键词勉强成立关联\"], \"contraindications\": [\"语义关系明确且强\"], \"workflow_steps\": [\"读取评论与SKU描述\", \"判断语义关联强度（场景、材质、上下文意图）\", \"若关联弱或不清，标记为不适用\", \"若关联明确且强，标记为适用\", \"输出判定结果\"], \"constraints\": [\"宁可少计不可过计\", \"仅强语义关系才判定适用\", \"匹配上下文与预期用途，而非仅匹配个别关键词\"], \"triggers\": [\"需要对评论与SKU进行适用性判定\", \"语义关联模糊或较弱\", \"存在过度计数风险\"], \"output_contract\": [\"每条评论-SKU配对给出适用/不适用判定，弱关联被明确标记为不适用。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"529684d7-cb46-54dd-bff7-bf378ff743ce\", \"name\": \"评论与SKU语义匹配判定\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"对每条评论-SKU对给出是否适用的保守判定\", \"applicable_signals\": [\"存在待映射的非结构化评论与产品目录条目\", \"需要判断评论内容是否适用于某SKU\", \"需要控制过度匹配、保持保守计数\"], \"workflow_steps\": [\"读取评论与SKU条目，确认类别是否匹配（硬性要求）\", \"评估评论与SKU描述之间的语义相似度\", \"应用材料等价规则判断材料表述是否等价\", \"结合语境与预期用途核对一致性（如保暖类评论不适用于轻薄夏季产品）\", \"仅在语义关联强且清晰时判定为适用，否则判定为不适用\", \"输出每条评论-SKU对的判定结果及理由\"], \"output_contract\": [\"每条评论-SKU对的适用/不适用判定及理由\"], \"score\": 0.6688334608776045}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

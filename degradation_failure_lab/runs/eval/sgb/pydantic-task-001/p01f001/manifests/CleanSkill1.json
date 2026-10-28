@@ -1,0 +1,94 @@
+{
+  "arm": "CleanSkill1",
+  "generator_run_id": "p01g001",
+  "staged_root": "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/runs/eval/sgb/pydantic-task-001/p01f001/staged/CleanSkill",
+  "files": {
+    "0166b7ef-ec54-5e0c-9bd2-086b92fc3430/SKILL.md": "200d5a1f491b0f4df7a297ef657cefe4f2236e6bf555fe806774da8e816176c9",
+    "1047b6b8-7e89-5dd1-8eb4-08e24cb05a08/SKILL.md": "031be7aab1b7f40734485235afc713421a5951d342ba8c490ed0e137729913fe",
+    "15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce/SKILL.md": "e8cfa0e70ee86d87eb9543fbd2cc4ab4d624854865f5abcdbeaa01448185e4fa",
+    "2de78ee8-e350-5fb5-be7d-84c34b80f056/SKILL.md": "1e71e53d11962c006743a2e0caa52288c9ed2d19fd1cccdca74d9ab8a0db5149",
+    "3697a04c-0fec-56b7-8448-1c44e3349e5e/SKILL.md": "d2cd49fa9c481817437c5437cebfbc2146ed397e98ea48873f826a5c382ee1ed",
+    "3f2908c2-5e45-53d0-8741-3e78c412be38/SKILL.md": "50944e5a035732a6fe56d884987448faa74cad408556846a88a85ddf2c6c7431",
+    "4045e587-c93f-5cf1-96d8-34f912827e83/SKILL.md": "71e47b2ab0bf509bf90d0a698c184ee9f44ca20e02834d24e07a787164125b80",
+    "4641701b-2dc0-5429-a380-d65c1c0ec55d/SKILL.md": "dc6fb6de7cf47c7cc7d186912a7e4bd7c08f9945ae2b12d9f1456e06185a6e04",
+    "50016175-02e2-59a2-b10a-9128ffd4676a/SKILL.md": "5b8ed6e61290c917a5f7d37cac18c27f858a2156c8e77b794f79670e785ff172",
+    "688b17b0-4bcf-5eb2-879a-50609da68fe0/SKILL.md": "cfddde4cb80be05ca6ab1f9fdda4de6999eb5e2428a6b6e40bc34403cf997a34",
+    "6f6dd4cb-79fc-53a5-a853-3cf312474f21/SKILL.md": "a06f9b8e258fd27cd723ac66d6586c46e641cbf80f9f6d400c73a61d625344f5",
+    "81c5fe93-c4e0-53ad-bc12-ac8fea6d8888/SKILL.md": "7ceb9c1a753d9bfa57033140ff061c68683db340694b546844331573edca2888",
+    "9ac11db1-8466-56be-bf2b-9bed656dacd8/SKILL.md": "5ac12ee44bedcbc3e144e54e5f5ca706beb179795fad1810d551c35e7432211e",
+    "9eb16e27-a3e6-5b09-a407-854038ca54a2/SKILL.md": "03dd4d9187932310715d3a6d2e62a8156a2d17082a78665e6c580961d56a686a",
+    "a30b25f4-b752-5564-afbd-e34563890155/SKILL.md": "8ec54969f7240554ca214566c6d881166ffd207155ad7d4671434661fa4c2705",
+    "bfefe7d8-3421-5458-9efa-0bc78f7f439d/SKILL.md": "9d8b651f6aeaef079c27094dc5aace0b083adb91f3b7b11a7494650f15e0aefb",
+    "faa883e0-e41a-5e19-868e-c3c8400b4db4/SKILL.md": "2fb0d42d413e73e2a655d8aa7666fd683add6c69f6289bcc30fa90bcf2e68c46"
+  },
+  "metadata": {
+    "1047b6b8-7e89-5dd1-8eb4-08e24cb05a08": {
+      "name": "After 模型验证器实现",
+      "description": "实现 Pydantic after 模型验证器：将其定义为实例方法，在整个模型校验完成后运行，作为初始化后钩子，并必须返回校验后的实例。适用于需要在模型级校验完成后执行跨字段逻辑或后初始化处理的场景。"
+    },
+    "3697a04c-0fec-56b7-8448-1c44e3349e5e": {
+      "name": "Before 校验器安全实现",
+      "description": "在 Pydantic 中实现 before 模式校验器：在内部解析与校验之前处理原始输入，并避免在校验失败前直接修改值，防止变更值流入其他校验器（如 unions）。适用于需要处理原始输入且校验器可能抛出校验错误的场景。"
+    },
+    "50016175-02e2-59a2-b10a-9128ffd4676a": {
+      "name": "Before 校验器预处理原始输入",
+      "description": "使用 before 校验器在 Pydantic 内部类型校验前对任意原始输入做规范化处理（如将标量包装为列表），并覆盖所有可能的输入类型；处理后的值仍会继续进入 Pydantic 的字段类型校验。"
+    },
+    "9eb16e27-a3e6-5b09-a407-854038ca54a2": {
+      "name": "Pydantic before 校验器安全变异约束",
+      "description": "在编写或审查 Pydantic before 校验器时，约束对原始输入的直接变异行为：若校验器后续可能抛出验证错误，应避免直接变异值，以防变异后的值经 union 等路径传递给其他校验器产生副作用。"
+    },
+    "3f2908c2-5e45-53d0-8741-3e78c412be38": {
+      "name": "Pydantic 校验器执行顺序控制",
+      "description": "按 Pydantic 规定的顺序组织字段校验器与模型校验器：字段校验先于模型校验，before 模式先于 after 模式，确保校验逻辑的依赖关系正确。适用于模型中存在多个校验器或校验逻辑依赖其他字段已校验值的设计场景。"
+    },
+    "6f6dd4cb-79fc-53a5-a853-3cf312474f21": {
+      "name": "Pydantic 校验错误抛出与校验器顺序控制",
+      "description": "在 Pydantic 自定义校验器中按规范抛出结构化校验错误，并依据校验器执行顺序安排依赖关系，确保多校验器编排与失败处理正确。"
+    },
+    "bfefe7d8-3421-5458-9efa-0bc78f7f439d": {
+      "name": "Pydantic 校验错误抛出规范",
+      "description": "在校验器内检测到非法输入时，通过抛出 ValueError 或 PydanticCustomError 报告校验失败，使 Pydantic 将其包装为结构化 ValidationError 并附带错误类型与输入信息。适用于需要拒绝非法输入或自定义错误消息/错误类型的场景。"
+    },
+    "688b17b0-4bcf-5eb2-879a-50609da68fe0": {
+      "name": "Pydantic 模型级 before/after 校验器实现",
+      "description": "使用 model_validator 在 before/after 阶段对整体模型输入执行校验，处理原始输入类型并支持提前终止校验，适用于跨字段或模型级约束。"
+    },
+    "4641701b-2dc0-5429-a380-d65c1c0ec55d": {
+      "name": "Pydantic 模型级校验器与 ValidationInfo 使用",
+      "description": "实现 Pydantic 模型级校验器，并在校验中通过 ValidationInfo 读取字段数据、已校验数据与校验上下文，用于跨字段依赖或需要访问上下文的校验场景。"
+    },
+    "4045e587-c93f-5cf1-96d8-34f912827e83": {
+      "name": "Pydantic 模型级跨字段校验器",
+      "description": "使用 model_validator(mode='after') 在模型实例化后校验同一模型内多个字段之间的一致性，不一致时抛出 ValueError。适用于字段级约束无法表达的跨字段逻辑。"
+    },
+    "81c5fe93-c4e0-53ad-bc12-ac8fea6d8888": {
+      "name": "Pydantic 特殊类型与跳过校验参考",
+      "description": "提供 Pydantic 中 InstanceOf 特殊类型与 SkipValidation 跳过校验的用法参考，用于需要校验字段为某类实例或临时跳过某字段校验时查阅。"
+    },
+    "0166b7ef-ec54-5e0c-9bd2-086b92fc3430": {
+      "name": "Pydantic 验证器模式选型与实现",
+      "description": "根据校验需求选择字段验证器（annotated 或 decorator 模式）或模型验证器（before/after），并按正确签名实现，用于为 Pydantic 模型添加自定义校验逻辑时。"
+    },
+    "15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce": {
+      "name": "Wrap 校验器前后处理与提前终止",
+      "description": "使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。"
+    },
+    "2de78ee8-e350-5fb5-be7d-84c34b80f056": {
+      "name": "字段校验器显式返回值契约",
+      "description": "编写或审查 Pydantic 字段级 field_validator 时，确保校验逻辑在每条执行路径上显式返回最终值（原值或规范化后的值），避免字段被置空或校验失效。"
+    },
+    "faa883e0-e41a-5e19-868e-c3c8400b4db4": {
+      "name": "字段校验器访问已校验数据",
+      "description": "在字段校验器中通过 ValidationInfo.data 读取已校验的其他字段值，用于跨字段依赖校验，可作为 after 模型校验器的替代方案。"
+    },
+    "a30b25f4-b752-5564-afbd-e34563890155": {
+      "name": "字段校验器通配符与字段检查配置",
+      "description": "使用装饰器式字段校验器时，通过传入 '*' 使校验器作用于所有字段（含子类字段），并通过 check_fields=False 在基类上定义校验器而允许字段在子类中存在。适用于在基类或跨字段场景中复用字段校验逻辑。"
+    },
+    "9ac11db1-8466-56be-bf2b-9bed656dacd8": {
+      "name": "验证错误抛出与 ValidationInfo 使用",
+      "description": "在 Pydantic 验证器中通过抛出验证错误报告校验失败，并使用 ValidationInfo 读取字段数据与校验上下文。适用于需要自定义错误信息或访问校验上下文的场景。"
+    }
+  }
+}

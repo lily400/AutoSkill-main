@@ -1,0 +1,64 @@
+[?2004hroot@2fcc354d511e:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ find /harbor/skills -maxdepth 2 -name SKILL.md -print
+[?2004l[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from typing import Annotated, Literal, Union, Any
+[?2004l[?2004h> 
+[?2004l[?2004h> from pydantic import BaseModel, Discriminator, Tag
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> class Cat(BaseModel):
+[?2004l[?2004h>     pet_type: Literal["cat"]
+[?2004l[?2004h>     meow_volume: int
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> class Dog(BaseModel):
+[?2004l[?2004h>     pet_kind: Literal["dog"]
+[?2004l[?2004h>     bark_level: int
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> class Bird(BaseModel):
+[?2004l[?2004h>     animal_type: Literal["bird"]
+[?2004l[?2004h>     wing_span: int
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def pet_discriminator(value: Any) -> str | None:
+[?2004l[?2004h>     if isinstance(value, dict):
+[?2004l[?2004h>         if "pet_type" in value:
+[?2004l[?2004h>             return value.get("pet_type")
+[?2004l[?2004h>         if "pet_kind" in value:
+[?2004l[?2004h>             return value.get("pet_kind")
+[?2004l[?2004h>         if "animal_type" in value:
+[?2004l[?2004h>             return value.get("animal_type")
+[?2004l[?2004h>         return None
+[?2004l[?2004h> 
+[?2004l[?2004h>     for attr in ("pet_type", "pet_kind", "animal_type"):
+[?2004l[?2004h>         if hasattr(value, attr):
+[?2004l[?2004h>             return getattr(value, attr)
+[?2004l[?2004h>     return None
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> Pet = Annotated[
+[?2004l[?2004h>     Union[
+[?2004l[?2004h>         Annotated[Cat, Tag("cat")],
+[?2004l[?2004h>         Annotated[Dog, Tag("dog")],
+[?2004l[?2004h>         Annotated[Bird, Tag("bird")],
+[?2004l[?2004h>     ],
+[?2004l[?2004h>     Discriminator(pet_discriminator),
+[?2004l[?2004h> ]
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> class PetEnvelope(BaseModel):
+[?2004l[?2004h>     pet: Pet
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> __all__ = [
+[?2004l[?2004h>     "Cat",
+[?2004l[?2004h>     "Dog",
+[?2004l[?2004h>     "Bird",
+[?2004l[?2004h>     "Pet",
+[?2004l[?2004h>     "PetEnvelope",
+[?2004l[?2004h>     "pet_discriminator",
+[?2004l[?2004h> ]
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

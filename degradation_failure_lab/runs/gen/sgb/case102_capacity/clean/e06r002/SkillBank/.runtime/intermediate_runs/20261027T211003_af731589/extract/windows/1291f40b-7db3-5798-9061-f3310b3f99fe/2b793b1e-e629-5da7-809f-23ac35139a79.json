@@ -1,0 +1,483 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "2b793b1e-e629-5da7-809f-23ac35139a79",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "b22ce640-9598-5908-95e1-f04872b57411",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 31551,
+        "end": 32495
+      },
+      "excerpt": "R36. Each loading/unloading job has an integer WorkUnits equal to the sum of the SizeUnits of the consignments being handled in that job.\n\nR37. Each vehicle type has a HandlingRate:\n- BIKE: 1 work unit per tick.\n- VAN: 2 work units per tick.\n- MINI_TRUCK: 3 work units per tick.\n- TRUCK: 4 work units per tick.\n\nR38. When a vehicle chooses START_LOADING or START_UNLOADING at tick t:\n- Its Status becomes LOADING or UNLOADING.\n- A job is created with the relevant consignments and total WorkUnits.\n- During each subsequent Loading/Unloading Phase, WorkUnits is reduced by the vehicle’s HandlingRate.\n- When WorkUnits reaches 0 or less, the job completes at the end of that tick:\n  - For loading, consignments’ Status becomes ON_VEHICLE.\n  - For unloading, consignments’ Status becomes DELIVERED or PENDING_AT_ORIGIN at a transfer node as specified by the scenario.\n\nR39. While a job is in progress, the vehicle cannot move or start another job.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "装卸作业工作量推进规则",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "正确推进装卸作业并判定完成时机与货物状态转换",
+        "task_family": "装卸作业模拟",
+        "method_family": "逐tick工作量递减",
+        "stage": "Loading/Unloading Phase",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "2b793b1e-e629-5da7-809f-23ac35139a79",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 41,
+        "paragraph_end": 44,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:33:40+00:00"
+    },
+    {
+      "support_id": "236ee33f-5333-5b59-8904-0261a75398d0",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 31551,
+        "end": 32495
+      },
+      "excerpt": "R36. Each loading/unloading job has an integer WorkUnits equal to the sum of the SizeUnits of the consignments being handled in that job.\n\nR37. Each vehicle type has a HandlingRate:\n- BIKE: 1 work unit per tick.\n- VAN: 2 work units per tick.\n- MINI_TRUCK: 3 work units per tick.\n- TRUCK: 4 work units per tick.\n\nR38. When a vehicle chooses START_LOADING or START_UNLOADING at tick t:\n- Its Status becomes LOADING or UNLOADING.\n- A job is created with the relevant consignments and total WorkUnits.\n- During each subsequent Loading/Unloading Phase, WorkUnits is reduced by the vehicle’s HandlingRate.\n- When WorkUnits reaches 0 or less, the job completes at the end of that tick:\n  - For loading, consignments’ Status becomes ON_VEHICLE.\n  - For unloading, consignments’ Status becomes DELIVERED or PENDING_AT_ORIGIN at a transfer node as specified by the scenario.\n\nR39. While a job is in progress, the vehicle cannot move or start another job.",
+      "relation_type": "constraint",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "装卸期间车辆锁定约束",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "防止装卸中车辆执行非法移动或重复作业",
+        "task_family": "动作合法性校验",
+        "method_family": "状态锁定约束",
+        "stage": "Legal Actions Per Tick",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 2,
+        "window_id": "2b793b1e-e629-5da7-809f-23ac35139a79",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 41,
+        "paragraph_end": 44,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:33:40+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "0ef49326-ef06-5dfc-94bc-6c1382ef75e4",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "装卸作业工作量推进规则",
+      "description": "按车辆 HandlingRate 在每个 Loading/Unloading Phase 逐 tick 递减装卸作业的 WorkUnits，并在 WorkUnits 归零或小于零时于该 tick 末完成作业并更新货物状态。用于车辆已进入 LOADING 或 UNLOADING 状态后，推进作业并判定完成时点与货物状态转换。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确推进装卸作业并判定完成时机与货物状态转换",
+      "domain": "交通仿真规则",
+      "task_family": "装卸作业模拟",
+      "method_family": "逐tick工作量递减",
+      "stage": "Loading/Unloading Phase",
+      "applicable_signals": [
+        "车辆状态为 LOADING",
+        "车辆状态为 UNLOADING",
+        "存在进行中的装卸作业且 WorkUnits 大于 0",
+        "需要确定作业完成 tick 及货物新状态"
+      ],
+      "contraindications": [
+        "车辆尚未开始装卸作业",
+        "需要处理车辆移动或信号逻辑",
+        "作业尚未创建或 WorkUnits 未初始化"
+      ],
+      "intervention_moves": [
+        "按车辆类型查取 HandlingRate",
+        "每个 Loading/Unloading Phase 将 WorkUnits 减去 HandlingRate",
+        "WorkUnits 小于等于 0 时在该 tick 末完成作业",
+        "装载完成将货物状态置为 ON_VEHICLE",
+        "卸载完成将货物状态置为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN",
+        "作业进行期间锁定车辆，禁止移动或开始新作业"
+      ],
+      "workflow_steps": [
+        "确认车辆已通过 START_LOADING 或 START_UNLOADING 进入 LOADING/UNLOADING 状态",
+        "确认作业 WorkUnits 等于所处理货物 SizeUnits 之和",
+        "按车辆类型确定 HandlingRate（BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4）",
+        "在每个后续 Loading/Unloading Phase 将 WorkUnits 减去 HandlingRate",
+        "若 WorkUnits 小于等于 0，则在该 tick 末完成作业并更新货物状态",
+        "装载完成置为 ON_VEHICLE；卸载完成置为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN",
+        "作业进行期间保持车辆不可移动且不可开始新作业"
+      ],
+      "triggers": [
+        "车辆已进入 LOADING 或 UNLOADING 状态",
+        "需要计算作业剩余 WorkUnits 或完成时点",
+        "需要判定装载/卸载完成后的货物状态转换"
+      ],
+      "constraints": [
+        "WorkUnits 必须等于该作业所处理货物 SizeUnits 之和",
+        "HandlingRate 必须按车辆类型取值：BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4",
+        "完成判定条件为 WorkUnits 小于等于 0，完成时点为该 tick 末",
+        "作业进行期间车辆不得移动或开始另一作业"
+      ],
+      "cautions": [
+        "WorkUnits 可能因递减而小于零，仍按小于等于 0 判定完成",
+        "卸载完成后的货物状态取决于是否为转运节点，需按场景规定区分 DELIVERED 与 PENDING_AT_ORIGIN",
+        "本规则不覆盖移动、信号或路径逻辑，遇到这些需求应转交相应规则"
+      ],
+      "output_contract": [
+        "作业 WorkUnits 归零或小于零，并在该 tick 末输出作业完成结果及货物新状态（装载为 ON_VEHICLE；卸载为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN）。"
+      ],
+      "examples": [
+        {
+          "input": "VAN 在 tick t 开始装载，所处理货物 SizeUnits 之和为 5，HandlingRate=2。",
+          "output": "tick t+1 后 WorkUnits=3，tick t+2 后 WorkUnits=1，tick t+3 后 WorkUnits=-1，于 tick t+3 末完成装载，货物状态置为 ON_VEHICLE。",
+          "notes": "WorkUnits 递减至小于零仍按完成处理。"
+        },
+        {
+          "input": "TRUCK 在转运节点开始卸载，作业 WorkUnits=4，HandlingRate=4。",
+          "output": "该 tick 的 Loading/Unloading Phase 后 WorkUnits=0，于该 tick 末完成卸载，货物状态按场景规定置为 DELIVERED 或 PENDING_AT_ORIGIN。",
+          "notes": "卸载完成状态取决于是否为转运节点。"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "b22ce640-9598-5908-95e1-f04872b57411"
+      ],
+      "metadata": {
+        "prompt": "当车辆已选择 START_LOADING 或 START_UNLOADING 并进入 LOADING/UNLOADING 状态时，按以下步骤推进装卸作业：\n1. 确认作业已创建，且 WorkUnits 等于该作业所处理货物 SizeUnits 之和。\n2. 确认车辆类型对应的 HandlingRate：BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4 工作单位/tick。\n3. 在每个后续 Loading/Unloading Phase，将 WorkUnits 减去该车辆的 HandlingRate。\n4. 若递减后 WorkUnits 小于等于 0，则在该 tick 末完成作业：装载作业将货物状态置为 ON_VEHICLE；卸载作业按场景规定将货物状态置为 DELIVERED，或在转运节点置为 PENDING_AT_ORIGIN。\n5. 作业进行期间，车辆不得移动，也不得开始另一作业。\n仅处理装卸作业推进与完成判定，不处理车辆移动、信号或路径逻辑。",
+        "tags": [
+          "装卸作业",
+          "WorkUnits",
+          "HandlingRate",
+          "逐tick推进",
+          "货物状态转换",
+          "Loading/Unloading Phase"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "2b793b1e-e629-5da7-809f-23ac35139a79",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 41,
+        "paragraph_end": 44,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "d8671562-d431-5eee-bc60-6c9e19003e6f",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "装卸期间车辆锁定约束",
+      "description": "当车辆处于 LOADING 或 UNLOADING 状态且装卸作业未完成时，校验并强制该车辆本 tick 不得移动或启动新作业；用于每 tick 合法动作生成与状态一致性检查。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止装卸中车辆执行非法移动或重复作业",
+      "domain": "交通仿真规则",
+      "task_family": "动作合法性校验",
+      "method_family": "状态锁定约束",
+      "stage": "Legal Actions Per Tick",
+      "applicable_signals": [
+        "车辆 Status 为 LOADING",
+        "车辆 Status 为 UNLOADING",
+        "存在未完成的装卸作业（WorkUnits > 0）"
+      ],
+      "contraindications": [
+        "车辆处于空闲或移动状态",
+        "装卸作业已在本 tick 结束时完成（WorkUnits 降至 0 或以下）"
+      ],
+      "intervention_moves": [
+        "读取车辆当前 Status",
+        "若处于装卸中，将本 tick 合法动作限制为无操作",
+        "拒绝移动或启动新作业的请求",
+        "保持作业与状态不变直至作业完成"
+      ],
+      "workflow_steps": [
+        "读取目标车辆当前 Status。",
+        "若 Status 不是 LOADING 或 UNLOADING，则不适用本约束。",
+        "若 Status 为 LOADING 或 UNLOADING 且作业未完成，则将该车辆本 tick 合法动作集合限定为无操作。",
+        "拒绝任何移动或启动新作业的动作请求。",
+        "保持车辆状态与作业 WorkUnits 不变，等待后续 Loading/Unloading Phase 继续扣减。"
+      ],
+      "triggers": [
+        "车辆状态为 LOADING 或 UNLOADING",
+        "生成或校验该车辆本 tick 动作",
+        "检查装卸作业进行中的状态一致性"
+      ],
+      "constraints": [
+        "仅在车辆处于装卸作业进行中时生效。",
+        "不得在锁定期间修改车辆位置或创建新作业。"
+      ],
+      "cautions": [
+        "作业完成判定发生在该 tick 结束时，完成当 tick 仍受锁定约束。",
+        "需与装卸 WorkUnits 扣减逻辑配合，避免提前解锁。"
+      ],
+      "output_contract": [
+        "被锁定车辆的动作集合仅含无操作，非法动作被拒绝，且车辆状态与作业保持不变。"
+      ],
+      "examples": [
+        {
+          "input": "车辆 Status=LOADING，作业 WorkUnits=3，本 tick 请求 MOVE。",
+          "output": "拒绝 MOVE，本 tick 合法动作仅为无操作，状态保持 LOADING。",
+          "notes": "作业未完成期间持续锁定。"
+        }
+      ],
+      "risk_class": "medium",
+      "confidence": 0.75,
+      "support_ids": [
+        "236ee33f-5333-5b59-8904-0261a75398d0"
+      ],
+      "metadata": {
+        "prompt": "在生成或校验某车辆本 tick 动作前，先检查其 Status。若为 LOADING 或 UNLOADING 且作业 WorkUnits 尚未降至 0 或以下，则该车辆本 tick 的合法动作集合仅允许无操作；拒绝任何移动或启动新作业的请求，并保持状态与作业不变。",
+        "tags": [
+          "交通仿真",
+          "动作合法性",
+          "状态锁定",
+          "装卸作业"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "2b793b1e-e629-5da7-809f-23ac35139a79",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 41,
+        "paragraph_end": 44,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

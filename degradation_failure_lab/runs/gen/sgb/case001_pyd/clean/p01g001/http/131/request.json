@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"2de78ee8-e350-5fb5-be7d-84c34b80f056\", \"name\": \"字段校验器显式返回值契约\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"保证字段校验器显式返回校验后的值，避免模型字段被置空或校验失效。\", \"applicable_signals\": [\"正在编写 field_validator 函数体\", \"校验器对字段值做转换或规范化\", \"校验器仅做检查而不修改值\"], \"contraindications\": [\"仅需声明字段约束（如 gt、max_length）而无需自定义逻辑\", \"编写模型级校验器而非字段级校验器\"], \"workflow_steps\": [\"确认校验器为字段级 field_validator\", \"确保函数体每条执行路径都以 return 结束\", \"若做了转换或规范化，返回转换后的值\", \"若仅做校验，返回原值不变\", \"实例化模型并检查字段值是否符合预期\"], \"constraints\": [\"校验器必须显式返回最终值\", \"不得依赖隐式返回 None\"], \"triggers\": [\"编写或修改 field_validator 函数体\", \"校验器需要转换或规范化字段值\", \"审查字段校验器实现是否正确\"], \"output_contract\": [\"校验器函数以 return 语句返回最终值，且模型实例化后字段值符合预期。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"0166b7ef-ec54-5e0c-9bd2-086b92fc3430\", \"name\": \"Pydantic 验证器模式选型与实现\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为给定校验需求选择并实现正确的 Pydantic 验证器模式\", \"applicable_signals\": [\"校验逻辑作用于单个字段\", \"校验逻辑需要访问整个已校验模型\", \"需要在初始化前后介入校验\"], \"workflow_steps\": [\"明确校验目标是单字段还是整个模型\", \"字段级：在 annotated 模式与 decorator 模式之间选择并实现\", \"模型级：在 before 与 after 验证器之间选择并实现\", \"after 验证器定义为实例方法并返回校验后的实例\", \"输出可运行代码并说明选型理由\"], \"output_contract\": [\"可运行的验证器代码，模式选择有明确理由\"], \"score\": 0.5241905184685242}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

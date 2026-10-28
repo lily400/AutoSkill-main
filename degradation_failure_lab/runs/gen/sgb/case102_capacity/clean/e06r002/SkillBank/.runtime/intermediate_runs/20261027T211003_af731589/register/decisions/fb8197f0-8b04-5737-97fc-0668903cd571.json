@@ -1,0 +1,116 @@
+{
+  "skill_id": "fb8197f0-8b04-5737-97fc-0668903cd571",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选规则有明确文档支持（R25），聚焦MOVING状态下唯一合法动作为CONTINUE_TRAVEL，与同批其他候选（前置条件守卫、装卸锁定、歧义声明）在触发状态与约束内容上互补，无重复或冲突，保留为新技能。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "fb8197f0-8b04-5737-97fc-0668903cd571",
+    "name": "行驶中车辆动作合法性约束",
+    "description": "当车辆状态为 MOVING（位于某条边上）时，校验其唯一合法动作为 CONTINUE_TRAVEL，禁止开始装卸；用于每 tick 车辆动作合法性判定。",
+    "skill_body": "在确定或校验某车辆本 tick 的动作时，先检查其状态。若状态为 MOVING（车辆位于边上），则唯一合法动作为 CONTINUE_TRAVEL；不得开始装载或卸载。若控制器下发或候选动作包含装卸类动作，应判定为非法并拒绝，返回合法动作 CONTINUE_TRAVEL。仅处理动作合法性判定，不涉及容量计算或信号判定。\n\n## Objective\n\n防止行驶中车辆执行装卸等非法动作\n## Applicable Signals\n\n- 车辆 Status = MOVING\n- 车辆位于某条边上\n- 需要判定本 tick 车辆动作\n\n## Contraindications\n\n- 车辆处于非行驶状态\n- 与车辆动作无关的容量或信号判定\n\n## Intervention Moves\n\n- 读取车辆状态\n- 若为 MOVING 则限定动作为 CONTINUE_TRAVEL\n- 拒绝任何装卸类动作并标记非法\n\n## Workflow Steps\n\n- 检查车辆当前状态是否为 MOVING\n- 若为 MOVING，将合法动作限定为 CONTINUE_TRAVEL\n- 若候选动作包含开始装载或卸载，判定为非法并拒绝\n- 输出合法动作或非法标记\n\n## Constraints\n\n- MOVING 状态下不得开始装载或卸载\n- 仅对动作合法性做判定，不扩展到容量或信号规则\n\n## Cautions\n\n- 仅在车辆确实位于边上（MOVING）时适用\n- 非行驶状态车辆不适用本约束\n\n## Output Contract\n\n- 确认车辆动作被限定为 CONTINUE_TRAVEL，或将装卸类动作标记为非法。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆状态为 MOVING，控制器下发 START_LOADING\n- Therapist/Output: 动作非法，拒绝；合法动作限定为 CONTINUE_TRAVEL\n- Notes: 行驶中车辆不得开始装卸\n\n### Example 2\n\n- Client/Input: 车辆状态为 MOVING，候选动作为 CONTINUE_TRAVEL\n- Therapist/Output: 动作合法，允许执行 CONTINUE_TRAVEL",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止行驶中车辆执行装卸等非法动作",
+    "domain": "交通仿真规则",
+    "task_family": "动作合法性校验",
+    "method_family": "约束规则",
+    "stage": "动作执行",
+    "applicable_signals": [
+      "车辆 Status = MOVING",
+      "车辆位于某条边上",
+      "需要判定本 tick 车辆动作"
+    ],
+    "contraindications": [
+      "车辆处于非行驶状态",
+      "与车辆动作无关的容量或信号判定"
+    ],
+    "intervention_moves": [
+      "读取车辆状态",
+      "若为 MOVING 则限定动作为 CONTINUE_TRAVEL",
+      "拒绝任何装卸类动作并标记非法"
+    ],
+    "triggers": [
+      "车辆状态为 MOVING 且需确定其可执行动作",
+      "校验控制器下发的动作是否合法"
+    ],
+    "workflow_steps": [
+      "检查车辆当前状态是否为 MOVING",
+      "若为 MOVING，将合法动作限定为 CONTINUE_TRAVEL",
+      "若候选动作包含开始装载或卸载，判定为非法并拒绝",
+      "输出合法动作或非法标记"
+    ],
+    "constraints": [
+      "MOVING 状态下不得开始装载或卸载",
+      "仅对动作合法性做判定，不扩展到容量或信号规则"
+    ],
+    "cautions": [
+      "仅在车辆确实位于边上（MOVING）时适用",
+      "非行驶状态车辆不适用本约束"
+    ],
+    "output_contract": [
+      "确认车辆动作被限定为 CONTINUE_TRAVEL，或将装卸类动作标记为非法。"
+    ],
+    "examples": [
+      {
+        "input": "车辆状态为 MOVING，控制器下发 START_LOADING",
+        "output": "动作非法，拒绝；合法动作限定为 CONTINUE_TRAVEL",
+        "notes": "行驶中车辆不得开始装卸"
+      },
+      {
+        "input": "车辆状态为 MOVING，候选动作为 CONTINUE_TRAVEL",
+        "output": "动作合法，允许执行 CONTINUE_TRAVEL",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "动作合法性",
+      "MOVING",
+      "CONTINUE_TRAVEL",
+      "护栏"
+    ],
+    "support_ids": [
+      "b921ce3e-5264-51f8-aabc-33b32af1196f"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "ba3e25d1-7b7c-5ddc-b3a5-8b1617f677f5"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|防止行驶中车辆执行装卸等非法动作|交通仿真规则|动作合法性校验|约束规则|动作执行|行驶中车辆动作合法性约束"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,105 @@
+{
+  "skill_id": "7fea83d0-a6f4-576d-8a92-9fcae0814d82",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 ce42f188（无信号节点优先级冲突裁决）实质重复，规则、约束与注意事项一致，保留其一即可，避免冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "7fea83d0-a6f4-576d-8a92-9fcae0814d82",
+    "name": "无信号节点通行优先级裁决",
+    "description": "在无信号下游节点，按入边优先级排序处理队列，并在不同入边同优先级车辆冲突时以较小 VehicleID 先行，用于确定多车争用同一节点的通行顺序。",
+    "skill_body": "当车辆到达无信号下游节点且存在多入边队列时，按以下规则裁决通行顺序：先按入边优先级排序，高优先级入边队列先于低优先级队列处理；若不同入边同优先级车辆发生冲突，则 VehicleID 较小者先行。输出排定的通行顺序列表。\n\n## Objective\n\n按优先级与 VehicleID 规则确定无信号节点的车辆通行顺序\n## Applicable Signals\n\n- 无信号下游节点\n- 多入边队列并存\n- 不同入边同优先级车辆冲突\n\n## Contraindications\n\n- 节点由交通信号控制\n- 仅单条入边且无冲突\n\n## Intervention Moves\n\n- 按入边优先级对队列排序\n- 高优先级队列先处理\n- 同优先级冲突时比较 VehicleID 取较小者先行\n\n## Workflow Steps\n\n- 确认下游节点为无信号节点\n- 收集各入边队列及车辆优先级信息\n- 按入边优先级从高到低排序处理队列\n- 对不同入边同优先级冲突车辆，按 VehicleID 较小者先行裁决\n- 输出排定的通行顺序列表\n\n## Constraints\n\n- 仅适用于无信号下游节点\n- 优先级排序以入边优先级为准\n- 同优先级冲突裁决以 VehicleID 较小者先行\n\n## Cautions\n\n- 若节点由交通信号控制，应改用信号规则而非本规则\n\n## Output Contract\n\n- 按优先级与 VehicleID 排定的通行顺序列表",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按优先级与 VehicleID 规则确定无信号节点的车辆通行顺序",
+    "domain": "交通仿真规则",
+    "task_family": "节点冲突裁决",
+    "method_family": "优先级排序规则",
+    "stage": "节点通行处理",
+    "applicable_signals": [
+      "无信号下游节点",
+      "多入边队列并存",
+      "不同入边同优先级车辆冲突"
+    ],
+    "contraindications": [
+      "节点由交通信号控制",
+      "仅单条入边且无冲突"
+    ],
+    "intervention_moves": [
+      "按入边优先级对队列排序",
+      "高优先级队列先处理",
+      "同优先级冲突时比较 VehicleID 取较小者先行"
+    ],
+    "triggers": [
+      "车辆到达无信号下游节点且存在多入边队列",
+      "两条不同入边同优先级车辆发生通行冲突"
+    ],
+    "workflow_steps": [
+      "确认下游节点为无信号节点",
+      "收集各入边队列及车辆优先级信息",
+      "按入边优先级从高到低排序处理队列",
+      "对不同入边同优先级冲突车辆，按 VehicleID 较小者先行裁决",
+      "输出排定的通行顺序列表"
+    ],
+    "constraints": [
+      "仅适用于无信号下游节点",
+      "优先级排序以入边优先级为准",
+      "同优先级冲突裁决以 VehicleID 较小者先行"
+    ],
+    "cautions": [
+      "若节点由交通信号控制，应改用信号规则而非本规则"
+    ],
+    "output_contract": [
+      "按优先级与 VehicleID 排定的通行顺序列表"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "无信号节点",
+      "优先级裁决",
+      "冲突处理"
+    ],
+    "support_ids": [
+      "82c17159-9048-5ae3-b275-ab510fdf0b09"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "cb162310-f78e-553b-9173-3761c2f3f740"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|按优先级与 vehicleid 规则确定无信号节点的车辆通行顺序|交通仿真规则|节点冲突裁决|优先级排序规则|节点通行处理|无信号节点通行优先级裁决"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

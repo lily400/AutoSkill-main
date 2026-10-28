@@ -1,0 +1,153 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "类型校验配置",
+  "run_id": "20261028T132115_10748529",
+  "skills": [
+    {
+      "skill_id": "faa3da58-bd45-51a5-93dd-11af9989f499",
+      "name": "Union 校验模式选择",
+      "description": "在 Pydantic 模型定义含 Union 字段时，根据输入歧义风险选择 union_mode（left_to_right 或 smart），避免宽松模式下数值字符串被意外匹配到 int 成员而非 str。",
+      "skill_body": "当模型包含 Union 字段且成员类型之间存在隐式转换风险（如 int 与 str）时，评估输入歧义并选择 union_mode。默认优先使用 smart 模式；仅当明确需要按声明顺序优先匹配且已确认无意外转换时，才使用 left_to_right。选择后用代表性输入验证解析结果符合预期。\n\n## Objective\n\n为 Union 字段选择正确的校验模式以避免意外类型匹配\n## Applicable Signals\n\n- Union 成员类型可互相转换（如 int 与 str）\n- 宽松模式下数值字符串被解析为 int 而非 str\n- 需要避免 left_to_right 带来的意外匹配结果\n\n## Contraindications\n\n- Union 成员类型互不兼容、无歧义风险\n- 需要严格按声明顺序优先匹配且已确认无意外转换\n\n## Intervention Moves\n\n- 识别 Union 字段成员间的隐式转换风险\n- 默认选择 union_mode='smart'\n- 仅在确认无意外转换且需按顺序优先匹配时使用 union_mode='left_to_right'\n- 用代表性输入验证解析结果\n\n## Workflow Steps\n\n- 检查 Union 字段的成员类型是否存在隐式转换（如 int 与 str）\n- 评估输入歧义风险\n- 默认指定 union_mode='smart'；若确需顺序优先匹配且无意外转换，则指定 union_mode='left_to_right'\n- 用代表性输入（如数值字符串）验证解析结果符合预期\n\n## Constraints\n\n- 仅在成员类型存在歧义风险时进行模式选择决策\n- 选择后必须验证输入解析结果\n\n## Cautions\n\n- left_to_right 模式下数值字符串可能被优先匹配到 int 成员，产生意外结果\n\n## Output Contract\n\n- 为 Union 字段指定合适的 union_mode 并验证输入解析结果符合预期\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Union 字段成员为 int 与 str，输入数值字符串 '456'\n- Therapist/Output: 使用 union_mode='smart'，避免 '456' 被意外解析为 int\n- Notes: left_to_right 下 '456' 会先匹配 int 成员",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为 Union 字段选择正确的校验模式以避免意外类型匹配",
+      "domain": "pydantic",
+      "task_family": "类型校验配置",
+      "method_family": "union_mode 配置",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "Union 成员类型可互相转换（如 int 与 str）",
+        "宽松模式下数值字符串被解析为 int 而非 str",
+        "需要避免 left_to_right 带来的意外匹配结果"
+      ],
+      "contraindications": [
+        "Union 成员类型互不兼容、无歧义风险",
+        "需要严格按声明顺序优先匹配且已确认无意外转换"
+      ],
+      "intervention_moves": [
+        "识别 Union 字段成员间的隐式转换风险",
+        "默认选择 union_mode='smart'",
+        "仅在确认无意外转换且需按顺序优先匹配时使用 union_mode='left_to_right'",
+        "用代表性输入验证解析结果"
+      ],
+      "triggers": [
+        "定义含 Union 字段的模型且成员类型可能互相转换",
+        "发现宽松模式下数值字符串被解析为 int 而非 str"
+      ],
+      "workflow_steps": [
+        "检查 Union 字段的成员类型是否存在隐式转换（如 int 与 str）",
+        "评估输入歧义风险",
+        "默认指定 union_mode='smart'；若确需顺序优先匹配且无意外转换，则指定 union_mode='left_to_right'",
+        "用代表性输入（如数值字符串）验证解析结果符合预期"
+      ],
+      "constraints": [
+        "仅在成员类型存在歧义风险时进行模式选择决策",
+        "选择后必须验证输入解析结果"
+      ],
+      "cautions": [
+        "left_to_right 模式下数值字符串可能被优先匹配到 int 成员，产生意外结果"
+      ],
+      "output_contract": [
+        "为 Union 字段指定合适的 union_mode 并验证输入解析结果符合预期"
+      ],
+      "examples": [
+        {
+          "input": "Union 字段成员为 int 与 str，输入数值字符串 '456'",
+          "output": "使用 union_mode='smart'，避免 '456' 被意外解析为 int",
+          "notes": "left_to_right 下 '456' 会先匹配 int 成员"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "union_mode",
+        "类型校验",
+        "配置"
+      ],
+      "support_ids": [
+        "c90f0711-9054-5f73-888c-2facb4f90c88"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "4406e0b3-6bff-52c0-a5be-3ca55411c2bf"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|为 union 字段选择正确的校验模式以避免意外类型匹配|pydantic|类型校验配置|union_mode 配置|模型定义|union 校验模式选择",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "b80161c5-1f09-4bbf-bee4-4d6c07e74f64",
+      "entity_type": "skill",
+      "entity_id": "faa3da58-bd45-51a5-93dd-11af9989f499",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "faa3da58-bd45-51a5-93dd-11af9989f499",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "c90f0711-9054-5f73-888c-2facb4f90c88"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

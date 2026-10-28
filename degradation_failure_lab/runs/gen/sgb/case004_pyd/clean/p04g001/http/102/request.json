@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"f2ee54d4-9dd0-5a47-9012-d0e239e70e9a\", \"name\": \"可调用判别器设计\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"实现兼容 dict 与模型输入的 callable discriminator\", \"applicable_signals\": [\"联合成员缺少单一统一判别字段\", \"需要在序列化阶段也能正确判别\"], \"contraindications\": [\"存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器\", \"判别逻辑仅需处理单一输入形态时，无需引入可调用判别器\"], \"workflow_steps\": [\"检查联合成员，确认没有单一统一字段可作为字符串判别器\", \"设计判别函数签名，使其接受 dict 或模型实例\", \"在函数内分支处理：dict 走键访问，模型实例走属性访问\", \"返回对应成员的标签值\", \"分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误\"], \"constraints\": [\"判别函数必须同时处理 dict 与模型实例输入\", \"不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误\"], \"triggers\": [\"联合成员之间没有单一统一判别字段\", \"需要在序列化阶段也能正确判别联合成员\", \"准备为 Union 配置 callable Discriminator\"], \"output_contract\": [\"一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"556b9c81-2257-59a9-9233-b7eab81bd6d8\", \"name\": \"可调用判别器联合类型校验\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为联合类型字段配置可调用判别器，实现按运行时类型分派校验\", \"applicable_signals\": [\"联合成员需按运行时类型（如 int 与 dict/BaseModel）区分\", \"字符串判别字段无法覆盖判别逻辑\"], \"workflow_steps\": [\"定义判别函数，按运行时类型返回对应标签字符串\", \"判别值未找到时返回 None\", \"用 Annotated 为每个联合成员标注 Tag\", \"用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型\", \"用 model_validate 验证不同输入分派到正确成员实例\"], \"output_contract\": [\"带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例\"], \"score\": 0.5868080233120343}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

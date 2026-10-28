@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"051b46c6-eb00-5693-995a-de8aaefaff4d\", \"name\": \"Consignment Lateness Penalty Weighting\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"Apply correct priority-based penalty weight per late tick.\", \"applicable_signals\": [\"Consignment status is late\", \"Penalty tallying is in progress\", \"Network Service Score is being computed\"], \"contraindications\": [\"Consignment is on time\", \"Priority is undefined\"], \"workflow_steps\": [\"Confirm the consignment is late and penalties are being tallied.\", \"Read the consignment priority tier.\", \"Map priority to penalty weight: LOW=0.5, STANDARD=1.0, HIGH=2.0, CRITICAL=4.0.\", \"Multiply the weight by the count of late ticks to produce the penalty value.\"], \"constraints\": [\"Use only the four defined priority tiers and their fixed weights.\", \"Do not assign a penalty to on-time consignments.\", \"Do not proceed when priority is undefined.\"], \"triggers\": [\"A consignment is late and penalties are being tallied\", \"Computing Network Service Score\", \"Objective evaluation requires per-consignment lateness penalty\"], \"output_contract\": [\"Penalty value per late tick assigned by priority tier, with the total penalty contribution for the late consignment.\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"578dde0f-98ed-55c6-a95a-07eb359fcd7a\", \"name\": \"Incident Effect Application During Resolution Phase\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"Correctly apply and expire incident effects on edges per tick.\", \"applicable_signals\": [\"Active or scheduled incidents present at current tick\", \"Tick equals an incident StartTick or reaches EndTick\"], \"workflow_steps\": [\"Identify all incidents affecting edges at tick t.\", \"For each incident, test whether StartTick <= t < EndTick.\", \"If active, apply the effect: CLOSE_EDGE blocks new entries (existing on-edge vehicles continue); REDUCE_CAPACITY scales capacity by CapacityMultiplier.\", \"If t >= EndTick, revert the edge to baseline attributes unless another active incident modifies it.\", \"Record updated edge attributes for the tick.\"], \"output_contract\": [\"Edge attributes updated to reflect active incidents or reverted to baseline.\"], \"score\": 0.39013749363801364}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

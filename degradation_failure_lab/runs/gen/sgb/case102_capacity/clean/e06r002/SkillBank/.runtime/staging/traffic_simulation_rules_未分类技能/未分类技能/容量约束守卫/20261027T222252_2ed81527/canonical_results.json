@@ -1,0 +1,152 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "容量约束守卫",
+  "run_id": "20261027T222252_2ed81527",
+  "skills": [
+    {
+      "skill_id": "d954539f-c4e1-500a-b366-90101b10e80b",
+      "name": "超容量进入请求的拒绝与等待回退",
+      "description": "在容量与冲突检查阶段，当批准 ENTER_EDGE 请求会使目标边车辆数超过有效 MaxVehicles 时，拒绝该请求并令车辆在源节点执行 WAIT 一个 tick，从而守住边容量上限并给出确定的回退行为。",
+      "skill_body": "在容量与冲突检查阶段处理 ENTER_EDGE 请求时：先取目标边的有效 MaxVehicles（含事件容量乘数影响），再判断批准后边车辆数是否会超过该上限。若会超过，则拒绝该请求，并将车辆状态更新为在源节点 WAIT 一个 tick；若未超过，则不应拒绝。\n\n## Objective\n\n防止边容量被突破并保证被拒车辆有确定的回退行为\n## Applicable Signals\n\n- 批准进入请求将导致边车辆数超过有效容量\n- 边当前车辆数已达到有效 MaxVehicles\n\n## Contraindications\n\n- 边仍有剩余容量时不应拒绝\n- 不得在未计算有效容量前直接拒绝\n\n## Intervention Moves\n\n- 计算目标边的有效 MaxVehicles\n- 比较批准后车辆数与有效 MaxVehicles\n- 超限时拒绝请求并将车辆置为源节点 WAIT 一个 tick\n\n## Workflow Steps\n\n- 确定目标边的有效 MaxVehicles（考虑容量乘数等影响）\n- 判断批准 ENTER_EDGE 后边车辆数是否超过有效 MaxVehicles\n- 若超过，则拒绝该请求\n- 将被拒车辆状态更新为在源节点 WAIT 一个 tick\n- 若未超过，则不应拒绝\n\n## Constraints\n\n- 拒绝判定必须以有效 MaxVehicles 为准\n- 被拒车辆必须有确定的回退行为（源节点 WAIT）\n\n## Cautions\n\n- 有效容量可能因事件容量乘数而低于基线，需先计算再判定\n\n## Output Contract\n\n- 请求被标记为拒绝，车辆状态更新为在源节点 WAIT\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 边 E9 基线 MaxVehicles=4，事件容量乘数 0.5，有效 MaxVehicles=2；tick 5 时 E9 已有 2 辆车，源节点车辆请求 ENTER_EDGE(E9)\n- Therapist/Output: 请求被拒绝，车辆在源节点执行 WAIT 一个 tick\n- Notes: 批准将超过有效 MaxVehicles=2",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止边容量被突破并保证被拒车辆有确定的回退行为",
+      "domain": "交通仿真规则",
+      "task_family": "容量约束守卫",
+      "method_family": "准入拒绝与等待回退",
+      "stage": "容量与冲突检查阶段",
+      "applicable_signals": [
+        "批准进入请求将导致边车辆数超过有效容量",
+        "边当前车辆数已达到有效 MaxVehicles"
+      ],
+      "contraindications": [
+        "边仍有剩余容量时不应拒绝",
+        "不得在未计算有效容量前直接拒绝"
+      ],
+      "intervention_moves": [
+        "计算目标边的有效 MaxVehicles",
+        "比较批准后车辆数与有效 MaxVehicles",
+        "超限时拒绝请求并将车辆置为源节点 WAIT 一个 tick"
+      ],
+      "triggers": [
+        "车辆在源节点发起 ENTER_EDGE 请求",
+        "目标边存在容量乘数或容量缩减事件",
+        "批准进入请求可能使边车辆数超过有效 MaxVehicles"
+      ],
+      "workflow_steps": [
+        "确定目标边的有效 MaxVehicles（考虑容量乘数等影响）",
+        "判断批准 ENTER_EDGE 后边车辆数是否超过有效 MaxVehicles",
+        "若超过，则拒绝该请求",
+        "将被拒车辆状态更新为在源节点 WAIT 一个 tick",
+        "若未超过，则不应拒绝"
+      ],
+      "constraints": [
+        "拒绝判定必须以有效 MaxVehicles 为准",
+        "被拒车辆必须有确定的回退行为（源节点 WAIT）"
+      ],
+      "cautions": [
+        "有效容量可能因事件容量乘数而低于基线，需先计算再判定"
+      ],
+      "output_contract": [
+        "请求被标记为拒绝，车辆状态更新为在源节点 WAIT"
+      ],
+      "examples": [
+        {
+          "input": "边 E9 基线 MaxVehicles=4，事件容量乘数 0.5，有效 MaxVehicles=2；tick 5 时 E9 已有 2 辆车，源节点车辆请求 ENTER_EDGE(E9)",
+          "output": "请求被拒绝，车辆在源节点执行 WAIT 一个 tick",
+          "notes": "批准将超过有效 MaxVehicles=2"
+        }
+      ],
+      "tags": [
+        "容量约束",
+        "准入拒绝",
+        "等待回退",
+        "交通仿真"
+      ],
+      "support_ids": [
+        "4fb2864f-fb51-524c-9bb8-cafd7a021594"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "4c1a562d-80a5-50ed-8960-02c30c2d4096"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|防止边容量被突破并保证被拒车辆有确定的回退行为|交通仿真规则|容量约束守卫|准入拒绝与等待回退|容量与冲突检查阶段|超容量进入请求的拒绝与等待回退",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "062a36d5-9b8d-4d23-93fc-14f904e989d9",
+      "entity_type": "skill",
+      "entity_id": "d954539f-c4e1-500a-b366-90101b10e80b",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d954539f-c4e1-500a-b366-90101b10e80b",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "4fb2864f-fb51-524c-9bb8-cafd7a021594"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

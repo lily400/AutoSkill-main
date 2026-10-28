@@ -1,0 +1,120 @@
+...........FF.......                                                     [100%]
+=================================== FAILURES ===================================
+_ TestNestedDiscriminatorDifferentFieldNames.test_discriminator_handles_model_instances _
+
+self = <eval.TestNestedDiscriminatorDifferentFieldNames object at 0x7586aef3bcb0>
+
+    def test_discriminator_handles_model_instances(self):
+        """pet_discriminator should extract the tag from model instances, not only dicts."""
+        fn = agent_output.pet_discriminator
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=4)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=5)
+        bird = agent_output.Bird(animal_type="bird", wing_span=6)
+    
+>       assert fn(cat) == "cat"
+E       AssertionError: assert None == 'cat'
+E        +  where None = <function pet_discriminator at 0x7586aefd8360>(Cat(pet_type='cat', meow_volume=4))
+
+/oracle/eval.py:142: AssertionError
+_ TestNestedDiscriminatorDifferentFieldNames.test_union_accepts_model_instances _
+
+self = <eval.TestNestedDiscriminatorDifferentFieldNames object at 0x7586aef48210>
+
+    def test_union_accepts_model_instances(self):
+        """Direct union validation should also accept already-created model instances."""
+        adapter = _pet_adapter()
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=9)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=10)
+        bird = agent_output.Bird(animal_type="bird", wing_span=11)
+    
+>       cat2 = adapter.validate_python(cat)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = TypeAdapter(Annotated[Union[Annotated[Cat, Tag], Annotated[Dog, Tag], Annotated[Bird, Tag]], Discriminator])
+object = Cat(pet_type='cat', meow_volume=9)
+
+    def validate_python(
+        self,
+        object: Any,
+        /,
+        *,
+        strict: bool | None = None,
+        extra: ExtraValues | None = None,
+        from_attributes: bool | None = None,
+        context: Any | None = None,
+        experimental_allow_partial: bool | Literal['off', 'on', 'trailing-strings'] = False,
+        by_alias: bool | None = None,
+        by_name: bool | None = None,
+    ) -> T:
+        """Validate a Python object against the model.
+    
+        Args:
+            object: The Python object to validate against the model.
+            strict: Whether to strictly check types.
+            extra: Whether to ignore, allow, or forbid extra data during model validation.
+                See the [`extra` configuration value][pydantic.ConfigDict.extra] for details.
+            from_attributes: Whether to extract data from object attributes.
+            context: Additional context to pass to the validator.
+            experimental_allow_partial: **Experimental** whether to enable
+                [partial validation](../concepts/experimental.md#partial-validation), e.g. to process streams.
+                * False / 'off': Default behavior, no partial validation.
+                * True / 'on': Enable partial validation.
+                * 'trailing-strings': Enable partial validation and allow trailing strings in the input.
+            by_alias: Whether to use the field's alias when validating against the provided input data.
+            by_name: Whether to use the field's name when validating against the provided input data.
+    
+        !!! note
+            When using `TypeAdapter` with a Pydantic `dataclass`, the use of the `from_attributes`
+            argument is not supported.
+    
+        Returns:
+            The validated object.
+        """
+        if by_alias is False and by_name is not True:
+            raise PydanticUserError(
+                'At least one of `by_alias` or `by_name` must be set to True.',
+                code='validate-by-alias-and-name-false',
+            )
+    
+>       return self.validator.validate_python(
+            object,
+            strict=strict,
+            extra=extra,
+            from_attributes=from_attributes,
+            context=context,
+            allow_partial=experimental_allow_partial,
+            by_alias=by_alias,
+            by_name=by_name,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for tagged-union[Cat,Dog,Bird]
+E         Unable to extract tag using discriminator pet_discriminator() [type=union_tag_not_found, input_value=Cat(pet_type='cat', meow_volume=9), input_type=Cat]
+E           For further information visit https://errors.pydantic.dev/2.13/v/union_tag_not_found
+
+/opt/sgb/site/pydantic/type_adapter.py:441: ValidationError
+=============================== warnings summary ===============================
+eval.py::TestNestedDiscriminatorDifferentFieldNames::test_nested_serialization_preserves_original_field_names
+  /opt/sgb/site/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+    PydanticSerializationUnexpectedValue(Defaulting to left to right union serialization - failed to get discriminator value for tagged union serialization [input_value=Cat(pet_type='cat', meow_volume=2), input_type=Cat])
+    return self.__pydantic_serializer__.to_python(
+
+eval.py::TestNestedDiscriminatorDifferentFieldNames::test_nested_serialization_preserves_original_field_names
+  /opt/sgb/site/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+    PydanticSerializationUnexpectedValue(Defaulting to left to right union serialization - failed to get discriminator value for tagged union serialization [input_value=Dog(pet_kind='dog', bark_level=4), input_type=Dog])
+    return self.__pydantic_serializer__.to_python(
+
+eval.py::TestNestedDiscriminatorDifferentFieldNames::test_nested_serialization_preserves_original_field_names
+  /opt/sgb/site/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+    PydanticSerializationUnexpectedValue(Defaulting to left to right union serialization - failed to get discriminator value for tagged union serialization [input_value=Bird(animal_type='bird', wing_span=8), input_type=Bird])
+    return self.__pydantic_serializer__.to_python(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED ../oracle/eval.py::TestNestedDiscriminatorDifferentFieldNames::test_discriminator_handles_model_instances
+FAILED ../oracle/eval.py::TestNestedDiscriminatorDifferentFieldNames::test_union_accepts_model_instances
+2 failed, 18 passed, 3 warnings in 0.28s

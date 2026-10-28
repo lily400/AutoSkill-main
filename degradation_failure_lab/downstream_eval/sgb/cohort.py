@@ -4,7 +4,7 @@ from pathlib import Path
 from degradation_lab.io import inside, read, sha256, write
 from .attribution import audit_pair
 from .protocol import CONFIG
-from downstream_eval.scoring.results import summarize, trial_record
+from downstream_eval.scoring.results import summarize, trial_record, completion_state
 
 
 def load(root, config):
@@ -81,6 +81,46 @@ def protocol_evidence(root, run, protocol, history_index):
             'history':history, 'historical_adoption':profile.get('protocol_id') != protocol['protocol_id']}
 
 
+def revised_values(root, run, row, values):
+    """Apply an explicitly approved, hash-bound scoring correction to the same Agent outputs."""
+    reference = row['score_revision']; path = inside(root, reference['path'])
+    if not path.is_relative_to(Path(root) / 'results/sgb/rescores') or sha256(path) != reference['sha256']:
+        raise ValueError('Scoring revision manifest hash/path mismatch')
+    manifest = read(path)
+    if (manifest.get('schema_version') != 1 or manifest.get('user_approved') is not True
+            or manifest.get('model_calls') != 0 or manifest['run_path'] != row['pair']['run_path']
+            or manifest['source_batch_results_sha256'] != sha256(run / 'batch_results.json')):
+        raise ValueError('Scoring revision approval/source binding mismatch')
+    if not manifest['files'] or any(sha256(inside(path.parent, name)) != digest
+                                    for name, digest in manifest['files'].items()):
+        raise ValueError('Scoring revision artifact hash mismatch')
+    if len(values) != 2 or set(manifest['results']) != {v['label'] for v in values}:
+        raise ValueError('Scoring revision must bind both original arms')
+    revised = []
+    for value in values:
+        record = read(inside(path.parent, manifest['results'][value['label']]))
+        grade = record['oracle']; original = value['oracle']; counts = grade['task_result']
+        if (record['label'] != value['label'] or record['scoring_revision'] != manifest['protocol_id']
+                or record['source_result_sha256'] != sha256(run / 'outcomes' / value['label'] / 'result.json')
+                or grade.get('candidate_sha256') != original['candidate_sha256']
+                or grade.get('oracle_sha256') != original['oracle_sha256']
+                or grade.get('candidate_binding_verified') is not True or grade.get('infra_ok') is not True
+                or grade.get('model_calls') != 0 or type(grade.get('task_success')) is not bool
+                or value.get('infra_ok') is not True or value.get('native_exception')
+                or value.get('failure_kind') not in ('none','task_failure')
+                or counts['tests'] != original['task_result']['tests'] or counts['errors'] or counts['skipped']
+                or counts['passed'] + counts['failed'] != counts['tests']
+                or grade['task_success'] != (counts['passed'] == counts['tests'])):
+            raise ValueError('Scoring revision candidate/Oracle/outcome binding mismatch')
+        revision = {'protocol_id':manifest['protocol_id'], **reference,
+                    'original_task_success':value['task_success'], 'original_task_result':original['task_result'],
+                    'post_run_measurement_correction':True}
+        revised.append(dict(value, oracle=grade, task_success=grade['task_success'],
+                            failure_category=grade['failure_category'],
+                            failure_kind='none' if grade['task_success'] else 'task_failure', scoring_revision=revision))
+    return revised
+
+
 def report(root, config):
     root = Path(root).resolve(); cohort = load(root, config)
     protocol = read(inside(root, CONFIG)); tasks = []; records = []; observed = []
@@ -99,6 +139,23 @@ def report(root, config):
                 audit = audit_pair(root, spec)
                 item.update(protocol=checks, comparability=audit['comparability'])
                 values = read(run / 'batch_results.json')['results']
+                limit = read(run / 'profile.json')['budget']['max_requests']
+                for i, value in enumerate(values):
+                    native_path = run / 'outcomes' / value['label'] / 'native.json'
+                    if not native_path.is_file():continue
+                    termination = completion_state(read(native_path),limit)
+                    if (termination['status'] == 'turn_limit_unconfirmed' and value.get('infra_ok') is True
+                            and not value.get('native_exception')
+                            and value.get('failure_kind') in (None,'none','task_failure')):
+                        correction = {'protocol_id':'terminus2-turn-limit-v2', **termination,
+                                      'original_failure_kind':value.get('failure_kind'),
+                                      'native_result':native_path.relative_to(root).as_posix(),
+                                      'native_result_sha256':sha256(native_path)}
+                        values[i] = dict(value,failure_kind='budget_exhausted',task_success=False,
+                                         classification_revision=correction)
+                if row.get('score_revision'):
+                    values = revised_values(root, run, row, values)
+                    item['score_revision'] = row['score_revision']
                 labels = (pair['reference_label'], pair['target_label'])
                 if len(values) > 2 or len({v['label'] for v in values}) != len(values) or any(v['label'] not in labels for v in values):
                     raise ValueError('Formal pair must contain at most one result per arm')
@@ -113,7 +170,10 @@ def report(root, config):
                         trial = audit['trials'][side]
                         if (trial and not trial['integrity_issues'] and value.get('model_api_results') is True
                                 and (trial['scorable'] or value.get('infra_ok') is False)):
-                            accepted.append(trial_record(value, row['task_id'], pair['run_path']))
+                            record = trial_record(value, row['task_id'], pair['run_path'])
+                            if value.get('scoring_revision'):record['scoring_revision'] = value['scoring_revision']
+                            if value.get('classification_revision'):record['classification_revision'] = value['classification_revision']
+                            accepted.append(record)
                     observed += accepted
                 item['observed_outcomes'] = accepted
                 if (checks['status'] == 'VERIFIED' and identities_match

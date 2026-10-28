@@ -1,0 +1,119 @@
+{
+  "skill_id": "7e9b6184-6ad1-511a-a756-2b9fff70151b",
+  "name": "混合情感评论极性判定规则",
+  "description": "对同时包含正面与负面内容的评论，按主导情感判定单一极性；均衡时默认判为负面以保守避免误判。用于情感分类计数前的极性裁决。",
+  "skill_body": "当一条评论同时包含正面与负面表述时，先判断哪一方为主导情感：若整体偏正面、仅有次要批评，判为 positive；若整体偏负面、仅有次要称赞，判为 negative；若正负大致均衡，默认判为 negative（保守策略，优先避免误判）。最终为每条混合评论输出唯一极性标签。\n\n## Objective\n\n为混合情感评论确定单一极性标签\n## Applicable Signals\n\n- 评论中同时出现正面与负面表述\n- 下游计数任务要求每条评论只有一个极性标签\n\n## Contraindications\n\n- 评论情感单一明确\n- 任务不涉及情感极性计数\n\n## Intervention Moves\n\n- 识别评论中的正面与负面成分\n- 判断主导情感方向\n- 正负均衡时按保守策略默认判为 negative\n- 输出唯一极性标签\n\n## Workflow Steps\n\n- 检查评论是否同时包含正面与负面表述；若情感单一，直接按单一极性处理，不适用本规则。\n- 若整体偏正面、仅有次要批评，判为 positive。\n- 若整体偏负面、仅有次要称赞，判为 negative。\n- 若正负大致均衡，默认判为 negative（保守策略）。\n- 输出该评论的唯一极性标签（positive/negative）。\n\n## Constraints\n\n- 每条混合评论只能输出一个极性标签\n- 均衡情形必须默认判为 negative\n- 判定需基于评论中正负成分的相对主导性\n\n## Cautions\n\n- 显著问题（如耐用性缺陷）应视为重要负面信号，可能使整体判为 negative\n- 保守默认负面可能低估正面倾向，需在均衡情形下才启用\n\n## Output Contract\n\n- 每条混合评论获得唯一极性标签（positive/negative）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 产品保暖又时尚，但洗几次后起球且价格过高\n- Therapist/Output: negative\n- Notes: 耐用性问题显著，整体判为负面",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "为混合情感评论确定单一极性标签",
+  "domain": "运营流程",
+  "task_family": "情感分类",
+  "method_family": "规则判定",
+  "stage": "评论极性标注",
+  "applicable_signals": [
+    "评论中同时出现正面与负面表述",
+    "下游计数任务要求每条评论只有一个极性标签"
+  ],
+  "contraindications": [
+    "评论情感单一明确",
+    "任务不涉及情感极性计数"
+  ],
+  "intervention_moves": [
+    "识别评论中的正面与负面成分",
+    "判断主导情感方向",
+    "正负均衡时按保守策略默认判为 negative",
+    "输出唯一极性标签"
+  ],
+  "triggers": [
+    "评论同时含正面与负面表述",
+    "需要为计数任务输出单一极性标签"
+  ],
+  "workflow_steps": [
+    "检查评论是否同时包含正面与负面表述；若情感单一，直接按单一极性处理，不适用本规则。",
+    "若整体偏正面、仅有次要批评，判为 positive。",
+    "若整体偏负面、仅有次要称赞，判为 negative。",
+    "若正负大致均衡，默认判为 negative（保守策略）。",
+    "输出该评论的唯一极性标签（positive/negative）。"
+  ],
+  "constraints": [
+    "每条混合评论只能输出一个极性标签",
+    "均衡情形必须默认判为 negative",
+    "判定需基于评论中正负成分的相对主导性"
+  ],
+  "cautions": [
+    "显著问题（如耐用性缺陷）应视为重要负面信号，可能使整体判为 negative",
+    "保守默认负面可能低估正面倾向，需在均衡情形下才启用"
+  ],
+  "output_contract": [
+    "每条混合评论获得唯一极性标签（positive/negative）"
+  ],
+  "examples": [
+    {
+      "input": "产品保暖又时尚，但洗几次后起球且价格过高",
+      "output": "negative",
+      "notes": "耐用性问题显著，整体判为负面"
+    }
+  ],
+  "tags": [
+    "情感分类",
+    "极性判定",
+    "混合评论",
+    "规则判定",
+    "计数前置"
+  ],
+  "support_ids": [
+    "ef75e796-9f2b-564b-bc85-b383a5f7b519"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "230aedb4-184f-5750-97b5-f033de5099a6"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.85,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|为混合情感评论确定单一极性标签|运营流程|情感分类|规则判定|评论极性标注|混合情感评论极性判定规则",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

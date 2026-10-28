@@ -1,0 +1,65 @@
+...........FF.......                                                     [100%]
+=================================== FAILURES ===================================
+_ TestNestedDiscriminatorDifferentFieldNames.test_discriminator_handles_model_instances _
+
+self = <eval.TestNestedDiscriminatorDifferentFieldNames object at 0x76c6414bfaf0>
+
+    def test_discriminator_handles_model_instances(self):
+        """pet_discriminator should extract the tag from model instances, not only dicts."""
+        fn = agent_output.pet_discriminator
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=4)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=5)
+        bird = agent_output.Bird(animal_type="bird", wing_span=6)
+    
+>       assert fn(cat) == "cat"
+E       AssertionError: assert None == 'cat'
+E        +  where None = <function <lambda> at 0x76c6413d1a80>(Cat())
+
+/oracle/eval.py:142: AssertionError
+_ TestNestedDiscriminatorDifferentFieldNames.test_union_accepts_model_instances _
+
+self = <eval.TestNestedDiscriminatorDifferentFieldNames object at 0x76c641494050>
+
+    def test_union_accepts_model_instances(self):
+        """Direct union validation should also accept already-created model instances."""
+        adapter = _pet_adapter()
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=9)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=10)
+        bird = agent_output.Bird(animal_type="bird", wing_span=11)
+    
+>       cat2 = adapter.validate_python(cat)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:109: in validate_python
+    def validate_python(self,value):return replay('validate_python','Pet',value)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:56: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for tagged-union[Cat,Dog,Bird]\n  Unable to extract tag using discriminator pet_discri...r': 'pet_discriminator()'}, 'input': {'meow_volume': 9, 'pet_type': 'cat'}, 'loc': [], 'type': 'union_tag_not_found'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+>           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Unable to extract tag using discriminator pet_discriminator() [type=union_tag_not_found, input_value={'pet_type': 'cat', 'meow_volume': 9}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/union_tag_not_found
+
+/bridge/code_bridge.py:27: ValidationError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED ../oracle/eval.py::TestNestedDiscriminatorDifferentFieldNames::test_discriminator_handles_model_instances
+FAILED ../oracle/eval.py::TestNestedDiscriminatorDifferentFieldNames::test_union_accepts_model_instances
+2 failed, 18 passed in 0.14s

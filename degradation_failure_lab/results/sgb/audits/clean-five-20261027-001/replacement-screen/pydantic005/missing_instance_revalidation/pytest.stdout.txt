@@ -1,0 +1,23 @@
+......F.....                                                             [100%]
+=================================== FAILURES ===================================
+_ TestConfigPropagationBoundaries.test_nested_stdlib_dataclass_inherits_parent_config_instance_input _
+
+self = <eval.TestConfigPropagationBoundaries object at 0x7619122487c0>
+
+    def test_nested_stdlib_dataclass_inherits_parent_config_instance_input(self):
+        user_dc = agent_output.UserDataclass(name="JOHN")
+        parent = agent_output.ParentWithDataclass(user=user_dc)
+>       assert parent.user.name == "john", (
+            "Stdlib dataclass instance without own config should still reflect "
+            "parent string config and become 'john'"
+        )
+E       AssertionError: Stdlib dataclass instance without own config should still reflect parent string config and become 'john'
+E       assert 'JOHN' == 'john'
+E         
+E         - john
+E         + JOHN
+
+/oracle/eval.py:70: AssertionError
+=========================== short test summary info ============================
+FAILED ../oracle/eval.py::TestConfigPropagationBoundaries::test_nested_stdlib_dataclass_inherits_parent_config_instance_input
+1 failed, 11 passed in 0.19s

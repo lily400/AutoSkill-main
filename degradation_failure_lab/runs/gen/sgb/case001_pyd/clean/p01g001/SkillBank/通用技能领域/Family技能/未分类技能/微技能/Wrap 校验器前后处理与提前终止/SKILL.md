@@ -1,0 +1,73 @@
+---
+id: "15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce"
+name: "Wrap 校验器前后处理与提前终止"
+description: "使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "wrap"
+  - "字段校验"
+  - "未分类技能"
+  - "profile:pydantic::未分类技能"
+triggers:
+  - "需要在标准校验前后插入自定义逻辑"
+  - "需要在校验早期直接返回或抛错终止"
+  - "需要最灵活的校验流程控制"
+---
+
+# Wrap 校验器前后处理与提前终止
+
+使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。
+
+## Prompt
+
+实现一个 wrap 校验器：在标准校验前后插入自定义逻辑，或在需要时提前返回/抛错终止校验。先确认简单类型转换不适用本技能（应改用 annotated 校验器）。编写函数时明确前后处理分支与提前终止分支，并保证返回值为最终字段值。
+
+## Objective
+
+在字段校验中实现前后处理或提前终止逻辑
+## Applicable Signals
+
+- 标准校验前后需要自定义代码
+- 需要提前返回或抛错以终止校验
+
+## Contraindications
+
+- 简单类型转换用 annotated 校验器即可
+
+## Intervention Moves
+
+- 在 Pydantic 及其他校验器处理前后运行代码
+- 通过提前返回值终止校验
+- 通过抛错终止校验
+
+## Workflow Steps
+
+- 判断是否确需 wrap 校验器（否则改用 annotated 校验器）
+- 编写 wrap 校验器函数，明确前后处理逻辑
+- 在需要时提前返回最终值或抛出错误以终止校验
+- 确认返回值为最终字段值
+
+## Constraints
+
+- wrap 校验器为最灵活模式，应仅在需要前后处理或提前终止时使用
+
+## Cautions
+
+- 提前返回会跳过后续校验器处理，需确认符合预期
+
+## Output Contract
+
+- 可运行的 wrap 校验器函数，含前后处理或提前终止分支
+
+## Files
+
+- `references/evidence.md`
+- `references/evidence_manifest.json`
+
+## Triggers
+
+- 需要在标准校验前后插入自定义逻辑
+- 需要在校验早期直接返回或抛错终止
+- 需要最灵活的校验流程控制

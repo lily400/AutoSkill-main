@@ -1,0 +1,109 @@
+{
+  "skill_id": "b1fd6dc7-178e-51b8-b73f-6db8efda3650",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 5ba03192-0deb-57ad-bf0f-a99a23ffcd1e（Pydantic 单字段自定义校验器编写）高度重叠，目标、阶段、方法族与工作流基本一致，属于同批冗余，无需重复保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "b1fd6dc7-178e-51b8-b73f-6db8efda3650",
+    "name": "字段校验器实现（Annotated 与装饰器模式）",
+    "description": "使用 Pydantic 字段校验器对单个字段值执行条件检查、强制转换或变更，并返回校验后的值；支持 Annotated 与装饰器两种写法，用于字段级校验场景。",
+    "skill_body": "为单个字段实现字段校验器：编写一个接收待校验值并返回校验后值的可调用对象，在其中执行条件检查与必要的值变更（强制转换或变更），并选择 Annotated 或装饰器写法落地。优先采用 after 校验器（在 Pydantic 内部校验之后运行），以获得更好的类型安全与更易实现的效果。若需求涉及跨字段或模型级校验，或内置字段约束已足够，则不要使用本技能。\n\n## Objective\n\n为单个字段实现可复用的校验逻辑并返回校验后的值\n## Applicable Signals\n\n- 校验目标限定为单个字段\n- 需要在校验中返回值或对值做强制转换/变更\n- 需要决定使用 Annotated 还是装饰器写法\n\n## Contraindications\n\n- 需要跨字段或模型级校验\n- 仅需内置字段约束即可满足\n\n## Intervention Moves\n\n- 编写接收待校验值并返回校验后值的可调用对象\n- 在校验器中执行条件检查，必要时抛出校验错误\n- 对值执行强制转换或变更后返回\n- 优先采用 after 校验器以提升类型安全与实现便利\n- 按需选择 Annotated 或装饰器写法\n\n## Workflow Steps\n\n- 确认校验目标为单个字段，且内置字段约束不足以满足需求\n- 编写字段校验器：接收待校验值，执行条件检查与必要的值变更，并返回校验后的值\n- 选择实现写法：Annotated 模式或装饰器模式\n- 优先采用 after 校验器（在 Pydantic 内部校验之后运行）\n- 验证校验器可运行并正确返回校验后的值\n\n## Constraints\n\n- 字段校验器必须返回校验后的值\n- 校验器仅作用于单个字段\n- 优先使用 after 校验器以获得更好的类型安全\n\n## Cautions\n\n- 若需求涉及跨字段或模型级校验，应改用模型校验器而非字段校验器\n- 若内置字段约束已能满足需求，无需自定义字段校验器\n\n## Output Contract\n\n- 一个可运行的字段校验器，接收待校验值并返回校验后的值，采用 Annotated 或装饰器写法之一实现。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为单个字段实现可复用的校验逻辑并返回校验后的值",
+    "domain": "pydantic",
+    "task_family": "字段校验",
+    "method_family": "validator 实现",
+    "stage": "字段级校验",
+    "applicable_signals": [
+      "校验目标限定为单个字段",
+      "需要在校验中返回值或对值做强制转换/变更",
+      "需要决定使用 Annotated 还是装饰器写法"
+    ],
+    "contraindications": [
+      "需要跨字段或模型级校验",
+      "仅需内置字段约束即可满足"
+    ],
+    "intervention_moves": [
+      "编写接收待校验值并返回校验后值的可调用对象",
+      "在校验器中执行条件检查，必要时抛出校验错误",
+      "对值执行强制转换或变更后返回",
+      "优先采用 after 校验器以提升类型安全与实现便利",
+      "按需选择 Annotated 或装饰器写法"
+    ],
+    "triggers": [
+      "需要对单个字段做条件检查或值变更",
+      "需要在 Annotated 与装饰器写法之间选择字段校验器实现方式"
+    ],
+    "workflow_steps": [
+      "确认校验目标为单个字段，且内置字段约束不足以满足需求",
+      "编写字段校验器：接收待校验值，执行条件检查与必要的值变更，并返回校验后的值",
+      "选择实现写法：Annotated 模式或装饰器模式",
+      "优先采用 after 校验器（在 Pydantic 内部校验之后运行）",
+      "验证校验器可运行并正确返回校验后的值"
+    ],
+    "constraints": [
+      "字段校验器必须返回校验后的值",
+      "校验器仅作用于单个字段",
+      "优先使用 after 校验器以获得更好的类型安全"
+    ],
+    "cautions": [
+      "若需求涉及跨字段或模型级校验，应改用模型校验器而非字段校验器",
+      "若内置字段约束已能满足需求，无需自定义字段校验器"
+    ],
+    "output_contract": [
+      "一个可运行的字段校验器，接收待校验值并返回校验后的值，采用 Annotated 或装饰器写法之一实现。"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "字段校验",
+      "validator",
+      "annotated",
+      "装饰器"
+    ],
+    "support_ids": [
+      "b82ba67f-0aeb-5c6c-9df2-f77d31bac53b"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "ff1b7fc5-867f-5ba6-92b4-8ccae7f52e40"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|为单个字段实现可复用的校验逻辑并返回校验后的值|pydantic|字段校验|validator 实现|字段级校验|字段校验器实现（annotated 与装饰器模式）"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

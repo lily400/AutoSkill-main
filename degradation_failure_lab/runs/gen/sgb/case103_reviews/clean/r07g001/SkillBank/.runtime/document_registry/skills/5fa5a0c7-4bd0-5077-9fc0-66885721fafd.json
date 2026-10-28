@@ -1,0 +1,128 @@
+{
+  "skill_id": "5fa5a0c7-4bd0-5077-9fc0-66885721fafd",
+  "name": "产品目录分类映射校验",
+  "description": "依据受约束的类别词表（tops/bottoms/outerwear）及其定义，将产品描述映射到合法类别，并校验目录中 category 字段取值是否合法。用于需要统一产品分类口径或校验目录类别字段时。",
+  "skill_body": "使用本参考词表进行产品分类映射与校验：\n1. 仅使用三个允许类别：tops、bottoms、outerwear。\n2. 依据定义映射：tops 包含 tees、shirts、hoodies、sweatshirts、jerseys；bottoms 包含 pants、joggers、shorts、leggings、tights；outerwear 包含 jackets、parkas、windbreakers、vests、shells。\n3. 对每个产品，根据其描述匹配上述定义，输出一个合法类别；若无法归入任何允许类别，则标记为不合法。\n4. 校验目录中每个条目的 category 字段是否属于 {tops, bottoms, outerwear}；不属于则标记为不合法。\n5. 不要引入词表之外的类别或自由标签；本资产只提供定义与校验口径，不负责语义相似度判断。\n\n## Objective\n\n提供受约束的产品类别定义与映射口径，用于分类和校验\n## Applicable Signals\n\n- 产品描述需要归入固定类别集合\n- 目录条目含 category 字段待校验\n- 需要统一分类口径\n\n## Contraindications\n\n- 类别体系未定义或允许自由标签\n- 需要语义相似度判断而非类别归属\n\n## Intervention Moves\n\n- 按定义将产品描述匹配到 tops/bottoms/outerwear 之一\n- 校验 category 字段是否属于允许类别集合\n- 对无法归类的产品标记为不合法\n\n## Workflow Steps\n\n- 确认使用受约束类别集合 {tops, bottoms, outerwear}\n- 依据类别定义将产品描述映射到单一合法类别\n- 校验目录中每个条目的 category 字段合法性\n- 对无法归入允许类别的产品标记为不合法\n\n## Constraints\n\n- 仅使用 tops、bottoms、outerwear 三个类别\n- 映射须依据给定类别定义\n- 不得引入词表之外的类别或自由标签\n\n## Cautions\n\n- 本资产只提供定义与校验口径，不承担语义相似度判断\n- 类别定义之外的描述需标记为不合法而非强行归类\n\n## Output Contract\n\n- 每个产品被映射到合法类别或标记为不合法\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Wind-resistant shell\n- Therapist/Output: outerwear\n- Notes: shell 属于 outerwear 定义\n\n### Example 2\n\n- Client/Input: Lightweight performance hoodie\n- Therapist/Output: tops\n- Notes: hoodie 属于 tops 定义\n\n### Example 3\n\n- Client/Input: category: outer-wear\n- Therapist/Output: 不合法\n- Notes: 取值不在 {tops, bottoms, outerwear} 内",
+  "asset_type": "knowledge_reference",
+  "granularity": "session",
+  "asset_node_id": "knowledge_reference_node",
+  "asset_path": "family_root/knowledge_reference_node",
+  "asset_level": 1,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 1.0,
+  "hierarchy_status": "root",
+  "visible_role": "leaf",
+  "objective": "提供受约束的产品类别定义与映射口径，用于分类和校验",
+  "domain": "商品目录运营",
+  "task_family": "产品分类映射",
+  "method_family": "受控词表映射",
+  "stage": "分类与校验",
+  "applicable_signals": [
+    "产品描述需要归入固定类别集合",
+    "目录条目含 category 字段待校验",
+    "需要统一分类口径"
+  ],
+  "contraindications": [
+    "类别体系未定义或允许自由标签",
+    "需要语义相似度判断而非类别归属"
+  ],
+  "intervention_moves": [
+    "按定义将产品描述匹配到 tops/bottoms/outerwear 之一",
+    "校验 category 字段是否属于允许类别集合",
+    "对无法归类的产品标记为不合法"
+  ],
+  "triggers": [
+    "需要将产品描述归入固定类别集合",
+    "需要校验目录中 category 字段是否合法",
+    "需要统一产品分类口径"
+  ],
+  "workflow_steps": [
+    "确认使用受约束类别集合 {tops, bottoms, outerwear}",
+    "依据类别定义将产品描述映射到单一合法类别",
+    "校验目录中每个条目的 category 字段合法性",
+    "对无法归入允许类别的产品标记为不合法"
+  ],
+  "constraints": [
+    "仅使用 tops、bottoms、outerwear 三个类别",
+    "映射须依据给定类别定义",
+    "不得引入词表之外的类别或自由标签"
+  ],
+  "cautions": [
+    "本资产只提供定义与校验口径，不承担语义相似度判断",
+    "类别定义之外的描述需标记为不合法而非强行归类"
+  ],
+  "output_contract": [
+    "每个产品被映射到合法类别或标记为不合法"
+  ],
+  "examples": [
+    {
+      "input": "Wind-resistant shell",
+      "output": "outerwear",
+      "notes": "shell 属于 outerwear 定义"
+    },
+    {
+      "input": "Lightweight performance hoodie",
+      "output": "tops",
+      "notes": "hoodie 属于 tops 定义"
+    },
+    {
+      "input": "category: outer-wear",
+      "output": "不合法",
+      "notes": "取值不在 {tops, bottoms, outerwear} 内"
+    }
+  ],
+  "tags": [
+    "产品分类",
+    "受控词表",
+    "类别校验",
+    "目录运营"
+  ],
+  "support_ids": [
+    "2ba87cdc-442a-50d4-9fba-c21be2d5bd2f"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "b7e21047-8a08-56ff-8cd9-b8d7034b947a"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||knowledge_reference|session|knowledge_reference_node|提供受约束的产品类别定义与映射口径，用于分类和校验|商品目录运营|产品分类映射|受控词表映射|分类与校验|产品目录分类映射校验",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 1.0,
+    "hierarchy_status": "root",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

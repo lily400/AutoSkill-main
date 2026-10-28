@@ -1,0 +1,112 @@
+{
+  "skill_id": "8031195d-6143-5db6-828f-0b0ace06658a",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "该候选是一条独立且可执行的安全约束规则，聚焦预爬虫设置与反应器设置的作用域限制；与同批候选（动态设置覆盖、命令行覆盖、设置优先级参考）虽有主题关联，但约束内容与目标不同，不构成冗余，且无冲突证据，故保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "8031195d-6143-5db6-828f-0b0ace06658a",
+    "name": "预爬虫与反应器设置作用域约束",
+    "description": "约束预爬虫设置不可按 Spider 定义、反应器设置在同一进程多 Spider 运行时不应按 Spider 取不同值；用于配置多 Spider 同进程运行或考虑在 Spider 中定义受限设置时，避免因按 Spider 覆盖受限设置导致运行异常。",
+    "skill_body": "在配置 Scrapy 项目时，检查是否存在按 Spider 定义预爬虫设置或为反应器设置按 Spider 赋不同值的情况。若同一进程运行多个 Spider，确保反应器设置保持一致；预爬虫设置只能在项目级定义，不得放入 Spider 设置。发现违规时移除 Spider 级覆盖并回退到项目级配置，最后确认受限设置未被按 Spider 覆盖。\n\n## Objective\n\n避免因按 Spider 覆盖受限设置导致运行异常\n## Applicable Signals\n\n- 同一进程运行多个 Spider\n- Spider 设置中出现预爬虫设置\n- 反应器设置在不同 Spider 间取值不一致\n\n## Contraindications\n\n- 单 Spider 独立进程运行且无相关设置\n\n## Intervention Moves\n\n- 识别受限设置类别（预爬虫设置、反应器设置）\n- 检查 Spider 级设置是否覆盖受限类别\n- 将预爬虫设置回退到项目级定义\n- 统一同一进程内各 Spider 的反应器设置取值\n\n## Workflow Steps\n\n- 确认当前是否在同一进程运行多个 Spider\n- 检查 Spider 设置中是否定义了预爬虫设置\n- 检查反应器设置是否在不同 Spider 间取值不同\n- 移除违规的 Spider 级覆盖并回退到项目级配置\n- 确认受限设置未被按 Spider 覆盖\n\n## Constraints\n\n- 预爬虫设置不可按 Spider 定义\n- 同一进程多 Spider 运行时反应器设置不应按 Spider 取不同值\n\n## Cautions\n\n- Spider 设置通常优先于项目设置，但该优先级不适用于预爬虫设置与反应器设置的作用域限制\n\n## Output Contract\n\n- 确认受限设置未被按 Spider 覆盖，并给出回退到项目级配置的结论\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 在同一进程运行多个 Spider，并考虑在某个 Spider 中定义反应器设置的不同取值\n- Therapist/Output: 指出反应器设置不应按 Spider 取不同值，建议统一为项目级一致取值\n- Notes: 多 Spider 同进程场景",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "避免因按 Spider 覆盖受限设置导致运行异常",
+    "domain": "scrapy",
+    "task_family": "配置约束",
+    "method_family": "作用域限制规则",
+    "stage": "配置阶段",
+    "applicable_signals": [
+      "同一进程运行多个 Spider",
+      "Spider 设置中出现预爬虫设置",
+      "反应器设置在不同 Spider 间取值不一致"
+    ],
+    "contraindications": [
+      "单 Spider 独立进程运行且无相关设置"
+    ],
+    "intervention_moves": [
+      "识别受限设置类别（预爬虫设置、反应器设置）",
+      "检查 Spider 级设置是否覆盖受限类别",
+      "将预爬虫设置回退到项目级定义",
+      "统一同一进程内各 Spider 的反应器设置取值"
+    ],
+    "triggers": [
+      "同一进程运行多个 Spider",
+      "考虑在 Spider 中定义预爬虫或反应器设置",
+      "审查 Spider 级设置是否会覆盖受限设置类别"
+    ],
+    "workflow_steps": [
+      "确认当前是否在同一进程运行多个 Spider",
+      "检查 Spider 设置中是否定义了预爬虫设置",
+      "检查反应器设置是否在不同 Spider 间取值不同",
+      "移除违规的 Spider 级覆盖并回退到项目级配置",
+      "确认受限设置未被按 Spider 覆盖"
+    ],
+    "constraints": [
+      "预爬虫设置不可按 Spider 定义",
+      "同一进程多 Spider 运行时反应器设置不应按 Spider 取不同值"
+    ],
+    "cautions": [
+      "Spider 设置通常优先于项目设置，但该优先级不适用于预爬虫设置与反应器设置的作用域限制"
+    ],
+    "output_contract": [
+      "确认受限设置未被按 Spider 覆盖，并给出回退到项目级配置的结论"
+    ],
+    "examples": [
+      {
+        "input": "在同一进程运行多个 Spider，并考虑在某个 Spider 中定义反应器设置的不同取值",
+        "output": "指出反应器设置不应按 Spider 取不同值，建议统一为项目级一致取值",
+        "notes": "多 Spider 同进程场景"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "settings",
+      "配置约束",
+      "作用域限制",
+      "多spider"
+    ],
+    "support_ids": [
+      "b15beeba-16ee-50a5-9878-e45c94466f03"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "1af7b1b3-fb4e-50b0-a09b-34d06995eb14"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.65,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||safety_rule|micro|safety_rule_node|避免因按 spider 覆盖受限设置导致运行异常|scrapy|配置约束|作用域限制规则|配置阶段|预爬虫与反应器设置作用域约束"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

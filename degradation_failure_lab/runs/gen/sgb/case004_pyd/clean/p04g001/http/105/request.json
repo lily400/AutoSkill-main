@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc\", \"name\": \"TypeAdapter 校验纯联合类型\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"用 TypeAdapter 对纯联合类型执行校验\", \"applicable_signals\": [\"校验目标仅为联合类型本身\", \"不希望继承 BaseModel\", \"已有联合类型定义但无外层模型承载\"], \"contraindications\": [\"需要完整模型字段校验\", \"已有 BaseModel 承载该字段\"], \"workflow_steps\": [\"确认校验目标为联合类型本身而非完整模型\", \"用 TypeAdapter(联合类型) 构造适配器\", \"调用 type_adapter.validate_python(数据)\", \"返回解析后的具体联合成员实例\"], \"constraints\": [\"仅用于纯联合类型校验，不替代 BaseModel 字段校验\", \"若为可辨识联合，判别字段须存在且取值匹配\"], \"triggers\": [\"需要校验的数据目标仅为联合类型本身\", \"不希望为校验而继承 BaseModel\", \"需要对联合类型单独执行 validate_python\"], \"output_contract\": [\"返回解析后的具体联合成员实例\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"556b9c81-2257-59a9-9233-b7eab81bd6d8\", \"name\": \"可调用判别器联合类型校验\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为联合类型字段配置可调用判别器，实现按运行时类型分派校验\", \"applicable_signals\": [\"联合成员需按运行时类型（如 int 与 dict/BaseModel）区分\", \"字符串判别字段无法覆盖判别逻辑\"], \"workflow_steps\": [\"定义判别函数，按运行时类型返回对应标签字符串\", \"判别值未找到时返回 None\", \"用 Annotated 为每个联合成员标注 Tag\", \"用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型\", \"用 model_validate 验证不同输入分派到正确成员实例\"], \"output_contract\": [\"带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例\"], \"score\": 0.5323464155138216}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

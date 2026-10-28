@@ -1,0 +1,116 @@
+{
+  "skill_id": "578dde0f-98ed-55c6-a95a-07eb359fcd7a",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "Distinct incident-resolution capability with clear tick-window semantics and effect application rules; no same-batch redundancy or conflict evidence.",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "578dde0f-98ed-55c6-a95a-07eb359fcd7a",
+    "name": "Incident Effect Application During Resolution Phase",
+    "description": "Applies active incident effects to edges during the Incident Resolution Phase of each tick, honoring StartTick/EndTick windows and reverting to baseline when expired. Use when advancing simulation ticks with active or scheduled incidents.",
+    "skill_body": "During the Incident Resolution Phase of tick t, for each incident evaluate whether StartTick <= t < EndTick. If active, apply its effect to the affected edge: for CLOSE_EDGE, block new vehicle entry while allowing vehicles already on the edge to continue; for REDUCE_CAPACITY, apply the CapacityMultiplier to the edge capacity. If t >= EndTick, revert the edge to its baseline attributes unless another active incident modifies it. Update edge attributes accordingly and report the resulting state.\n\n## Objective\n\nCorrectly apply and expire incident effects on edges per tick.\n## Applicable Signals\n\n- Active or scheduled incidents present at current tick\n- Tick equals an incident StartTick or reaches EndTick\n\n## Contraindications\n\n- No incidents are defined or active\n- Outside the Incident Resolution Phase\n\n## Intervention Moves\n\n- Check StartTick <= t < EndTick for each incident\n- Apply CLOSE_EDGE by blocking new entries while allowing on-edge vehicles to continue\n- Apply REDUCE_CAPACITY by scaling edge capacity with CapacityMultiplier\n- Revert edge to baseline when t >= EndTick unless another active incident applies\n\n## Workflow Steps\n\n- Identify all incidents affecting edges at tick t.\n- For each incident, test whether StartTick <= t < EndTick.\n- If active, apply the effect: CLOSE_EDGE blocks new entries (existing on-edge vehicles continue); REDUCE_CAPACITY scales capacity by CapacityMultiplier.\n- If t >= EndTick, revert the edge to baseline attributes unless another active incident modifies it.\n- Record updated edge attributes for the tick.\n\n## Constraints\n\n- EndTick is exclusive.\n- CapacityMultiplier must be in (0,1].\n- CLOSE_EDGE does not stop vehicles already on the edge.\n\n## Cautions\n\n- Multiple incidents may affect the same edge; baseline reversion applies only if no other active incident modifies it.\n\n## Output Contract\n\n- Edge attributes updated to reflect active incidents or reverted to baseline.\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Tick t within [StartTick, EndTick) for a REDUCE_CAPACITY incident with CapacityMultiplier 0.5 on an edge.\n- Therapist/Output: Edge capacity scaled to 50% of baseline for that tick.\n- Notes: Effect applied during Incident Resolution Phase.\n\n### Example 2\n\n- Client/Input: Tick t >= EndTick for a CLOSE_EDGE incident with no other active incident on the edge.\n- Therapist/Output: Edge reverted to baseline attributes; new entries permitted.\n- Notes: EndTick is exclusive.",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "Correctly apply and expire incident effects on edges per tick.",
+    "domain": "traffic simulation",
+    "task_family": "incident_handling",
+    "method_family": "rule_based_tick_update",
+    "stage": "incident_resolution_phase",
+    "applicable_signals": [
+      "Active or scheduled incidents present at current tick",
+      "Tick equals an incident StartTick or reaches EndTick"
+    ],
+    "contraindications": [
+      "No incidents are defined or active",
+      "Outside the Incident Resolution Phase"
+    ],
+    "intervention_moves": [
+      "Check StartTick <= t < EndTick for each incident",
+      "Apply CLOSE_EDGE by blocking new entries while allowing on-edge vehicles to continue",
+      "Apply REDUCE_CAPACITY by scaling edge capacity with CapacityMultiplier",
+      "Revert edge to baseline when t >= EndTick unless another active incident applies"
+    ],
+    "triggers": [
+      "A tick is being processed and incidents exist",
+      "An incident's StartTick or EndTick boundary is reached"
+    ],
+    "workflow_steps": [
+      "Identify all incidents affecting edges at tick t.",
+      "For each incident, test whether StartTick <= t < EndTick.",
+      "If active, apply the effect: CLOSE_EDGE blocks new entries (existing on-edge vehicles continue); REDUCE_CAPACITY scales capacity by CapacityMultiplier.",
+      "If t >= EndTick, revert the edge to baseline attributes unless another active incident modifies it.",
+      "Record updated edge attributes for the tick."
+    ],
+    "constraints": [
+      "EndTick is exclusive.",
+      "CapacityMultiplier must be in (0,1].",
+      "CLOSE_EDGE does not stop vehicles already on the edge."
+    ],
+    "cautions": [
+      "Multiple incidents may affect the same edge; baseline reversion applies only if no other active incident modifies it."
+    ],
+    "output_contract": [
+      "Edge attributes updated to reflect active incidents or reverted to baseline."
+    ],
+    "examples": [
+      {
+        "input": "Tick t within [StartTick, EndTick) for a REDUCE_CAPACITY incident with CapacityMultiplier 0.5 on an edge.",
+        "output": "Edge capacity scaled to 50% of baseline for that tick.",
+        "notes": "Effect applied during Incident Resolution Phase."
+      },
+      {
+        "input": "Tick t >= EndTick for a CLOSE_EDGE incident with no other active incident on the edge.",
+        "output": "Edge reverted to baseline attributes; new entries permitted.",
+        "notes": "EndTick is exclusive."
+      }
+    ],
+    "tags": [
+      "traffic_simulation",
+      "incident_handling",
+      "tick_update",
+      "edge_capacity"
+    ],
+    "support_ids": [
+      "37dc4635-20ae-5e42-a90f-9c9cbf4be2c3"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "0351bb37-7235-541e-b22c-689f5ec27d4e"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|correctly apply and expire incident effects on edges per tick.|traffic simulation|incident_handling|rule_based_tick_update|incident_resolution_phase|incident effect application during resolution phase"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

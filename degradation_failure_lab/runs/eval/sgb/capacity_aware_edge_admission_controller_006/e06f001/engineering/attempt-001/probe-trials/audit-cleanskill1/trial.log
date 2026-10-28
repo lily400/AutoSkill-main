@@ -1,0 +1,65 @@
+max_turns (f.k.a. max_episodes) artificially limited to 6. Consider removing this limit for better task completion.
+Trajectory dumped to /run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/runs/eval/sgb/capacity_aware_edge_admission_controller_006/e06f001/engineering/attempt-001/probe-trials/audit-cleanskill1/agent/trajectory.json
+Trial audit-cleanskill1 failed: audit-cleanskill1__env: failed to send non-blocking keys: command='tmux send-keys -t terminus-2 -- \'python -c "from pathlib import Path; print(Path(\'"\'"\'/harbor/s, return_code=1, stderr=None, stdout='Error response from daemon: container 4bc03db8ced147cf51922e92257d1387781902f2d38009ddb9bc0ea8efbbb067 is not running\n'
+Collecting main service artifacts
+compose cp failed; retrying download with engine cp: Docker compose command failed for environment capacity_aware_edge_admission_controller_006. Command: docker compose --project-name audit-cleanskill1__env --project-directory /run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/downstream_eval/tasks/sgb/audited/capacity_aware_edge_admission_controller_006/environment -f /tmp/tmpb_lu885m/audit-cleanskill1__env-docker-compose-resources.json -f /run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/environments/docker/docker-compose-prebuilt.yaml -f /run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/downstream_eval/integration/network-none.yaml -f /tmp/tmpd4z8op8f/docker-compose-environment.json -f /tmp/tmp8n2cy0kv/docker-compose-mounts.json -f /run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/environments/docker/docker-compose-egress-control.yaml cp main:/workspace/agent_output.py /run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/runs/eval/sgb/capacity_aware_edge_admission_controller_006/e06f001/engineering/attempt-001/probe-trials/audit-cleanskill1/artifacts/workspace/agent_output.py. Return code: 1. Stdout: no container found for service "main"
+. Stderr: None. 
+Failed to download artifact '/workspace/agent_output.py' from service 'main' (best-effort)
+Traceback (most recent call last):
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/trial/trial.py", line 502, in run
+    await self._run()
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/trial/single_step.py", line 40, in _run
+    await self._run_agent()
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/trial/single_step.py", line 76, in _run_agent
+    await self._run_agent_phase(
+    ...<5 lines>...
+    )
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/downstream_eval/sgb/task_adapters/scrapy041/adapter.py", line 80, in phase
+    await probe_hook(self)
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/downstream_eval/integration/skill_probe.py", line 32, in probe_body_chunks
+    timed_out,observation=await trial.agent._execute_commands(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        [Command(command,0.2)],trial.agent._session)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/downstream_eval/integration/p1_observer.py", line 267, in _execute_commands
+    result = await super()._execute_commands(commands, session)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/agents/terminus_2/terminus_2.py", line 1420, in _execute_commands
+    await session.send_keys(
+    ...<3 lines>...
+    )
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/agents/terminus_2/tmux_session.py", line 823, in send_keys
+    await self._send_non_blocking_keys(
+    ...<2 lines>...
+    )
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/agents/terminus_2/tmux_session.py", line 778, in _send_non_blocking_keys
+    await self._send_keys_to_session(keys, action="non-blocking")
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/agents/terminus_2/tmux_session.py", line 751, in _send_keys_to_session
+    await _flush()
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/agents/terminus_2/tmux_session.py", line 741, in _flush
+    await self._send_key_batches(batch, action)
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/agents/terminus_2/tmux_session.py", line 728, in _send_key_batches
+    raise self._send_keys_error(action, command, result)
+RuntimeError: audit-cleanskill1__env: failed to send non-blocking keys: command='tmux send-keys -t terminus-2 -- \'python -c "from pathlib import Path; print(Path(\'"\'"\'/harbor/s, return_code=1, stderr=None, stdout='Error response from daemon: container 4bc03db8ced147cf51922e92257d1387781902f2d38009ddb9bc0ea8efbbb067 is not running\n'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/trial/artifact_handler.py", line 313, in _download_artifact
+    await source_env.service_download_file(
+    ...<3 lines>...
+    )
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/environments/docker/docker.py", line 1320, in service_download_file
+    await self.download_file(source_path, target_path)
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/environments/docker/docker.py", line 1305, in download_file
+    await self._platform.download_file(source_path, target_path)
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/environments/docker/docker_unix.py", line 278, in download_file
+    await self._download_via_engine_cp(source_path, target_path, service)
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/environments/docker/docker_unix.py", line 253, in _download_via_engine_cp
+    await self._engine_cp(f"{container}:{container_path}", str(target_path))
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/.external/harbor-full/src/harbor/environments/docker/docker_unix.py", line 244, in _engine_cp
+    raise RuntimeError(
+        f"Engine cp failed ({source!r} -> {destination!r}): {output}"
+    )
+RuntimeError: Engine cp failed ('9e031c42f397:/workspace/agent_output.py' -> '/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/runs/eval/sgb/capacity_aware_edge_admission_controller_006/e06f001/engineering/attempt-001/probe-trials/audit-cleanskill1/artifacts/workspace/agent_output.py'): Error response from daemon: Could not find the file /workspace/agent_output.py in container 9e031c42f397
+

@@ -1,0 +1,109 @@
+{
+  "skill_id": "81ae6951-57bb-5b46-a3c2-8ece31b7ea27",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 ecc64a23-0467-5293-bd27-60d98523efa4 高度重复（同为信号交叉口绿灯放行规则），后者描述更完整且包含 WAIT 处理，本候选冗余，应丢弃。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "81ae6951-57bb-5b46-a3c2-8ece31b7ea27",
+    "name": "信号交叉口绿灯放行规则",
+    "description": "在信号化下游节点，按入边信号组的绿灯状态与节点队列到达顺序（FIFO）判定本 tick 哪些车辆可释放进入交叉口；用于逐 tick 的车辆移动更新。",
+    "skill_body": "当车辆已请求 ENTER_EDGE 且下游节点为信号化节点时，执行本技能：\n1. 确认下游节点为信号化节点，且车辆已请求 ENTER_EDGE；否则不适用。\n2. 对每条入边确定其所属信号组。\n3. 仅保留信号组处于 GREEN 相位的入边，其上的车辆可在本 tick 释放进入交叉口。\n4. 对同一入边上的车辆，按到达节点队列的先后顺序（FIFO）确定释放顺序。\n5. 输出本 tick 可放行车辆列表，按入边信号组与 FIFO 排序。\n注意：本技能只处理信号化节点的绿灯放行；无信号节点的优先级规则不在本技能范围内。\n\n## Objective\n\n按信号组绿灯与 FIFO 顺序决定信号交叉口每 tick 的车辆放行\n## Applicable Signals\n\n- 下游节点为信号化节点\n- 需要判定入边车辆能否在本 tick 进入交叉口\n- 车辆已请求 ENTER_EDGE\n\n## Contraindications\n\n- 下游节点无信号控制（应使用无信号优先级规则）\n- 车辆尚未请求 ENTER_EDGE\n\n## Intervention Moves\n\n- 识别每条入边对应的信号组\n- 筛选处于 GREEN 相位的信号组入边\n- 对同一入边车辆按到达队列顺序（FIFO）排序\n- 生成可放行车辆列表\n\n## Workflow Steps\n\n- 确认下游节点为信号化节点且车辆已请求 ENTER_EDGE\n- 为每条入边确定信号组\n- 仅保留信号组处于 GREEN 相位的入边\n- 对同一入边车辆按到达节点队列顺序（FIFO）排序\n- 输出本 tick 可放行车辆列表\n\n## Constraints\n\n- 仅 GREEN 相位信号组的入边可释放车辆\n- 同一入边内释放顺序必须为 FIFO\n- 不处理无信号节点的优先级冲突规则\n\n## Cautions\n\n- 若下游节点无信号控制，应改用无信号优先级规则而非本技能\n- 未请求 ENTER_EDGE 的车辆不进入本判定\n\n## Output Contract\n\n- 本 tick 可放行车辆列表，按入边信号组与 FIFO 排序。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按信号组绿灯与 FIFO 顺序决定信号交叉口每 tick 的车辆放行",
+    "domain": "交通仿真规则",
+    "task_family": "交叉口通行控制",
+    "method_family": "信号相位与队列放行",
+    "stage": "车辆移动更新",
+    "applicable_signals": [
+      "下游节点为信号化节点",
+      "需要判定入边车辆能否在本 tick 进入交叉口",
+      "车辆已请求 ENTER_EDGE"
+    ],
+    "contraindications": [
+      "下游节点无信号控制（应使用无信号优先级规则）",
+      "车辆尚未请求 ENTER_EDGE"
+    ],
+    "intervention_moves": [
+      "识别每条入边对应的信号组",
+      "筛选处于 GREEN 相位的信号组入边",
+      "对同一入边车辆按到达队列顺序（FIFO）排序",
+      "生成可放行车辆列表"
+    ],
+    "triggers": [
+      "下游节点为信号化节点",
+      "需要判定入边车辆能否在本 tick 进入交叉口",
+      "车辆已请求 ENTER_EDGE 且等待放行判定"
+    ],
+    "workflow_steps": [
+      "确认下游节点为信号化节点且车辆已请求 ENTER_EDGE",
+      "为每条入边确定信号组",
+      "仅保留信号组处于 GREEN 相位的入边",
+      "对同一入边车辆按到达节点队列顺序（FIFO）排序",
+      "输出本 tick 可放行车辆列表"
+    ],
+    "constraints": [
+      "仅 GREEN 相位信号组的入边可释放车辆",
+      "同一入边内释放顺序必须为 FIFO",
+      "不处理无信号节点的优先级冲突规则"
+    ],
+    "cautions": [
+      "若下游节点无信号控制，应改用无信号优先级规则而非本技能",
+      "未请求 ENTER_EDGE 的车辆不进入本判定"
+    ],
+    "output_contract": [
+      "本 tick 可放行车辆列表，按入边信号组与 FIFO 排序。"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "信号控制",
+      "绿灯放行",
+      "FIFO",
+      "交叉口通行"
+    ],
+    "support_ids": [
+      "777cff59-648a-5f7b-a291-1eff779adbec"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "f8f1583d-d2cd-59cd-9830-f9c53c65059f"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|按信号组绿灯与 fifo 顺序决定信号交叉口每 tick 的车辆放行|交通仿真规则|交叉口通行控制|信号相位与队列放行|车辆移动更新|信号交叉口绿灯放行规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -282,6 +282,18 @@ class P1ObservationMixin:
     def _budget_ledger(self):
         return ledger_for_profile(self._p1)
 
+    def _write_p1_summary(self, stopped):
+        visible_ids = sorted({sid for e in self._p1_tool_events for sid, match in e['full_body_visible_ignoring_terminal_whitespace'].items() if match})
+        summary = {'mode': self.options.p1_mode, 'stopped_before_model': stopped,
+                   'paid_requests': self._p1_calls, 'logical_model_dispatches': self._p1_calls,
+                   'actual_http_attempts': (self._p1_budget.snapshot()['counts'][self._p1_manifest['arm']]
+                                            if self._p1_budget else 0), 'estimated_input_reserved': self._p1_input,
+                   'model_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'model_tool'}),
+                   'controlled_probe_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'zero_model_probe'}),
+                   'full_body_visible_ids_ignoring_terminal_whitespace': visible_ids,
+                   'rule_following': 'requires action and Oracle review; not inferred from model self-report'}
+        (self._p1_logs / 'p1-summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+
     async def run(self, instruction, environment, context):
         if not getattr(self, '_p1', None):
             return await super().run(instruction, environment, context)
@@ -309,19 +321,14 @@ class P1ObservationMixin:
                     await self._execute_commands([Command('cat ' + shlex.quote(path) + '\n', 0.2)], self._session)
                 if not paths:
                     await self._execute_commands([Command('pwd\n', 0.2)], self._session)
+                hook = getattr(self, '_p1_probe_hook', None)
+                if hook is not None:
+                    self._write_p1_summary(stopped)
+                    await hook()
         finally:
             if self._p1_pid:
                 await environment.exec('kill ' + str(self._p1_pid), timeout_sec=10)
                 await self._capture_reads()
-            visible_ids = sorted({sid for e in self._p1_tool_events for sid, match in e['full_body_visible_ignoring_terminal_whitespace'].items() if match})
-            summary = {'mode': self.options.p1_mode, 'stopped_before_model': stopped,
-                       'paid_requests': self._p1_calls, 'logical_model_dispatches': self._p1_calls,
-                       'actual_http_attempts': (self._p1_budget.snapshot()['counts'][self._p1_manifest['arm']]
-                                                if self._p1_budget else 0), 'estimated_input_reserved': self._p1_input,
-                       'model_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'model_tool'}),
-                       'controlled_probe_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'zero_model_probe'}),
-                       'full_body_visible_ids_ignoring_terminal_whitespace': visible_ids,
-                       'rule_following': 'requires action and Oracle review; not inferred from model self-report'}
-            (self._p1_logs / 'p1-summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+            self._write_p1_summary(stopped)
             if self._p1_http_client:
                 await self._p1_http_client.aclose()

@@ -1,0 +1,163 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "容量与冲突裁决",
+  "run_id": "20261027T222252_3f454946",
+  "skills": [
+    {
+      "skill_id": "15dc5310-2210-53f1-a5fe-b75dd3ad5173",
+      "name": "容量削减事件下的边容量与准入判定",
+      "description": "在容量削减事件生效期间，按基线车道容量乘以事件容量系数并向下取整计算边的有效最大车辆数，并在容量与冲突检查阶段据此批准或拒绝 ENTER_EDGE 请求。",
+      "skill_body": "当某条边存在生效中的容量削减事件且车辆请求 ENTER_EDGE 时：1) 确认事件覆盖当前 tick；2) 计算基线 MaxVehicles = LaneCount × CapacityPerLane；3) 有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)；4) 在容量与冲突检查阶段比较当前边内车辆数与有效 MaxVehicles，若批准将超出则拒绝请求，车辆在该 tick 执行 WAIT；5) 输出有效 MaxVehicles 数值与批准/拒绝结论。\n\n## Objective\n\n在容量削减事件生效期间正确计算边有效容量并据此裁决车辆进入请求\n## Applicable Signals\n\n- 边存在生效中的容量削减事件\n- 事件覆盖当前 tick\n- 车辆在相邻节点请求 ENTER_EDGE\n\n## Contraindications\n\n- 无生效事件时不应套用容量乘子\n- 事件未覆盖当前 tick 时按基线容量处理\n\n## Intervention Moves\n\n- 确认事件生效区间覆盖当前 tick\n- 计算基线 MaxVehicles = LaneCount × CapacityPerLane\n- 有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)\n- 在容量与冲突检查阶段比较当前车辆数与有效 MaxVehicles\n- 超出则拒绝请求并令车辆该 tick 执行 WAIT\n\n## Workflow Steps\n\n- 确认目标边存在生效中的容量削减事件且覆盖当前 tick\n- 计算基线 MaxVehicles = LaneCount × CapacityPerLane\n- 计算有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)\n- 在容量与冲突检查阶段比较当前边内车辆数与有效 MaxVehicles\n- 若批准将超出有效 MaxVehicles 则拒绝 ENTER_EDGE 请求\n- 被拒车辆在该 tick 执行 WAIT\n\n## Constraints\n\n- 有效容量必须向下取整\n- 仅在事件覆盖的 tick 内应用容量乘子\n- 准入裁决须在容量与冲突检查阶段进行\n\n## Cautions\n\n- 事件区间边界（含首尾 tick）需确认是否包含当前 tick\n- 无事件时不得套用容量乘子\n\n## Output Contract\n\n- 给出有效 MaxVehicles 数值及批准/拒绝结论，被拒车辆在该 tick 执行 WAIT\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 事件 I1 覆盖 E9（N4 到 N9），CapacityMultiplier = 0.5；E9 基线 LaneCount = 2，CapacityPerLane = 2；tick 5 时 E9 已有 2 辆车，N4 处第三辆车请求 ENTER_EDGE(E9)\n- Therapist/Output: 基线 MaxVehicles = 4，有效 MaxVehicles = floor(4 × 0.5) = 2；批准将超出 2，故拒绝请求，该车在 N4 执行 WAIT\n- Notes: 事件区间为 ticks 4-15 含首尾",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+      "parent_candidate_ids": [
+        "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+        "730695a2-c80a-54b5-aadf-c616118dd310"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.82,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在容量削减事件生效期间正确计算边有效容量并据此裁决车辆进入请求",
+      "domain": "交通仿真规则",
+      "task_family": "容量与冲突裁决",
+      "method_family": "容量乘子取整计算",
+      "stage": "容量与冲突检查阶段",
+      "applicable_signals": [
+        "边存在生效中的容量削减事件",
+        "事件覆盖当前 tick",
+        "车辆在相邻节点请求 ENTER_EDGE"
+      ],
+      "contraindications": [
+        "无生效事件时不应套用容量乘子",
+        "事件未覆盖当前 tick 时按基线容量处理"
+      ],
+      "intervention_moves": [
+        "确认事件生效区间覆盖当前 tick",
+        "计算基线 MaxVehicles = LaneCount × CapacityPerLane",
+        "有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)",
+        "在容量与冲突检查阶段比较当前车辆数与有效 MaxVehicles",
+        "超出则拒绝请求并令车辆该 tick 执行 WAIT"
+      ],
+      "triggers": [
+        "某条边存在生效中的容量削减事件",
+        "车辆请求 ENTER_EDGE 且需判断是否超出有效容量"
+      ],
+      "workflow_steps": [
+        "确认目标边存在生效中的容量削减事件且覆盖当前 tick",
+        "计算基线 MaxVehicles = LaneCount × CapacityPerLane",
+        "计算有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)",
+        "在容量与冲突检查阶段比较当前边内车辆数与有效 MaxVehicles",
+        "若批准将超出有效 MaxVehicles 则拒绝 ENTER_EDGE 请求",
+        "被拒车辆在该 tick 执行 WAIT"
+      ],
+      "constraints": [
+        "有效容量必须向下取整",
+        "仅在事件覆盖的 tick 内应用容量乘子",
+        "准入裁决须在容量与冲突检查阶段进行"
+      ],
+      "cautions": [
+        "事件区间边界（含首尾 tick）需确认是否包含当前 tick",
+        "无事件时不得套用容量乘子"
+      ],
+      "output_contract": [
+        "给出有效 MaxVehicles 数值及批准/拒绝结论，被拒车辆在该 tick 执行 WAIT"
+      ],
+      "examples": [
+        {
+          "input": "事件 I1 覆盖 E9（N4 到 N9），CapacityMultiplier = 0.5；E9 基线 LaneCount = 2，CapacityPerLane = 2；tick 5 时 E9 已有 2 辆车，N4 处第三辆车请求 ENTER_EDGE(E9)",
+          "output": "基线 MaxVehicles = 4，有效 MaxVehicles = floor(4 × 0.5) = 2；批准将超出 2，故拒绝请求，该车在 N4 执行 WAIT",
+          "notes": "事件区间为 ticks 4-15 含首尾"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "容量裁决",
+        "容量乘子",
+        "准入控制"
+      ],
+      "support_ids": [
+        "fdb400b7-8844-5d17-9cc6-2ad3a9c305cd"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "381dff9b-b73f-59c3-a702-ce43e639d3d1"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||session_skill|session|micro_skill_node|在容量削减事件生效期间正确计算边有效容量并据此裁决车辆进入请求|交通仿真规则|容量与冲突裁决|容量乘子取整计算|容量与冲突检查阶段|容量削减事件下的边容量与准入判定",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+        "parent_candidate_ids": [
+          "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+          "730695a2-c80a-54b5-aadf-c616118dd310"
+        ],
+        "hierarchy_confidence": 0.82,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "99d11bff-a7c1-4c2f-9903-b35f2aec46fc",
+      "entity_type": "skill",
+      "entity_id": "15dc5310-2210-53f1-a5fe-b75dd3ad5173",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "15dc5310-2210-53f1-a5fe-b75dd3ad5173",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "fdb400b7-8844-5d17-9cc6-2ad3a9c305cd"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

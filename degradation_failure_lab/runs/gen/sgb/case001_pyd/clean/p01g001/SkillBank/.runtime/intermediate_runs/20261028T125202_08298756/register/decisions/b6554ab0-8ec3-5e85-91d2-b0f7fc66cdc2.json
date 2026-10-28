@@ -1,0 +1,112 @@
+{
+  "skill_id": "b6554ab0-8ec3-5e85-91d2-b0f7fc66cdc2",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 07e18b42（Pydantic 字段校验器选择与实现）高度重叠，后者覆盖相同的字段级 annotated/decorator 选型与实现，且本候选范围更窄、无独有增量，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "b6554ab0-8ec3-5e85-91d2-b0f7fc66cdc2",
+    "name": "字段校验器模式选型与实现",
+    "description": "为字段级自定义校验需求在 annotated 模式与 field_validator 装饰器模式之间做出选择，并据此组织可运行的字段校验代码。用于设计字段校验实现方案时。",
+    "skill_body": "先确认需求属于字段级自定义校验（而非仅用内置约束或跨字段模型级校验）。在 annotated 模式与 field_validator 装饰器模式之间选定一种，说明选择理由，然后按所选模式写出校验逻辑，确保校验函数返回校验后的值。\n\n## Objective\n\n为给定字段校验需求选定合适的校验器编写模式并落地实现。\n## Applicable Signals\n\n- 字段需要超出内置约束的自定义校验\n- 存在 annotated 与装饰器两种可选写法需要取舍\n\n## Contraindications\n\n- 仅使用内置字段约束即可满足需求\n- 需要跨字段的模型级校验\n\n## Intervention Moves\n\n- 判断需求是否为字段级自定义校验\n- 在 annotated 模式与 field_validator 装饰器模式之间选定一种\n- 按所选模式编写校验逻辑并确保返回校验后的值\n\n## Workflow Steps\n\n- 确认校验需求属于字段级自定义校验，而非内置约束或模型级校验可覆盖的场景。\n- 在 annotated 模式与 field_validator 装饰器模式之间选择一种，并说明选择依据。\n- 按所选模式实现校验逻辑。\n- 确保校验函数返回校验后的值（校验通过时返回原值或转换后的值）。\n- 触发校验失败时抛出 ValidationError，并确认错误信息可读。\n\n## Constraints\n\n- 校验函数必须返回校验后的值，不能只做检查而不返回。\n- 本技能只处理字段级校验模式选型，不扩展到模型级跨字段校验。\n\n## Cautions\n\n- 若校验逻辑涉及多个字段之间的关系，应改用模型级校验而非本技能。\n- 若内置字段约束已能满足需求，无需引入自定义校验器。\n\n## Output Contract\n\n- 明确选定一种校验器模式（annotated 或 field_validator 装饰器）并产出对应的可运行字段校验代码，校验函数返回校验后的值。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要校验某整数字段为偶数，并希望在多种写法间取舍。\n- Therapist/Output: 选定 field_validator 装饰器模式，编写校验函数：检查是否为偶数，不是则抛出 ValueError（触发 ValidationError），是则返回该值。\n- Notes: 校验失败时错误信息形如“1 is not an even number”，类型为 value_error。",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为给定字段校验需求选定合适的校验器编写模式并落地实现。",
+    "domain": "pydantic",
+    "task_family": "数据校验实现",
+    "method_family": "校验器模式选型",
+    "stage": "设计",
+    "applicable_signals": [
+      "字段需要超出内置约束的自定义校验",
+      "存在 annotated 与装饰器两种可选写法需要取舍"
+    ],
+    "contraindications": [
+      "仅使用内置字段约束即可满足需求",
+      "需要跨字段的模型级校验"
+    ],
+    "intervention_moves": [
+      "判断需求是否为字段级自定义校验",
+      "在 annotated 模式与 field_validator 装饰器模式之间选定一种",
+      "按所选模式编写校验逻辑并确保返回校验后的值"
+    ],
+    "triggers": [
+      "需要为字段添加自定义校验逻辑",
+      "在多种校验器写法之间做取舍",
+      "设计字段校验实现方案"
+    ],
+    "workflow_steps": [
+      "确认校验需求属于字段级自定义校验，而非内置约束或模型级校验可覆盖的场景。",
+      "在 annotated 模式与 field_validator 装饰器模式之间选择一种，并说明选择依据。",
+      "按所选模式实现校验逻辑。",
+      "确保校验函数返回校验后的值（校验通过时返回原值或转换后的值）。",
+      "触发校验失败时抛出 ValidationError，并确认错误信息可读。"
+    ],
+    "constraints": [
+      "校验函数必须返回校验后的值，不能只做检查而不返回。",
+      "本技能只处理字段级校验模式选型，不扩展到模型级跨字段校验。"
+    ],
+    "cautions": [
+      "若校验逻辑涉及多个字段之间的关系，应改用模型级校验而非本技能。",
+      "若内置字段约束已能满足需求，无需引入自定义校验器。"
+    ],
+    "output_contract": [
+      "明确选定一种校验器模式（annotated 或 field_validator 装饰器）并产出对应的可运行字段校验代码，校验函数返回校验后的值。"
+    ],
+    "examples": [
+      {
+        "input": "需要校验某整数字段为偶数，并希望在多种写法间取舍。",
+        "output": "选定 field_validator 装饰器模式，编写校验函数：检查是否为偶数，不是则抛出 ValueError（触发 ValidationError），是则返回该值。",
+        "notes": "校验失败时错误信息形如“1 is not an even number”，类型为 value_error。"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "validators",
+      "field_validator",
+      "annotated",
+      "模式选型"
+    ],
+    "support_ids": [
+      "3e0193e1-7422-5b63-bcb0-fc1995affbe4"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "0401f731-c99c-565f-9f53-752a5e38ddae"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|为给定字段校验需求选定合适的校验器编写模式并落地实现。|pydantic|数据校验实现|校验器模式选型|设计|字段校验器模式选型与实现"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,106 @@
+{
+  "skill_id": "2fa0d411-9763-5a34-acc4-605805a7e5d3",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批候选 d4a05432（Pydantic 字段校验器模式选择）高度重叠，且后者更完整地覆盖了 annotated 与 decorator 模式的选择与实现；同时 4258652f 已覆盖字段级与模型级模式及 before/after 时机选择，因此该候选属于冗余，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "2fa0d411-9763-5a34-acc4-605805a7e5d3",
+    "name": "Pydantic 字段校验器模式选择",
+    "description": "根据字段校验需求，在 Annotated 模式与 @field_validator 装饰器模式之间做出选择，并说明理由。适用于需要为模型字段添加自定义校验逻辑、但不确定采用哪种实现方式的场景。",
+    "skill_body": "先明确校验需求：是否需要访问 ValidationInfo（如其他字段值、校验上下文）、是否希望复用类型注解、是否需要访问 cls 或执行复杂逻辑。据此选择模式：需要 ValidationInfo 或复用类型注解时选 Annotated 模式；需要访问 cls 或做复杂逻辑时选装饰器模式。最后输出选定的模式及理由。\n\n## Objective\n\n为给定字段校验需求选出合适的校验器实现模式\n## Applicable Signals\n\n- 字段需要自定义校验而非仅内置约束\n- 校验逻辑需要访问 ValidationInfo 或校验上下文\n- 校验逻辑需要访问 cls 或包含复杂分支\n\n## Contraindications\n\n- 仅需内置约束（如 gt、max_length）即可满足时无需选择自定义校验器模式\n\n## Intervention Moves\n\n- 判断校验逻辑是否需要 ValidationInfo 或类型注解复用\n- 判断校验逻辑是否需要访问 cls 或复杂逻辑\n- 按判断结果选定 Annotated 模式或装饰器模式\n- 说明选择理由\n\n## Workflow Steps\n\n- 梳理字段校验需求，识别是否需要 ValidationInfo、类型注解复用、cls 访问或复杂逻辑\n- 若需要 ValidationInfo 或复用类型注解，选择 Annotated 模式\n- 若需要访问 cls 或执行复杂逻辑，选择装饰器模式\n- 输出选定模式并说明理由\n\n## Constraints\n\n- 选择应基于校验需求本身，而非个人偏好\n- 仅在内置约束无法满足时才进入自定义校验器模式选择\n\n## Cautions\n\n- 两种模式并非互斥于所有场景，选择时以主要需求为准\n- 若需求同时涉及两类特征，需说明取舍依据\n\n## Output Contract\n\n- 明确选定一种校验器模式（Annotated 或装饰器）并说明理由",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为给定字段校验需求选出合适的校验器实现模式",
+    "domain": "pydantic",
+    "task_family": "数据校验",
+    "method_family": "校验器模式选择",
+    "stage": "设计",
+    "applicable_signals": [
+      "字段需要自定义校验而非仅内置约束",
+      "校验逻辑需要访问 ValidationInfo 或校验上下文",
+      "校验逻辑需要访问 cls 或包含复杂分支"
+    ],
+    "contraindications": [
+      "仅需内置约束（如 gt、max_length）即可满足时无需选择自定义校验器模式"
+    ],
+    "intervention_moves": [
+      "判断校验逻辑是否需要 ValidationInfo 或类型注解复用",
+      "判断校验逻辑是否需要访问 cls 或复杂逻辑",
+      "按判断结果选定 Annotated 模式或装饰器模式",
+      "说明选择理由"
+    ],
+    "triggers": [
+      "需要为模型字段添加自定义校验逻辑",
+      "不确定该用 Annotated 还是 @field_validator 装饰器",
+      "需要在两种字段校验器实现方式之间做取舍"
+    ],
+    "workflow_steps": [
+      "梳理字段校验需求，识别是否需要 ValidationInfo、类型注解复用、cls 访问或复杂逻辑",
+      "若需要 ValidationInfo 或复用类型注解，选择 Annotated 模式",
+      "若需要访问 cls 或执行复杂逻辑，选择装饰器模式",
+      "输出选定模式并说明理由"
+    ],
+    "constraints": [
+      "选择应基于校验需求本身，而非个人偏好",
+      "仅在内置约束无法满足时才进入自定义校验器模式选择"
+    ],
+    "cautions": [
+      "两种模式并非互斥于所有场景，选择时以主要需求为准",
+      "若需求同时涉及两类特征，需说明取舍依据"
+    ],
+    "output_contract": [
+      "明确选定一种校验器模式（Annotated 或装饰器）并说明理由"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "validators",
+      "field_validator",
+      "annotated",
+      "模式选择"
+    ],
+    "support_ids": [
+      "a4baa242-df9e-53a6-a501-3974fa8faea2"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "e86fe37d-0da5-543a-93b6-c0644a288261"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|为给定字段校验需求选出合适的校验器实现模式|pydantic|数据校验|校验器模式选择|设计|pydantic 字段校验器模式选择"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

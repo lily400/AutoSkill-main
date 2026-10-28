@@ -1,0 +1,107 @@
+{
+  "skill_id": "5705f35c-9afe-5668-81aa-6ae7e5d4f172",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "5705f35c-9afe-5668-81aa-6ae7e5d4f172",
+    "name": "按品牌文本的 Nike/竞品二分归类",
+    "description": "当结构化品牌标志（competitor_or_nike）缺失时，依据评论文本中明确出现的品牌线索，将每条记录归为 nike 或 competitor，作为下游按 Nike/竞品拆分计数的临时充分方案。",
+    "skill_body": "在结构化品牌标志缺失、但评论文本含品牌线索时，逐条读取评论文本，识别其中出现的品牌名，将其归为 nike 或 competitor。仅依据文本中明确出现的品牌线索判断，不得从无关字段推断。若某条记录文本无任何品牌线索，标记为无法归类并上报，不要臆测。输出每条记录的归类结果，并附简要状态说明与阻塞项。\n\n## Objective\n\n在品牌标志缺失时仍能按品牌文本完成 Nike 与竞品的区分\n## Applicable Signals\n\n- competitor_or_nike 字段缺失\n- 评论文本中出现品牌名\n- 下游计数需要 Nike/竞品二分\n\n## Contraindications\n\n- 评论文本无任何品牌线索\n- 结构化品牌字段已完整可用\n\n## Intervention Moves\n\n- 逐条读取评论文本\n- 识别文本中出现的品牌名\n- 将记录归为 nike 或 competitor\n- 对无品牌线索的记录标记为无法归类并上报\n\n## Workflow Steps\n\n- 确认 competitor_or_nike 字段缺失且评论文本含品牌线索\n- 逐条读取评论文本并识别品牌名\n- 将记录归为 nike 或 competitor\n- 对无品牌线索的记录标记为无法归类，不臆测\n- 输出归类结果并附状态说明与阻塞项\n\n## Constraints\n\n- 仅依据评论文本中明确出现的品牌线索判断\n- 不得从无关字段推断分类值\n- 无品牌线索时不得强行归类\n\n## Cautions\n\n- 一条评论可能提及多个品牌，需按文本线索谨慎判断\n- 该归类为临时充分方案，后续应待结构化字段修复后复核\n\n## Output Contract\n\n- 每条记录标注为 nike 或 competitor 的归类结果，并附简要状态说明与阻塞项。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在品牌标志缺失时仍能按品牌文本完成 Nike 与竞品的区分",
+    "domain": "数据运营",
+    "task_family": "评论分类",
+    "method_family": "文本品牌识别",
+    "stage": "分类处理",
+    "applicable_signals": [
+      "competitor_or_nike 字段缺失",
+      "评论文本中出现品牌名",
+      "下游计数需要 Nike/竞品二分"
+    ],
+    "contraindications": [
+      "评论文本无任何品牌线索",
+      "结构化品牌字段已完整可用"
+    ],
+    "intervention_moves": [
+      "逐条读取评论文本",
+      "识别文本中出现的品牌名",
+      "将记录归为 nike 或 competitor",
+      "对无品牌线索的记录标记为无法归类并上报"
+    ],
+    "triggers": [
+      "competitor_or_nike 字段缺失但评论文本含品牌名",
+      "下游需要按 Nike/竞品拆分计数"
+    ],
+    "workflow_steps": [
+      "确认 competitor_or_nike 字段缺失且评论文本含品牌线索",
+      "逐条读取评论文本并识别品牌名",
+      "将记录归为 nike 或 competitor",
+      "对无品牌线索的记录标记为无法归类，不臆测",
+      "输出归类结果并附状态说明与阻塞项"
+    ],
+    "constraints": [
+      "仅依据评论文本中明确出现的品牌线索判断",
+      "不得从无关字段推断分类值",
+      "无品牌线索时不得强行归类"
+    ],
+    "cautions": [
+      "一条评论可能提及多个品牌，需按文本线索谨慎判断",
+      "该归类为临时充分方案，后续应待结构化字段修复后复核"
+    ],
+    "output_contract": [
+      "每条记录标注为 nike 或 competitor 的归类结果，并附简要状态说明与阻塞项。"
+    ],
+    "examples": [],
+    "tags": [
+      "品牌识别",
+      "文本归类",
+      "评论分类",
+      "数据运营"
+    ],
+    "support_ids": [
+      "ed3b7869-dd4d-5a09-9ea7-5850d440d64b"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "24cb6d6b-cc9b-5bd0-b1d4-d445a798fe02"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|在品牌标志缺失时仍能按品牌文本完成 nike 与竞品的区分|数据运营|评论分类|文本品牌识别|分类处理|按品牌文本的 nike/竞品二分归类"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

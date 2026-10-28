@@ -1,0 +1,116 @@
+{
+  "skill_id": "e6fa8c9e-42b0-5f33-aa08-11f1c16a7bf8",
+  "name": "车辆状态快照字段规范校验",
+  "description": "定义并校验 VEHICLES 状态快照中每辆车的必填字段集合，用于生成或解析仿真状态快照中的车辆条目。",
+  "skill_body": "当需要生成或校验 VEHICLES 段状态快照中的车辆条目时，按 T5 规定的字段集合逐项检查：VehicleID、VehicleType、LocationType（取值 NODE 或 EDGE）、LocationID（NodeID 或 EdgeID）、Status、LoadUnitsUsed、OnboardConsignments（ConsignmentID 列表）；若 LocationType 为 EDGE，则必须额外包含 RemainingTravelTime。输出符合该字段结构的车辆条目列表，并标注缺失或非法字段。\n\n## Objective\n\n确保车辆状态快照条目包含完整且合法的字段结构\n## Applicable Signals\n\n- 输入或输出涉及 VEHICLES 段\n- 需要确认车辆条目字段是否齐全\n- 需要区分车辆位于节点还是边\n\n## Contraindications\n\n- 处理节点或边等其他实体段\n- 需要仿真推进逻辑而非字段结构\n\n## Intervention Moves\n\n- 列出 T5 规定的必填字段集合\n- 校验 LocationType 取值属于 {NODE, EDGE}\n- 当 LocationType 为 EDGE 时要求存在 RemainingTravelTime\n- 校验 OnboardConsignments 为 ConsignmentID 列表\n- 标注缺失或非法字段并返回条目列表\n\n## Workflow Steps\n\n- 确认目标为 VEHICLES 段车辆条目\n- 逐项核对必填字段：VehicleID、VehicleType、LocationType、LocationID、Status、LoadUnitsUsed、OnboardConsignments\n- 根据 LocationType 判断是否需要 RemainingTravelTime\n- 校验字段取值合法性（如 LocationType 属于 {NODE, EDGE}）\n- 输出符合规范的车辆条目列表并标注问题字段\n\n## Constraints\n\n- LocationType 仅允许 NODE 或 EDGE\n- LocationID 必须为 NodeID 或 EdgeID\n- RemainingTravelTime 仅在车辆位于边上时出现\n- OnboardConsignments 为 ConsignmentID 列表\n\n## Cautions\n\n- 仅覆盖车辆实体字段结构，不涉及仿真推进或时间更新逻辑\n- 不适用于节点、边、货物等其他实体段\n\n## Output Contract\n\n- 符合字段规范的车辆条目列表，每条包含完整必填字段，并标注任何缺失或非法字段。",
+  "asset_type": "knowledge_reference",
+  "granularity": "session",
+  "asset_node_id": "knowledge_reference_node",
+  "asset_path": "family_root/knowledge_reference_node",
+  "asset_level": 1,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 1.0,
+  "hierarchy_status": "root",
+  "visible_role": "leaf",
+  "objective": "确保车辆状态快照条目包含完整且合法的字段结构",
+  "domain": "交通仿真",
+  "task_family": "状态快照规范",
+  "method_family": "字段模式定义",
+  "stage": "状态序列化/解析",
+  "applicable_signals": [
+    "输入或输出涉及 VEHICLES 段",
+    "需要确认车辆条目字段是否齐全",
+    "需要区分车辆位于节点还是边"
+  ],
+  "contraindications": [
+    "处理节点或边等其他实体段",
+    "需要仿真推进逻辑而非字段结构"
+  ],
+  "intervention_moves": [
+    "列出 T5 规定的必填字段集合",
+    "校验 LocationType 取值属于 {NODE, EDGE}",
+    "当 LocationType 为 EDGE 时要求存在 RemainingTravelTime",
+    "校验 OnboardConsignments 为 ConsignmentID 列表",
+    "标注缺失或非法字段并返回条目列表"
+  ],
+  "triggers": [
+    "需要生成 VEHICLES 段状态快照",
+    "需要校验车辆条目字段完整性",
+    "需要解析状态快照中的车辆条目"
+  ],
+  "workflow_steps": [
+    "确认目标为 VEHICLES 段车辆条目",
+    "逐项核对必填字段：VehicleID、VehicleType、LocationType、LocationID、Status、LoadUnitsUsed、OnboardConsignments",
+    "根据 LocationType 判断是否需要 RemainingTravelTime",
+    "校验字段取值合法性（如 LocationType 属于 {NODE, EDGE}）",
+    "输出符合规范的车辆条目列表并标注问题字段"
+  ],
+  "constraints": [
+    "LocationType 仅允许 NODE 或 EDGE",
+    "LocationID 必须为 NodeID 或 EdgeID",
+    "RemainingTravelTime 仅在车辆位于边上时出现",
+    "OnboardConsignments 为 ConsignmentID 列表"
+  ],
+  "cautions": [
+    "仅覆盖车辆实体字段结构，不涉及仿真推进或时间更新逻辑",
+    "不适用于节点、边、货物等其他实体段"
+  ],
+  "output_contract": [
+    "符合字段规范的车辆条目列表，每条包含完整必填字段，并标注任何缺失或非法字段。"
+  ],
+  "examples": [],
+  "tags": [
+    "交通仿真",
+    "状态快照",
+    "字段规范",
+    "VEHICLES"
+  ],
+  "support_ids": [
+    "6eccf7b3-6277-53cd-83e3-73dc791c2511"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "ec17ab8b-5382-5fcd-8d60-506deed0b350"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|确保车辆状态快照条目包含完整且合法的字段结构|交通仿真|状态快照规范|字段模式定义|状态序列化/解析|车辆状态快照字段规范校验",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 1.0,
+    "hierarchy_status": "root",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

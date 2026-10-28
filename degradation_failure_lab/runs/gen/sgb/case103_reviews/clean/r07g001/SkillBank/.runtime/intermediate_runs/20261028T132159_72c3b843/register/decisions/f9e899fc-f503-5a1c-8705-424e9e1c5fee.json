@@ -1,0 +1,110 @@
+{
+  "skill_id": "f9e899fc-f503-5a1c-8705-424e9e1c5fee",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "该候选技能是独立的评论处理器输出字段与枚举校验规范，与同批候选（类别映射、语义等价匹配、约束优化选品）无重叠，且无冲突证据，具备可执行校验步骤，应保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "f9e899fc-f503-5a1c-8705-424e9e1c5fee",
+    "name": "评论处理器输出字段规范校验",
+    "description": "依据数据字典（Review Processor Output Fields v7.2）校验评论处理器输出字段是否存在、类型正确、枚举取值合法，用于下游消费前确认结构化输出符合约定。",
+    "skill_body": "使用本技能时，先确认字段规范版本与待校验输出一致，再逐字段核对存在性、类型与枚举取值，最后输出通过/不合规字段清单。仅做规范校验，不修改或补全业务数据。\n\n## Objective\n\n确保评论处理器输出符合字段与枚举约定\n## Applicable Signals\n\n- 待校验输出声称遵循 Review Processor Output Fields v7.2\n- 下游消费前需要字段合规确认\n\n## Contraindications\n\n- 字段规范未定义或版本不匹配时\n\n## Intervention Moves\n\n- 核对字段是否存在\n- 核对字段类型\n- 核对枚举取值合法性\n- 汇总不合规字段清单\n\n## Workflow Steps\n\n- 确认字段规范版本与待校验输出一致\n- 逐字段检查存在性：review_id、review、is_sportswear、is_apparel_product、brand、competitor_or_nike\n- 检查类型：review_id 与 review 为 string，brand 为 string（规范化品牌名或 \"N/A\"）\n- 检查枚举：is_sportswear 与 is_apparel_product 取 {\"yes\",\"no\"}；competitor_or_nike 取 {\"nike\",\"competitor\",\"n/a\"}\n- 汇总通过/不合规字段清单并交付\n\n## Constraints\n\n- 仅依据已定义的字段规范版本进行校验\n- 不修改或补全业务数据，只报告合规结果\n\n## Cautions\n\n- 版本不匹配时不应套用本规范\n- 枚举取值需严格匹配，注意大小写与 \"N/A\" 与 \"n/a\" 的差异\n\n## Output Contract\n\n- 字段合规检查结果：整体通过或不合规字段清单（含字段名与不合规原因）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 输出含 is_sportswear=\"maybe\"\n- Therapist/Output: 不合规：is_sportswear 取值 \"maybe\" 不在枚举 {\"yes\",\"no\"} 内\n- Notes: 枚举校验示例",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保评论处理器输出符合字段与枚举约定",
+    "domain": "运营流程",
+    "task_family": "数据校验",
+    "method_family": "schema校验",
+    "stage": "输出验证",
+    "applicable_signals": [
+      "待校验输出声称遵循 Review Processor Output Fields v7.2",
+      "下游消费前需要字段合规确认"
+    ],
+    "contraindications": [
+      "字段规范未定义或版本不匹配时"
+    ],
+    "intervention_moves": [
+      "核对字段是否存在",
+      "核对字段类型",
+      "核对枚举取值合法性",
+      "汇总不合规字段清单"
+    ],
+    "triggers": [
+      "需要验证评论处理器输出结构",
+      "下游系统消费前做字段合规检查"
+    ],
+    "workflow_steps": [
+      "确认字段规范版本与待校验输出一致",
+      "逐字段检查存在性：review_id、review、is_sportswear、is_apparel_product、brand、competitor_or_nike",
+      "检查类型：review_id 与 review 为 string，brand 为 string（规范化品牌名或 \"N/A\"）",
+      "检查枚举：is_sportswear 与 is_apparel_product 取 {\"yes\",\"no\"}；competitor_or_nike 取 {\"nike\",\"competitor\",\"n/a\"}",
+      "汇总通过/不合规字段清单并交付"
+    ],
+    "constraints": [
+      "仅依据已定义的字段规范版本进行校验",
+      "不修改或补全业务数据，只报告合规结果"
+    ],
+    "cautions": [
+      "版本不匹配时不应套用本规范",
+      "枚举取值需严格匹配，注意大小写与 \"N/A\" 与 \"n/a\" 的差异"
+    ],
+    "output_contract": [
+      "字段合规检查结果：整体通过或不合规字段清单（含字段名与不合规原因）"
+    ],
+    "examples": [
+      {
+        "input": "输出含 is_sportswear=\"maybe\"",
+        "output": "不合规：is_sportswear 取值 \"maybe\" 不在枚举 {\"yes\",\"no\"} 内",
+        "notes": "枚举校验示例"
+      }
+    ],
+    "tags": [
+      "数据校验",
+      "schema校验",
+      "输出验证",
+      "评论处理"
+    ],
+    "support_ids": [
+      "28d2b679-cb51-51d1-b56d-08102c84d894"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "daa25ac4-ffd9-581c-84f3-76f288ce0d78"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||knowledge_reference|session|knowledge_reference_node|确保评论处理器输出符合字段与枚举约定|运营流程|数据校验|schema校验|输出验证|评论处理器输出字段规范校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

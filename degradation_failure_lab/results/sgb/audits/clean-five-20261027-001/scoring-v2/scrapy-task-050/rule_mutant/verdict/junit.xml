@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="8" time="0.086" timestamp="2026-10-27T14:32:39.786726+00:00" hostname="c38cc699ddd1"><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_file_exists" time="0.000" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_file_not_empty" time="0.002" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_module_imports" time="0.000" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_has_required_api" time="0.000" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_depth_limit_setting_is_zero" time="0.000"><failure message="AssertionError: DepthLimitZeroSpider.custom_settings must set DEPTH_LIMIT to 0&#10;assert 1 == 0&#10; +  where 1 = &lt;built-in method get of dict object at 0x70073fde4640&gt;('DEPTH_LIMIT', None)&#10; +    where &lt;built-in method get of dict object at 0x70073fde4640&gt; = {'DEPTH_LIMIT': 1}.get">self = &lt;eval.TestDepthLimitZeroBehavior object at 0x70073d95f530&gt;
+
+    def test_depth_limit_setting_is_zero(self):
+        sys.path.insert(0, ROOT_DIR)
+        import agent_output
+    
+        spider_cls = agent_output.DepthLimitZeroSpider
+        settings = getattr(spider_cls, "custom_settings", None)
+    
+        assert isinstance(settings, dict), \
+            "DepthLimitZeroSpider.custom_settings must be a dict"
+&gt;       assert settings.get("DEPTH_LIMIT", None) == 0, \
+            "DepthLimitZeroSpider.custom_settings must set DEPTH_LIMIT to 0"
+E       AssertionError: DepthLimitZeroSpider.custom_settings must set DEPTH_LIMIT to 0
+E       assert 1 == 0
+E        +  where 1 = &lt;built-in method get of dict object at 0x70073fde4640&gt;('DEPTH_LIMIT', None)
+E        +    where &lt;built-in method get of dict object at 0x70073fde4640&gt; = {'DEPTH_LIMIT': 1}.get
+
+/oracle/eval.py:70: AssertionError</failure></testcase><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_finding_structure_and_semantics" time="0.000" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_runtime_behavior_crawls_beyond_depth_zero" time="0.001"><failure message="AssertionError: Expected multiple pages to be crawled, got: {'visited_count': 2, 'max_depth_seen': 1, 'depths': [0, 1], 'urls': ['http://127.0.0.1:46577/index.html', 'http://127.0.0.1:46577/page1.html']}&#10;assert 2 &gt;= 3">self = &lt;eval.TestDepthLimitZeroBehavior object at 0x70073daa79b0&gt;
+
+    def test_runtime_behavior_crawls_beyond_depth_zero(self):
+        """
+        Run a real crawl against a tiny local website with multiple link depths.
+        The probe spider inherits the agent spider's settings, but uses a known parse()
+        implementation so this test measures DEPTH_LIMIT behavior rather than text matching.
+        """
+        script = textwrap.dedent(
+            f"""
+            import os
+            import sys
+            import json
+            import socket
+            import inspect
+            import threading
+            import tempfile
+            from pathlib import Path
+            from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+    
+            sys.path.insert(0, {ROOT_DIR!r})
+            import agent_output
+            import scrapy
+            from scrapy.crawler import CrawlerProcess
+    
+            # Create a tiny website with depth 0 -&gt; 1 -&gt; 2 -&gt; 3
+            tmpdir = tempfile.TemporaryDirectory()
+            root = Path(tmpdir.name)
+    
+            (root / "index.html").write_text('&lt;html&gt;&lt;body&gt;&lt;a href="/page1.html"&gt;p1&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;', encoding="utf-8")
+            (root / "page1.html").write_text('&lt;html&gt;&lt;body&gt;&lt;a href="/page2.html"&gt;p2&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;', encoding="utf-8")
+            (root / "page2.html").write_text('&lt;html&gt;&lt;body&gt;&lt;a href="/page3.html"&gt;p3&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;', encoding="utf-8")
+            (root / "page3.html").write_text('&lt;html&gt;&lt;body&gt;done&lt;/body&gt;&lt;/html&gt;', encoding="utf-8")
+    
+            class QuietHandler(SimpleHTTPRequestHandler):
+                def log_message(self, format, *args):
+                    pass
+    
+            os.chdir(root)
+    
+            sock = socket.socket()
+            sock.bind(("127.0.0.1", 0))
+            host, port = sock.getsockname()
+            sock.close()
+    
+            server = ThreadingHTTPServer(("127.0.0.1", port), QuietHandler)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+    
+            visited = []
+    
+            base_cls = agent_output.DepthLimitZeroSpider
+    
+            class ProbeSpider(base_cls):
+                name = "probe_depth_limit_zero"
+                start_urls = [f"http://127.0.0.1:{{port}}/index.html"]
+    
+                def parse(self, response):
+                    depth = response.meta.get("depth", 0)
+                    visited.append({{"url": response.url, "depth": depth}})
+                    for href in response.css("a::attr(href)").getall():
+                        yield response.follow(href, callback=self.parse)
+    
+            process = CrawlerProcess(settings={{
+                "LOG_ENABLED": False,
+            }})
+            process.crawl(ProbeSpider)
+            process.start()
+    
+            server.shutdown()
+            server.server_close()
+            tmpdir.cleanup()
+    
+            out = {{
+                "visited_count": len(visited),
+                "max_depth_seen": max((x["depth"] for x in visited), default=None),
+                "depths": sorted(set(x["depth"] for x in visited)),
+                "urls": [x["url"] for x in visited],
+            }}
+            print(json.dumps(out))
+            """
+        )
+    
+        completed = subprocess.run(
+            [sys.executable, "-c", script],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    
+        stdout = completed.stdout.strip().splitlines()
+        assert stdout, f"No output from crawl subprocess. stderr={completed.stderr}"
+    
+        data = json.loads(stdout[-1])
+    
+        # Must at least reach depth 2 on our tiny site if DEPTH_LIMIT=0 means "no limit"
+&gt;       assert data["visited_count"] &gt;= 3, f"Expected multiple pages to be crawled, got: {data}"
+E       AssertionError: Expected multiple pages to be crawled, got: {'visited_count': 2, 'max_depth_seen': 1, 'depths': [0, 1], 'urls': ['http://127.0.0.1:46577/index.html', 'http://127.0.0.1:46577/page1.html']}
+E       assert 2 &gt;= 3
+
+/oracle/eval.py:198: AssertionError</failure></testcase><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_finding_matches_runtime_behavior" time="0.000" /></testsuite></testsuites>

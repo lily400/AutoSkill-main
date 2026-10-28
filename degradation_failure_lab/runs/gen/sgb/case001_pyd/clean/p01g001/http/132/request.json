@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"a30b25f4-b752-5564-afbd-e34563890155\", \"name\": \"字段校验器通配符与字段检查配置\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"正确配置字段校验器的适用范围与字段存在性检查，使校验逻辑可安全复用于基类与子类。\", \"applicable_signals\": [\"校验器定义在基类上，字段由子类提供\", \"需要一次性覆盖模型所有字段的校验逻辑\"], \"contraindications\": [\"仅需校验单个已知字段且字段必然存在于当前模型\", \"使用 annotated 模式而非装饰器模式\"], \"workflow_steps\": [\"判断校验器是否需要覆盖全部字段，若是则将字段名参数设为 '*'\", \"判断校验器是否定义在基类且目标字段仅存在于子类，若是则传入 check_fields=False\", \"验证校验器作用于预期字段集合，且类创建时无字段存在性报错\"], \"constraints\": [\"仅在装饰器式字段校验器场景下使用\", \"check_fields=False 仅用于字段预期存在于子类的基类校验器\"], \"triggers\": [\"需要在基类上定义字段校验器并期望子类字段也受校验\", \"希望校验器作用于模型全部字段\"], \"output_contract\": [\"校验器按预期作用于目标字段集合，且类创建时无字段存在性报错。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"0166b7ef-ec54-5e0c-9bd2-086b92fc3430\", \"name\": \"Pydantic 验证器模式选型与实现\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为给定校验需求选择并实现正确的 Pydantic 验证器模式\", \"applicable_signals\": [\"校验逻辑作用于单个字段\", \"校验逻辑需要访问整个已校验模型\", \"需要在初始化前后介入校验\"], \"workflow_steps\": [\"明确校验目标是单字段还是整个模型\", \"字段级：在 annotated 模式与 decorator 模式之间选择并实现\", \"模型级：在 before 与 after 验证器之间选择并实现\", \"after 验证器定义为实例方法并返回校验后的实例\", \"输出可运行代码并说明选型理由\"], \"output_contract\": [\"可运行的验证器代码，模式选择有明确理由\"], \"score\": 0.5515336217909543}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

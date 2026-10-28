@@ -1,0 +1,693 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "ef1d5176-75ca-57b6-a070-deec3773e269",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "6f46ef5c-d71f-53ea-bfd2-6d9efdeb21a4",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 14677,
+        "end": 16937
+      },
+      "excerpt": "S4. Return paths are modeled by additional edges:\n- E13: N2 to N1 | LOCAL | 3 | 1 | 2 | UNSIGNALIZED\n- E14: N3 to N2 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E15: N4 to N3 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E16: N3 to N5 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E17: N6 to N2 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n- E18: N7 to N3 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n- E19: N8 to N3 | LOCAL | 4 | 1 | 1 | UNSIGNALIZED\n- E20: N9 to N4 | RING | 3 | 2 | 2 | SIGNALIZED\n- E21: N10 to N5 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n\n3. Signal Settings\nS5. Node N3 (Central Intersection) is signalized for edges arriving from N2, N4, N5, N10, N7, and N8.\n\nS6. N3 has CycleLength = 6 ticks and three phases:\n- Phase A (ticks 0-1 mod 6): GreenEdges = {E2, E10} (traffic arriving from N2 and N9).\n- Phase B (ticks 2-3 mod 6): GreenEdges = {E3, E5, E12} (traffic arriving from N4, N5, N10).\n- Phase C (ticks 4-5 mod 6): GreenEdges = {E18, E19, E7} (traffic arriving from N7, N8, and return from N7).\n\nS7. Node N4 is signalized for edges arriving from N3 and N9 with a simple cycle:\n- CycleLength = 4 ticks.\n- Phase 1 (ticks 0-1 mod 4): GreenEdges = {E3}.\n- Phase 2 (ticks 2-3 mod 4): GreenEdges = {E20}.\n\n4. Vehicles in the Morning Rush Scenario\nS8. The scenario begins at tick t = 0.\n\nS9. There are four vehicles:\n- V1: type TRUCK, capacity 12 units, home depot N1, initially at N1, empty, status IDLE_AT_NODE.\n- V2: type VAN, capacity 8 units, home depot N1, initially at N1, empty, status IDLE_AT_NODE.\n- V3: type VAN, capacity 8 units, home depot N5, initially at N5, empty, status IDLE_AT_NODE.\n- V4: type BIKE, capacity 2 units, home depot N4, initially at N4, empty, status IDLE_AT_NODE.\n\n5. Consignments\nS10. Initial consignments at tick 0:\n1. C1: from N1 to N6, size 3, release time 0, due time 12, priority STANDARD.\n2. C2: from N1 to N7, size 4, release time 0, due time 10, priority HIGH.\n3. C3: from N5 to N10, size 5, release time 0, due time 9, priority STANDARD.\n4. C4: from N5 to N8, size 4, release time 2, due time 14, priority LOW.\n5. C5: from N4 to N9, size 2, release time 1, due time 8, priority CRITICAL.\n6. C6: from N2 to N3, size 1, release time 3, due time 9, priority HIGH.\n\nS11. All consignments start with Status = PENDING_AT_ORIGIN and no assigned vehicle.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "信号配时相位判定",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "确定给定节点在给定 tick 的绿灯边集合",
+        "task_family": "信号控制判定",
+        "method_family": "周期相位模运算",
+        "stage": "每tick状态更新",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "ef1d5176-75ca-57b6-a070-deec3773e269",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 11,
+        "paragraph_end": 18,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:19:12+00:00"
+    },
+    {
+      "support_id": "081f0a1e-51d0-54c8-82b4-c7c26ac990fd",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 14677,
+        "end": 16937
+      },
+      "excerpt": "S4. Return paths are modeled by additional edges:\n- E13: N2 to N1 | LOCAL | 3 | 1 | 2 | UNSIGNALIZED\n- E14: N3 to N2 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E15: N4 to N3 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E16: N3 to N5 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E17: N6 to N2 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n- E18: N7 to N3 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n- E19: N8 to N3 | LOCAL | 4 | 1 | 1 | UNSIGNALIZED\n- E20: N9 to N4 | RING | 3 | 2 | 2 | SIGNALIZED\n- E21: N10 to N5 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n\n3. Signal Settings\nS5. Node N3 (Central Intersection) is signalized for edges arriving from N2, N4, N5, N10, N7, and N8.\n\nS6. N3 has CycleLength = 6 ticks and three phases:\n- Phase A (ticks 0-1 mod 6): GreenEdges = {E2, E10} (traffic arriving from N2 and N9).\n- Phase B (ticks 2-3 mod 6): GreenEdges = {E3, E5, E12} (traffic arriving from N4, N5, N10).\n- Phase C (ticks 4-5 mod 6): GreenEdges = {E18, E19, E7} (traffic arriving from N7, N8, and return from N7).\n\nS7. Node N4 is signalized for edges arriving from N3 and N9 with a simple cycle:\n- CycleLength = 4 ticks.\n- Phase 1 (ticks 0-1 mod 4): GreenEdges = {E3}.\n- Phase 2 (ticks 2-3 mod 4): GreenEdges = {E20}.\n\n4. Vehicles in the Morning Rush Scenario\nS8. The scenario begins at tick t = 0.\n\nS9. There are four vehicles:\n- V1: type TRUCK, capacity 12 units, home depot N1, initially at N1, empty, status IDLE_AT_NODE.\n- V2: type VAN, capacity 8 units, home depot N1, initially at N1, empty, status IDLE_AT_NODE.\n- V3: type VAN, capacity 8 units, home depot N5, initially at N5, empty, status IDLE_AT_NODE.\n- V4: type BIKE, capacity 2 units, home depot N4, initially at N4, empty, status IDLE_AT_NODE.\n\n5. Consignments\nS10. Initial consignments at tick 0:\n1. C1: from N1 to N6, size 3, release time 0, due time 12, priority STANDARD.\n2. C2: from N1 to N7, size 4, release time 0, due time 10, priority HIGH.\n3. C3: from N5 to N10, size 5, release time 0, due time 9, priority STANDARD.\n4. C4: from N5 to N8, size 4, release time 2, due time 14, priority LOW.\n5. C5: from N4 to N9, size 2, release time 1, due time 8, priority CRITICAL.\n6. C6: from N2 to N3, size 1, release time 3, due time 9, priority HIGH.\n\nS11. All consignments start with Status = PENDING_AT_ORIGIN and no assigned vehicle.",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "边容量与队列冲突处理",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "按容量与冲突规则裁决边上的车辆通行",
+        "task_family": "通行裁决",
+        "method_family": "容量队列冲突规则",
+        "stage": "每tick移动执行",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 2,
+        "window_id": "ef1d5176-75ca-57b6-a070-deec3773e269",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 11,
+        "paragraph_end": 18,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:19:12+00:00"
+    },
+    {
+      "support_id": "285f23ce-bf4a-51c0-bdc1-b79eaf90cd7c",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 14677,
+        "end": 16937
+      },
+      "excerpt": "S4. Return paths are modeled by additional edges:\n- E13: N2 to N1 | LOCAL | 3 | 1 | 2 | UNSIGNALIZED\n- E14: N3 to N2 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E15: N4 to N3 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E16: N3 to N5 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- E17: N6 to N2 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n- E18: N7 to N3 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n- E19: N8 to N3 | LOCAL | 4 | 1 | 1 | UNSIGNALIZED\n- E20: N9 to N4 | RING | 3 | 2 | 2 | SIGNALIZED\n- E21: N10 to N5 | LOCAL | 3 | 1 | 1 | UNSIGNALIZED\n\n3. Signal Settings\nS5. Node N3 (Central Intersection) is signalized for edges arriving from N2, N4, N5, N10, N7, and N8.\n\nS6. N3 has CycleLength = 6 ticks and three phases:\n- Phase A (ticks 0-1 mod 6): GreenEdges = {E2, E10} (traffic arriving from N2 and N9).\n- Phase B (ticks 2-3 mod 6): GreenEdges = {E3, E5, E12} (traffic arriving from N4, N5, N10).\n- Phase C (ticks 4-5 mod 6): GreenEdges = {E18, E19, E7} (traffic arriving from N7, N8, and return from N7).\n\nS7. Node N4 is signalized for edges arriving from N3 and N9 with a simple cycle:\n- CycleLength = 4 ticks.\n- Phase 1 (ticks 0-1 mod 4): GreenEdges = {E3}.\n- Phase 2 (ticks 2-3 mod 4): GreenEdges = {E20}.\n\n4. Vehicles in the Morning Rush Scenario\nS8. The scenario begins at tick t = 0.\n\nS9. There are four vehicles:\n- V1: type TRUCK, capacity 12 units, home depot N1, initially at N1, empty, status IDLE_AT_NODE.\n- V2: type VAN, capacity 8 units, home depot N1, initially at N1, empty, status IDLE_AT_NODE.\n- V3: type VAN, capacity 8 units, home depot N5, initially at N5, empty, status IDLE_AT_NODE.\n- V4: type BIKE, capacity 2 units, home depot N4, initially at N4, empty, status IDLE_AT_NODE.\n\n5. Consignments\nS10. Initial consignments at tick 0:\n1. C1: from N1 to N6, size 3, release time 0, due time 12, priority STANDARD.\n2. C2: from N1 to N7, size 4, release time 0, due time 10, priority HIGH.\n3. C3: from N5 to N10, size 5, release time 0, due time 9, priority STANDARD.\n4. C4: from N5 to N8, size 4, release time 2, due time 14, priority LOW.\n5. C5: from N4 to N9, size 2, release time 1, due time 8, priority CRITICAL.\n6. C6: from N2 to N3, size 1, release time 3, due time 9, priority HIGH.\n\nS11. All consignments start with Status = PENDING_AT_ORIGIN and no assigned vehicle.",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "装卸与任务分配流程",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "完成货物到车辆的分配与装卸状态更新",
+        "task_family": "物流任务分配",
+        "method_family": "容量匹配与装卸规则",
+        "stage": "装卸阶段",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 3,
+        "window_id": "ef1d5176-75ca-57b6-a070-deec3773e269",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 11,
+        "paragraph_end": 18,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:19:12+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "ba95c74f-2663-5b3a-bcf4-d897a2c78eae",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "信号配时相位判定",
+      "description": "根据信号化节点的周期长度与当前 tick 的模运算，判定该节点当前所处相位及其绿灯边集合，用于车辆通行合法性判断。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "确定给定节点在给定 tick 的绿灯边集合",
+      "domain": "交通仿真规则",
+      "task_family": "信号控制判定",
+      "method_family": "周期相位模运算",
+      "stage": "每tick状态更新",
+      "applicable_signals": [
+        "节点为 SIGNALIZED",
+        "已知节点 CycleLength 与各相位 tick 区间及 GreenEdges",
+        "已知当前 tick"
+      ],
+      "contraindications": [
+        "节点为 UNSIGNALIZED",
+        "缺少 CycleLength 或相位定义"
+      ],
+      "intervention_moves": [
+        "计算 tick mod CycleLength 得到周期内位置",
+        "将周期内位置匹配到对应相位的 tick 区间",
+        "返回该相位的相位标识与 GreenEdges 集合"
+      ],
+      "workflow_steps": [
+        "确认目标节点为 SIGNALIZED 且具备 CycleLength 与相位定义",
+        "计算 tick mod CycleLength",
+        "将结果落入对应相位的 tick 区间，确定当前相位",
+        "输出相位标识与该相位的 GreenEdges 集合"
+      ],
+      "triggers": [
+        "需要判断某车辆能否通过信号化节点",
+        "需要计算节点当前相位",
+        "需要获取某 tick 下节点的绿灯边集合"
+      ],
+      "constraints": [
+        "相位区间按 mod CycleLength 判定",
+        "仅返回当前相位对应的绿灯边集合，不涉及容量或队列处理"
+      ],
+      "cautions": [
+        "若 tick 区间定义存在重叠或空缺，应报告规则冲突而非臆断相位"
+      ],
+      "output_contract": [
+        "输出当前相位标识与绿灯边集合"
+      ],
+      "examples": [
+        {
+          "input": "节点 N3，CycleLength=6，tick=0，Phase A 为 ticks 0-1 mod 6，GreenEdges={E2,E10}",
+          "output": "当前相位 Phase A，绿灯边集合 {E2,E10}",
+          "notes": null
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "6f46ef5c-d71f-53ea-bfd2-6d9efdeb21a4"
+      ],
+      "metadata": {
+        "prompt": "给定一个信号化节点及其 CycleLength 与相位定义，以及当前 tick，按 tick mod CycleLength 落入的相位区间确定当前相位，并返回该相位的 GreenEdges 集合。若节点为 UNSIGNALIZED 或缺少 CycleLength/相位定义，则不做判定并说明原因。",
+        "tags": [
+          "交通仿真",
+          "信号控制",
+          "相位判定",
+          "模运算"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "ef1d5176-75ca-57b6-a070-deec3773e269",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 11,
+        "paragraph_end": 18,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "52c6ab30-a500-53a8-bed7-d7204fe64dd2",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "边容量与队列冲突处理",
+      "description": "在交通仿真每个 tick 中，依据边的容量、排队与冲突规则裁决车辆能否进入目标边或需等待排队，并处理容量削减与拥堵情形。适用于多车竞争同一入边或发生容量削减事件时。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "按容量与冲突规则裁决边上的车辆通行",
+      "domain": "交通仿真规则",
+      "task_family": "通行裁决",
+      "method_family": "容量队列冲突规则",
+      "stage": "每tick移动执行",
+      "applicable_signals": [
+        "多车竞争同一入边",
+        "发生容量削减事件",
+        "目标边存在容量或排队约束"
+      ],
+      "contraindications": [
+        "边无容量限制且无冲突时无需使用本技能"
+      ],
+      "intervention_moves": [
+        "读取目标边容量与当前占用/排队状态",
+        "检查容量削减事件与冲突",
+        "容量允许且无冲突时允许进入并更新占用",
+        "否则令车辆排队等待并记录决策"
+      ],
+      "workflow_steps": [
+        "对每辆试图进入目标边的车辆读取该边容量与当前占用/排队状态",
+        "检查是否存在容量削减事件或冲突",
+        "若容量允许且无冲突，允许车辆进入并更新占用",
+        "否则令车辆排队等待并记录排队决策",
+        "汇总每 tick 的进入/排队决策结果"
+      ],
+      "triggers": [
+        "多车竞争同一入边",
+        "发生容量削减事件",
+        "需要判定车辆能否进入目标边"
+      ],
+      "constraints": [
+        "裁决须在每个 tick 的移动执行阶段进行",
+        "须以边容量与冲突规则为依据，不得绕过容量限制"
+      ],
+      "cautions": [
+        "容量削减事件会改变可用容量，需在裁决前纳入考虑"
+      ],
+      "output_contract": [
+        "每 tick 的车辆进入/排队决策结果"
+      ],
+      "examples": [
+        {
+          "input": "多辆车在同一 tick 试图进入同一条容量受限的边",
+          "output": "容量允许的车辆进入并更新占用，其余车辆排队等待，输出该 tick 的进入/排队决策",
+          "notes": "体现容量与冲突裁决"
+        },
+        {
+          "input": "某边发生容量削减事件，车辆试图进入",
+          "output": "按削减后的容量裁决，超出容量的车辆排队等待",
+          "notes": "体现容量削减处理"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "081f0a1e-51d0-54c8-82b4-c7c26ac990fd"
+      ],
+      "metadata": {
+        "prompt": "在每个 tick 的移动执行阶段，对每辆试图进入某条边的车辆，按以下顺序裁决：1) 读取目标边的容量与当前占用/排队状态；2) 检查是否存在容量削减事件或冲突；3) 若容量允许且无冲突，则允许车辆进入并更新占用；4) 否则令车辆排队等待，记录排队决策。输出每 tick 的进入/排队决策结果。",
+        "tags": [
+          "交通仿真",
+          "容量",
+          "队列",
+          "冲突裁决",
+          "每tick移动"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 2,
+        "window_id": "ef1d5176-75ca-57b6-a070-deec3773e269",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 11,
+        "paragraph_end": 18,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "4a8fd03f-9a77-5a1f-88d1-1789b0f40550",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "装卸与任务分配流程",
+      "description": "依据车辆容量、当前位置与货物起点终点，将 PENDING_AT_ORIGIN 货物分配给合适车辆，并执行装卸与状态更新。适用于存在待分配货物且有空闲车辆位于货物起点的仿真装卸阶段。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "完成货物到车辆的分配与装卸状态更新",
+      "domain": "交通仿真规则",
+      "task_family": "物流任务分配",
+      "method_family": "容量匹配与装卸规则",
+      "stage": "装卸阶段",
+      "applicable_signals": [
+        "货物状态为 PENDING_AT_ORIGIN 且无分配车辆",
+        "车辆状态为空闲且位于货物起点",
+        "车辆剩余容量满足货物尺寸"
+      ],
+      "contraindications": [
+        "货物已分配或已送达",
+        "车辆容量不足以装载货物",
+        "车辆不在货物起点"
+      ],
+      "intervention_moves": [
+        "按货物优先级或释放时间筛选待分配货物",
+        "匹配位于货物起点且容量足够的空闲车辆",
+        "将货物分配给车辆并更新车辆载货与货物状态"
+      ],
+      "workflow_steps": [
+        "识别状态为 PENDING_AT_ORIGIN 且无分配车辆的货物",
+        "筛选位于货物起点且空闲的车辆",
+        "校验车辆剩余容量是否满足货物尺寸",
+        "将货物分配给满足条件的车辆",
+        "更新车辆载货状态与货物状态"
+      ],
+      "triggers": [
+        "存在状态为 PENDING_AT_ORIGIN 的待分配货物",
+        "存在空闲车辆且位于货物起点"
+      ],
+      "constraints": [
+        "仅分配 PENDING_AT_ORIGIN 状态的货物",
+        "车辆必须位于货物起点",
+        "车辆剩余容量必须不小于货物尺寸"
+      ],
+      "cautions": [
+        "容量不足或位置不符的车辆应跳过，不得强行分配"
+      ],
+      "output_contract": [
+        "更新后的车辆载货状态与货物状态（已分配/已装载）"
+      ],
+      "examples": [
+        {
+          "input": "货物 C1 位于 N1，尺寸 3，状态 PENDING_AT_ORIGIN；车辆 V1 位于 N1，容量 12，空闲",
+          "output": "C1 分配给 V1，V1 载货更新，C1 状态更新为已分配",
+          "notes": "容量与位置均满足"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "285f23ce-bf4a-51c0-bdc1-b79eaf90cd7c"
+      ],
+      "metadata": {
+        "prompt": "在仿真装卸阶段，遍历 PENDING_AT_ORIGIN 货物，检查空闲车辆是否位于货物起点且容量足够，完成分配并更新车辆载货与货物状态；容量不足或位置不符时跳过该车辆。",
+        "tags": [
+          "交通仿真",
+          "物流任务分配",
+          "装卸",
+          "容量匹配"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 3,
+        "window_id": "ef1d5176-75ca-57b6-a070-deec3773e269",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 11,
+        "paragraph_end": 18,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

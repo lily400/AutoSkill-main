@@ -1,0 +1,114 @@
+{
+  "skill_id": "7793410c-0ccb-5765-9e74-dfdcc7eb4823",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "Near-duplicate of peer candidate 'Over-Capacity Entry Denial with WAIT Fallback', which covers the same capacity computation, denial, and WAIT fallback; redundant within the batch.",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "7793410c-0ccb-5765-9e74-dfdcc7eb4823",
+    "name": "Incident Capacity Reduction Enforcement",
+    "description": "Computes an edge's effective MaxVehicles under an active incident's CapacityMultiplier and enforces that limit during the Capacity & Conflict Check Phase, denying ENTER_EDGE requests that would exceed it. Use when an incident reduces edge capacity and a vehicle requests entry.",
+    "skill_body": "During the Capacity & Conflict Check Phase, for an edge with an active incident specifying a CapacityMultiplier: (1) take the edge's baseline MaxVehicles (LaneCount × CapacityPerLane); (2) compute effective MaxVehicles = floor(baseline × CapacityMultiplier); (3) when a vehicle requests ENTER_EDGE, approve only if current occupancy plus the new vehicle does not exceed effective MaxVehicles; otherwise deny the request and have the vehicle perform WAIT at its current node for that tick.\n\n## Objective\n\nCompute effective edge capacity under an incident and deny entry requests that would exceed it.\n## Applicable Signals\n\n- Active incident with CapacityMultiplier on the target edge\n- ENTER_EDGE request targeting an edge with reduced capacity\n- Current occupancy at or near effective MaxVehicles\n\n## Contraindications\n\n- No incident is active on the edge\n- The request is not an edge-entry request\n\n## Intervention Moves\n\n- Derive baseline MaxVehicles from LaneCount and CapacityPerLane\n- Apply floor(baseline × CapacityMultiplier) to get effective MaxVehicles\n- Compare current occupancy plus requested vehicle against effective MaxVehicles\n- Deny over-capacity ENTER_EDGE and substitute WAIT at current node\n\n## Workflow Steps\n\n- Identify the active incident and its CapacityMultiplier on the target edge.\n- Compute baseline MaxVehicles = LaneCount × CapacityPerLane.\n- Compute effective MaxVehicles = floor(baseline × CapacityMultiplier).\n- On an ENTER_EDGE request, check whether occupancy plus the new vehicle exceeds effective MaxVehicles.\n- If it would exceed, deny the request and have the vehicle WAIT at its current node for that tick; otherwise approve.\n\n## Constraints\n\n- Apply the floor function to the capacity product.\n- Enforce the limit only during the Capacity & Conflict Check Phase.\n- Denied vehicles must WAIT at their current node for that tick.\n\n## Cautions\n\n- Do not apply the multiplier when no incident is active on the edge.\n- Do not approve entry that would push occupancy above effective MaxVehicles.\n\n## Output Contract\n\n- Effective MaxVehicles computed and over-capacity ENTER_EDGE requests denied, with denied vehicles performing WAIT at their current node.\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Incident I1 on an edge with LaneCount = 2, CapacityPerLane = 2, CapacityMultiplier = 0.5; at a tick, 2 vehicles already on the edge and a third requests ENTER_EDGE.\n- Therapist/Output: Baseline MaxVehicles = 4; effective MaxVehicles = floor(4 × 0.5) = 2; request denied; vehicle performs WAIT at its current node for that tick.\n- Notes: Illustrates incident-driven capacity math and admission denial.",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "Compute effective edge capacity under an incident and deny entry requests that would exceed it.",
+    "domain": "traffic simulation rules",
+    "task_family": "capacity enforcement",
+    "method_family": "capacity computation and admission control",
+    "stage": "capacity & conflict check phase",
+    "applicable_signals": [
+      "Active incident with CapacityMultiplier on the target edge",
+      "ENTER_EDGE request targeting an edge with reduced capacity",
+      "Current occupancy at or near effective MaxVehicles"
+    ],
+    "contraindications": [
+      "No incident is active on the edge",
+      "The request is not an edge-entry request"
+    ],
+    "intervention_moves": [
+      "Derive baseline MaxVehicles from LaneCount and CapacityPerLane",
+      "Apply floor(baseline × CapacityMultiplier) to get effective MaxVehicles",
+      "Compare current occupancy plus requested vehicle against effective MaxVehicles",
+      "Deny over-capacity ENTER_EDGE and substitute WAIT at current node"
+    ],
+    "triggers": [
+      "An active incident specifies a CapacityMultiplier on an edge",
+      "A vehicle requests ENTER_EDGE on an edge with reduced capacity"
+    ],
+    "workflow_steps": [
+      "Identify the active incident and its CapacityMultiplier on the target edge.",
+      "Compute baseline MaxVehicles = LaneCount × CapacityPerLane.",
+      "Compute effective MaxVehicles = floor(baseline × CapacityMultiplier).",
+      "On an ENTER_EDGE request, check whether occupancy plus the new vehicle exceeds effective MaxVehicles.",
+      "If it would exceed, deny the request and have the vehicle WAIT at its current node for that tick; otherwise approve."
+    ],
+    "constraints": [
+      "Apply the floor function to the capacity product.",
+      "Enforce the limit only during the Capacity & Conflict Check Phase.",
+      "Denied vehicles must WAIT at their current node for that tick."
+    ],
+    "cautions": [
+      "Do not apply the multiplier when no incident is active on the edge.",
+      "Do not approve entry that would push occupancy above effective MaxVehicles."
+    ],
+    "output_contract": [
+      "Effective MaxVehicles computed and over-capacity ENTER_EDGE requests denied, with denied vehicles performing WAIT at their current node."
+    ],
+    "examples": [
+      {
+        "input": "Incident I1 on an edge with LaneCount = 2, CapacityPerLane = 2, CapacityMultiplier = 0.5; at a tick, 2 vehicles already on the edge and a third requests ENTER_EDGE.",
+        "output": "Baseline MaxVehicles = 4; effective MaxVehicles = floor(4 × 0.5) = 2; request denied; vehicle performs WAIT at its current node for that tick.",
+        "notes": "Illustrates incident-driven capacity math and admission denial."
+      }
+    ],
+    "tags": [
+      "capacity",
+      "incident",
+      "admission-control",
+      "edge-entry",
+      "traffic-simulation"
+    ],
+    "support_ids": [
+      "c3ce014d-de28-521a-b852-a5b0a436c016"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "263353b0-5b95-5206-a41f-2af173cdfe5e"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|compute effective edge capacity under an incident and deny entry requests that would exceed it.|traffic simulation rules|capacity enforcement|capacity computation and admission control|capacity & conflict check phase|incident capacity reduction enforcement"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

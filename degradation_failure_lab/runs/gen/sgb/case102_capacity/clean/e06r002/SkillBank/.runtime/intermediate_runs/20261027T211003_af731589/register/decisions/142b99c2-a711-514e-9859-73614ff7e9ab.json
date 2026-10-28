@@ -1,0 +1,118 @@
+{
+  "skill_id": "142b99c2-a711-514e-9859-73614ff7e9ab",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“每Tick合法动作选择与校验”(37d5e779)高度重复，后者覆盖同一阶段、同一目标且约束更完整，保留本候选会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "142b99c2-a711-514e-9859-73614ff7e9ab",
+    "name": "每Tick合法动作选择与校验移交",
+    "description": "在每个仿真tick为每辆非离线车辆从合法动作集中选择恰好一个动作，并将其标记为待校验请求，移交容量与冲突检查阶段处理。",
+    "skill_body": "对每个仿真tick，遍历所有非离线车辆，为每辆车从合法动作集中选择恰好一个动作：WAIT、ENTER_EDGE(edgeID)、CONTINUE_TRAVEL、START_LOADING(consignmentIDs)、START_UNLOADING(consignmentIDs)、GO_OFFLINE、GO_ONLINE。按动作前置条件筛选可用动作（如ENTER_EDGE需当前在节点、CONTINUE_TRAVEL需已在边上、GO_OFFLINE需在HomeDepot、GO_ONLINE需在HomeDepot且当前OFFLINE）。将所选动作标记为待校验的请求，交由后续容量与冲突检查阶段处理，不在本阶段判定其是否成功。\n\n## Objective\n\n为每辆非离线车辆生成恰好一个合法动作请求并交由后续校验阶段处理\n## Applicable Signals\n\n- 进入新的仿真tick\n- 存在非离线车辆需要决策\n- 车辆当前状态与位置已知\n\n## Contraindications\n\n- 车辆已处于OFFLINE状态\n- 需要执行容量与冲突校验本身而非动作选择\n\n## Intervention Moves\n\n- 枚举该车当前可用的合法动作\n- 按前置条件过滤不适用动作\n- 为每辆非离线车辆选定恰好一个动作\n- 将动作标记为待校验请求\n\n## Workflow Steps\n\n- 识别本tick所有非离线车辆\n- 对每辆车根据当前节点/边与状态枚举合法动作\n- 按动作前置条件过滤（ENTER_EDGE需在节点、CONTINUE_TRAVEL需在边、GO_OFFLINE/GO_ONLINE需在HomeDepot）\n- 为每辆车选定恰好一个动作\n- 将所选动作标记为请求并移交容量与冲突检查阶段\n\n## Constraints\n\n- 每辆非离线车辆每tick只能选择一个动作\n- 动作在容量与冲突检查阶段前仅为请求，不视为已生效\n- OFFLINE车辆不参与本tick动作选择\n\n## Cautions\n\n- CONTINUE_TRAVEL在无其他可用动作时视为隐式动作\n- START_UNLOADING仅适用于车上且目的地或允许转移节点匹配当前节点的consignment\n\n## Output Contract\n\n- 每辆非离线车辆对应一个合法动作请求，标记为待校验，供容量与冲突检查阶段处理\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某非离线车辆当前位于节点，需决定本tick动作\n- Therapist/Output: ENTER_EDGE(edgeID) 请求，标记为待校验\n- Notes: 动作仅为请求，需经容量与冲突检查\n\n### Example 2\n\n- Client/Input: 某车辆已在边上且无其他可用动作\n- Therapist/Output: CONTINUE_TRAVEL 请求\n- Notes: 隐式动作",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为每辆非离线车辆生成恰好一个合法动作请求并交由后续校验阶段处理",
+    "domain": "交通仿真规则",
+    "task_family": "车辆动作决策",
+    "method_family": "规则驱动动作选择",
+    "stage": "每tick动作生成",
+    "applicable_signals": [
+      "进入新的仿真tick",
+      "存在非离线车辆需要决策",
+      "车辆当前状态与位置已知"
+    ],
+    "contraindications": [
+      "车辆已处于OFFLINE状态",
+      "需要执行容量与冲突校验本身而非动作选择"
+    ],
+    "intervention_moves": [
+      "枚举该车当前可用的合法动作",
+      "按前置条件过滤不适用动作",
+      "为每辆非离线车辆选定恰好一个动作",
+      "将动作标记为待校验请求"
+    ],
+    "triggers": [
+      "需要推进一个仿真tick的车辆行为",
+      "车辆处于非离线状态且需决定本tick动作"
+    ],
+    "workflow_steps": [
+      "识别本tick所有非离线车辆",
+      "对每辆车根据当前节点/边与状态枚举合法动作",
+      "按动作前置条件过滤（ENTER_EDGE需在节点、CONTINUE_TRAVEL需在边、GO_OFFLINE/GO_ONLINE需在HomeDepot）",
+      "为每辆车选定恰好一个动作",
+      "将所选动作标记为请求并移交容量与冲突检查阶段"
+    ],
+    "constraints": [
+      "每辆非离线车辆每tick只能选择一个动作",
+      "动作在容量与冲突检查阶段前仅为请求，不视为已生效",
+      "OFFLINE车辆不参与本tick动作选择"
+    ],
+    "cautions": [
+      "CONTINUE_TRAVEL在无其他可用动作时视为隐式动作",
+      "START_UNLOADING仅适用于车上且目的地或允许转移节点匹配当前节点的consignment"
+    ],
+    "output_contract": [
+      "每辆非离线车辆对应一个合法动作请求，标记为待校验，供容量与冲突检查阶段处理"
+    ],
+    "examples": [
+      {
+        "input": "某非离线车辆当前位于节点，需决定本tick动作",
+        "output": "ENTER_EDGE(edgeID) 请求，标记为待校验",
+        "notes": "动作仅为请求，需经容量与冲突检查"
+      },
+      {
+        "input": "某车辆已在边上且无其他可用动作",
+        "output": "CONTINUE_TRAVEL 请求",
+        "notes": "隐式动作"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "车辆动作",
+      "逐tick决策",
+      "规则驱动"
+    ],
+    "support_ids": [
+      "e247683d-15a3-578b-b578-86873c7bda9b"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "fc34b9fe-38a0-534d-8e55-3d118ec1977b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|为每辆非离线车辆生成恰好一个合法动作请求并交由后续校验阶段处理|交通仿真规则|车辆动作决策|规则驱动动作选择|每tick动作生成|每tick合法动作选择与校验移交"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,4 +1,5 @@
 """Normalize task failures, resource limits and infrastructure failures separately."""
+import json
 
 TASK_FAILURES = {'submission_missing', 'invalid_submission', 'candidate_timeout',
                  'oracle_assertion_failure'}
@@ -9,7 +10,28 @@ BUDGET_MESSAGES = ('HTTP limit ', 'Persistent input Token budget reached',
                    'P1 request/input token budget exhausted')
 
 
-def failure_kind(score, native_exception=None, *, error=None, stage=None, attempts=()):
+def completion_state(native, max_turns):
+    """Interpret the pinned Terminus-2 two-confirmation contract, without executing Agent code."""
+    metadata = ((native or {}).get('agent_result') or {}).get('metadata') or {}
+    episodes = metadata.get('n_episodes')
+    replies = [m.get('content') for m in metadata.get('all_messages', []) if m.get('role') == 'assistant']
+    flags = []
+    for content in replies[-2:]:
+        try:
+            if isinstance(content,str) and content.lstrip().startswith('```'):
+                content = '\n'.join(content.strip().splitlines()[1:-1])
+            value = json.loads(content).get('task_complete')
+            flags.append(value if type(value) is bool else None)
+        except (ValueError,TypeError,AttributeError):flags.append(None)
+    confirmed = len(flags) == 2 and flags == [True,True]
+    capped = (type(max_turns) is int and type(episodes) is int and episodes >= max_turns
+              and bool(flags) and (flags[-1] is False or flags == [False,True]))
+    return {'status':'confirmed' if confirmed else 'turn_limit_unconfirmed' if capped else 'unknown',
+            'n_episodes':episodes,'max_turns':max_turns,'last_completion_flags':flags,
+            'confirmation_contract':'two consecutive task_complete=true responses'}
+
+
+def failure_kind(score, native_exception=None, *, error=None, stage=None, attempts=(), native_result=None, max_turns=None):
     # A reserved or unknown model call cannot be relabelled as a free resource stop.
     if any(a.get('state') in ('UNKNOWN', 'RESERVED') or
            a.get('http_status') is not None and not 200 <= a['http_status'] < 300 for a in attempts):
@@ -21,6 +43,8 @@ def failure_kind(score, native_exception=None, *, error=None, stage=None, attemp
         return 'budget_exhausted'
     if native_exception or error is not None:
         return 'infrastructure_failure'
+    if completion_state(native_result,max_turns)['status'] == 'turn_limit_unconfirmed':
+        return 'budget_exhausted'
     category = score.get('failure_category')
     if category in TASK_FAILURES:
         return 'task_failure'

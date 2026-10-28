@@ -1,0 +1,121 @@
+{
+  "skill_id": "a94f2864-b63a-5846-89f5-7c5ef080e3a7",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a94f2864-b63a-5846-89f5-7c5ef080e3a7",
+    "name": "输入数据质量校验与阻断",
+    "description": "在进入下游处理前，对商品目录JSON与评论CSV执行数据质量门控：校验可解析性、字段完整性、类别合法性与分类取值约束；无效输入阻断并上报，低量输入告警后继续。用于数据接入阶段的质量门控。",
+    "skill_body": "作为数据接入阶段的质量门控执行者，按以下顺序校验输入：\n1. 校验目录JSON可解析，且数组长度符合预期（如50条）。\n2. 逐条校验SKU字段齐全，且category取值属于允许集合（tops、bottoms、outerwear）。\n3. 校验评论CSV可解析，必需列齐全，分类取值严格受限于约定取值。\n4. 任一输入无效时，阻断下游流程，并向编排方上报明确状态与问题说明。\n5. 输入有效但任一子集数据量偏低（如少于10条）时，发出告警并继续。\n仅执行校验与门控判断，不进行语义匹配或分类判断。\n\n## Objective\n\n确保输入数据合法完整，非法输入被阻断并上报\n## Applicable Signals\n\n- 开始处理目录或评论数据前\n- 需要判断输入是否可继续下游流程\n\n## Contraindications\n\n- 数据已通过校验且无需重复检查\n- 仅做语义判断不涉及输入合法性\n\n## Intervention Moves\n\n- 校验目录JSON可解析且数组长度符合预期\n- 逐条校验SKU字段齐全且category属于允许集合\n- 校验评论CSV可解析、必需列齐全、分类取值严格受限\n- 无效输入时阻断并上报明确状态与问题说明\n- 低量输入时告警并继续\n\n## Workflow Steps\n\n- 校验目录JSON可解析，数组长度符合预期\n- 逐条校验SKU字段齐全，category ∈ {tops, bottoms, outerwear}\n- 校验评论CSV可解析，必需列齐全，分类取值严格受限\n- 任一输入无效则阻断并上报编排方，附明确状态与问题说明\n- 输入有效但任一子集数据量偏低（如少于10条）则告警并继续\n\n## Constraints\n\n- 类别取值必须严格属于允许集合\n- 分类取值必须严格受限于约定取值\n- 无效输入必须阻断，不得静默继续\n- 低量仅告警，不阻断\n\n## Cautions\n\n- 不得将低量告警误判为阻断\n- 不得在未完成校验前放行下游流程\n\n## Output Contract\n\n- 输出通过/阻断状态及问题说明，或低量告警\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 目录JSON无法解析\n- Therapist/Output: 阻断：目录JSON解析失败，已上报编排方\n- Notes: 无效输入必须阻断\n\n### Example 2\n\n- Client/Input: 评论CSV有效但某子集仅8条\n- Therapist/Output: 告警：子集数据量偏低（8条），继续处理\n- Notes: 低量告警后继续",
+    "asset_type": "safety_rule",
+    "granularity": "session",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保输入数据合法完整，非法输入被阻断并上报",
+    "domain": "商品目录运营",
+    "task_family": "数据质量门控",
+    "method_family": "校验与阻断规则",
+    "stage": "数据接入",
+    "applicable_signals": [
+      "开始处理目录或评论数据前",
+      "需要判断输入是否可继续下游流程"
+    ],
+    "contraindications": [
+      "数据已通过校验且无需重复检查",
+      "仅做语义判断不涉及输入合法性"
+    ],
+    "intervention_moves": [
+      "校验目录JSON可解析且数组长度符合预期",
+      "逐条校验SKU字段齐全且category属于允许集合",
+      "校验评论CSV可解析、必需列齐全、分类取值严格受限",
+      "无效输入时阻断并上报明确状态与问题说明",
+      "低量输入时告警并继续"
+    ],
+    "triggers": [
+      "开始处理目录或评论数据前",
+      "需要判断输入是否可继续下游流程",
+      "数据接入阶段的质量门控"
+    ],
+    "workflow_steps": [
+      "校验目录JSON可解析，数组长度符合预期",
+      "逐条校验SKU字段齐全，category ∈ {tops, bottoms, outerwear}",
+      "校验评论CSV可解析，必需列齐全，分类取值严格受限",
+      "任一输入无效则阻断并上报编排方，附明确状态与问题说明",
+      "输入有效但任一子集数据量偏低（如少于10条）则告警并继续"
+    ],
+    "constraints": [
+      "类别取值必须严格属于允许集合",
+      "分类取值必须严格受限于约定取值",
+      "无效输入必须阻断，不得静默继续",
+      "低量仅告警，不阻断"
+    ],
+    "cautions": [
+      "不得将低量告警误判为阻断",
+      "不得在未完成校验前放行下游流程"
+    ],
+    "output_contract": [
+      "输出通过/阻断状态及问题说明，或低量告警"
+    ],
+    "examples": [
+      {
+        "input": "目录JSON无法解析",
+        "output": "阻断：目录JSON解析失败，已上报编排方",
+        "notes": "无效输入必须阻断"
+      },
+      {
+        "input": "评论CSV有效但某子集仅8条",
+        "output": "告警：子集数据量偏低（8条），继续处理",
+        "notes": "低量告警后继续"
+      }
+    ],
+    "tags": [
+      "数据质量",
+      "输入校验",
+      "门控",
+      "阻断上报",
+      "数据接入"
+    ],
+    "support_ids": [
+      "190db8e5-fb5d-51a7-b2ff-8dbb0e129f95"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "cffba9bb-2b2f-53a9-8fee-3d262c6f87f3"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|session|safety_rule_node|确保输入数据合法完整，非法输入被阻断并上报|商品目录运营|数据质量门控|校验与阻断规则|数据接入|输入数据质量校验与阻断"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

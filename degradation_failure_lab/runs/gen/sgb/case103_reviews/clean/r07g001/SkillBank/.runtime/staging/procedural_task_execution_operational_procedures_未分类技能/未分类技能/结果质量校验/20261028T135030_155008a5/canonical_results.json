@@ -1,0 +1,300 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "结果质量校验",
+  "run_id": "20261028T135030_155008a5",
+  "skills": [
+    {
+      "skill_id": "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0",
+      "name": "SKU计数逻辑一致性校验",
+      "description": "对按SKU聚合的评论计数结果执行逻辑一致性检查，识别总量异常、同类别SKU计数分布失衡或全零计数等疑似语义匹配错误；用于计数结果产出后的质量把关阶段。",
+      "skill_body": "在已获得按SKU的评论计数聚合结果后，执行逻辑一致性校验：检查总量量级是否合理、同类别SKU计数分布是否失衡、是否存在全零计数，并输出标注异常项的校验结论。\n\n## Objective\n\n验证SKU计数结果的逻辑合理性并标记疑似错误\n## Applicable Signals\n\n- 已生成按SKU的评论计数结果\n- 计数结果需要在下游使用前确认可信度\n\n## Contraindications\n\n- 尚未生成任何计数结果\n- 仅需做语义相似度判断而非计数校验\n\n## Intervention Moves\n\n- 核对各SKU计数总和与过滤后评论总数的量级关系\n- 比较同类别SKU之间的计数范围是否相近\n- 检查是否存在全部SKU计数为零的情况\n- 对疑似异常项进行语义质量抽查\n\n## Workflow Steps\n\n- 确认输入为已完成的按SKU评论计数聚合结果\n- 检查总量：各SKU计数总和不应超过过滤后评论总数，因评论可对应多个SKU，总量可超出但量级应合理\n- 检查分布：同类别SKU的计数范围应相近，除非描述可解释显著差异\n- 检查非零性：至少部分SKU应有非零计数；若全部SKU为零，则疑似语义匹配错误\n- 对疑似异常项进行语义质量抽查\n- 汇总并标注异常项，输出校验结论\n\n## Constraints\n\n- 校验对象必须是已产出的计数结果\n- 总量超出评论总数本身不构成错误，需结合量级合理性判断\n\n## Cautions\n\n- 全部SKU计数为零是语义匹配错误的强信号\n- 同类别计数差异需结合SKU描述判断是否合理，不可仅凭差异直接判错\n\n## Output Contract\n\n- 一份标注了异常项（总量失衡、分布异常、全零）的校验结论",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "3350a33c-d6b2-5fdf-8f8e-c122b1618d1f"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "验证SKU计数结果的逻辑合理性并标记疑似错误",
+      "domain": "运营数据处理",
+      "task_family": "结果质量校验",
+      "method_family": "逻辑一致性检查",
+      "stage": "产出后校验",
+      "applicable_signals": [
+        "已生成按SKU的评论计数结果",
+        "计数结果需要在下游使用前确认可信度"
+      ],
+      "contraindications": [
+        "尚未生成任何计数结果",
+        "仅需做语义相似度判断而非计数校验"
+      ],
+      "intervention_moves": [
+        "核对各SKU计数总和与过滤后评论总数的量级关系",
+        "比较同类别SKU之间的计数范围是否相近",
+        "检查是否存在全部SKU计数为零的情况",
+        "对疑似异常项进行语义质量抽查"
+      ],
+      "triggers": [
+        "已完成按SKU的评论计数聚合",
+        "需要判断计数结果是否可信"
+      ],
+      "workflow_steps": [
+        "确认输入为已完成的按SKU评论计数聚合结果",
+        "检查总量：各SKU计数总和不应超过过滤后评论总数，因评论可对应多个SKU，总量可超出但量级应合理",
+        "检查分布：同类别SKU的计数范围应相近，除非描述可解释显著差异",
+        "检查非零性：至少部分SKU应有非零计数；若全部SKU为零，则疑似语义匹配错误",
+        "对疑似异常项进行语义质量抽查",
+        "汇总并标注异常项，输出校验结论"
+      ],
+      "constraints": [
+        "校验对象必须是已产出的计数结果",
+        "总量超出评论总数本身不构成错误，需结合量级合理性判断"
+      ],
+      "cautions": [
+        "全部SKU计数为零是语义匹配错误的强信号",
+        "同类别计数差异需结合SKU描述判断是否合理，不可仅凭差异直接判错"
+      ],
+      "output_contract": [
+        "一份标注了异常项（总量失衡、分布异常、全零）的校验结论"
+      ],
+      "examples": [],
+      "tags": [
+        "计数校验",
+        "逻辑一致性",
+        "质量把关",
+        "SKU聚合"
+      ],
+      "support_ids": [
+        "dd1f2b7a-de86-5fce-b1aa-a202d201a5ec"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "e8b36531-c363-582a-bac9-2593259b29c0"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|验证sku计数结果的逻辑合理性并标记疑似错误|运营数据处理|结果质量校验|逻辑一致性检查|产出后校验|sku计数逻辑一致性校验",
+        "change_action": "create",
+        "llm_reason": "候选技能是独立的产出后逻辑一致性校验能力，与同批的语义匹配、情感计数、约束优化选品技能在阶段与目标上均不重叠，且支持证据明确、无冲突，应保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "3350a33c-d6b2-5fdf-8f8e-c122b1618d1f"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "3350a33c-d6b2-5fdf-8f8e-c122b1618d1f",
+      "name": "语义匹配结果抽样质量检查",
+      "description": "在语义匹配完成后、正式交付前，对匹配输出进行抽样抽查，快速评估匹配质量是否达标，并给出质量判定结论。",
+      "skill_body": "对语义匹配输出执行抽样抽查：从匹配结果中抽取样本，逐条核对匹配是否合理，记录抽查发现，并给出质量是否达标的判定结论。仅做抽样评估，不做全量逐条核验。\n\n## Objective\n\n通过抽样抽查确认语义匹配质量\n## Applicable Signals\n\n- 语义匹配输出已生成\n- 进入交付前质量抽检环节\n- 需要快速判断匹配准确性是否达标\n\n## Contraindications\n\n- 语义匹配尚未执行\n- 需要全量逐条核验而非抽样\n\n## Intervention Moves\n\n- 从语义匹配结果中抽取样本\n- 逐条核对样本匹配是否合理\n- 记录抽查发现\n- 给出质量是否达标的判定结论\n\n## Workflow Steps\n\n- 确认语义匹配已完成并取得匹配输出\n- 抽取样本进行抽查\n- 逐条核对样本的匹配合理性\n- 记录抽查发现\n- 给出质量判定结论\n\n## Constraints\n\n- 仅做抽样抽查，不替代全量核验\n- 须在语义匹配完成后执行\n\n## Cautions\n\n- 抽样结果仅代表样本范围，不能直接推断全量质量\n\n## Output Contract\n\n- 抽样检查记录及质量判定结论\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 语义匹配已完成，需在交付前快速评估匹配准确性\n- Therapist/Output: 抽样检查记录及质量判定结论\n- Notes: 仅抽样抽查，不做全量逐条核验",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0",
+      "parent_candidate_ids": [
+        "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.82,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "通过抽样抽查确认语义匹配质量",
+      "domain": "运营数据处理",
+      "task_family": "结果质量校验",
+      "method_family": "抽样抽查",
+      "stage": "产出后校验",
+      "applicable_signals": [
+        "语义匹配输出已生成",
+        "进入交付前质量抽检环节",
+        "需要快速判断匹配准确性是否达标"
+      ],
+      "contraindications": [
+        "语义匹配尚未执行",
+        "需要全量逐条核验而非抽样"
+      ],
+      "intervention_moves": [
+        "从语义匹配结果中抽取样本",
+        "逐条核对样本匹配是否合理",
+        "记录抽查发现",
+        "给出质量是否达标的判定结论"
+      ],
+      "triggers": [
+        "语义匹配已完成",
+        "需要快速评估匹配准确性",
+        "正式交付前的质量抽检环节"
+      ],
+      "workflow_steps": [
+        "确认语义匹配已完成并取得匹配输出",
+        "抽取样本进行抽查",
+        "逐条核对样本的匹配合理性",
+        "记录抽查发现",
+        "给出质量判定结论"
+      ],
+      "constraints": [
+        "仅做抽样抽查，不替代全量核验",
+        "须在语义匹配完成后执行"
+      ],
+      "cautions": [
+        "抽样结果仅代表样本范围，不能直接推断全量质量"
+      ],
+      "output_contract": [
+        "抽样检查记录及质量判定结论"
+      ],
+      "examples": [
+        {
+          "input": "语义匹配已完成，需在交付前快速评估匹配准确性",
+          "output": "抽样检查记录及质量判定结论",
+          "notes": "仅抽样抽查，不做全量逐条核验"
+        }
+      ],
+      "tags": [
+        "质量校验",
+        "抽样抽查",
+        "语义匹配",
+        "产出后校验"
+      ],
+      "support_ids": [
+        "ba475eac-99a9-545c-9b2f-89d38d39920f"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "76e64243-3cdb-5cfe-b955-1198e72016e9"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.6,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|通过抽样抽查确认语义匹配质量|运营数据处理|结果质量校验|抽样抽查|产出后校验|语义匹配结果抽样质量检查",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0",
+        "parent_candidate_ids": [
+          "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0"
+        ],
+        "hierarchy_confidence": 0.82,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "796c0a75-e782-4dba-9d71-2e1c13da2022",
+      "entity_type": "skill",
+      "entity_id": "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是独立的产出后逻辑一致性校验能力，与同批的语义匹配、情感计数、约束优化选品技能在阶段与目标上均不重叠，且支持证据明确、无冲突，应保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "ad537d3f-8dab-5dd3-a8d9-41c8ac4abfb0",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "dd1f2b7a-de86-5fce-b1aa-a202d201a5ec"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "a687451a-059a-45bb-b473-13ea92e27220",
+      "entity_type": "skill",
+      "entity_id": "3350a33c-d6b2-5fdf-8f8e-c122b1618d1f",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3350a33c-d6b2-5fdf-8f8e-c122b1618d1f",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "ba475eac-99a9-545c-9b2f-89d38d39920f"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "skill_id": "3697a04c-0fec-56b7-8448-1c44e3349e5e",
+  "name": "Before 校验器安全实现",
+  "description": "在 Pydantic 中实现 before 模式校验器：在内部解析与校验之前处理原始输入，并避免在校验失败前直接修改值，防止变更值流入其他校验器（如 unions）。适用于需要处理原始输入且校验器可能抛出校验错误的场景。",
+  "skill_body": "实现 before 校验器时，先确认需求必须在 Pydantic 内部解析前处理原始输入；函数接收原始输入（理论上可为任意对象），需自行处理类型不确定性。若后续可能抛出校验错误，避免直接原地修改值，改为返回新值或在校验通过后再变更，以防变更值流入其他校验器（如 unions）。返回的值将由 Pydantic 依据类型注解再次校验。\n\n## Objective\n\n安全地实现 before 校验器，避免副作用污染后续校验\n## Applicable Signals\n\n- 需要绕过或先于 Pydantic 内部解析与校验（如 str 到 int 的强制转换）处理输入\n- 校验逻辑需面对任意原始对象类型\n- 校验函数内可能抛出校验错误且涉及值变更\n\n## Contraindications\n\n- after 校验器已能满足需求\n- 无需处理原始输入类型\n\n## Intervention Moves\n\n- 确认使用 before 模式而非默认 after 模式\n- 在函数内处理原始输入的类型不确定性\n- 避免在校验失败前直接原地修改值\n- 返回新值交由类型注解再次校验\n\n## Workflow Steps\n\n- 判断是否必须在 Pydantic 内部解析前处理原始输入，否则改用 after 校验器\n- 编写 before 校验器函数，接收原始输入并处理其类型不确定性\n- 若函数后续可能抛出校验错误，避免直接原地修改值，改为返回新值\n- 返回结果，由 Pydantic 依据类型注解再次校验\n\n## Constraints\n\n- before 校验器运行于 Pydantic 内部解析与校验之前\n- 返回的值必须能通过类型注解的再次校验\n- 避免在校验失败前直接修改值，以防变更值流入其他校验器（如 unions）\n\n## Cautions\n\n- before 校验器比 after 校验器更灵活，但需处理任意原始输入对象\n- 在 unions 场景下，被修改的值可能传递给其他校验器，需格外谨慎\n\n## Output Contract\n\n- 返回经类型注解再次校验的值的 before 校验器函数\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要在 Pydantic 解析前处理原始输入，且校验器可能抛出校验错误\n- Therapist/Output: 实现 before 校验器：处理原始输入，避免在校验失败前原地修改值，返回新值交由类型注解再次校验\n- Notes: 若无需处理原始输入，应改用 after 校验器",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "安全地实现 before 校验器，避免副作用污染后续校验",
+  "domain": "pydantic",
+  "task_family": "数据校验",
+  "method_family": "before 校验器实现",
+  "stage": "实现",
+  "applicable_signals": [
+    "需要绕过或先于 Pydantic 内部解析与校验（如 str 到 int 的强制转换）处理输入",
+    "校验逻辑需面对任意原始对象类型",
+    "校验函数内可能抛出校验错误且涉及值变更"
+  ],
+  "contraindications": [
+    "after 校验器已能满足需求",
+    "无需处理原始输入类型"
+  ],
+  "intervention_moves": [
+    "确认使用 before 模式而非默认 after 模式",
+    "在函数内处理原始输入的类型不确定性",
+    "避免在校验失败前直接原地修改值",
+    "返回新值交由类型注解再次校验"
+  ],
+  "triggers": [
+    "需要在 Pydantic 内部解析前处理原始输入",
+    "校验器可能抛出校验错误且涉及值变更"
+  ],
+  "workflow_steps": [
+    "判断是否必须在 Pydantic 内部解析前处理原始输入，否则改用 after 校验器",
+    "编写 before 校验器函数，接收原始输入并处理其类型不确定性",
+    "若函数后续可能抛出校验错误，避免直接原地修改值，改为返回新值",
+    "返回结果，由 Pydantic 依据类型注解再次校验"
+  ],
+  "constraints": [
+    "before 校验器运行于 Pydantic 内部解析与校验之前",
+    "返回的值必须能通过类型注解的再次校验",
+    "避免在校验失败前直接修改值，以防变更值流入其他校验器（如 unions）"
+  ],
+  "cautions": [
+    "before 校验器比 after 校验器更灵活，但需处理任意原始输入对象",
+    "在 unions 场景下，被修改的值可能传递给其他校验器，需格外谨慎"
+  ],
+  "output_contract": [
+    "返回经类型注解再次校验的值的 before 校验器函数"
+  ],
+  "examples": [
+    {
+      "input": "需要在 Pydantic 解析前处理原始输入，且校验器可能抛出校验错误",
+      "output": "实现 before 校验器：处理原始输入，避免在校验失败前原地修改值，返回新值交由类型注解再次校验",
+      "notes": "若无需处理原始输入，应改用 after 校验器"
+    }
+  ],
+  "tags": [
+    "pydantic",
+    "before-validator",
+    "数据校验",
+    "副作用防护"
+  ],
+  "support_ids": [
+    "1357f09a-b5c0-5879-b48e-cea9442a8913"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "92c156c7-926f-502c-a733-28d304319900"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.65,
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "pydantic::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|安全地实现 before 校验器，避免副作用污染后续校验|pydantic|数据校验|before 校验器实现|实现|before 校验器安全实现",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

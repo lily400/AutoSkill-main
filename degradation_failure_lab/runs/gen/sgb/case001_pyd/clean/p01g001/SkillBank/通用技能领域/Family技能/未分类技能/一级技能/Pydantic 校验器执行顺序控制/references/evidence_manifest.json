@@ -1,0 +1,73 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-28T05:05:22+00:00",
+  "family_name": "未分类技能",
+  "skill_id": "3f2908c2-5e45-53d0-8741-3e78c412be38",
+  "skill_name": "Pydantic 校验器执行顺序控制",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "7346aadc-b010-5048-980e-caf4c4da45d8",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "document_title": "input001\\validators.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 5464,
+        "end": 6382
+      },
+      "relation_type": "support",
+      "confidence": 0.75,
+      "quote": "print(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n\n```\nfrom typing import Any",
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 校验器执行顺序控制",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "正确安排多个校验器的执行顺序",
+        "task_family": "数据校验",
+        "method_family": "校验器排序",
+        "stage": "设计",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "cdb29ce3-dcec-5069-b556-9f30dbb0afbd",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 46,
+        "paragraph_end": 48,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    }
+  ]
+}

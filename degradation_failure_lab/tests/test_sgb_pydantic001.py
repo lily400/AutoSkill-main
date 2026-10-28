@@ -31,7 +31,7 @@ class PydanticDemo(unittest.TestCase):
     def test_rules_remain_analyst_annotations_and_paid_generation_is_blocked(self):
         bundle=CaseManager(LAB).load(CASE_ID)
         self.assertEqual(bundle['rules']['rules'][0]['annotation_status'],'analyst_checklist')
-        with self.assertRaisesRegex(RuntimeError,'execution gate'):
+        with self.assertRaisesRegex(RuntimeError,'BLOCKED'):
             ExperimentRunner(LAB).run(CASE_ID,'clean','p001never')
 
     def test_demo_refuses_invalid_or_existing_evidence_location(self):

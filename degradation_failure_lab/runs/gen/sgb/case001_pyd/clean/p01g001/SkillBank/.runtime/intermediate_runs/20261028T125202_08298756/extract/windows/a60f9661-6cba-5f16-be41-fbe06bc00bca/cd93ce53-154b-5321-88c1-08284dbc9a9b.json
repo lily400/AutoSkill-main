@@ -1,0 +1,563 @@
+{
+  "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+  "title": "input001\\validators.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+  "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+  "section_heading": "# Validators",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "f7fca6c2-0c39-5b21-9a0a-5ad91201fdeb",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 14017,
+        "end": 14766
+      },
+      "excerpt": "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n\n@model_validator(mode='after')\n    def check_passwords_match(self) -> Self:\n        if self.password != self.password_repeat:\n            raise ValueError('Passwords do not match')\n        return self\n```\n- ***Before* validators**: are run before the model is instantiated. These are more flexible than *after* validators,\n but they also have to deal with the raw input, which in theory could be any arbitrary object. You should also avoid\n mutating the value directly if you are raising a validation error later in your validator\n function, as the mutated value may be passed to other validators if using [unions](../unions/).\n\n```\nfrom typing import Any",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 模型级跨字段校验器",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误",
+        "task_family": "数据校验",
+        "method_family": "模型校验器",
+        "stage": "模型定义",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 33,
+        "paragraph_end": 35,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:55:36+00:00"
+    },
+    {
+      "support_id": "7c9695ed-392b-5e94-96e8-c1947590b121",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 14017,
+        "end": 14766
+      },
+      "excerpt": "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n\n@model_validator(mode='after')\n    def check_passwords_match(self) -> Self:\n        if self.password != self.password_repeat:\n            raise ValueError('Passwords do not match')\n        return self\n```\n- ***Before* validators**: are run before the model is instantiated. These are more flexible than *after* validators,\n but they also have to deal with the raw input, which in theory could be any arbitrary object. You should also avoid\n mutating the value directly if you are raising a validation error later in your validator\n function, as the mutated value may be passed to other validators if using [unions](../unions/).\n\n```\nfrom typing import Any",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 字段校验器模式选择",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "指导字段校验器在 annotated 与 decorator 两种模式间的选择与使用",
+        "task_family": "数据校验",
+        "method_family": "字段校验器",
+        "stage": "模型定义",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 33,
+        "paragraph_end": 35,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:55:36+00:00"
+    },
+    {
+      "support_id": "43d03a28-6070-5e7c-a6c6-78da780d4613",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 14017,
+        "end": 14766
+      },
+      "excerpt": "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n\n@model_validator(mode='after')\n    def check_passwords_match(self) -> Self:\n        if self.password != self.password_repeat:\n            raise ValueError('Passwords do not match')\n        return self\n```\n- ***Before* validators**: are run before the model is instantiated. These are more flexible than *after* validators,\n but they also have to deal with the raw input, which in theory could be any arbitrary object. You should also avoid\n mutating the value directly if you are raising a validation error later in your validator\n function, as the mutated value may be passed to other validators if using [unions](../unions/).\n\n```\nfrom typing import Any",
+      "relation_type": "constraint",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic before 校验器安全变异约束",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "防止 before 校验器中不安全的值变异导致副作用传播",
+        "task_family": "数据校验",
+        "method_family": "校验器约束",
+        "stage": "模型定义",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 3,
+        "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 33,
+        "paragraph_end": 35,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:55:36+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "dfa65445-0c8f-5133-ae69-5eedd6bba9af",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic 模型级跨字段校验器",
+      "description": "使用 model_validator(mode='after') 在模型实例化后校验同一模型内多个字段之间的一致性，不一致时抛出 ValueError。适用于字段级约束无法表达的跨字段逻辑。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "模型校验器",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "模型包含两个及以上需相互比较的字段",
+        "单字段约束无法覆盖的依赖关系"
+      ],
+      "contraindications": [
+        "仅需单字段约束时",
+        "需要在实例化前处理原始输入时（应使用 before 校验器）"
+      ],
+      "intervention_moves": [
+        "声明 @model_validator(mode='after') 方法",
+        "在方法内比较相关字段值",
+        "不一致时 raise ValueError 并说明原因",
+        "校验通过时 return self"
+      ],
+      "workflow_steps": [
+        "确认跨字段一致性需求无法由字段级约束表达",
+        "在模型类中定义 mode='after' 的 model_validator 方法",
+        "在方法内读取并比较相关字段",
+        "不一致时抛出 ValueError 并给出明确错误信息",
+        "校验通过时返回 self"
+      ],
+      "triggers": [
+        "需要比较同一模型内多个字段的值",
+        "字段级约束无法表达跨字段逻辑",
+        "需要在模型实例化后校验字段一致性"
+      ],
+      "constraints": [
+        "after 校验器在模型实例化后运行，操作的是已解析的字段值",
+        "校验失败必须抛出 ValueError 以触发验证错误"
+      ],
+      "cautions": [
+        "before 校验器处理原始输入，若在 before 中直接修改值后又抛出验证错误，被修改的值可能传递给其他校验器（如使用 unions 时），应避免"
+      ],
+      "output_contract": [
+        "返回 self 的 after 模型校验器，校验失败时抛出 ValueError"
+      ],
+      "examples": [
+        {
+          "input": "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str",
+          "output": "@model_validator(mode='after')\ndef check_passwords_match(self) -> Self:\n    if self.password != self.password_repeat:\n        raise ValueError('Passwords do not match')\n    return self",
+          "notes": "跨字段一致性校验示例"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "f7fca6c2-0c39-5b21-9a0a-5ad91201fdeb"
+      ],
+      "metadata": {
+        "prompt": "在模型定义中声明一个 mode='after' 的 model_validator，接收已实例化的模型自身，比较相关字段值；若不一致则抛出 ValueError 并给出清晰错误信息；校验通过时返回 self。",
+        "tags": [
+          "pydantic",
+          "model_validator",
+          "跨字段校验",
+          "数据校验"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 33,
+        "paragraph_end": 35,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    },
+    {
+      "draft_id": "b01fe6b7-3da6-52c0-a23c-377566afa8b3",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic 字段校验器模式选择",
+      "description": "指导在 annotated 模式与 decorator 模式之间选择字段校验器实现方式，并遵循对应写法；适用于为单个字段添加自定义校验逻辑时。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "指导字段校验器在 annotated 与 decorator 两种模式间的选择与使用",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "字段校验器",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "需要为单个字段添加自定义校验",
+        "不确定选用 annotated 还是 decorator 模式"
+      ],
+      "contraindications": [
+        "需要跨字段校验时",
+        "需要实例化前处理原始输入时"
+      ],
+      "intervention_moves": [
+        "判断校验范围是否为单个字段",
+        "在 annotated 模式与 decorator 模式之间做出选择",
+        "按所选模式实现字段校验器"
+      ],
+      "workflow_steps": [
+        "确认校验目标为单个字段的自定义校验逻辑",
+        "根据需求在 annotated 模式与 decorator 模式之间选择",
+        "按所选模式实现字段校验器"
+      ],
+      "triggers": [
+        "需要为单个字段添加自定义校验",
+        "不确定选用 annotated 还是 decorator 模式"
+      ],
+      "constraints": [
+        "仅适用于单字段自定义校验",
+        "跨字段校验应使用模型校验器而非字段校验器"
+      ],
+      "cautions": [
+        "若需求涉及跨字段比较或实例化前处理原始输入，应改用其他校验器类型"
+      ],
+      "output_contract": [
+        "选定并实现的字段校验器模式"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "7c9695ed-392b-5e94-96e8-c1947590b121"
+      ],
+      "metadata": {
+        "prompt": "当需要为单个字段添加自定义校验逻辑时，先判断应使用 annotated 模式还是 decorator 模式，再按所选模式实现字段校验器。仅处理单字段校验；跨字段校验或实例化前处理原始输入的需求不属于本技能范围。",
+        "tags": [
+          "pydantic",
+          "字段校验器",
+          "模式选择",
+          "annotated",
+          "decorator"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 33,
+        "paragraph_end": 35,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    },
+    {
+      "draft_id": "f0850c7e-9033-500b-b37f-b5cf8a9ea3f3",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic before 校验器安全变异约束",
+      "description": "在编写 Pydantic before 校验器时，约束对原始输入的直接变异行为：若校验器后续可能抛出验证错误，应避免直接变异值，以防变异后的值经 union 等路径传递给其他校验器产生副作用。适用于编写或审查 before 校验器的场景。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止 before 校验器中不安全的值变异导致副作用传播",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "校验器约束",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "正在编写 before 校验器",
+        "校验器内可能后续抛出验证错误",
+        "输入值可能经 union 传递给其他校验器"
+      ],
+      "contraindications": [
+        "after 校验器中已实例化的安全场景",
+        "校验器不会抛出验证错误且无 union 传播风险的就地变异"
+      ],
+      "intervention_moves": [
+        "识别 before 校验器中的错误抛出路径",
+        "避免直接变异原始输入值",
+        "改用副本或返回新值以隔离变异",
+        "在 union 场景下确认变异不会泄漏"
+      ],
+      "workflow_steps": [
+        "确认校验器为 before 模式",
+        "检查是否存在后续抛出验证错误的路径",
+        "若存在则避免直接变异输入值，改用副本或返回新值",
+        "在 union 场景下验证变异不会传递给其他校验器",
+        "输出符合约束的实现或审查结论"
+      ],
+      "triggers": [
+        "编写 before 校验器",
+        "审查 before 校验器中的值变异",
+        "校验器内存在后续可能抛出验证错误的路径",
+        "使用 union 且涉及 before 校验器变异"
+      ],
+      "constraints": [
+        "仅在 before 校验器场景应用",
+        "存在后续错误抛出路径时不得直接变异原始输入",
+        "需考虑 union 下变异值可能传递给其他校验器"
+      ],
+      "cautions": [
+        "before 校验器处理的是任意原始输入，需谨慎对待类型",
+        "就地变异在 union 场景下可能产生难以追踪的副作用"
+      ],
+      "output_contract": [
+        "未发生不安全变异的 before 校验器实现，或针对现有 before 校验器的变异安全审查结论"
+      ],
+      "examples": [],
+      "risk_class": "medium",
+      "confidence": 0.75,
+      "support_ids": [
+        "43d03a28-6070-5e7c-a6c6-78da780d4613"
+      ],
+      "metadata": {
+        "prompt": "在编写或审查 before 校验器时执行以下约束检查：\n1. 确认当前校验器为 before 模式（在模型实例化之前运行，处理原始输入）。\n2. 判断校验器内是否存在后续可能抛出验证错误的路径。\n3. 若存在该路径，避免直接变异输入值；改为基于副本或返回新值，确保变异不会泄漏到其他校验器（尤其是 union 场景）。\n4. 若确需变异且不会抛出错误，方可就地修改，并说明理由。\n5. 输出符合约束的 before 校验器实现或审查结论。",
+        "tags": [
+          "pydantic",
+          "validator",
+          "before-validator",
+          "mutation-safety",
+          "union"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 33,
+        "paragraph_end": 35,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

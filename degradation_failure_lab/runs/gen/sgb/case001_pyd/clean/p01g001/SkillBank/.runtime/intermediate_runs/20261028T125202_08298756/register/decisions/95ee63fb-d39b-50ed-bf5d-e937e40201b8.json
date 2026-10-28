@@ -1,0 +1,104 @@
+{
+  "skill_id": "95ee63fb-d39b-50ed-bf5d-e937e40201b8",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批 peer 候选（尤其是 0166b7ef 的 Pydantic 验证器模式选型与实现）高度重叠，后者已覆盖字段/模型校验器选择及 annotated/decorator 模式选型，且本候选仅停留在决策层面、缺少可执行实现细节，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "95ee63fb-d39b-50ed-bf5d-e937e40201b8",
+    "name": "校验器模式选择",
+    "description": "根据校验需求在 annotated 模式与 decorator 模式之间选择，并决定使用字段校验器还是模型校验器，产出校验器模式与类型的决策结果。",
+    "skill_body": "先明确校验需求：校验作用于单个字段还是整个模型、是否需要访问已校验数据或用户上下文、是否需要改变字段值。据此选择字段校验器或模型校验器，再在 annotated 模式与 decorator 模式之间选择，并说明选择理由与后续实现要点。\n\n## Objective\n\n为给定校验需求选定合适的校验器模式与类型\n## Applicable Signals\n\n- 校验需求仅涉及单个字段\n- 校验需求涉及跨字段或整个模型\n- 需要访问已校验数据、用户上下文或校验模式信息\n- 需要在校验中改变字段值\n\n## Contraindications\n\n- 已有明确指定的校验器模式\n\n## Intervention Moves\n\n- 判断校验作用范围以选择字段校验器或模型校验器\n- 在 annotated 模式与 decorator 模式之间选择\n- 说明所选模式的理由与实现要点\n\n## Workflow Steps\n\n- 明确校验目标：作用对象是单字段还是整个模型。\n- 若需访问已校验数据、用户上下文或校验模式信息，考虑使用 ValidationInfo。\n- 若校验需改变字段值，选择支持值变更的校验器模式。\n- 在 annotated 模式与 decorator 模式之间选择，并记录理由。\n- 输出校验器类型与模式的决策结果及实现要点。\n\n## Constraints\n\n- 决策须与校验需求的作用范围一致\n- 不得在已有明确指定模式时重新选择\n\n## Cautions\n\n- 字段校验器可通过 ValidationInfo.data 访问已校验数据，可作为 after 模型校验器的替代方案\n\n## Output Contract\n\n- 选定校验器模式与类型的决策结果，包含字段校验器或模型校验器的选择、annotated 或 decorator 模式的选择及理由。",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为给定校验需求选定合适的校验器模式与类型",
+    "domain": "pydantic",
+    "task_family": "数据校验",
+    "method_family": "校验器模式选择",
+    "stage": "校验设计",
+    "applicable_signals": [
+      "校验需求仅涉及单个字段",
+      "校验需求涉及跨字段或整个模型",
+      "需要访问已校验数据、用户上下文或校验模式信息",
+      "需要在校验中改变字段值"
+    ],
+    "contraindications": [
+      "已有明确指定的校验器模式"
+    ],
+    "intervention_moves": [
+      "判断校验作用范围以选择字段校验器或模型校验器",
+      "在 annotated 模式与 decorator 模式之间选择",
+      "说明所选模式的理由与实现要点"
+    ],
+    "triggers": [
+      "需要新增校验逻辑但不确定用哪种校验器模式",
+      "在字段校验器与模型校验器之间做取舍"
+    ],
+    "workflow_steps": [
+      "明确校验目标：作用对象是单字段还是整个模型。",
+      "若需访问已校验数据、用户上下文或校验模式信息，考虑使用 ValidationInfo。",
+      "若校验需改变字段值，选择支持值变更的校验器模式。",
+      "在 annotated 模式与 decorator 模式之间选择，并记录理由。",
+      "输出校验器类型与模式的决策结果及实现要点。"
+    ],
+    "constraints": [
+      "决策须与校验需求的作用范围一致",
+      "不得在已有明确指定模式时重新选择"
+    ],
+    "cautions": [
+      "字段校验器可通过 ValidationInfo.data 访问已校验数据，可作为 after 模型校验器的替代方案"
+    ],
+    "output_contract": [
+      "选定校验器模式与类型的决策结果，包含字段校验器或模型校验器的选择、annotated 或 decorator 模式的选择及理由。"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "校验器",
+      "模式选择",
+      "校验设计"
+    ],
+    "support_ids": [
+      "6710974f-51fd-559b-881e-0c1cc5cbe726"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "6f66d302-bef5-5a36-bec0-85557a523537"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|为给定校验需求选定合适的校验器模式与类型|pydantic|数据校验|校验器模式选择|校验设计|校验器模式选择"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,2198 @@
+[
+  {
+    "window_id": "d903145f-e0c5-5a1c-b936-de0e81914723",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 0,
+      "end": 35
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 1,
+        "text": "# TypeAdapter - Pydantic Validation"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "48ce8e45-1cd8-5985-91f4-e88d35530bdc",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 51,
+      "end": 7502
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 5,
+        "text": "Bases: `Generic[T]`"
+      },
+      {
+        "input_line": 7,
+        "text": "[`TypeAdapter`](../../concepts/type_adapter/)"
+      },
+      {
+        "input_line": 9,
+        "text": "Type adapters provide a flexible way to perform validation and serialization based on a Python type."
+      },
+      {
+        "input_line": 11,
+        "text": "A `TypeAdapter` instance exposes some of the functionality from `BaseModel` instance methods"
+      },
+      {
+        "input_line": 12,
+        "text": "for types that do not have such methods (such as dataclasses, primitive types, and more)."
+      },
+      {
+        "input_line": 14,
+        "text": "**Note:** `TypeAdapter` instances are not types, and cannot be used as type annotations for fields."
+      },
+      {
+        "input_line": 16,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 25,
+        "text": "Attributes:"
+      },
+      {
+        "input_line": 34,
+        "text": "Compatibility with `mypy`"
+      },
+      {
+        "input_line": 36,
+        "text": "Depending on the type used, `mypy` might raise an error when instantiating a `TypeAdapter`. As a workaround, you can explicitly"
+      },
+      {
+        "input_line": 37,
+        "text": "annotate your variable:"
+      },
+      {
+        "input_line": 39,
+        "text": "```"
+      },
+      {
+        "input_line": 40,
+        "text": "from typing import Union"
+      },
+      {
+        "input_line": 42,
+        "text": "from pydantic import TypeAdapter"
+      },
+      {
+        "input_line": 44,
+        "text": "ta: TypeAdapter[Union[str, int]] = TypeAdapter(Union[str, int])  # type: ignore[arg-type]"
+      },
+      {
+        "input_line": 45,
+        "text": "```"
+      },
+      {
+        "input_line": 47,
+        "text": "Namespace management nuances and implementation details"
+      },
+      {
+        "input_line": 49,
+        "text": "Here, we collect some notes on namespace management, and subtle differences from `BaseModel`:"
+      },
+      {
+        "input_line": 57,
+        "text": "It is expected that the `ns_resolver` passed to this function will have the correct"
+      },
+      {
+        "input_line": 58,
+        "text": "namespace for the type we're adapting. See the source code for `TypeAdapter.__init__`"
+      },
+      {
+        "input_line": 59,
+        "text": "and `TypeAdapter.rebuild` for various ways to construct this namespace."
+      },
+      {
+        "input_line": 61,
+        "text": "This works for the case where this function is called in a module that"
+      },
+      {
+        "input_line": 62,
+        "text": "has the target of forward references in its scope, but"
+      },
+      {
+        "input_line": 63,
+        "text": "does not always work for more complex cases."
+      },
+      {
+        "input_line": 65,
+        "text": "For example, take the following:"
+      },
+      {
+        "input_line": 67,
+        "text": "a.py"
+      },
+      {
+        "input_line": 68,
+        "text": "```"
+      },
+      {
+        "input_line": 69,
+        "text": "IntList = list[int]"
+      },
+      {
+        "input_line": 70,
+        "text": "OuterDict = dict[str, 'IntList']"
+      },
+      {
+        "input_line": 71,
+        "text": "```"
+      },
+      {
+        "input_line": 73,
+        "text": "b.py"
+      },
+      {
+        "input_line": 74,
+        "text": "```"
+      },
+      {
+        "input_line": 75,
+        "text": "from a import OuterDict"
+      },
+      {
+        "input_line": 77,
+        "text": "from pydantic import TypeAdapter"
+      },
+      {
+        "input_line": 79,
+        "text": "IntList = int  # replaces the symbol the forward reference is looking for"
+      },
+      {
+        "input_line": 80,
+        "text": "v = TypeAdapter(OuterDict)"
+      },
+      {
+        "input_line": 81,
+        "text": "v({'x': 1})  # should fail but doesn't"
+      },
+      {
+        "input_line": 82,
+        "text": "```"
+      },
+      {
+        "input_line": 84,
+        "text": "If `OuterDict` were a `BaseModel`, this would work because it would resolve"
+      },
+      {
+        "input_line": 85,
+        "text": "the forward reference within the `a.py` namespace."
+      },
+      {
+        "input_line": 86,
+        "text": "But `TypeAdapter(OuterDict)` can't determine what module `OuterDict` came from."
+      },
+      {
+        "input_line": 94,
+        "text": "But at the very least this behavior is *subtly* different from `BaseModel`'s."
+      },
+      {
+        "input_line": 96,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      },
+      {
+        "input_line": 101,
+        "text": "## rebuild"
+      },
+      {
+        "input_line": 103,
+        "text": "```"
+      },
+      {
+        "input_line": 104,
+        "text": "rebuild("
+      },
+      {
+        "input_line": 105,
+        "text": "    *,"
+      },
+      {
+        "input_line": 106,
+        "text": "    force: bool = False,"
+      },
+      {
+        "input_line": 107,
+        "text": "    raise_errors: bool = True,"
+      },
+      {
+        "input_line": 108,
+        "text": "    _parent_namespace_depth: int = 2,"
+      },
+      {
+        "input_line": 109,
+        "text": "    _types_namespace: MappingNamespace | None = None"
+      },
+      {
+        "input_line": 110,
+        "text": ") -> bool | None"
+      },
+      {
+        "input_line": 111,
+        "text": "```"
+      },
+      {
+        "input_line": 113,
+        "text": "Try to rebuild the pydantic-core schema for the adapter's type."
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "9734afd5-3279-5c49-8aff-cba8d56b5dd4",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 7504,
+      "end": 8804
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 115,
+        "text": "This may be necessary when one of the annotations is a ForwardRef which could not be resolved during"
+      },
+      {
+        "input_line": 116,
+        "text": "the initial attempt to build the schema, and automatic rebuilding fails."
+      },
+      {
+        "input_line": 118,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 127,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 129,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 130,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 131,
+        "text": "| `bool \\| None` | Returns `None` if the schema is already \"complete\" and rebuilding was not required. |"
+      },
+      {
+        "input_line": 132,
+        "text": "| `bool \\| None` | If rebuilding *was* required, returns `True` if rebuilding was successful, otherwise `False`. |"
+      },
+      {
+        "input_line": 134,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "2f3dab57-e790-540f-84ae-ccca1bae3999",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 11256,
+      "end": 17512
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 139,
+        "text": "## validate_python"
+      },
+      {
+        "input_line": 158,
+        "text": "Validate a Python object against the model."
+      },
+      {
+        "input_line": 160,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 173,
+        "text": "When using `TypeAdapter` with a Pydantic `dataclass`, the use of the `from_attributes`"
+      },
+      {
+        "input_line": 174,
+        "text": "argument is not supported."
+      },
+      {
+        "input_line": 176,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 178,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 179,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 180,
+        "text": "| `T` | The validated object. |"
+      },
+      {
+        "input_line": 182,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      },
+      {
+        "input_line": 187,
+        "text": "## validate_json"
+      },
+      {
+        "input_line": 205,
+        "text": "[JSON Parsing](../../concepts/json/#json-parsing)"
+      },
+      {
+        "input_line": 207,
+        "text": "Validate a JSON string or bytes against the model."
+      },
+      {
+        "input_line": 209,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 221,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 223,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 224,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 225,
+        "text": "| `T` | The validated object. |"
+      },
+      {
+        "input_line": 227,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "667007c2-0758-509f-95cd-4eae4744746a",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 19768,
+      "end": 27331
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 232,
+        "text": "## validate_strings"
+      },
+      {
+        "input_line": 250,
+        "text": "Validate object contains string data against the model."
+      },
+      {
+        "input_line": 252,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 264,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 266,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 267,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 268,
+        "text": "| `T` | The validated object. |"
+      },
+      {
+        "input_line": 270,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      },
+      {
+        "input_line": 275,
+        "text": "## get_default_value"
+      },
+      {
+        "input_line": 277,
+        "text": "```"
+      },
+      {
+        "input_line": 278,
+        "text": "get_default_value("
+      },
+      {
+        "input_line": 279,
+        "text": "    *,"
+      },
+      {
+        "input_line": 280,
+        "text": "    strict: bool | None = None,"
+      },
+      {
+        "input_line": 281,
+        "text": "    context: Any | None = None"
+      },
+      {
+        "input_line": 282,
+        "text": ") -> Some[T] | None"
+      },
+      {
+        "input_line": 283,
+        "text": "```"
+      },
+      {
+        "input_line": 285,
+        "text": "Get the default value for the wrapped type."
+      },
+      {
+        "input_line": 287,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 289,
+        "text": "| Name | Type | Description | Default |"
+      },
+      {
+        "input_line": 290,
+        "text": "| --- | --- | --- | --- |"
+      },
+      {
+        "input_line": 291,
+        "text": "| `strict` | `bool \\| None` | Whether to strictly check types. | `None` |"
+      },
+      {
+        "input_line": 292,
+        "text": "| `context` | `Any \\| None` | Additional context to pass to the validator. | `None` |"
+      },
+      {
+        "input_line": 294,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 296,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 297,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 298,
+        "text": "| `Some[T] \\| None` | The default value wrapped in a `Some` if there is one or None if not. |"
+      },
+      {
+        "input_line": 300,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      },
+      {
+        "input_line": 305,
+        "text": "## dump_python"
+      },
+      {
+        "input_line": 330,
+        "text": "Dump an instance of the adapted type to a Python object."
+      },
+      {
+        "input_line": 332,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 351,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 353,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 354,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 355,
+        "text": "| `Any` | The serialized object. |"
+      },
+      {
+        "input_line": 357,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "40d86d96-7ac7-50a4-8868-74c84487c4e8",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 30165,
+      "end": 36602
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 362,
+        "text": "## dump_json"
+      },
+      {
+        "input_line": 388,
+        "text": "[JSON Serialization](../../concepts/json/#json-serialization)"
+      },
+      {
+        "input_line": 390,
+        "text": "Serialize an instance of the adapted type to JSON."
+      },
+      {
+        "input_line": 392,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 412,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 414,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 415,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 416,
+        "text": "| `bytes` | The JSON representation of the given instance as bytes. |"
+      },
+      {
+        "input_line": 418,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      },
+      {
+        "input_line": 423,
+        "text": "## json_schema"
+      },
+      {
+        "input_line": 440,
+        "text": "Generate a JSON schema for the adapted type."
+      },
+      {
+        "input_line": 442,
+        "text": "Parameters:"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "5384f948-968b-5158-9b1f-8224365adf52",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 38018,
+      "end": 43207
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 127,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 129,
+        "text": "| Type | Description |"
+      },
+      {
+        "input_line": 130,
+        "text": "| --- | --- |"
+      },
+      {
+        "input_line": 458,
+        "text": "| `dict[str, Any]` | The JSON schema for the model as a dictionary. |"
+      },
+      {
+        "input_line": 460,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      },
+      {
+        "input_line": 465,
+        "text": "## json_schemas"
+      },
+      {
+        "input_line": 467,
+        "text": "`staticmethod`"
+      },
+      {
+        "input_line": 497,
+        "text": "Generate a JSON schema including definitions from multiple type adapters."
+      },
+      {
+        "input_line": 499,
+        "text": "Parameters:"
+      },
+      {
+        "input_line": 511,
+        "text": "Returns:"
+      },
+      {
+        "input_line": 517,
+        "text": "Source code in `pydantic/type_adapter.py`"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "a5c53a3d-8ac5-591f-9832-2e5c67d1dc66",
+    "source_id": "sgb-1ef0a08ee484c17f",
+    "input_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+    "official_span": {
+      "start": 46876,
+      "end": 46968
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 522,
+        "text": "Was this page helpful?"
+      },
+      {
+        "input_line": 524,
+        "text": "Thanks for your feedback!"
+      },
+      {
+        "input_line": 526,
+        "text": "Thanks for your feedback!"
+      },
+      {
+        "input_line": 528,
+        "text": "Back to top"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "5abd065d-7c15-50cd-8513-1316001e538a",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 0,
+      "end": 30
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 1,
+        "text": "# Unions - Pydantic Validation"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "9dda6482-ed2e-5a14-b7a9-e7bcc84b5108",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 219,
+      "end": 501
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 7,
+        "text": "This leads to some nuance around how to validate unions:"
+      },
+      {
+        "input_line": 9,
+        "text": "- which member(s) of the union should you validate data against, and in which order?"
+      },
+      {
+        "input_line": 10,
+        "text": "- which errors to raise when validation fails?"
+      },
+      {
+        "input_line": 12,
+        "text": "Validating unions feels like adding another orthogonal dimension to the validation process."
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "1fd81aeb-7fbb-5dc8-8a05-baace0d30dc2",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 503,
+      "end": 1228
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 14,
+        "text": "To solve these problems, Pydantic supports three fundamental approaches to validating unions:"
+      },
+      {
+        "input_line": 16,
+        "text": "1. left to right mode - the simplest approach, each member of the union is tried in order and the first match is returned"
+      },
+      {
+        "input_line": 17,
+        "text": "2. smart mode - similar to \"left to right mode\" members are tried in order; however, validation will proceed past the first match to attempt to find a better match, this is the default mode for most union validation"
+      },
+      {
+        "input_line": 18,
+        "text": "3. discriminated unions - only one member of the union is tried, based on a discriminator"
+      },
+      {
+        "input_line": 20,
+        "text": "In general, we recommend using discriminated unions. They are both more performant and more predictable than untagged unions, as they allow you to control which member of the union to validate against."
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "e91ba773-ce3c-569b-9374-ea0a917b89cb",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 3637,
+      "end": 4111
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 105,
+        "text": "print(User(id=123))  # (1)"
+      },
+      {
+        "input_line": 106,
+        "text": "#> id=123"
+      },
+      {
+        "input_line": 107,
+        "text": "print(User(id='456'))  # (2)"
+      },
+      {
+        "input_line": 108,
+        "text": "#> id=456"
+      },
+      {
+        "input_line": 109,
+        "text": "```"
+      },
+      {
+        "input_line": 111,
+        "text": "1. As expected the input is validated against the `int` member and the result is as expected."
+      },
+      {
+        "input_line": 112,
+        "text": "2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`."
+      },
+      {
+        "input_line": 113,
+        "text": " Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`."
+      },
+      {
+        "input_line": 115,
+        "text": "Union with left to right - unexpected results"
+      },
+      {
+        "input_line": 116,
+        "text": "```"
+      },
+      {
+        "input_line": 117,
+        "text": "from pydantic import BaseModel, Field"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "df6bfb68-7696-554f-9d10-430d689bc05a",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 4191,
+      "end": 4748
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 105,
+        "text": "print(User(id=123))  # (1)"
+      },
+      {
+        "input_line": 106,
+        "text": "#> id=123"
+      },
+      {
+        "input_line": 107,
+        "text": "print(User(id='456'))  # (2)"
+      },
+      {
+        "input_line": 108,
+        "text": "#> id=456"
+      },
+      {
+        "input_line": 109,
+        "text": "```"
+      },
+      {
+        "input_line": 111,
+        "text": "1. As expected the input is validated against the `int` member and the result is as expected."
+      },
+      {
+        "input_line": 112,
+        "text": "2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`."
+      },
+      {
+        "input_line": 113,
+        "text": " Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`."
+      },
+      {
+        "input_line": 134,
+        "text": "Because of the potentially surprising results of `union_mode='left_to_right'`, in Pydantic >=2 the default mode for `Union` validation is `union_mode='smart'`."
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "Smart Mode"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "8204eafa-3ed2-52f0-b15a-bd2395f4a405",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 5220,
+      "end": 5479
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 143,
+        "text": "The smart mode algorithm uses two metrics to determine the best match for the input:"
+      },
+      {
+        "input_line": 145,
+        "text": "1. The number of valid fields set (relevant for models, dataclasses, and typed dicts)"
+      },
+      {
+        "input_line": 146,
+        "text": "2. The exactness of the match (relevant for all types)"
+      },
+      {
+        "input_line": 148,
+        "text": "#### Number of valid fields set"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "0b0e5e47-09fd-5f29-b888-21bc0b6d4a76",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 6097,
+      "end": 6574
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 161,
+        "text": "For `exactness`, Pydantic scores a match of a union member into one of the following three groups (from highest score to lowest score):"
+      },
+      {
+        "input_line": 163,
+        "text": "- An exact type match, for example an `int` input to a `float | int` union validation is an exact type match for the `int` member"
+      },
+      {
+        "input_line": 164,
+        "text": "- Validation would have succeeded in [`strict` mode](../strict_mode/)"
+      },
+      {
+        "input_line": 165,
+        "text": "- Validation would have succeeded in lax mode"
+      },
+      {
+        "input_line": 167,
+        "text": "The union match which produced the highest exactness score will be considered the best match."
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "c31eb8ef-1fc4-533b-b875-c9110a66b1a5",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 6669,
+      "end": 7864
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 171,
+        "text": "`BaseModel`, `dataclass`, and `TypedDict`All other data types"
+      },
+      {
+        "input_line": 173,
+        "text": "1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,"
+      },
+      {
+        "input_line": 174,
+        "text": "with the valid fields set count also tallied."
+      },
+      {
+        "input_line": 175,
+        "text": "2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned."
+      },
+      {
+        "input_line": 176,
+        "text": "3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned."
+      },
+      {
+        "input_line": 177,
+        "text": "4. If validation failed on all the members, return all the errors."
+      },
+      {
+        "input_line": 179,
+        "text": "1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above."
+      },
+      {
+        "input_line": 180,
+        "text": "  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted."
+      },
+      {
+        "input_line": 181,
+        "text": "2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned."
+      },
+      {
+        "input_line": 182,
+        "text": "3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned."
+      },
+      {
+        "input_line": 183,
+        "text": "4. Validation failed on all the members, return all the errors."
+      },
+      {
+        "input_line": 185,
+        "text": "Python 3.9 and abovePython 3.10 and above"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 10151,
+      "end": 13211
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 263,
+        "text": "To validate models based on that information you can set the same field - let's call it `my_discriminator` -"
+      },
+      {
+        "input_line": 264,
+        "text": "in each of the models with a discriminated value, which is one (or many) `Literal` value(s)."
+      },
+      {
+        "input_line": 265,
+        "text": "For your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`."
+      },
+      {
+        "input_line": 267,
+        "text": "Python 3.9 and abovePython 3.10 and above"
+      },
+      {
+        "input_line": 269,
+        "text": "```"
+      },
+      {
+        "input_line": 270,
+        "text": "from typing import Literal, Union"
+      },
+      {
+        "input_line": 272,
+        "text": "from pydantic import BaseModel, Field, ValidationError"
+      },
+      {
+        "input_line": 274,
+        "text": "class Cat(BaseModel):"
+      },
+      {
+        "input_line": 275,
+        "text": "    pet_type: Literal['cat']"
+      },
+      {
+        "input_line": 276,
+        "text": "    meows: int"
+      },
+      {
+        "input_line": 278,
+        "text": "class Dog(BaseModel):"
+      },
+      {
+        "input_line": 279,
+        "text": "    pet_type: Literal['dog']"
+      },
+      {
+        "input_line": 280,
+        "text": "    barks: float"
+      },
+      {
+        "input_line": 282,
+        "text": "class Lizard(BaseModel):"
+      },
+      {
+        "input_line": 283,
+        "text": "    pet_type: Literal['reptile', 'lizard']"
+      },
+      {
+        "input_line": 284,
+        "text": "    scales: bool"
+      },
+      {
+        "input_line": 286,
+        "text": "class Model(BaseModel):"
+      },
+      {
+        "input_line": 287,
+        "text": "    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')"
+      },
+      {
+        "input_line": 288,
+        "text": "    n: int"
+      },
+      {
+        "input_line": 301,
+        "text": "```"
+      },
+      {
+        "input_line": 304,
+        "text": "from typing import Literal"
+      },
+      {
+        "input_line": 306,
+        "text": "from pydantic import BaseModel, Field, ValidationError"
+      },
+      {
+        "input_line": 308,
+        "text": "class Cat(BaseModel):"
+      },
+      {
+        "input_line": 309,
+        "text": "    pet_type: Literal['cat']"
+      },
+      {
+        "input_line": 310,
+        "text": "    meows: int"
+      },
+      {
+        "input_line": 312,
+        "text": "class Dog(BaseModel):"
+      },
+      {
+        "input_line": 313,
+        "text": "    pet_type: Literal['dog']"
+      },
+      {
+        "input_line": 314,
+        "text": "    barks: float"
+      },
+      {
+        "input_line": 316,
+        "text": "class Lizard(BaseModel):"
+      },
+      {
+        "input_line": 317,
+        "text": "    pet_type: Literal['reptile', 'lizard']"
+      },
+      {
+        "input_line": 318,
+        "text": "    scales: bool"
+      },
+      {
+        "input_line": 320,
+        "text": "class Model(BaseModel):"
+      },
+      {
+        "input_line": 321,
+        "text": "    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')"
+      },
+      {
+        "input_line": 322,
+        "text": "    n: int"
+      },
+      {
+        "input_line": 339,
+        "text": "API Documentation"
+      },
+      {
+        "input_line": 341,
+        "text": "[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)"
+      },
+      {
+        "input_line": 343,
+        "text": "In the case of a `Union` with multiple models, sometimes there isn't a single uniform field"
+      },
+      {
+        "input_line": 344,
+        "text": "across all models that you can use as a discriminator."
+      },
+      {
+        "input_line": 345,
+        "text": "This is the perfect use case for a callable `Discriminator`."
+      },
+      {
+        "input_line": 347,
+        "text": "When you're designing callable discriminators, remember that you might have to account"
+      },
+      {
+        "input_line": 348,
+        "text": "for both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,"
+      },
+      {
+        "input_line": 349,
+        "text": "where you have to anticipate various forms of input."
+      },
+      {
+        "input_line": 351,
+        "text": "But wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?"
+      },
+      {
+        "input_line": 352,
+        "text": "Pydantic uses callable discriminators for serialization as well, at which point the input to your callable is"
+      },
+      {
+        "input_line": 353,
+        "text": "very likely to be a model instance."
+      },
+      {
+        "input_line": 355,
+        "text": "In the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs."
+      },
+      {
+        "input_line": 356,
+        "text": "If you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,"
+      },
+      {
+        "input_line": 357,
+        "text": "and in the worst case, get runtime errors during validation."
+      },
+      {
+        "input_line": 359,
+        "text": "Python 3.9 and abovePython 3.10 and above"
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "Discriminated Unions with callable `Discriminator`"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 13213,
+      "end": 16127
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 41,
+        "text": "```"
+      },
+      {
+        "input_line": 362,
+        "text": "from typing import Annotated, Any, Literal, Union"
+      },
+      {
+        "input_line": 364,
+        "text": "from pydantic import BaseModel, Discriminator, Tag"
+      },
+      {
+        "input_line": 366,
+        "text": "class Pie(BaseModel):"
+      },
+      {
+        "input_line": 367,
+        "text": "    time_to_cook: int"
+      },
+      {
+        "input_line": 368,
+        "text": "    num_ingredients: int"
+      },
+      {
+        "input_line": 370,
+        "text": "class ApplePie(Pie):"
+      },
+      {
+        "input_line": 371,
+        "text": "    fruit: Literal['apple'] = 'apple'"
+      },
+      {
+        "input_line": 373,
+        "text": "class PumpkinPie(Pie):"
+      },
+      {
+        "input_line": 374,
+        "text": "    filling: Literal['pumpkin'] = 'pumpkin'"
+      },
+      {
+        "input_line": 376,
+        "text": "def get_discriminator_value(v: Any) -> str:"
+      },
+      {
+        "input_line": 377,
+        "text": "    if isinstance(v, dict):"
+      },
+      {
+        "input_line": 378,
+        "text": "        return v.get('fruit', v.get('filling'))"
+      },
+      {
+        "input_line": 379,
+        "text": "    return getattr(v, 'fruit', getattr(v, 'filling', None))"
+      },
+      {
+        "input_line": 381,
+        "text": "class ThanksgivingDinner(BaseModel):"
+      },
+      {
+        "input_line": 382,
+        "text": "    dessert: Annotated["
+      },
+      {
+        "input_line": 383,
+        "text": "        Union["
+      },
+      {
+        "input_line": 384,
+        "text": "            Annotated[ApplePie, Tag('apple')],"
+      },
+      {
+        "input_line": 385,
+        "text": "            Annotated[PumpkinPie, Tag('pumpkin')],"
+      },
+      {
+        "input_line": 386,
+        "text": "        ],"
+      },
+      {
+        "input_line": 387,
+        "text": "        Discriminator(get_discriminator_value),"
+      },
+      {
+        "input_line": 388,
+        "text": "    ]"
+      },
+      {
+        "input_line": 390,
+        "text": "apple_variation = ThanksgivingDinner.model_validate("
+      },
+      {
+        "input_line": 391,
+        "text": "    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}"
+      },
+      {
+        "input_line": 392,
+        "text": ")"
+      },
+      {
+        "input_line": 393,
+        "text": "print(repr(apple_variation))"
+      },
+      {
+        "input_line": 394,
+        "text": "\"\"\""
+      },
+      {
+        "input_line": 395,
+        "text": "ThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))"
+      },
+      {
+        "input_line": 396,
+        "text": "\"\"\""
+      },
+      {
+        "input_line": 411,
+        "text": "```"
+      },
+      {
+        "input_line": 414,
+        "text": "from typing import Annotated, Any, Literal"
+      },
+      {
+        "input_line": 416,
+        "text": "from pydantic import BaseModel, Discriminator, Tag"
+      },
+      {
+        "input_line": 418,
+        "text": "class Pie(BaseModel):"
+      },
+      {
+        "input_line": 419,
+        "text": "    time_to_cook: int"
+      },
+      {
+        "input_line": 420,
+        "text": "    num_ingredients: int"
+      },
+      {
+        "input_line": 422,
+        "text": "class ApplePie(Pie):"
+      },
+      {
+        "input_line": 423,
+        "text": "    fruit: Literal['apple'] = 'apple'"
+      },
+      {
+        "input_line": 425,
+        "text": "class PumpkinPie(Pie):"
+      },
+      {
+        "input_line": 426,
+        "text": "    filling: Literal['pumpkin'] = 'pumpkin'"
+      },
+      {
+        "input_line": 428,
+        "text": "def get_discriminator_value(v: Any) -> str:"
+      },
+      {
+        "input_line": 429,
+        "text": "    if isinstance(v, dict):"
+      },
+      {
+        "input_line": 430,
+        "text": "        return v.get('fruit', v.get('filling'))"
+      },
+      {
+        "input_line": 431,
+        "text": "    return getattr(v, 'fruit', getattr(v, 'filling', None))"
+      },
+      {
+        "input_line": 433,
+        "text": "class ThanksgivingDinner(BaseModel):"
+      },
+      {
+        "input_line": 434,
+        "text": "    dessert: Annotated["
+      },
+      {
+        "input_line": 435,
+        "text": "        ("
+      },
+      {
+        "input_line": 436,
+        "text": "            Annotated[ApplePie, Tag('apple')] |"
+      },
+      {
+        "input_line": 437,
+        "text": "            Annotated[PumpkinPie, Tag('pumpkin')]"
+      },
+      {
+        "input_line": 438,
+        "text": "        ),"
+      },
+      {
+        "input_line": 439,
+        "text": "        Discriminator(get_discriminator_value),"
+      },
+      {
+        "input_line": 440,
+        "text": "    ]"
+      },
+      {
+        "input_line": 442,
+        "text": "apple_variation = ThanksgivingDinner.model_validate("
+      },
+      {
+        "input_line": 443,
+        "text": "    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}"
+      },
+      {
+        "input_line": 444,
+        "text": ")"
+      },
+      {
+        "input_line": 445,
+        "text": "print(repr(apple_variation))"
+      },
+      {
+        "input_line": 446,
+        "text": "\"\"\""
+      },
+      {
+        "input_line": 447,
+        "text": "ThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))"
+      },
+      {
+        "input_line": 448,
+        "text": "\"\"\""
+      },
+      {
+        "input_line": 465,
+        "text": "`Discriminator`s can also be used to validate `Union` types with combinations of models and primitive types."
+      },
+      {
+        "input_line": 467,
+        "text": "For example:"
+      },
+      {
+        "input_line": 469,
+        "text": "Python 3.9 and abovePython 3.10 and above"
+      },
+      {
+        "input_line": 471,
+        "text": "```"
+      },
+      {
+        "input_line": 472,
+        "text": "from typing import Annotated, Any, Union"
+      },
+      {
+        "input_line": 474,
+        "text": "from pydantic import BaseModel, Discriminator, Tag, ValidationError"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 16129,
+      "end": 19225
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 476,
+        "text": "def model_x_discriminator(v: Any) -> str:"
+      },
+      {
+        "input_line": 477,
+        "text": "    if isinstance(v, int):"
+      },
+      {
+        "input_line": 478,
+        "text": "        return 'int'"
+      },
+      {
+        "input_line": 479,
+        "text": "    if isinstance(v, (dict, BaseModel)):"
+      },
+      {
+        "input_line": 480,
+        "text": "        return 'model'"
+      },
+      {
+        "input_line": 481,
+        "text": "    else:"
+      },
+      {
+        "input_line": 482,
+        "text": "        # return None if the discriminator value isn't found"
+      },
+      {
+        "input_line": 483,
+        "text": "        return None"
+      },
+      {
+        "input_line": 485,
+        "text": "class SpecialValue(BaseModel):"
+      },
+      {
+        "input_line": 486,
+        "text": "    value: int"
+      },
+      {
+        "input_line": 488,
+        "text": "class DiscriminatedModel(BaseModel):"
+      },
+      {
+        "input_line": 489,
+        "text": "    value: Annotated["
+      },
+      {
+        "input_line": 490,
+        "text": "        Union["
+      },
+      {
+        "input_line": 491,
+        "text": "            Annotated[int, Tag('int')],"
+      },
+      {
+        "input_line": 492,
+        "text": "            Annotated['SpecialValue', Tag('model')],"
+      },
+      {
+        "input_line": 493,
+        "text": "        ],"
+      },
+      {
+        "input_line": 494,
+        "text": "        Discriminator(model_x_discriminator),"
+      },
+      {
+        "input_line": 495,
+        "text": "    ]"
+      },
+      {
+        "input_line": 497,
+        "text": "model_data = {'value': {'value': 1}}"
+      },
+      {
+        "input_line": 498,
+        "text": "m = DiscriminatedModel.model_validate(model_data)"
+      },
+      {
+        "input_line": 499,
+        "text": "print(m)"
+      },
+      {
+        "input_line": 500,
+        "text": "#> value=SpecialValue(value=1)"
+      },
+      {
+        "input_line": 502,
+        "text": "int_data = {'value': 123}"
+      },
+      {
+        "input_line": 503,
+        "text": "m = DiscriminatedModel.model_validate(int_data)"
+      },
+      {
+        "input_line": 504,
+        "text": "print(m)"
+      },
+      {
+        "input_line": 505,
+        "text": "#> value=123"
+      },
+      {
+        "input_line": 518,
+        "text": "1. Notice the callable discriminator function returns `None` if a discriminator value is not found."
+      },
+      {
+        "input_line": 519,
+        "text": " When `None` is returned, this `union_tag_not_found` error is raised."
+      },
+      {
+        "input_line": 521,
+        "text": "```"
+      },
+      {
+        "input_line": 522,
+        "text": "from typing import Annotated, Any"
+      },
+      {
+        "input_line": 524,
+        "text": "from pydantic import BaseModel, Discriminator, Tag, ValidationError"
+      },
+      {
+        "input_line": 526,
+        "text": "def model_x_discriminator(v: Any) -> str:"
+      },
+      {
+        "input_line": 527,
+        "text": "    if isinstance(v, int):"
+      },
+      {
+        "input_line": 528,
+        "text": "        return 'int'"
+      },
+      {
+        "input_line": 529,
+        "text": "    if isinstance(v, (dict, BaseModel)):"
+      },
+      {
+        "input_line": 530,
+        "text": "        return 'model'"
+      },
+      {
+        "input_line": 531,
+        "text": "    else:"
+      },
+      {
+        "input_line": 532,
+        "text": "        # return None if the discriminator value isn't found"
+      },
+      {
+        "input_line": 533,
+        "text": "        return None"
+      },
+      {
+        "input_line": 535,
+        "text": "class SpecialValue(BaseModel):"
+      },
+      {
+        "input_line": 536,
+        "text": "    value: int"
+      },
+      {
+        "input_line": 538,
+        "text": "class DiscriminatedModel(BaseModel):"
+      },
+      {
+        "input_line": 539,
+        "text": "    value: Annotated["
+      },
+      {
+        "input_line": 540,
+        "text": "        ("
+      },
+      {
+        "input_line": 541,
+        "text": "            Annotated[int, Tag('int')] |"
+      },
+      {
+        "input_line": 542,
+        "text": "            Annotated['SpecialValue', Tag('model')]"
+      },
+      {
+        "input_line": 543,
+        "text": "        ),"
+      },
+      {
+        "input_line": 544,
+        "text": "        Discriminator(model_x_discriminator),"
+      },
+      {
+        "input_line": 545,
+        "text": "    ]"
+      },
+      {
+        "input_line": 547,
+        "text": "model_data = {'value': {'value': 1}}"
+      },
+      {
+        "input_line": 548,
+        "text": "m = DiscriminatedModel.model_validate(model_data)"
+      },
+      {
+        "input_line": 549,
+        "text": "print(m)"
+      },
+      {
+        "input_line": 550,
+        "text": "#> value=SpecialValue(value=1)"
+      },
+      {
+        "input_line": 552,
+        "text": "int_data = {'value': 123}"
+      },
+      {
+        "input_line": 553,
+        "text": "m = DiscriminatedModel.model_validate(int_data)"
+      },
+      {
+        "input_line": 554,
+        "text": "print(m)"
+      },
+      {
+        "input_line": 555,
+        "text": "#> value=123"
+      },
+      {
+        "input_line": 568,
+        "text": "1. Notice the callable discriminator function returns `None` if a discriminator value is not found."
+      },
+      {
+        "input_line": 569,
+        "text": " When `None` is returned, this `union_tag_not_found` error is raised."
+      },
+      {
+        "input_line": 571,
+        "text": "Using the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup"
+      },
+      {
+        "input_line": 572,
+        "text": "the `Union` and `discriminator` information. See the next example for more details."
+      },
+      {
+        "input_line": 574,
+        "text": "There are a few ways to set a discriminator for a field, all varying slightly in syntax."
+      },
+      {
+        "input_line": 576,
+        "text": "For `str` discriminators:"
+      },
+      {
+        "input_line": 578,
+        "text": "```"
+      },
+      {
+        "input_line": 579,
+        "text": "some_field: Union[...] = Field(discriminator='my_discriminator')"
+      },
+      {
+        "input_line": 580,
+        "text": "some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]"
+      },
+      {
+        "input_line": 581,
+        "text": "```"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "d37a8c2c-fa2b-54d9-b7a6-e89c97c846c9",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 19227,
+      "end": 19690
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 583,
+        "text": "For callable `Discriminator`s:"
+      },
+      {
+        "input_line": 585,
+        "text": "```"
+      },
+      {
+        "input_line": 586,
+        "text": "some_field: Union[...] = Field(discriminator=Discriminator(...))"
+      },
+      {
+        "input_line": 587,
+        "text": "some_field: Annotated[Union[...], Discriminator(...)]"
+      },
+      {
+        "input_line": 588,
+        "text": "some_field: Annotated[Union[...], Field(discriminator=Discriminator(...))]"
+      },
+      {
+        "input_line": 589,
+        "text": "```"
+      },
+      {
+        "input_line": 591,
+        "text": "Discriminated unions cannot be used with only a single variant, such as `Union[Cat]`."
+      },
+      {
+        "input_line": 593,
+        "text": "Python changes `Union[T]` into `T` at interpretation time, so it is not possible for `pydantic` to"
+      },
+      {
+        "input_line": 594,
+        "text": "distinguish fields of `Union[T]` from `T`."
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "e202d0a5-4f50-5cc5-a2e4-74bfd73327b8",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 19692,
+      "end": 25009
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 598,
+        "text": "Only one discriminator can be set for a field but sometimes you want to combine multiple discriminators."
+      },
+      {
+        "input_line": 599,
+        "text": "You can do it by creating nested `Annotated` types, e.g.:"
+      },
+      {
+        "input_line": 601,
+        "text": "```"
+      },
+      {
+        "input_line": 602,
+        "text": "from typing import Annotated, Literal, Union"
+      },
+      {
+        "input_line": 604,
+        "text": "from pydantic import BaseModel, Field, ValidationError"
+      },
+      {
+        "input_line": 606,
+        "text": "class BlackCat(BaseModel):"
+      },
+      {
+        "input_line": 607,
+        "text": "    pet_type: Literal['cat']"
+      },
+      {
+        "input_line": 608,
+        "text": "    color: Literal['black']"
+      },
+      {
+        "input_line": 609,
+        "text": "    black_name: str"
+      },
+      {
+        "input_line": 611,
+        "text": "class WhiteCat(BaseModel):"
+      },
+      {
+        "input_line": 612,
+        "text": "    pet_type: Literal['cat']"
+      },
+      {
+        "input_line": 613,
+        "text": "    color: Literal['white']"
+      },
+      {
+        "input_line": 614,
+        "text": "    white_name: str"
+      },
+      {
+        "input_line": 616,
+        "text": "Cat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]"
+      },
+      {
+        "input_line": 618,
+        "text": "class Dog(BaseModel):"
+      },
+      {
+        "input_line": 619,
+        "text": "    pet_type: Literal['dog']"
+      },
+      {
+        "input_line": 620,
+        "text": "    name: str"
+      },
+      {
+        "input_line": 622,
+        "text": "Pet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]"
+      },
+      {
+        "input_line": 624,
+        "text": "class Model(BaseModel):"
+      },
+      {
+        "input_line": 625,
+        "text": "    pet: Pet"
+      },
+      {
+        "input_line": 626,
+        "text": "    n: int"
+      },
+      {
+        "input_line": 651,
+        "text": "If you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`."
+      },
+      {
+        "input_line": 653,
+        "text": "In the context of the previous example, we have the following:"
+      },
+      {
+        "input_line": 655,
+        "text": "```"
+      },
+      {
+        "input_line": 656,
+        "text": "type_adapter = TypeAdapter(Pet)"
+      },
+      {
+        "input_line": 658,
+        "text": "pet = type_adapter.validate_python("
+      },
+      {
+        "input_line": 659,
+        "text": "    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}"
+      },
+      {
+        "input_line": 660,
+        "text": ")"
+      },
+      {
+        "input_line": 661,
+        "text": "print(repr(pet))"
+      },
+      {
+        "input_line": 662,
+        "text": "#> BlackCat(pet_type='cat', color='black', black_name='felix')"
+      },
+      {
+        "input_line": 663,
+        "text": "```"
+      },
+      {
+        "input_line": 674,
+        "text": "You can also customize the error type, message, and context for a `Discriminator` by passing"
+      },
+      {
+        "input_line": 675,
+        "text": "these specifications as parameters to the `Discriminator` constructor, as seen in the example below."
+      },
+      {
+        "input_line": 677,
+        "text": "```"
+      },
+      {
+        "input_line": 678,
+        "text": "from typing import Annotated, Union"
+      },
+      {
+        "input_line": 680,
+        "text": "from pydantic import BaseModel, Discriminator, Tag, ValidationError"
+      },
+      {
+        "input_line": 682,
+        "text": "# Errors are quite verbose with a normal Union:"
+      },
+      {
+        "input_line": 683,
+        "text": "class Model(BaseModel):"
+      },
+      {
+        "input_line": 684,
+        "text": "    x: Union[str, 'Model']"
+      },
+      {
+        "input_line": 718,
+        "text": "# Errors are much simpler with a discriminated union:"
+      },
+      {
+        "input_line": 719,
+        "text": "def model_x_discriminator(v):"
+      },
+      {
+        "input_line": 720,
+        "text": "    if isinstance(v, str):"
+      },
+      {
+        "input_line": 721,
+        "text": "        return 'str'"
+      },
+      {
+        "input_line": 722,
+        "text": "    if isinstance(v, (dict, BaseModel)):"
+      },
+      {
+        "input_line": 723,
+        "text": "        return 'model'"
+      },
+      {
+        "input_line": 739,
+        "text": "try:"
+      },
+      {
+        "input_line": 740,
+        "text": "    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})"
+      },
+      {
+        "input_line": 741,
+        "text": "except ValidationError as e:"
+      },
+      {
+        "input_line": 742,
+        "text": "    print(e)"
+      },
+      {
+        "input_line": 743,
+        "text": "    \"\"\""
+      },
+      {
+        "input_line": 744,
+        "text": "    1 validation error for DiscriminatedModel"
+      },
+      {
+        "input_line": 745,
+        "text": "    x.model.x.model.x"
+      },
+      {
+        "input_line": 746,
+        "text": "      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]"
+      },
+      {
+        "input_line": 747,
+        "text": "    \"\"\""
+      },
+      {
+        "input_line": 749,
+        "text": "try:"
+      },
+      {
+        "input_line": 750,
+        "text": "    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})"
+      },
+      {
+        "input_line": 751,
+        "text": "except ValidationError as e:"
+      },
+      {
+        "input_line": 752,
+        "text": "    print(e)"
+      },
+      {
+        "input_line": 753,
+        "text": "    \"\"\""
+      },
+      {
+        "input_line": 754,
+        "text": "    1 validation error for DiscriminatedModel"
+      },
+      {
+        "input_line": 755,
+        "text": "    x.model.x.model.x.model.x"
+      },
+      {
+        "input_line": 756,
+        "text": "      Field required [type=missing, input_value={}, input_type=dict]"
+      },
+      {
+        "input_line": 757,
+        "text": "    \"\"\""
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "Nested Discriminated Unions"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "2d0633a0-c6e0-532f-8b22-a588d81ab3fd",
+    "source_id": "sgb-bfff832235f53b65",
+    "input_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+    "official_span": {
+      "start": 25011,
+      "end": 27204
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 759,
+        "text": "# The data is still handled properly when valid:"
+      },
+      {
+        "input_line": 760,
+        "text": "data = {'x': {'x': {'x': 'a'}}}"
+      },
+      {
+        "input_line": 761,
+        "text": "m = DiscriminatedModel.model_validate(data)"
+      },
+      {
+        "input_line": 762,
+        "text": "print(m.model_dump())"
+      },
+      {
+        "input_line": 763,
+        "text": "#> {'x': {'x': {'x': 'a'}}}"
+      },
+      {
+        "input_line": 764,
+        "text": "```"
+      },
+      {
+        "input_line": 766,
+        "text": "1. `custom_error_type` is the `type` attribute of the `ValidationError` raised when validation fails."
+      },
+      {
+        "input_line": 767,
+        "text": "2. `custom_error_message` is the `msg` attribute of the `ValidationError` raised when validation fails."
+      },
+      {
+        "input_line": 768,
+        "text": "3. `custom_error_context` is the `ctx` attribute of the `ValidationError` raised when validation fails."
+      },
+      {
+        "input_line": 770,
+        "text": "You can also simplify error messages by labeling each case with a [`Tag`](../../api/types/#pydantic.types.Tag)."
+      },
+      {
+        "input_line": 771,
+        "text": "This is especially useful when you have complex types like those in this example:"
+      },
+      {
+        "input_line": 773,
+        "text": "```"
+      },
+      {
+        "input_line": 774,
+        "text": "from typing import Annotated, Union"
+      },
+      {
+        "input_line": 776,
+        "text": "from pydantic import AfterValidator, Tag, TypeAdapter, ValidationError"
+      },
+      {
+        "input_line": 778,
+        "text": "DoubledList = Annotated[list[int], AfterValidator(lambda x: x * 2)]"
+      },
+      {
+        "input_line": 779,
+        "text": "StringsMap = dict[str, str]"
+      },
+      {
+        "input_line": 781,
+        "text": "# Not using any `Tag`s for each union case, the errors are not so nice to look at"
+      },
+      {
+        "input_line": 782,
+        "text": "adapter = TypeAdapter(Union[DoubledList, StringsMap])"
+      },
+      {
+        "input_line": 796,
+        "text": "tag_adapter = TypeAdapter("
+      },
+      {
+        "input_line": 797,
+        "text": "    Union["
+      },
+      {
+        "input_line": 798,
+        "text": "        Annotated[DoubledList, Tag('DoubledList')],"
+      },
+      {
+        "input_line": 799,
+        "text": "        Annotated[StringsMap, Tag('StringsMap')],"
+      },
+      {
+        "input_line": 800,
+        "text": "    ]"
+      },
+      {
+        "input_line": 801,
+        "text": ")"
+      },
+      {
+        "input_line": 816,
+        "text": "Was this page helpful?"
+      },
+      {
+        "input_line": 818,
+        "text": "Thanks for your feedback!"
+      },
+      {
+        "input_line": 820,
+        "text": "Thanks for your feedback!"
+      },
+      {
+        "input_line": 822,
+        "text": "Back to top"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  }
+]

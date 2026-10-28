@@ -1,0 +1,113 @@
+{
+  "skill_id": "407bc434-4c5b-5055-906d-1a08636fdb21",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批次候选“边容量与排队冲突计算”(839f4723)高度重复，后者已完整覆盖容量公式计算与超容/排队判定，本候选无独立新增能力，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "407bc434-4c5b-5055-906d-1a08636fdb21",
+    "name": "边容量计算与超容判定规则",
+    "description": "依据车道数与每车道容量计算边的最大车辆容量 MaxVehicles，并以此作为排队与冲突判定的容量基准；在需要评估某条边是否达到或超过容量、或为排队/冲突判定提供基准时使用。",
+    "skill_body": "给定一条边的 LaneCount 与 CapacityPerLane，按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算该边的最大车辆容量，并将结果作为排队与冲突判定的容量基准。输出 MaxVehicles 值及是否超容的结论。若缺少车道数或每车道容量数据，不要臆造数值，应声明数据不足。\n\n## Objective\n\n按公式计算边容量并作为排队与冲突判定的依据\n## Applicable Signals\n\n- 已知边的 LaneCount 与 CapacityPerLane\n- 需要评估边是否超容\n- 需要为排队或冲突判定建立容量基准\n\n## Contraindications\n\n- 缺少车道数或每车道容量数据\n- 与边容量无关的车辆行为判定\n\n## Intervention Moves\n\n- 读取该边的 LaneCount 与 CapacityPerLane\n- 按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算容量\n- 将计算结果作为排队与冲突判定的基准\n- 给出是否超容的结论\n\n## Workflow Steps\n\n- 确认目标边及其 LaneCount 与 CapacityPerLane 数据齐全\n- 按公式计算 MaxVehicles(edge)\n- 将 MaxVehicles 作为排队与冲突判定的容量基准\n- 输出 MaxVehicles 值及是否超容的结论\n\n## Constraints\n\n- 容量计算必须严格使用 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)\n- 缺少必要数据时不得臆造容量值\n\n## Cautions\n\n- 本规则仅提供容量基准，不替代车辆动作合法性等其他约束\n- 容量结果需结合当前车辆数才能判定是否超容\n\n## Output Contract\n\n- 输出该边的 MaxVehicles 值及是否超容的结论\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某边 LaneCount = 2，CapacityPerLane = 3\n- Therapist/Output: MaxVehicles(edge) = 2 × 3 = 6；据此作为排队与冲突判定基准，并给出是否超容的结论\n- Notes: 缺少任一参数时应声明数据不足",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按公式计算边容量并作为排队与冲突判定的依据",
+    "domain": "交通仿真规则",
+    "task_family": "容量与冲突判定",
+    "method_family": "规则计算",
+    "stage": "状态评估",
+    "applicable_signals": [
+      "已知边的 LaneCount 与 CapacityPerLane",
+      "需要评估边是否超容",
+      "需要为排队或冲突判定建立容量基准"
+    ],
+    "contraindications": [
+      "缺少车道数或每车道容量数据",
+      "与边容量无关的车辆行为判定"
+    ],
+    "intervention_moves": [
+      "读取该边的 LaneCount 与 CapacityPerLane",
+      "按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算容量",
+      "将计算结果作为排队与冲突判定的基准",
+      "给出是否超容的结论"
+    ],
+    "triggers": [
+      "需要判断某条边是否达到或超过车辆容量",
+      "需要为排队或冲突判定提供容量基准",
+      "需要计算某条边的 MaxVehicles"
+    ],
+    "workflow_steps": [
+      "确认目标边及其 LaneCount 与 CapacityPerLane 数据齐全",
+      "按公式计算 MaxVehicles(edge)",
+      "将 MaxVehicles 作为排队与冲突判定的容量基准",
+      "输出 MaxVehicles 值及是否超容的结论"
+    ],
+    "constraints": [
+      "容量计算必须严格使用 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)",
+      "缺少必要数据时不得臆造容量值"
+    ],
+    "cautions": [
+      "本规则仅提供容量基准，不替代车辆动作合法性等其他约束",
+      "容量结果需结合当前车辆数才能判定是否超容"
+    ],
+    "output_contract": [
+      "输出该边的 MaxVehicles 值及是否超容的结论"
+    ],
+    "examples": [
+      {
+        "input": "某边 LaneCount = 2，CapacityPerLane = 3",
+        "output": "MaxVehicles(edge) = 2 × 3 = 6；据此作为排队与冲突判定基准，并给出是否超容的结论",
+        "notes": "缺少任一参数时应声明数据不足"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "边容量",
+      "排队",
+      "冲突判定",
+      "规则计算"
+    ],
+    "support_ids": [
+      "bcb93f7d-97c1-5a09-af1d-3f9e524ec535"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "ed6ab9e2-9e23-5fa7-8bd8-2943c9854c98"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|按公式计算边容量并作为排队与冲突判定的依据|交通仿真规则|容量与冲突判定|规则计算|状态评估|边容量计算与超容判定规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

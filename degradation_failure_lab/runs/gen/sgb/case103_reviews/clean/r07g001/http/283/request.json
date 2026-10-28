@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"98da004a-ffa1-5fc4-999c-5a29338f8d95\", \"name\": \"类别匹配硬性校验\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"以类别一致性作为匹配的前置硬性门槛\", \"applicable_signals\": [\"评论与SKU配对已就绪，等待匹配判断\", \"评论可能涉及与SKU不同的商品类别\", \"下游将进行语义相似度或情感量化\"], \"contraindications\": [\"类别信息缺失且无法推断时不应强行判定\", \"任务仅需评估情感极性、不涉及商品匹配时\"], \"workflow_steps\": [\"读取评论内容，识别其指向的商品类别\", \"读取SKU描述，识别其所属类别\", \"比较评论类别与SKU类别是否一致\", \"若不一致，输出不匹配判定并停止该配对的后续匹配步骤\", \"若一致，输出类别一致判定并交由语义相似度判断继续处理\", \"若类别信息缺失且无法推断，标记为无法校验并说明原因\"], \"constraints\": [\"类别一致性是硬性门槛，优先于语义相似度判断\", \"类别不符即判定不匹配，不得以语义相似为由放行\", \"不得在类别信息缺失时臆造类别\"], \"triggers\": [\"评论与SKU进入匹配判断\", \"存在跨类别误配风险\", \"需要在语义相似度判断前设置前置门槛\"], \"output_contract\": [\"返回每条评论-SKU配对的类别一致/不一致判定结果；不一致时明确标记为不匹配并终止后续相似度判断，信息不足时标记为无法校验并说明原因。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"bd432df1-20b2-5198-b0f5-1d551a94d475\", \"name\": \"评论与SKU语义匹配及情感量化流程\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"将评论逐条匹配到SKU并量化情感倾向\", \"applicable_signals\": [\"输入包含原始消费者评论\", \"输入包含可用的SKU描述或商品目录\", \"下游需要可汇总的匹配与情感结果\"], \"workflow_steps\": [\"校验输入：确认评论文本与SKU描述/商品目录可用且格式有效。\", \"类别匹配：判断评论是否指向运动服饰类商品并识别品牌归属（硬性要求）。\", \"语义相似度判断：在通过类别匹配的候选SKU中评估评论与SKU描述的语义相似度。\", \"情感分类：对评论给出情感标签或分值。\", \"输出汇总：为每条评论记录匹配的SKU与情感结果；对无效或不完整输入按处理规则标注。\"], \"output_contract\": [\"每条评论对应的SKU匹配结果与情感标签/分值，可直接供下游汇总使用。\"], \"score\": 0.6519465311857697}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

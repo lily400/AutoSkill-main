@@ -1,0 +1,113 @@
+{
+  "skill_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "Distinct micro-skill on writing callable discriminators that handle both dict and model-instance inputs; complements peer candidates (unknown-tag None handling, generic extraction, string discriminator declaration) without redundancy.",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+    "name": "可调用判别器设计",
+    "description": "当联合成员之间没有统一判别字段时，编写可调用 Discriminator 函数，使其同时处理 dict 与模型实例输入，从而在验证与序列化阶段都能正确判别，避免序列化警告或运行时错误。",
+    "skill_body": "编写一个可调用判别器函数，用于联合类型中成员缺少统一判别字段的场景。函数需同时兼容 dict 输入与模型实例输入：对 dict 读取键值，对模型实例读取属性，返回对应成员的标签。设计时参照 mode='before' 校验器的思路，预先考虑多种输入形态，因为 Pydantic 在序列化阶段也会调用该判别器，此时输入很可能是模型实例。完成后确认函数在验证与序列化两条路径上均返回正确标签。\n\n## Objective\n\n实现兼容 dict 与模型输入的 callable discriminator\n## Applicable Signals\n\n- 联合成员缺少单一统一判别字段\n- 需要在序列化阶段也能正确判别\n\n## Contraindications\n\n- 存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器\n- 判别逻辑仅需处理单一输入形态时，无需引入可调用判别器\n\n## Intervention Moves\n\n- 确认联合成员间不存在可直接使用的统一 Literal 判别字段\n- 编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值\n- 返回与目标成员对应的标签\n- 在验证与序列化两条路径上验证判别结果\n\n## Workflow Steps\n\n- 检查联合成员，确认没有单一统一字段可作为字符串判别器\n- 设计判别函数签名，使其接受 dict 或模型实例\n- 在函数内分支处理：dict 走键访问，模型实例走属性访问\n- 返回对应成员的标签值\n- 分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误\n\n## Constraints\n\n- 判别函数必须同时处理 dict 与模型实例输入\n- 不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误\n\n## Cautions\n\n- Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例\n- 若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误\n\n## Output Contract\n\n- 一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。\n- Therapist/Output: 编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。\n- Notes: 参照 mode='before' 校验器的思路，预先考虑多种输入形态。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "实现兼容 dict 与模型输入的 callable discriminator",
+    "domain": "pydantic",
+    "task_family": "联合类型校验",
+    "method_family": "可调用判别器",
+    "stage": "判别逻辑实现",
+    "applicable_signals": [
+      "联合成员缺少单一统一判别字段",
+      "需要在序列化阶段也能正确判别"
+    ],
+    "contraindications": [
+      "存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器",
+      "判别逻辑仅需处理单一输入形态时，无需引入可调用判别器"
+    ],
+    "intervention_moves": [
+      "确认联合成员间不存在可直接使用的统一 Literal 判别字段",
+      "编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值",
+      "返回与目标成员对应的标签",
+      "在验证与序列化两条路径上验证判别结果"
+    ],
+    "triggers": [
+      "联合成员之间没有单一统一判别字段",
+      "需要在序列化阶段也能正确判别联合成员",
+      "准备为 Union 配置 callable Discriminator"
+    ],
+    "workflow_steps": [
+      "检查联合成员，确认没有单一统一字段可作为字符串判别器",
+      "设计判别函数签名，使其接受 dict 或模型实例",
+      "在函数内分支处理：dict 走键访问，模型实例走属性访问",
+      "返回对应成员的标签值",
+      "分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误"
+    ],
+    "constraints": [
+      "判别函数必须同时处理 dict 与模型实例输入",
+      "不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误"
+    ],
+    "cautions": [
+      "Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例",
+      "若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误"
+    ],
+    "output_contract": [
+      "一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。"
+    ],
+    "examples": [
+      {
+        "input": "联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。",
+        "output": "编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。",
+        "notes": "参照 mode='before' 校验器的思路，预先考虑多种输入形态。"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "union",
+      "discriminator",
+      "callable",
+      "serialization"
+    ],
+    "support_ids": [
+      "119de05c-37c6-55ca-8414-1aa8724e07e1"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "cd2f99f3-ed69-51f1-9f04-a57aef19d8e7"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|实现兼容 dict 与模型输入的 callable discriminator|pydantic|联合类型校验|可调用判别器|判别逻辑实现|可调用判别器设计"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

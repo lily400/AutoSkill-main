@@ -1,0 +1,59 @@
+{
+  "support_id": "a80204c1-b5b6-5b69-a620-e3cf7b420ba2",
+  "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+  "skill_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+  "section": "# Unions",
+  "span": {
+    "start": 16129,
+    "end": 19225
+  },
+  "excerpt": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+  "relation_type": "support",
+  "confidence": 0.8,
+  "metadata": {
+    "document_title": "input002\\unions.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "判别器未命中返回 None 的错误处理",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "visible_role": "leaf",
+    "objective": "在判别函数中对未知类型返回 None 并预期 union_tag_not_found 错误",
+    "task_family": "联合类型校验",
+    "method_family": "错误处理",
+    "stage": "校验失败处理",
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "candidate_slot": 2,
+    "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+    "window_strategy": "strict",
+    "anchor_hits": [],
+    "paragraph_start": 47,
+    "paragraph_end": 66,
+    "heading_path": [
+      "# Unions"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input002\\unions.md"
+    ],
+    "subsection_headings": [
+      "### Left to Right Mode",
+      "Smart Mode",
+      "Discriminated Unions",
+      "Discriminated Unions with `str` discriminators",
+      "Discriminated Unions with callable `Discriminator`",
+      "Nested Discriminated Unions",
+      "Union Validation Errors"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+  },
+  "created_at": "2026-10-28T05:15:03+00:00"
+}

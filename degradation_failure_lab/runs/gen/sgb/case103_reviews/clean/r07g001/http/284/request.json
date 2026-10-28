@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"cf8603df-1272-5af0-8fd3-e794b4dd8635\", \"name\": \"评论适用性双重条件判定\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"判定单条评论是否适用于目标SKU\", \"applicable_signals\": [\"需对单条评论给出适用/不适用结论\", \"目标SKU类别与评论内容均可获取\"], \"contraindications\": [\"缺少SKU类别或评论内容\"], \"workflow_steps\": [\"确认目标SKU的类别信息与待判评论内容齐备\", \"执行类别匹配检查：判断评论是否属于目标SKU类别（硬性要求）\", \"若类别不匹配，直接判定为不适用并记录依据\", \"若类别匹配，执行语义相似度判断：评估评论语义是否与目标SKU相关（判断要求）\", \"两项均满足则判定为适用，否则判定为不适用\", \"输出布尔结论及判定依据\"], \"constraints\": [\"类别匹配为硬性要求，不满足即不适用\", \"语义相似度为判断要求，需在类别匹配通过后执行\", \"仅当两项条件均满足时才标记为适用\"], \"triggers\": [\"需对单条评论给出适用/不适用结论\", \"已具备目标SKU类别信息与评论内容\"], \"output_contract\": [\"单条评论的适用性布尔结论及依据\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"25bac3cc-3b87-5f35-ad2b-4f229c1d670f\", \"name\": \"评论适用性判定与情感计数流程\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为每个SKU产出区分品牌来源的正面与负面适用评论计数\", \"applicable_signals\": [\"存在产品目录与评论数据\", \"需要按SKU量化消费者情感\", \"需区分Nike与竞品评论来源\"], \"workflow_steps\": [\"读取产品目录与评论数据\", \"对每个SKU逐条评论执行类别匹配（硬性要求）\", \"对通过类别匹配的评论执行语义相似度判断（判断要求）\", \"两项条件同时满足则标记为适用\", \"对适用评论按Nike与竞品、正面与负面分别计数\", \"汇总为每个SKU的计数表\"], \"output_contract\": [\"每个SKU的正面/负面适用评论计数表（区分Nike与竞品）\"], \"score\": 0.6657892551144883}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

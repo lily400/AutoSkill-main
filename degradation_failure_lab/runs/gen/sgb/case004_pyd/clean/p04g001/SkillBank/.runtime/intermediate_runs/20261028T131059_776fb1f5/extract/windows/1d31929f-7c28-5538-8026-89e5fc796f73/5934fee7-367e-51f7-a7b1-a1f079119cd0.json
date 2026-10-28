@@ -1,0 +1,544 @@
+{
+  "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+  "title": "input002\\unions.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+  "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+  "section_heading": "# Unions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "709c0694-5714-5e23-a79c-b3edd9d5e1dd",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 10151,
+        "end": 13211
+      },
+      "excerpt": "To validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nDiscriminated Unions with callable `Discriminator`\nAPI Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above",
+      "relation_type": "support",
+      "confidence": 0.9,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 判别式联合类型建模",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "为多模型联合类型建立基于判别字段的确定性校验路由",
+        "task_family": "联合类型校验",
+        "method_family": "判别式联合建模",
+        "stage": "模型定义",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 23,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:14:09+00:00"
+    },
+    {
+      "support_id": "119de05c-37c6-55ca-8414-1aa8724e07e1",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 10151,
+        "end": 13211
+      },
+      "excerpt": "To validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nDiscriminated Unions with callable `Discriminator`\nAPI Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "可调用判别器设计",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "实现兼容 dict 与模型输入的 callable discriminator",
+        "task_family": "联合类型校验",
+        "method_family": "可调用判别器",
+        "stage": "判别逻辑实现",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 23,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:14:09+00:00"
+    },
+    {
+      "support_id": "0918dcea-fb13-56b0-a37b-2c6f2a0cf02c",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 10151,
+        "end": 13211
+      },
+      "excerpt": "To validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nDiscriminated Unions with callable `Discriminator`\nAPI Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above",
+      "relation_type": "constraint",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "判别器输入形态兼容检查",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "防止判别器因输入形态不全导致序列化警告或校验期运行时错误",
+        "task_family": "联合类型校验",
+        "method_family": "输入兼容性校验",
+        "stage": "校验前检查",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 3,
+        "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 23,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:14:09+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "080c82b6-7859-535f-aeff-5779b38350f5",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "Pydantic 判别式联合类型建模",
+      "description": "使用带 Literal 判别字段的成员模型和 Field(discriminator=...) 构建可区分的联合类型，使 Pydantic 按判别值选择正确成员模型。适用于多个候选模型共享一个标签字段、需要精确路由校验的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为多模型联合类型建立基于判别字段的确定性校验路由",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "判别式联合建模",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "候选模型之间存在一个可共享的标签字段",
+        "标签字段可用 Literal 枚举取值",
+        "需要联合校验按标签精确匹配而非逐个尝试"
+      ],
+      "contraindications": [
+        "候选模型之间没有可共享的判别字段",
+        "仅需简单标量联合而非模型联合"
+      ],
+      "intervention_moves": [
+        "在每个成员模型中声明 Literal 判别字段",
+        "在联合字段上设置 Field(discriminator='<字段名>')",
+        "核对各成员判别取值互不冲突"
+      ],
+      "workflow_steps": [
+        "确认各候选模型存在可共享的判别字段",
+        "在每个成员模型中用 Literal 声明该判别字段的取值",
+        "在联合字段上使用 Field(discriminator='<字段名>') 指定判别字段",
+        "检查各成员判别取值互不冲突，确保按判别值选中唯一成员模型"
+      ],
+      "triggers": [
+        "多个候选模型各自带有区分用的 Literal 标签字段",
+        "希望联合校验按标签精确匹配而非逐个尝试",
+        "需要为多模型联合类型建立确定性校验路由"
+      ],
+      "constraints": [
+        "判别字段必须在每个成员模型中存在且为 Literal 取值",
+        "各成员的判别取值不应重叠，否则无法唯一路由"
+      ],
+      "cautions": [
+        "若成员间无统一判别字段，应改用可调用 Discriminator 而非强行套用本流程"
+      ],
+      "output_contract": [
+        "一个带 discriminator 配置的 Union 字段模型定义，能按判别值选中唯一成员模型"
+      ],
+      "examples": [
+        {
+          "input": "多个宠物模型各自带有 pet_type 标签字段，需要联合校验",
+          "output": "pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')",
+          "notes": "各成员用 Literal 声明 pet_type 取值"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.9,
+      "support_ids": [
+        "709c0694-5714-5e23-a79c-b3edd9d5e1dd"
+      ],
+      "metadata": {
+        "prompt": "为联合类型建立基于判别字段的确定性校验路由：先确认各候选模型存在共享的判别字段，再在每个成员模型中用 Literal 声明该字段的取值，最后在联合字段上用 Field(discriminator='<字段名>') 指定判别字段。确保判别值在各成员间不冲突，从而让校验按标签精确匹配唯一成员模型。",
+        "tags": [
+          "pydantic",
+          "union",
+          "discriminated-union",
+          "literal",
+          "validation"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 23,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    },
+    {
+      "draft_id": "cd2f99f3-ed69-51f1-9f04-a57aef19d8e7",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "可调用判别器设计",
+      "description": "当联合成员之间没有统一判别字段时，编写可调用 Discriminator 函数，使其同时处理 dict 与模型实例输入，从而在验证与序列化阶段都能正确判别，避免序列化警告或运行时错误。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "实现兼容 dict 与模型输入的 callable discriminator",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "可调用判别器",
+      "stage": "判别逻辑实现",
+      "applicable_signals": [
+        "联合成员缺少单一统一判别字段",
+        "需要在序列化阶段也能正确判别"
+      ],
+      "contraindications": [
+        "存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器",
+        "判别逻辑仅需处理单一输入形态时，无需引入可调用判别器"
+      ],
+      "intervention_moves": [
+        "确认联合成员间不存在可直接使用的统一 Literal 判别字段",
+        "编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值",
+        "返回与目标成员对应的标签",
+        "在验证与序列化两条路径上验证判别结果"
+      ],
+      "workflow_steps": [
+        "检查联合成员，确认没有单一统一字段可作为字符串判别器",
+        "设计判别函数签名，使其接受 dict 或模型实例",
+        "在函数内分支处理：dict 走键访问，模型实例走属性访问",
+        "返回对应成员的标签值",
+        "分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误"
+      ],
+      "triggers": [
+        "联合成员之间没有单一统一判别字段",
+        "需要在序列化阶段也能正确判别联合成员",
+        "准备为 Union 配置 callable Discriminator"
+      ],
+      "constraints": [
+        "判别函数必须同时处理 dict 与模型实例输入",
+        "不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误"
+      ],
+      "cautions": [
+        "Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例",
+        "若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误"
+      ],
+      "output_contract": [
+        "一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。"
+      ],
+      "examples": [
+        {
+          "input": "联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。",
+          "output": "编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。",
+          "notes": "参照 mode='before' 校验器的思路，预先考虑多种输入形态。"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "119de05c-37c6-55ca-8414-1aa8724e07e1"
+      ],
+      "metadata": {
+        "prompt": "编写一个可调用判别器函数，用于联合类型中成员缺少统一判别字段的场景。函数需同时兼容 dict 输入与模型实例输入：对 dict 读取键值，对模型实例读取属性，返回对应成员的标签。设计时参照 mode='before' 校验器的思路，预先考虑多种输入形态，因为 Pydantic 在序列化阶段也会调用该判别器，此时输入很可能是模型实例。完成后确认函数在验证与序列化两条路径上均返回正确标签。",
+        "tags": [
+          "pydantic",
+          "union",
+          "discriminator",
+          "callable",
+          "serialization"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 23,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    },
+    {
+      "draft_id": "c9daeffe-ba11-5476-bb2c-853dba75f2df",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "判别器输入形态兼容检查",
+      "description": "在部署可调用判别器（callable Discriminator）前，检查其是否同时覆盖 dict 与模型实例输入，避免序列化阶段出现警告或校验阶段出现运行时错误。适用于使用 callable Discriminator 且涉及序列化的场景。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止判别器因输入形态不全导致序列化警告或校验期运行时错误",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "输入兼容性校验",
+      "stage": "校验前检查",
+      "applicable_signals": [
+        "使用 callable Discriminator 且涉及序列化",
+        "判别函数仅按 dict 输入设计",
+        "联合类型含多个模型且无统一判别字段"
+      ],
+      "contraindications": [
+        "使用静态 Literal 判别字段无需 callable 判别器"
+      ],
+      "intervention_moves": [
+        "确认判别函数同时处理 dict 与模型实例输入",
+        "对仅处理 dict 的判别函数补充模型实例分支",
+        "在序列化与校验两条路径上验证无警告与运行时错误"
+      ],
+      "workflow_steps": [
+        "识别是否使用 callable Discriminator 且涉及序列化",
+        "检查判别函数是否同时覆盖 dict 与模型实例输入",
+        "若仅覆盖 dict，补充模型实例输入处理分支",
+        "在序列化与校验路径上验证无警告与运行时错误"
+      ],
+      "triggers": [
+        "使用 callable Discriminator 且涉及序列化",
+        "判别函数仅按 dict 输入设计",
+        "联合类型含多个模型且无统一判别字段"
+      ],
+      "constraints": [
+        "判别函数必须同时处理 dict 与模型实例输入",
+        "序列化时判别器输入很可能是模型实例"
+      ],
+      "cautions": [
+        "仅按 dict 设计判别函数，最好情况序列化时出现警告，最坏情况校验时出现运行时错误"
+      ],
+      "output_contract": [
+        "确认判别器对 dict 与模型输入均无警告和运行时错误"
+      ],
+      "examples": [
+        {
+          "input": "判别函数仅按 dict 输入设计，用于含多个模型的 Union 且涉及序列化",
+          "output": "提示补充模型实例输入处理分支，并在序列化与校验路径验证无警告与运行时错误",
+          "notes": "序列化时判别器输入很可能是模型实例"
+        }
+      ],
+      "risk_class": "medium",
+      "confidence": 0.8,
+      "support_ids": [
+        "0918dcea-fb13-56b0-a37b-2c6f2a0cf02c"
+      ],
+      "metadata": {
+        "prompt": "在部署 callable Discriminator 前执行本检查：确认判别函数对 dict 输入与模型实例输入均能正确返回判别值。若判别函数仅按 dict 设计，需补充对模型实例输入的处理分支，因为 Pydantic 在序列化时也会调用判别器，此时输入很可能是模型实例。检查通过后再投入使用。",
+        "tags": [
+          "pydantic",
+          "discriminated-union",
+          "callable-discriminator",
+          "serialization",
+          "input-compatibility"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 23,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

@@ -1,0 +1,115 @@
+{
+  "skill_id": "e73a3553-04f6-5b74-ad23-0f31b79ead90",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“评论与SKU语义匹配判定”和“保守语义匹配阈值判定”高度重叠，其语境一致性判定已被后者的上下文与预期用途约束覆盖，缺乏独立可执行价值。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "e73a3553-04f6-5b74-ad23-0f31b79ead90",
+    "name": "语境一致性匹配判定",
+    "description": "在评论与产品SKU的语义匹配判定中，依据评论语境与产品预期用途判断适用性，而非仅凭孤立关键词命中；用于避免关键词误配。",
+    "skill_body": "对每条评论与候选SKU的匹配，先识别评论所描述的语境与预期用途（如保暖、轻量、街头、户外），再核对SKU属性是否处于同一语境；语境一致才判为适用，语境冲突或关联薄弱则判为不适用。\n\n## Objective\n\n确保匹配基于语境与用途而非孤立关键词\n## Applicable Signals\n\n- 评论提到保暖、厚重、轻量等属性词\n- 评论使用场景词（跑步、街头、户外）与SKU描述用词不同\n- 关键词表面命中但产品类型可能不符\n\n## Contraindications\n\n- 评论与产品属性直接对应且无歧义时无需额外语境判定\n\n## Intervention Moves\n\n- 提取评论的语境与预期用途\n- 核对SKU属性是否属于同一语境\n- 语境一致则判为适用，语境冲突或关联薄弱则判为不适用\n\n## Workflow Steps\n\n- 识别评论所描述的语境与预期用途\n- 识别SKU的属性与适用场景\n- 判断二者是否处于同一语境\n- 语境一致判为适用；语境冲突或关联薄弱判为不适用\n\n## Constraints\n\n- 匹配语境与预期用途，而非仅匹配单个关键词\n- 语境关联薄弱或不清时不计为适用\n\n## Cautions\n\n- 保暖类评论不适用于轻量夏季产品\n- 批评厚重/臃肿的评论不适用于轻薄/修身产品\n\n## Output Contract\n\n- 给出基于语境的适用性判定，并说明所依据的语境与用途对应关系。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论称赞保暖性；候选SKU为保温/保暖类产品\n- Therapist/Output: 适用：评论语境（保暖）与SKU用途（保温）一致\n- Notes: 语境一致\n\n### Example 2\n\n- Client/Input: 评论称赞保暖性；候选SKU为轻量夏季产品\n- Therapist/Output: 不适用：评论语境（保暖）与SKU用途（轻量夏季）冲突\n- Notes: 语境冲突",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保匹配基于语境与用途而非孤立关键词",
+    "domain": "产品目录策展",
+    "task_family": "语义匹配",
+    "method_family": "语境一致性判定",
+    "stage": "匹配判定",
+    "applicable_signals": [
+      "评论提到保暖、厚重、轻量等属性词",
+      "评论使用场景词（跑步、街头、户外）与SKU描述用词不同",
+      "关键词表面命中但产品类型可能不符"
+    ],
+    "contraindications": [
+      "评论与产品属性直接对应且无歧义时无需额外语境判定"
+    ],
+    "intervention_moves": [
+      "提取评论的语境与预期用途",
+      "核对SKU属性是否属于同一语境",
+      "语境一致则判为适用，语境冲突或关联薄弱则判为不适用"
+    ],
+    "triggers": [
+      "评论含属性词但语境与产品用途不同",
+      "关键词命中可能产生误配",
+      "需要判断评论是否真正适用于某SKU"
+    ],
+    "workflow_steps": [
+      "识别评论所描述的语境与预期用途",
+      "识别SKU的属性与适用场景",
+      "判断二者是否处于同一语境",
+      "语境一致判为适用；语境冲突或关联薄弱判为不适用"
+    ],
+    "constraints": [
+      "匹配语境与预期用途，而非仅匹配单个关键词",
+      "语境关联薄弱或不清时不计为适用"
+    ],
+    "cautions": [
+      "保暖类评论不适用于轻量夏季产品",
+      "批评厚重/臃肿的评论不适用于轻薄/修身产品"
+    ],
+    "output_contract": [
+      "给出基于语境的适用性判定，并说明所依据的语境与用途对应关系。"
+    ],
+    "examples": [
+      {
+        "input": "评论称赞保暖性；候选SKU为保温/保暖类产品",
+        "output": "适用：评论语境（保暖）与SKU用途（保温）一致",
+        "notes": "语境一致"
+      },
+      {
+        "input": "评论称赞保暖性；候选SKU为轻量夏季产品",
+        "output": "不适用：评论语境（保暖）与SKU用途（轻量夏季）冲突",
+        "notes": "语境冲突"
+      }
+    ],
+    "tags": [
+      "语义匹配",
+      "语境一致性",
+      "适用性判定",
+      "产品目录策展"
+    ],
+    "support_ids": [
+      "c97eae20-1096-5114-a170-026cce0b1e49"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "edc2a5c9-1e6f-5328-9fba-03ebcb47caaf"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|确保匹配基于语境与用途而非孤立关键词|产品目录策展|语义匹配|语境一致性判定|匹配判定|语境一致性匹配判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

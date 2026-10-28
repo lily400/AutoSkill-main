@@ -1,0 +1,526 @@
+[
+  {
+    "window_id": "fe92006b-b446-5b3a-9d47-686d6f89acf3",
+    "doc_id": "85bf5954-44cd-5839-bb90-bfca92534a10",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md",
+    "unit_title": "input001\\depth.md",
+    "section_heading": "input001\\depth.md",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 2,
+    "anchor_hits": [],
+    "text": "# scrapy.spidermiddlewares.depth — Scrapy 2.14.1 documentation\n\n- [Module code](../../index.html)\n- scrapy.spidermiddlewares.depth\n\n---",
+    "span": {
+      "start": 0,
+      "end": 135
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "input001\\depth.md",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md",
+      "heading_path": [
+        "input001\\depth.md"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "# Source code for scrapy.spidermiddlewares.depth"
+      ],
+      "subsection_headings": [],
+      "heading_number": "",
+      "heading_kind": "",
+      "section_summary": "# scrapy.spidermiddlewares.depth — Scrapy 2.14.1 documentation",
+      "section_chunk_index": 0,
+      "section_chunk_count": 0,
+      "section_chunk_span": {},
+      "original_section_span": {}
+    }
+  },
+  {
+    "window_id": "f503f964-a49d-5f6a-998a-603538c5d44c",
+    "doc_id": "85bf5954-44cd-5839-bb90-bfca92534a10",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md",
+    "unit_title": "input001\\depth.md",
+    "section_heading": "# Source code for scrapy.spidermiddlewares.depth",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 14,
+    "anchor_hits": [],
+    "text": "```\n\"\"\"\nDepth Spider Middleware\n\nSee documentation in docs/topics/spider-middleware.rst\n\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom typing import TYPE_CHECKING, Any\n\nfrom scrapy.spidermiddlewares.base import BaseSpiderMiddleware\nfrom scrapy.utils.decorators import _warn_spider_arg\n\nif TYPE_CHECKING:\n    from collections.abc import AsyncIterator, Iterable\n\n# typing.Self requires Python 3.11\n    from typing_extensions import Self\n\nfrom scrapy import Spider\n    from scrapy.crawler import Crawler\n    from scrapy.http import Request, Response\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass DepthMiddleware(BaseSpiderMiddleware):\n    crawler: Crawler\n\ndef __init__(  # pylint: disable=super-init-not-called\n        self,\n        maxdepth: int,\n        stats: StatsCollector,\n        verbose_stats: bool = False,\n        prio: int = 1,\n    ):\n        self.maxdepth = maxdepth\n        self.stats = stats\n        self.verbose_stats = verbose_stats\n        self.prio = prio\n\n@_warn_spider_arg\n    def process_spider_output(\n        self, response: Response, result: Iterable[Any], spider: Spider | None = None\n    ) -> Iterable[Any]:\n        self._init_depth(response)\n        yield from super().process_spider_output(response, result)\n\ndef _init_depth(self, response: Response) -> None:\n        # base case (depth=0)\n        if \"depth\" not in response.meta:\n            response.meta[\"depth\"] = 0\n            if self.verbose_stats:\n                self.stats.inc_value(\"request_depth_count/0\")",
+    "span": {
+      "start": 186,
+      "end": 2510
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "# Source code for scrapy.spidermiddlewares.depth",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md",
+      "heading_path": [
+        "# Source code for scrapy.spidermiddlewares.depth"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input001\\depth.md"
+      ],
+      "subsection_headings": [],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "```",
+      "section_chunk_index": 0,
+      "section_chunk_count": 0,
+      "section_chunk_span": {},
+      "original_section_span": {}
+    }
+  },
+  {
+    "window_id": "6f2bb058-d2aa-57c3-8e60-1d572f5a5921",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "input002\\settings.md",
+    "section_level": 1,
+    "paragraph_start": 0,
+    "paragraph_end": 2,
+    "anchor_hits": [],
+    "text": "# Settings — Scrapy 2.14.1 documentation\n\n- Settings\n- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/settings.rst)\n\n---",
+    "span": {
+      "start": 0,
+      "end": 147
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "input002\\settings.md",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "input002\\settings.md"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "Settings"
+      ],
+      "subsection_headings": [],
+      "heading_number": "",
+      "heading_kind": "",
+      "section_summary": "# Settings — Scrapy 2.14.1 documentation",
+      "section_chunk_index": 0,
+      "section_chunk_count": 0,
+      "section_chunk_span": {},
+      "original_section_span": {}
+    }
+  },
+  {
+    "window_id": "4a836d6d-8e74-59cd-8a68-ecc68b71fe59",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "Settings",
+    "section_level": 1,
+    "paragraph_start": 7,
+    "paragraph_end": 9,
+    "anchor_hits": [],
+    "text": "> 1. Command-line settings (highest precedence)\n> 2. Spider settings\n> 3. Project settings\n> 4. Add-on settings\n> 5. Command-specific default settings\n> 6. Global default settings (lowest precedence)\n\n1. Command-line settings\nSettings set in the command line have the highest precedence, overriding any\nother settings.\n\nYou can explicitly override one or more settings using the `-s` (or\n`--set`) command-line option.",
+    "span": {
+      "start": 1262,
+      "end": 1679
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Settings",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "Settings"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\settings.md"
+      ],
+      "subsection_headings": [
+        "Designating the settings",
+        "Populating the settings",
+        "1. Command-line settings",
+        "2. Spider settings",
+        "3. Project settings",
+        "4. Add-on settings",
+        "5. Command-specific default settings",
+        "6. Default global settings",
+        "Compatibility with pickle",
+        "Import paths and classes",
+        "How to access settings",
+        "Component priority dictionaries",
+        "Special settings",
+        "Pre-crawler settings",
+        "Reactor settings"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+      "section_chunk_index": 1,
+      "section_chunk_count": 2,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9796
+      },
+      "original_section_span": {
+        "start": 160,
+        "end": 10645
+      }
+    }
+  },
+  {
+    "window_id": "f55b6c07-99da-5f9f-880c-da1cabf3c1ad",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "Settings",
+    "section_level": 1,
+    "paragraph_start": 11,
+    "paragraph_end": 13,
+    "anchor_hits": [],
+    "text": "```\nscrapy crawl myspider -s LOG_LEVEL=INFO -s LOG_FILE=scrapy.log\n```\n\n2. Spider settings\n[Spiders](spiders.html#topics-spiders) can define their own settings that will take\nprecedence and override the project ones.\n\nPre-crawler settings cannot be defined\nper spider, and reactor settings should not have\na different value per spider when [running multiple spiders in the\nsame process](practices.html#run-multiple-spiders).",
+    "span": {
+      "start": 1691,
+      "end": 2115
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Settings",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "Settings"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\settings.md"
+      ],
+      "subsection_headings": [
+        "Designating the settings",
+        "Populating the settings",
+        "1. Command-line settings",
+        "2. Spider settings",
+        "3. Project settings",
+        "4. Add-on settings",
+        "5. Command-specific default settings",
+        "6. Default global settings",
+        "Compatibility with pickle",
+        "Import paths and classes",
+        "How to access settings",
+        "Component priority dictionaries",
+        "Special settings",
+        "Pre-crawler settings",
+        "Reactor settings"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+      "section_chunk_index": 1,
+      "section_chunk_count": 2,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9796
+      },
+      "original_section_span": {
+        "start": 160,
+        "end": 10645
+      }
+    }
+  },
+  {
+    "window_id": "cd147aa9-5ee9-5f2e-bd16-419044d03b1d",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "Settings",
+    "section_level": 1,
+    "paragraph_start": 26,
+    "paragraph_end": 28,
+    "anchor_hits": [],
+    "text": "@classmethod\n    def from_crawler(cls, crawler, *args, **kwargs):\n        spider = super().from_crawler(crawler, *args, **kwargs)\n        if \"some_argument\" in kwargs:\n            spider.settings.set(\n                \"SOME_SETTING\", kwargs[\"some_argument\"], priority=\"spider\"\n            )\n        return spider\n```\n\n3. Project settings\nScrapy projects include a settings module, usually a file called\n`settings.py`, where you should populate most settings that apply to all your\nspiders.\n\nDesignating the settings",
+    "span": {
+      "start": 3093,
+      "end": 3607
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Settings",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "Settings"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\settings.md"
+      ],
+      "subsection_headings": [
+        "Designating the settings",
+        "Populating the settings",
+        "1. Command-line settings",
+        "2. Spider settings",
+        "3. Project settings",
+        "4. Add-on settings",
+        "5. Command-specific default settings",
+        "6. Default global settings",
+        "Compatibility with pickle",
+        "Import paths and classes",
+        "How to access settings",
+        "Component priority dictionaries",
+        "Special settings",
+        "Pre-crawler settings",
+        "Reactor settings"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+      "section_chunk_index": 1,
+      "section_chunk_count": 2,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9796
+      },
+      "original_section_span": {
+        "start": 160,
+        "end": 10645
+      }
+    }
+  },
+  {
+    "window_id": "59f63200-4296-5b00-9ea6-c08362af027f",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "Settings",
+    "section_level": 1,
+    "paragraph_start": 28,
+    "paragraph_end": 31,
+    "anchor_hits": [],
+    "text": "Designating the settings\n\n4. Add-on settings\n[Add-ons](addons.html#topics-addons) can modify settings. They should do this with\n`\"addon\"` priority where possible.\n\n5. Command-specific default settings\nEach [Scrapy command](commands.html#topics-commands) can have its own default settings,\nwhich override the global default settings.\n\nThose command-specific default settings are specified in the\n`default_settings` attribute of each command class.",
+    "span": {
+      "start": 3583,
+      "end": 4029
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Settings",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "Settings"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\settings.md"
+      ],
+      "subsection_headings": [
+        "Designating the settings",
+        "Populating the settings",
+        "1. Command-line settings",
+        "2. Spider settings",
+        "3. Project settings",
+        "4. Add-on settings",
+        "5. Command-specific default settings",
+        "6. Default global settings",
+        "Compatibility with pickle",
+        "Import paths and classes",
+        "How to access settings",
+        "Component priority dictionaries",
+        "Special settings",
+        "Pre-crawler settings",
+        "Reactor settings"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+      "section_chunk_index": 1,
+      "section_chunk_count": 2,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9796
+      },
+      "original_section_span": {
+        "start": 160,
+        "end": 10645
+      }
+    }
+  },
+  {
+    "window_id": "3adcbee4-13b5-5537-af56-d8bf5cd1c466",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "Settings",
+    "section_level": 1,
+    "paragraph_start": 31,
+    "paragraph_end": 33,
+    "anchor_hits": [],
+    "text": "Those command-specific default settings are specified in the\n`default_settings` attribute of each command class.\n\n6. Default global settings\nThe `scrapy.settings.default_settings` module defines global default values\nfor some built-in settings.\n\n[`startproject`](commands.html#std-command-startproject) generates a `settings.py` file that sets\nsome settings to different values.",
+    "span": {
+      "start": 3917,
+      "end": 4295
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Settings",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "Settings"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\settings.md"
+      ],
+      "subsection_headings": [
+        "Designating the settings",
+        "Populating the settings",
+        "1. Command-line settings",
+        "2. Spider settings",
+        "3. Project settings",
+        "4. Add-on settings",
+        "5. Command-specific default settings",
+        "6. Default global settings",
+        "Compatibility with pickle",
+        "Import paths and classes",
+        "How to access settings",
+        "Component priority dictionaries",
+        "Special settings",
+        "Pre-crawler settings",
+        "Reactor settings"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+      "section_chunk_index": 1,
+      "section_chunk_count": 2,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9796
+      },
+      "original_section_span": {
+        "start": 160,
+        "end": 10645
+      }
+    }
+  },
+  {
+    "window_id": "899bebcd-04a4-5384-96a3-e4395c075105",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "Settings",
+    "section_level": 1,
+    "paragraph_start": 36,
+    "paragraph_end": 38,
+    "anchor_hits": [],
+    "text": "Import paths and classes\nWhen a setting references a callable object to be imported by Scrapy, such as a\nclass or a function, there are two different ways you can specify that object:\n\n- As a string containing the import path of that object\n- As the object itself\n\nFor example:",
+    "span": {
+      "start": 4702,
+      "end": 4979
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Settings",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "Settings"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\settings.md"
+      ],
+      "subsection_headings": [
+        "Designating the settings",
+        "Populating the settings",
+        "1. Command-line settings",
+        "2. Spider settings",
+        "3. Project settings",
+        "4. Add-on settings",
+        "5. Command-specific default settings",
+        "6. Default global settings",
+        "Compatibility with pickle",
+        "Import paths and classes",
+        "How to access settings",
+        "Component priority dictionaries",
+        "Special settings",
+        "Pre-crawler settings",
+        "Reactor settings"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+      "section_chunk_index": 1,
+      "section_chunk_count": 2,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9796
+      },
+      "original_section_span": {
+        "start": 160,
+        "end": 10645
+      }
+    }
+  },
+  {
+    "window_id": "79dfca8a-4b20-5c6b-b849-aa2bcbc62e6e",
+    "doc_id": "63a3e42d-b022-53bd-918f-7256d9f5f5a2",
+    "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+    "unit_title": "input002\\settings.md",
+    "section_heading": "Settings",
+    "section_level": 1,
+    "paragraph_start": 64,
+    "paragraph_end": 66,
+    "anchor_hits": [],
+    "text": "These settings are:\n\n- `ASYNCIO_EVENT_LOOP` (not possible to set per-spider when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n- `DNS_RESOLVER` and settings used by the corresponding\ncomponent, e.g. `DNSCACHE_ENABLED`, `DNSCACHE_SIZE`\nand `DNS_TIMEOUT` for the default one.\n- `REACTOR_THREADPOOL_MAXSIZE`\n- `TWISTED_REACTOR` (ignored when using\n[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)\n\n`ASYNCIO_EVENT_LOOP` and `TWISTED_REACTOR` are used upon\ninstalling the reactor. The rest of the settings are applied when starting\nthe reactor.",
+    "span": {
+      "start": 9344,
+      "end": 9956
+    },
+    "strategy": "strict",
+    "metadata": {
+      "section_heading": "Settings",
+      "effective_strategy": "strict",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md",
+      "heading_path": [
+        "Settings"
+      ],
+      "parent_heading": "",
+      "sibling_headings": [
+        "input002\\settings.md"
+      ],
+      "subsection_headings": [
+        "Designating the settings",
+        "Populating the settings",
+        "1. Command-line settings",
+        "2. Spider settings",
+        "3. Project settings",
+        "4. Add-on settings",
+        "5. Command-specific default settings",
+        "6. Default global settings",
+        "Compatibility with pickle",
+        "Import paths and classes",
+        "How to access settings",
+        "Component priority dictionaries",
+        "Special settings",
+        "Pre-crawler settings",
+        "Reactor settings"
+      ],
+      "heading_number": "",
+      "heading_kind": "outline_llm",
+      "section_summary": "The Scrapy settings allows you to customize the behaviour of all Scrapy",
+      "section_chunk_index": 1,
+      "section_chunk_count": 2,
+      "section_chunk_span": {
+        "start": 0,
+        "end": 9796
+      },
+      "original_section_span": {
+        "start": 160,
+        "end": 10645
+      }
+    }
+  }
+]

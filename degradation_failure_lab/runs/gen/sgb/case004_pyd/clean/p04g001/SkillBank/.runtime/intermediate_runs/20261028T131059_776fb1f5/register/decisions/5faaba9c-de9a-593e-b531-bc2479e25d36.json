@@ -1,0 +1,110 @@
+{
+  "skill_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+    "name": "联合类型精确度匹配评分",
+    "description": "说明 Pydantic 校验联合类型（Union）时如何按精确度对成员匹配打分并选出最佳匹配，用于判断或解释联合类型中哪个成员应胜出。",
+    "skill_body": "当需要判断联合类型多个成员中哪个匹配最优，或解释联合类型校验结果的选择依据时，按精确度评分规则对每个成员匹配打分：精确类型匹配得分最高，其次是在 strict 模式下会成功的匹配，再次是在 lax 模式下会成功的匹配；取得最高精确度得分的成员即为最佳匹配。仅用于联合类型匹配选择，不用于单类型校验或自定义判别器逻辑。\n\n## Objective\n\n按精确度评分规则确定联合类型的最佳匹配成员\n## Applicable Signals\n\n- 输入需要匹配多个候选类型之一\n- 需要说明为何某个联合成员被选中\n\n## Contraindications\n\n- 非联合类型的单类型校验\n- 需要自定义判别器逻辑而非精确度评分时\n\n## Intervention Moves\n\n- 对每个联合成员计算精确度得分\n- 按精确类型匹配 > strict 模式成功 > lax 模式成功排序\n- 选择得分最高的成员作为最佳匹配\n\n## Workflow Steps\n\n- 确认校验对象为联合类型且存在多个候选成员\n- 对每个成员判断匹配层级：精确类型匹配、strict 模式成功、lax 模式成功\n- 按层级从高到低赋分\n- 选出最高精确度得分的成员作为最佳匹配\n- 输出按精确度排序的成员匹配结论\n\n## Constraints\n\n- 评分仅依据三个精确度层级，不引入其他自定义权重\n- 仅在联合类型场景下应用\n\n## Cautions\n\n- 精确类型匹配优先于 strict 模式成功，strict 模式成功优先于 lax 模式成功\n- 若需自定义判别器逻辑，应改用判别联合而非精确度评分\n\n## Output Contract\n\n- 给出按精确度排序的成员匹配结论，并指明最佳匹配成员。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: int 输入匹配 float | int 联合类型\n- Therapist/Output: int 成员为精确类型匹配，得分最高，判定为最佳匹配。\n- Notes: 精确类型匹配优先于其他层级",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按精确度评分规则确定联合类型的最佳匹配成员",
+    "domain": "pydantic",
+    "task_family": "联合类型校验",
+    "method_family": "精确度评分",
+    "stage": "匹配选择",
+    "applicable_signals": [
+      "输入需要匹配多个候选类型之一",
+      "需要说明为何某个联合成员被选中"
+    ],
+    "contraindications": [
+      "非联合类型的单类型校验",
+      "需要自定义判别器逻辑而非精确度评分时"
+    ],
+    "intervention_moves": [
+      "对每个联合成员计算精确度得分",
+      "按精确类型匹配 > strict 模式成功 > lax 模式成功排序",
+      "选择得分最高的成员作为最佳匹配"
+    ],
+    "triggers": [
+      "需要判断联合类型多个成员中哪个匹配最优",
+      "解释联合类型校验结果的选择依据"
+    ],
+    "workflow_steps": [
+      "确认校验对象为联合类型且存在多个候选成员",
+      "对每个成员判断匹配层级：精确类型匹配、strict 模式成功、lax 模式成功",
+      "按层级从高到低赋分",
+      "选出最高精确度得分的成员作为最佳匹配",
+      "输出按精确度排序的成员匹配结论"
+    ],
+    "constraints": [
+      "评分仅依据三个精确度层级，不引入其他自定义权重",
+      "仅在联合类型场景下应用"
+    ],
+    "cautions": [
+      "精确类型匹配优先于 strict 模式成功，strict 模式成功优先于 lax 模式成功",
+      "若需自定义判别器逻辑，应改用判别联合而非精确度评分"
+    ],
+    "output_contract": [
+      "给出按精确度排序的成员匹配结论，并指明最佳匹配成员。"
+    ],
+    "examples": [
+      {
+        "input": "int 输入匹配 float | int 联合类型",
+        "output": "int 成员为精确类型匹配，得分最高，判定为最佳匹配。",
+        "notes": "精确类型匹配优先于其他层级"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "union",
+      "exactness",
+      "匹配选择"
+    ],
+    "support_ids": [
+      "26404bea-5236-53ec-80a6-f3bba33795fc"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "1c73e9d3-2606-5f9a-81e1-791596fb67d1"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|按精确度评分规则确定联合类型的最佳匹配成员|pydantic|联合类型校验|精确度评分|匹配选择|联合类型精确度匹配评分"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

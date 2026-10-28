@@ -1,0 +1,116 @@
+{
+  "skill_id": "15b74fb7-f677-5822-a5fc-fcbe81d32338",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "15b74fb7-f677-5822-a5fc-fcbe81d32338",
+    "name": "输入一致性校验与阻断规则",
+    "description": "在分析前校验产品目录类别是否仅限 tops/bottoms/outerwear 且目录完整、评审 CSV 列是否齐全；不满足约定时明确阻断并说明所需修复，而不是继续分析。",
+    "skill_body": "作为分析前的合规守卫：先检查产品目录（JSON）中每个对象的类别字段是否仅取 tops/bottoms/outerwear，并确认目录完整（无缺失对象）；再检查评审 CSV 是否包含约定列。任一条件不满足时，停止分析并输出明确的阻断说明，列出具体不符合项及所需修复；全部通过时输出通过结论，允许进入分析。\n\n## Objective\n\n确保下游依赖的输入严格符合约定格式与完整性\n## Applicable Signals\n\n- 下游明确要求严格输入一致性\n- 目录类别字段出现约定外取值（如以 jackets 代替 outerwear）\n- 评审 CSV 可能缺少列\n- 目录对象数量与预期不一致\n\n## Contraindications\n\n- 已明确允许标注假设并继续分析\n- 输入已通过校验\n\n## Intervention Moves\n\n- 逐项校验目录类别取值是否属于 tops/bottoms/outerwear\n- 核对目录完整性（对象数量与预期一致）\n- 核对评审 CSV 列是否齐全\n- 对不符合项输出阻断说明与所需修复\n\n## Workflow Steps\n\n- 读取产品目录 JSON 与评审 CSV\n- 校验目录类别字段仅取 tops/bottoms/outerwear\n- 校验目录完整性\n- 校验评审 CSV 列齐全\n- 若全部通过，输出通过结论并放行分析\n- 若存在不符合项，输出阻断说明，逐项列出问题与所需修复\n\n## Constraints\n\n- 类别仅允许 tops/bottoms/outerwear\n- 目录须完整后方可分析\n- 评审 CSV 须包含约定列\n\n## Cautions\n\n- 不得因业务方要求“先出信号”而跳过校验\n- 不得自行将约定外类别静默改写为合规类别\n\n## Output Contract\n\n- 通过校验的结论，或明确的阻断说明及所需修复清单\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 目录中某外层单品类别被标为 jackets，且评审 CSV 缺少一列。\n- Therapist/Output: 阻断：类别 jackets 不在 tops/bottoms/outerwear 内；评审 CSV 缺少约定列。所需修复：将类别规范为 outerwear，补齐缺失列后重新提交。\n- Notes: 阻断需逐项列出问题与修复要求",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保下游依赖的输入严格符合约定格式与完整性",
+    "domain": "运营数据分析",
+    "task_family": "输入合规校验",
+    "method_family": "模式与完整性校验",
+    "stage": "分析前校验",
+    "applicable_signals": [
+      "下游明确要求严格输入一致性",
+      "目录类别字段出现约定外取值（如以 jackets 代替 outerwear）",
+      "评审 CSV 可能缺少列",
+      "目录对象数量与预期不一致"
+    ],
+    "contraindications": [
+      "已明确允许标注假设并继续分析",
+      "输入已通过校验"
+    ],
+    "intervention_moves": [
+      "逐项校验目录类别取值是否属于 tops/bottoms/outerwear",
+      "核对目录完整性（对象数量与预期一致）",
+      "核对评审 CSV 列是否齐全",
+      "对不符合项输出阻断说明与所需修复"
+    ],
+    "triggers": [
+      "下游依赖严格输入一致性",
+      "产品目录类别或评审 CSV 列可能不符合约定",
+      "目录可能不完整或存在未纳入的新增对象"
+    ],
+    "workflow_steps": [
+      "读取产品目录 JSON 与评审 CSV",
+      "校验目录类别字段仅取 tops/bottoms/outerwear",
+      "校验目录完整性",
+      "校验评审 CSV 列齐全",
+      "若全部通过，输出通过结论并放行分析",
+      "若存在不符合项，输出阻断说明，逐项列出问题与所需修复"
+    ],
+    "constraints": [
+      "类别仅允许 tops/bottoms/outerwear",
+      "目录须完整后方可分析",
+      "评审 CSV 须包含约定列"
+    ],
+    "cautions": [
+      "不得因业务方要求“先出信号”而跳过校验",
+      "不得自行将约定外类别静默改写为合规类别"
+    ],
+    "output_contract": [
+      "通过校验的结论，或明确的阻断说明及所需修复清单"
+    ],
+    "examples": [
+      {
+        "input": "目录中某外层单品类别被标为 jackets，且评审 CSV 缺少一列。",
+        "output": "阻断：类别 jackets 不在 tops/bottoms/outerwear 内；评审 CSV 缺少约定列。所需修复：将类别规范为 outerwear，补齐缺失列后重新提交。",
+        "notes": "阻断需逐项列出问题与修复要求"
+      }
+    ],
+    "tags": [
+      "输入校验",
+      "合规守卫",
+      "数据完整性",
+      "阻断规则"
+    ],
+    "support_ids": [
+      "87121286-1631-5dfe-af37-273495ff7288"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "f2c98a6f-358b-5c6a-b840-7a50b0324360"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|确保下游依赖的输入严格符合约定格式与完整性|运营数据分析|输入合规校验|模式与完整性校验|分析前校验|输入一致性校验与阻断规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

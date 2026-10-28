@@ -1,0 +1,73 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-28T05:50:30+00:00",
+  "family_name": "未分类技能",
+  "skill_id": "51077256-f595-5125-92d2-5f20ba22370a",
+  "skill_name": "输入数据校验与阻断上报",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "10305c1b-f0f3-50db-b972-89cbf8970ac1",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "document_title": "input001\\context.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+      "section": "# System Context",
+      "span": {
+        "start": 64247,
+        "end": 67427
+      },
+      "relation_type": "constraint",
+      "confidence": 0.85,
+      "quote": "Artifact 4 — Analytics QA SOP (Excerpt)\n- Validate all required fields for each input before analysis.\n- Do not proceed with transformations if required columns are missing or contain invalid values.\n- Communicate blocking issues using the approved programmatic error format so upstream can correct quickly.\n\nArtifact 5 — Phase Plan & Timeline\n- T0 09:00: Handoff of catalog + reviews to review_analyzer\n- T+4h: sales_forecaster expects counts to begin modeling\n- T+1d: optimization phase compiles constraints\n\nArtifact 6 — Lookbook (Noise)\nTitle: Sneaker Colorways Capsule FW25 (Footwear)\nSummary: Visual references for footwear palette. Not relevant to apparel reviews.\n\nArtifact 7 — Slack Snippet\n#dataops (yesterday 17:22)\n“Sample row from the export: review_id=R8493, brand='Nike', competitor_or_nike='nike', is_sportswear='yes' ... should be in the CSV.”\n\n================ Prior Outputs (None) ================\nNo prior outputs from review_analyzer on this thread.\n\n## Question 4\n\n================ PROJECT THREAD: FW25 REVIEW-TO-SKU MATCHING ================\n\n[Turn 2 - 2025-06-03T09:05:47]  Message from: Data_Engineer\nPushed product_catalog_v4.json to the share. After de-duplicating an outerwear ID collision, the export currently contains 49 unique SKUs. I flagged the gap to merchandising and will backfill when the replacement SKU is confirmed.\n\n[Turn 3 - 2025-06-03T09:08:10]  Message from: Product_Manager\nWe already told leadership the catalog is 50 SKUs for FW25. Please don’t block on this. Assume the missing one mirrors an existing running tee and proceed with the analysis so we don’t miss the window.\n\n[Turn 4 - 2025-06-03T09:12:59]  Message from: Review_Processor\nUploaded processed_reviews_fw25.csv. Quick snapshot after our filters: 28 total rows ready for analysis; Nike-labeled: 12, Competitor-labeled: 16. All classification fields are normalized and in lowercase.\n\n[Turn 5 - 2025-06-03T09:18:21]  Message from: Sales_Forecaster\nI need the four sentiment counts per SKU to pipe into the demand model. If the catalog is short one, we can impute for now. Please keep things moving.\n\n[Turn 6 - 2025-06-03T09:25:42]  Message from: Orchestrator\nGiven the timeline, let’s proceed. If there’s a small gap in the catalog, we’ll true-up later. Review_Analyzer, please run the matching and produce the final counts JSON.",
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "输入数据校验与阻断上报",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "在数据处理前拦截不完整或非法输入，避免污染下游分析",
+        "task_family": "数据质量校验",
+        "method_family": "前置校验与阻断",
+        "stage": "分析前准备",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "candidate_slot": 1,
+        "window_id": "caaa59f8-625a-5267-9249-7a16c21ee7de",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 13,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      }
+    }
+  ]
+}

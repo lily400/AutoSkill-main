@@ -1,0 +1,120 @@
+{
+  "skill_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+  "name": "TypeAdapter 校验纯联合类型",
+  "description": "当校验目标仅为联合类型本身、且不希望继承 BaseModel 时，使用 TypeAdapter 包装联合类型并调用 validate_python 对数据执行校验，返回解析后的具体联合成员实例。",
+  "skill_body": "确认校验目标是一个联合类型（而非完整模型字段）。用 TypeAdapter 包装该联合类型构造适配器，调用 validate_python 传入待校验数据，返回解析后的具体联合成员实例。若联合为可辨识联合，确保判别字段存在且取值匹配。\n\n## Objective\n\n用 TypeAdapter 对纯联合类型执行校验\n## Applicable Signals\n\n- 校验目标仅为联合类型本身\n- 不希望继承 BaseModel\n- 已有联合类型定义但无外层模型承载\n\n## Contraindications\n\n- 需要完整模型字段校验\n- 已有 BaseModel 承载该字段\n\n## Intervention Moves\n\n- 用 TypeAdapter 包装联合类型构造适配器\n- 调用 validate_python 传入待校验数据\n- 返回解析后的具体联合成员实例\n\n## Workflow Steps\n\n- 确认校验目标为联合类型本身而非完整模型\n- 用 TypeAdapter(联合类型) 构造适配器\n- 调用 type_adapter.validate_python(数据)\n- 返回解析后的具体联合成员实例\n\n## Constraints\n\n- 仅用于纯联合类型校验，不替代 BaseModel 字段校验\n- 若为可辨识联合，判别字段须存在且取值匹配\n\n## Cautions\n\n- 联合校验错误信息可能较冗长，可考虑可辨识联合简化错误\n\n## Output Contract\n\n- 返回解析后的具体联合成员实例\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: type_adapter = TypeAdapter(Pet); type_adapter.validate_python({'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'})\n- Therapist/Output: BlackCat(pet_type='cat', color='black', black_name='felix')\n- Notes: Pet 为嵌套可辨识联合类型",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+  "parent_candidate_ids": [
+    "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.6,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "用 TypeAdapter 对纯联合类型执行校验",
+  "domain": "pydantic",
+  "task_family": "联合类型校验",
+  "method_family": "TypeAdapter",
+  "stage": "数据校验",
+  "applicable_signals": [
+    "校验目标仅为联合类型本身",
+    "不希望继承 BaseModel",
+    "已有联合类型定义但无外层模型承载"
+  ],
+  "contraindications": [
+    "需要完整模型字段校验",
+    "已有 BaseModel 承载该字段"
+  ],
+  "intervention_moves": [
+    "用 TypeAdapter 包装联合类型构造适配器",
+    "调用 validate_python 传入待校验数据",
+    "返回解析后的具体联合成员实例"
+  ],
+  "triggers": [
+    "需要校验的数据目标仅为联合类型本身",
+    "不希望为校验而继承 BaseModel",
+    "需要对联合类型单独执行 validate_python"
+  ],
+  "workflow_steps": [
+    "确认校验目标为联合类型本身而非完整模型",
+    "用 TypeAdapter(联合类型) 构造适配器",
+    "调用 type_adapter.validate_python(数据)",
+    "返回解析后的具体联合成员实例"
+  ],
+  "constraints": [
+    "仅用于纯联合类型校验，不替代 BaseModel 字段校验",
+    "若为可辨识联合，判别字段须存在且取值匹配"
+  ],
+  "cautions": [
+    "联合校验错误信息可能较冗长，可考虑可辨识联合简化错误"
+  ],
+  "output_contract": [
+    "返回解析后的具体联合成员实例"
+  ],
+  "examples": [
+    {
+      "input": "type_adapter = TypeAdapter(Pet); type_adapter.validate_python({'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'})",
+      "output": "BlackCat(pet_type='cat', color='black', black_name='felix')",
+      "notes": "Pet 为嵌套可辨识联合类型"
+    }
+  ],
+  "tags": [
+    "pydantic",
+    "union",
+    "TypeAdapter",
+    "validation"
+  ],
+  "support_ids": [
+    "52871143-3b70-5022-a1fd-af6ce48fbc55"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "565b2424-8f94-56bd-a680-c1eb1098da78"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "pydantic::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|用 typeadapter 对纯联合类型执行校验|pydantic|联合类型校验|typeadapter|数据校验|typeadapter 校验纯联合类型",
+    "change_action": "create",
+    "llm_reason": "TypeAdapter 校验纯联合类型是独立且可执行的微技能，与同批判别器类技能无冗余，支持证据无冲突。",
+    "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+    "parent_candidate_ids": [
+      "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+    ],
+    "hierarchy_confidence": 0.6,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

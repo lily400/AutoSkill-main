@@ -1,0 +1,103 @@
+{
+  "skill_id": "a1a6384e-3e6c-59db-9b41-2b09e0ec67d6",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 a47fa0df 和 b6e41188 高度重复（同一 VehicleID→NodeID 规范排序规则），属同批冗余，无需保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a1a6384e-3e6c-59db-9b41-2b09e0ec67d6",
+    "name": "实体规范排序规则",
+    "description": "当某一仿真阶段内需要确定多个实体的处理顺序时，按 VehicleID 升序、再按 NodeID 升序施加确定性规范排序，以保证仿真可复现。",
+    "skill_body": "在阶段内需要处理多个实体且顺序未定时，使用本技能：先按 VehicleID 升序排序，VehicleID 相同时再按 NodeID 升序排序，得到确定的实体处理序列。若规则已明确指定其他优先级，则不要使用本技能，直接遵循该规则。\n\n## Objective\n\n在阶段内对实体施加确定性的规范排序\n## Applicable Signals\n\n- 阶段内多实体处理顺序未定\n- 需要保证仿真可复现\n\n## Contraindications\n\n- 规则已明确指定不同优先级\n\n## Intervention Moves\n\n- 以 VehicleID 升序作为主排序键\n- VehicleID 相同时以 NodeID 升序作为次排序键\n- 输出排序后的实体处理序列\n\n## Workflow Steps\n\n- 确认当前阶段内需要排序的实体集合\n- 检查是否存在规则明确指定的其他优先级；若有则改用该优先级\n- 按 VehicleID 升序排序\n- 对 VehicleID 相同的实体按 NodeID 升序排序\n- 输出最终实体处理序列\n\n## Constraints\n\n- 仅在阶段内需要排序时使用\n- 排序键顺序固定为 VehicleID 优先、NodeID 次之\n\n## Cautions\n\n- 若规则另有优先级规定，不得套用本规范排序\n\n## Output Contract\n\n- 按 VehicleID 再 NodeID 升序排列的实体处理序列",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在阶段内对实体施加确定性的规范排序",
+    "domain": "交通仿真",
+    "task_family": "确定性排序",
+    "method_family": "规范排序键",
+    "stage": "阶段内排序",
+    "applicable_signals": [
+      "阶段内多实体处理顺序未定",
+      "需要保证仿真可复现"
+    ],
+    "contraindications": [
+      "规则已明确指定不同优先级"
+    ],
+    "intervention_moves": [
+      "以 VehicleID 升序作为主排序键",
+      "VehicleID 相同时以 NodeID 升序作为次排序键",
+      "输出排序后的实体处理序列"
+    ],
+    "triggers": [
+      "阶段内多实体处理顺序未定",
+      "需要保证仿真可复现",
+      "同一阶段内需对实体施加确定性排序"
+    ],
+    "workflow_steps": [
+      "确认当前阶段内需要排序的实体集合",
+      "检查是否存在规则明确指定的其他优先级；若有则改用该优先级",
+      "按 VehicleID 升序排序",
+      "对 VehicleID 相同的实体按 NodeID 升序排序",
+      "输出最终实体处理序列"
+    ],
+    "constraints": [
+      "仅在阶段内需要排序时使用",
+      "排序键顺序固定为 VehicleID 优先、NodeID 次之"
+    ],
+    "cautions": [
+      "若规则另有优先级规定，不得套用本规范排序"
+    ],
+    "output_contract": [
+      "按 VehicleID 再 NodeID 升序排列的实体处理序列"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "确定性排序",
+      "规范排序键",
+      "可复现"
+    ],
+    "support_ids": [
+      "1b10cac2-f029-5f85-908f-39332a552f27"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "bcbb218c-815d-5562-8b58-5044dd78f452"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|在阶段内对实体施加确定性的规范排序|交通仿真|确定性排序|规范排序键|阶段内排序|实体规范排序规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

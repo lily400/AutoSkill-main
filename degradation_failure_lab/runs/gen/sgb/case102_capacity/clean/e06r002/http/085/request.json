@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"d3e1cf4c-29a0-51ad-a791-f42d7e30c644\", \"name\": \"边容量准入校验\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在容量与冲突检查阶段正确批准或拒绝车辆进入边的请求，避免超出边容量上限\", \"applicable_signals\": [\"车辆在节点请求 ENTER_EDGE 进入某条边\", \"目标边已有车辆数接近或达到 MaxVehicles\"], \"contraindications\": [\"请求不是进入边而是其他动作（如 WAIT、装卸）\", \"目标边不存在或未定义容量\"], \"workflow_steps\": [\"识别当前 tick 的 ENTER_EDGE 请求及其目标边\", \"读取目标边当前车辆数与 MaxVehicles 上限\", \"判断批准后车辆数是否超过 MaxVehicles\", \"若超过则拒绝请求，并令车辆在本 tick 于当前节点执行 WAIT\", \"若未超过则批准进入\", \"输出每个请求的批准或拒绝结果\"], \"constraints\": [\"判定须在容量与冲突检查阶段完成\", \"不得批准导致目标边车辆数超过 MaxVehicles 的请求\"], \"triggers\": [\"车辆在节点请求 ENTER_EDGE 进入某条边\", \"需要判断目标边是否已达 MaxVehicles 上限\"], \"output_contract\": [\"对每个 ENTER_EDGE 请求给出批准或拒绝结果；被拒绝车辆在该 tick 执行 WAIT。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"5f55b184-1a2e-5197-aa2f-6d52517d705f\", \"name\": \"边容量与队列冲突裁决\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"按容量与冲突规则裁决边上的车辆通行\", \"applicable_signals\": [\"多车竞争同一入边\", \"发生容量削减事件\", \"目标边存在容量或排队约束\"], \"workflow_steps\": [\"对每辆试图进入目标边的车辆读取该边容量与当前占用/排队状态\", \"检查是否存在容量削减事件或冲突\", \"若容量允许且无冲突，允许车辆进入并更新占用\", \"否则令车辆排队等待并记录排队决策\", \"汇总每 tick 的进入/排队决策结果\"], \"output_contract\": [\"每 tick 的车辆进入/排队决策结果\"], \"score\": 0.6107834228073081}, {\"skill_id\": \"730695a2-c80a-54b5-aadf-c616118dd310\", \"name\": \"Tick 处理与快照生成流程\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"按规定的阶段顺序推进一个 tick 并产出可核对的状态快照\", \"applicable_signals\": [\"需要从当前状态推进到下一 tick\", \"需要生成 GLOBAL/NODES/EDGES/VEHICLES 等快照\"], \"workflow_steps\": [\"阶段1：处理事件/事故（无事故则跳过）\", \"阶段2：收集移动承诺（未请求移动的车辆无承诺）\", \"阶段3：解决容量与冲突（无冲突则跳过）\", \"阶段4：执行移动（无承诺则无车辆移动）\", \"阶段5：执行装卸阶段，按 SizeUnits 与 HandlingRate 判定作业完成情况\", \"阶段6：计算指标\"], \"output_contract\": [\"包含 TimeTick、ScoreSoFar 及各实体状态的 tick 快照\"], \"score\": 0.48258089452633324}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

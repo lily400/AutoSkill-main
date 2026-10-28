@@ -1,0 +1,144 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "车辆状态回退",
+  "run_id": "20261027T222252_7ac7ee14",
+  "skills": [
+    {
+      "skill_id": "d9f5202a-1d1b-5545-a2d2-49b57c524a65",
+      "name": "进入边失败回退WAIT规则",
+      "description": "当车辆请求ENTER_EDGE但未满足进入条件时，将其状态回退为在当前节点执行WAIT；用于处理进入边被拒绝后的状态回退判定。",
+      "skill_body": "在车辆移动更新阶段，检查车辆是否发起了ENTER_EDGE请求。若请求存在但未满足进入条件（如信号相位、容量、队列等校验失败），不要放行车辆，而是将车辆状态置为在当前节点WAIT。若进入条件全部满足或车辆未发起ENTER_EDGE请求，则不适用本规则。\n\n## Objective\n\n在进入边条件不满足时正确回退为WAIT状态\n## Applicable Signals\n\n- 车辆请求进入边但条件校验失败\n\n## Contraindications\n\n- 车辆进入条件全部满足\n- 车辆未发起ENTER_EDGE请求\n\n## Intervention Moves\n\n- 确认车辆已发起ENTER_EDGE请求\n- 确认进入条件校验失败\n- 将车辆状态置为当前节点WAIT\n\n## Workflow Steps\n\n- 识别车辆是否发起ENTER_EDGE请求\n- 校验进入条件是否满足\n- 若校验失败，将车辆状态置为当前节点WAIT\n\n## Constraints\n\n- 仅在ENTER_EDGE请求存在且条件校验失败时触发\n- 回退目标状态为当前节点的WAIT\n\n## Cautions\n\n- 不要将条件满足的车辆误判为WAIT\n- 不要对未发起ENTER_EDGE请求的车辆应用本规则\n\n## Output Contract\n\n- 车辆状态置为当前节点WAIT",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "在进入边条件不满足时正确回退为WAIT状态",
+      "domain": "交通仿真",
+      "task_family": "车辆状态回退",
+      "method_family": "规则判定",
+      "stage": "车辆移动更新",
+      "applicable_signals": [
+        "车辆请求进入边但条件校验失败"
+      ],
+      "contraindications": [
+        "车辆进入条件全部满足",
+        "车辆未发起ENTER_EDGE请求"
+      ],
+      "intervention_moves": [
+        "确认车辆已发起ENTER_EDGE请求",
+        "确认进入条件校验失败",
+        "将车辆状态置为当前节点WAIT"
+      ],
+      "triggers": [
+        "车辆请求进入边但条件校验失败",
+        "车辆发起ENTER_EDGE请求后被拒绝"
+      ],
+      "workflow_steps": [
+        "识别车辆是否发起ENTER_EDGE请求",
+        "校验进入条件是否满足",
+        "若校验失败，将车辆状态置为当前节点WAIT"
+      ],
+      "constraints": [
+        "仅在ENTER_EDGE请求存在且条件校验失败时触发",
+        "回退目标状态为当前节点的WAIT"
+      ],
+      "cautions": [
+        "不要将条件满足的车辆误判为WAIT",
+        "不要对未发起ENTER_EDGE请求的车辆应用本规则"
+      ],
+      "output_contract": [
+        "车辆状态置为当前节点WAIT"
+      ],
+      "examples": [],
+      "tags": [
+        "交通仿真",
+        "车辆状态回退",
+        "ENTER_EDGE",
+        "WAIT",
+        "规则判定"
+      ],
+      "support_ids": [
+        "4b65fb08-9d40-5169-812d-e605d2528a8c"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "edf21cbb-6703-5c37-9108-3f101c190f19"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|在进入边条件不满足时正确回退为wait状态|交通仿真|车辆状态回退|规则判定|车辆移动更新|进入边失败回退wait规则",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "83b71598-17fa-481c-89c5-462bb369fdd0",
+      "entity_type": "skill",
+      "entity_id": "d9f5202a-1d1b-5545-a2d2-49b57c524a65",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d9f5202a-1d1b-5545-a2d2-49b57c524a65",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "4b65fb08-9d40-5169-812d-e605d2528a8c"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

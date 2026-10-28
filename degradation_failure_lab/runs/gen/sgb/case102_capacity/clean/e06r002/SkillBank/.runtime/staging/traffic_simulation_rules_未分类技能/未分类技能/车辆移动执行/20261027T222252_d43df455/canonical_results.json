@@ -1,0 +1,161 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "车辆移动执行",
+  "run_id": "20261027T222252_d43df455",
+  "skills": [
+    {
+      "skill_id": "2f3c4ace-1ca8-53a7-8b8b-3cd72ddc0fee",
+      "name": "边容量准入校验",
+      "description": "在移动执行阶段判断车辆能否进入目标边：检查边状态为 OPEN、进入后占用不超过 LaneCount×CapacityPerLane、且下游节点信号/交叉口规则允许；用于逐 tick 的车辆移动执行。",
+      "skill_body": "对每个 ENTER_EDGE 请求执行准入判定：\n1. 计算目标边的 MaxVehicles = LaneCount(edge) × CapacityPerLane(edge)。\n2. 检查边 Status 是否为 OPEN；非 OPEN 则拒绝。\n3. 检查批准进入后占用是否不超过 MaxVehicles；超限则拒绝。\n4. 检查下游节点的信号或交叉口规则是否允许进入；不允许则拒绝。\n5. 三项条件全部满足才批准进入；任一条件失败则拒绝，车辆改为在当前节点执行 WAIT。\n输出每个请求的批准/拒绝判定及失败原因。\n\n## Objective\n\n按容量与信号约束决定 ENTER_EDGE 是否被批准\n## Applicable Signals\n\n- 车辆请求 ENTER_EDGE\n- 需要判断目标边是否可容纳新增占用\n\n## Contraindications\n\n- 边状态未知或未初始化\n- 处于非移动执行阶段\n\n## Intervention Moves\n\n- 计算 MaxVehicles = LaneCount × CapacityPerLane\n- 校验边 Status = OPEN\n- 校验进入后占用不超过 MaxVehicles\n- 校验下游节点信号/交叉口规则允许进入\n- 条件失败时令车辆执行 WAIT\n\n## Workflow Steps\n\n- 计算目标边 MaxVehicles = LaneCount(edge) × CapacityPerLane(edge)\n- 检查边 Status 是否为 OPEN\n- 检查批准进入后占用是否不超过 MaxVehicles\n- 检查下游节点信号或交叉口规则是否允许进入\n- 三项条件全部满足则批准 ENTER_EDGE，否则拒绝并令车辆在当前节点 WAIT\n\n## Constraints\n\n- 仅在移动执行阶段执行准入判定\n- MaxVehicles 必须由 LaneCount 与 CapacityPerLane 相乘得出\n- 任一条件失败即拒绝进入\n\n## Cautions\n\n- 边状态未知或未初始化时不应执行判定\n- 拒绝进入的车辆应改为 WAIT，而非停留在未定义状态\n\n## Output Contract\n\n- 对每个 ENTER_EDGE 请求给出批准或拒绝的判定结果，拒绝时说明失败条件，并指示车辆执行 WAIT。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆请求 ENTER_EDGE，目标边 Status=OPEN，进入后占用未超 MaxVehicles，下游信号允许\n- Therapist/Output: 批准进入\n\n### Example 2\n\n- Client/Input: 车辆请求 ENTER_EDGE，但进入后占用将超过 MaxVehicles\n- Therapist/Output: 拒绝进入，车辆在当前节点执行 WAIT",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按容量与信号约束决定 ENTER_EDGE 是否被批准",
+      "domain": "交通仿真规则",
+      "task_family": "车辆移动执行",
+      "method_family": "容量与信号准入校验",
+      "stage": "movement_execution",
+      "applicable_signals": [
+        "车辆请求 ENTER_EDGE",
+        "需要判断目标边是否可容纳新增占用"
+      ],
+      "contraindications": [
+        "边状态未知或未初始化",
+        "处于非移动执行阶段"
+      ],
+      "intervention_moves": [
+        "计算 MaxVehicles = LaneCount × CapacityPerLane",
+        "校验边 Status = OPEN",
+        "校验进入后占用不超过 MaxVehicles",
+        "校验下游节点信号/交叉口规则允许进入",
+        "条件失败时令车辆执行 WAIT"
+      ],
+      "triggers": [
+        "车辆请求 ENTER_EDGE",
+        "需要判断目标边是否可容纳新增占用",
+        "移动执行阶段需要校验边准入"
+      ],
+      "workflow_steps": [
+        "计算目标边 MaxVehicles = LaneCount(edge) × CapacityPerLane(edge)",
+        "检查边 Status 是否为 OPEN",
+        "检查批准进入后占用是否不超过 MaxVehicles",
+        "检查下游节点信号或交叉口规则是否允许进入",
+        "三项条件全部满足则批准 ENTER_EDGE，否则拒绝并令车辆在当前节点 WAIT"
+      ],
+      "constraints": [
+        "仅在移动执行阶段执行准入判定",
+        "MaxVehicles 必须由 LaneCount 与 CapacityPerLane 相乘得出",
+        "任一条件失败即拒绝进入"
+      ],
+      "cautions": [
+        "边状态未知或未初始化时不应执行判定",
+        "拒绝进入的车辆应改为 WAIT，而非停留在未定义状态"
+      ],
+      "output_contract": [
+        "对每个 ENTER_EDGE 请求给出批准或拒绝的判定结果，拒绝时说明失败条件，并指示车辆执行 WAIT。"
+      ],
+      "examples": [
+        {
+          "input": "车辆请求 ENTER_EDGE，目标边 Status=OPEN，进入后占用未超 MaxVehicles，下游信号允许",
+          "output": "批准进入",
+          "notes": null
+        },
+        {
+          "input": "车辆请求 ENTER_EDGE，但进入后占用将超过 MaxVehicles",
+          "output": "拒绝进入，车辆在当前节点执行 WAIT",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "移动执行",
+        "容量校验",
+        "准入判定"
+      ],
+      "support_ids": [
+        "1bdb0120-25a7-52b8-a045-319d4d5e281d"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "8afb8083-d859-58c0-a5ca-b368fca5e78a"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|按容量与信号约束决定 enter_edge 是否被批准|交通仿真规则|车辆移动执行|容量与信号准入校验|movement_execution|边容量准入校验",
+        "change_action": "create",
+        "llm_reason": "候选技能与同批其他候选高度重叠，但本分支无已存在技能，且该候选内容完整、与支持证据一致，保留为独立微技能。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "31c99991-fc7f-475b-ac48-97eb532dce97",
+      "entity_type": "skill",
+      "entity_id": "2f3c4ace-1ca8-53a7-8b8b-3cd72ddc0fee",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能与同批其他候选高度重叠，但本分支无已存在技能，且该候选内容完整、与支持证据一致，保留为独立微技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "2f3c4ace-1ca8-53a7-8b8b-3cd72ddc0fee",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "1bdb0120-25a7-52b8-a045-319d4d5e281d"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

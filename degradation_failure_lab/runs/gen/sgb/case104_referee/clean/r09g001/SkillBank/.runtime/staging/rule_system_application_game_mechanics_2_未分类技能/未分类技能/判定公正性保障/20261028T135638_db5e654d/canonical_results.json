@@ -1,0 +1,158 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "rule_system_application_game_mechanics_2::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "判定公正性保障",
+  "run_id": "20261028T135638_db5e654d",
+  "skills": [
+    {
+      "skill_id": "00d30466-f686-51a8-86bb-522a6019aeba",
+      "name": "多来源证据权重与偏见过滤",
+      "description": "在力量举裁判判定前，区分官方现场观察与利益相关方陈述（教练备忘、赞助身份请求、装卸员视角、设备记录等），仅以裁判现场观察作为判定依据，并明确排除不当影响。用于存在多方陈述可能干扰判定时。",
+      "skill_body": "在做出裁判判定前，先对可用信息做证据分级：官方裁判现场观察为唯一判定依据；装卸员/侧位观察摘要、教练备忘、赞助身份请求等均视为非官方或利益相关方陈述，不得作为判定依据。逐条标注采纳或排除及理由，再进入技术违规核查与最终判定。\n\n## Objective\n\n确保判定仅基于有效观察并排除偏见与外部压力\n## Applicable Signals\n\n- 教练备忘含公平对待请求\n- 出现赞助身份相关表述\n- 装卸员或侧位观察提供补充说明\n- 存在非官方时间记录或设备记录\n\n## Contraindications\n\n- 仅有官方裁判观察记录时无需执行本过滤\n- 不得以本规则替代技术违规核查\n\n## Intervention Moves\n\n- 将官方裁判现场观察标记为唯一判定依据\n- 将利益相关方陈述标记为排除项并记录理由\n- 对非官方视角记录仅作背景参考，不纳入判定\n- 在判定输出中列出采纳与排除的证据清单\n\n## Workflow Steps\n\n- 识别所有可用信息来源并分类为官方观察或非官方/利益相关方陈述\n- 将官方裁判现场观察确定为判定依据\n- 排除教练备忘、赞助请求、装卸员视角等不当影响\n- 逐条记录采纳或排除及理由\n- 在完成证据分级后再进行技术违规核查与最终判定\n\n## Constraints\n\n- 判定只能基于裁判现场观察\n- 非官方视角记录不得作为判定依据\n- 不得因赞助身份或外部请求改变判定\n\n## Cautions\n\n- 装卸员视角与侧位观察摘要仅为背景信息，不构成官方判定\n- 时间记录存在延迟误差，仅供背景参考\n\n## Output Contract\n\n- 输出明确标注哪些证据被采纳、哪些被排除及理由的证据分级清单，作为判定前的公正性保障记录\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 教练备忘请求公平对待，装卸员说明未触碰杠铃\n- Therapist/Output: 采纳：裁判现场观察。排除：教练公平请求（不当影响）、装卸员说明（非官方判定）。理由：判定仅以现场观察为准。\n- Notes: 排除项仅记录理由，不参与技术判定",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "确保判定仅基于有效观察并排除偏见与外部压力",
+      "domain": "力量举裁判",
+      "task_family": "判定公正性保障",
+      "method_family": "证据分级与偏见过滤",
+      "stage": "判定前",
+      "applicable_signals": [
+        "教练备忘含公平对待请求",
+        "出现赞助身份相关表述",
+        "装卸员或侧位观察提供补充说明",
+        "存在非官方时间记录或设备记录"
+      ],
+      "contraindications": [
+        "仅有官方裁判观察记录时无需执行本过滤",
+        "不得以本规则替代技术违规核查"
+      ],
+      "intervention_moves": [
+        "将官方裁判现场观察标记为唯一判定依据",
+        "将利益相关方陈述标记为排除项并记录理由",
+        "对非官方视角记录仅作背景参考，不纳入判定",
+        "在判定输出中列出采纳与排除的证据清单"
+      ],
+      "triggers": [
+        "出现教练或团队请求公平对待的陈述",
+        "存在非官方视角的补充说明",
+        "存在赞助身份或外部压力相关表述",
+        "存在装卸员或侧位观察等非裁判视角记录"
+      ],
+      "workflow_steps": [
+        "识别所有可用信息来源并分类为官方观察或非官方/利益相关方陈述",
+        "将官方裁判现场观察确定为判定依据",
+        "排除教练备忘、赞助请求、装卸员视角等不当影响",
+        "逐条记录采纳或排除及理由",
+        "在完成证据分级后再进行技术违规核查与最终判定"
+      ],
+      "constraints": [
+        "判定只能基于裁判现场观察",
+        "非官方视角记录不得作为判定依据",
+        "不得因赞助身份或外部请求改变判定"
+      ],
+      "cautions": [
+        "装卸员视角与侧位观察摘要仅为背景信息，不构成官方判定",
+        "时间记录存在延迟误差，仅供背景参考"
+      ],
+      "output_contract": [
+        "输出明确标注哪些证据被采纳、哪些被排除及理由的证据分级清单，作为判定前的公正性保障记录"
+      ],
+      "examples": [
+        {
+          "input": "教练备忘请求公平对待，装卸员说明未触碰杠铃",
+          "output": "采纳：裁判现场观察。排除：教练公平请求（不当影响）、装卸员说明（非官方判定）。理由：判定仅以现场观察为准。",
+          "notes": "排除项仅记录理由，不参与技术判定"
+        }
+      ],
+      "tags": [
+        "力量举裁判",
+        "证据分级",
+        "偏见过滤",
+        "判定公正性"
+      ],
+      "support_ids": [
+        "d1fbfb2a-2d3f-5658-87e4-4308bde9f0df"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "48ec6787-b933-5b22-b49b-01e6509dced9"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.6,
+        "domain_type": "Rule_System_Application_Game_Mechanics_2",
+        "taxonomy_id": "Rule_System_Application_Game_Mechanics_2",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "rule_system_application_game_mechanics_2::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "rule_system_application_game_mechanics_2|||safety_rule|micro|safety_rule_node|确保判定仅基于有效观察并排除偏见与外部压力|力量举裁判|判定公正性保障|证据分级与偏见过滤|判定前|多来源证据权重与偏见过滤",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "100bd31b-3e80-496d-9f26-4a39abe1fac4",
+      "entity_type": "skill",
+      "entity_id": "00d30466-f686-51a8-86bb-522a6019aeba",
+      "action": "create",
+      "changed_at": "2026-10-28T05:56:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "00d30466-f686-51a8-86bb-522a6019aeba",
+        "doc_ids": [
+          "f2bf969c-e8a9-521f-9a06-108387c53d77"
+        ],
+        "support_added": [
+          "d1fbfb2a-2d3f-5658-87e4-4308bde9f0df"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

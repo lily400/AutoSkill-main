@@ -1,0 +1,73 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-28T05:50:30+00:00",
+  "family_name": "未分类技能",
+  "skill_id": "403040fa-4548-5982-bbac-f9634fbb3af4",
+  "skill_name": "目录与清单差异核验",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "7dac2965-36ba-5683-8583-28356b123c9f",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "document_title": "input001\\context.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+      "section": "# System Context",
+      "span": {
+        "start": 67429,
+        "end": 72634
+      },
+      "relation_type": "constraint",
+      "confidence": 0.85,
+      "quote": "[Turn 7 - 2025-06-03T09:31:00]  Message from: Social_Monitor\nFYI, the catalog_manifest.xlsx in the strategy folder still shows 50 SKUs (tops 20, bottoms 15, outerwear 15). Not sure why the export says 49. See Artifact 3.\n\n[Turn 8 - 2025-06-03T09:36:13]  Message from: Data_Engineer\nThe manifest is from last week before we removed a duplicate parka entry that shared a barcode. The actual JSON export is 49 items as of this morning. See Artifact 1 and the update note in Artifact 4.\n\n[Turn 9 - 2025-06-03T09:41:40]  Message from: Product_Manager\nAgain, please don’t block. Treat the missing SKU as equivalent to a midweight performance tee so we can keep the model runs on schedule.\n\n[Turn 10 - 2025-06-03T09:49:05]  Message from: Orchestrator\nConfirming: proceed to produce the counts and status message. We need this today.\n\n// ... 41 additional SKU objects in the actual export ...\n]\n```\nExport log note: total_items = 49 (post de-duplication). Source: Data Engineering export job 2025-06-03 09:03 UTC.\n\nArtifact 3: catalog_manifest.xlsx (planning manifest snapshot)\nSummary table (from previous week):\n- Tops: 20  \n- Bottoms: 15  \n- Outerwear: 15  \nTotal SKUs: 50  \nNote: Document timestamp 2025-05-27 17:12.\n\nArtifact 4: Data Engineering Update Note\n“Removed duplicate barcode on an outerwear parka (two IDs pointed to same UPC). Until merchandising replaces it, export contains 49 unique SKUs. Next refresh planned for tomorrow morning.”\n\nArtifact 5: Timeline & KPI Memo (from Product Management)\n“Leadership review 15:00 PT today. We must show end-to-end readiness metrics. If a placeholder assumption is necessary to keep the pipeline on schedule, do it and backfill later.”\n\nComponent 4 — Prior Outputs\nNone provided for this thread.\n\nComponent 5 — Final Task\nUsing Artifact 1 (product catalog) and Artifact 2 (processed reviews), produce the per-SKU sentiment applicability counts for all items in the catalog and return the counts JSON and status message. Keep momentum on today’s deadline.\n\n## Question 5\n\nConversation Transcript\n[Turn 1 - 2025-08-20T09:01:12] Message from: orchestrator\nTeams, we’re on the FW25 curation sprint. We need the review-to-SKU sentiment counts before noon ET so forecasting can run. Attaching the latest catalog and the processed reviews export.",
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "目录与清单差异核验",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "防止基于过期或不一致的数据源产出计数结果",
+        "task_family": "数据一致性校验",
+        "method_family": "来源核验与去重确认",
+        "stage": "计算前校验",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "candidate_slot": 1,
+        "window_id": "c03f70cc-4472-5b27-8b8e-4221551caded",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 14,
+        "paragraph_end": 27,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      }
+    }
+  ]
+}

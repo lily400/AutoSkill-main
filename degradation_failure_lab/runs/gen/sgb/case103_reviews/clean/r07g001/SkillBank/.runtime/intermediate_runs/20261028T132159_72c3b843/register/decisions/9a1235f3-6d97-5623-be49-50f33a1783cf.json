@@ -1,0 +1,105 @@
+{
+  "skill_id": "9a1235f3-6d97-5623-be49-50f33a1783cf",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批候选（无效或不完整输入处理规则、无效或不完整输入处理）高度重叠，均覆盖产品目录JSON前置校验与无效输入处理，属于同批冗余，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "9a1235f3-6d97-5623-be49-50f33a1783cf",
+    "name": "产品目录JSON前置校验",
+    "description": "在语义匹配任务开始前，校验产品目录JSON的有效性与完整性，识别无效或不完整输入并按规则处理并记录，避免基于坏数据执行匹配。",
+    "skill_body": "在执行产品目录语义匹配前，先对输入的产品目录JSON做有效性检查：确认JSON可解析、结构完整、必要字段齐全。若发现无效或不完整输入，按既定规则处理并记录，不要继续基于坏数据执行匹配；校验通过后标记通过，允许进入匹配任务。\n\n## Objective\n\n确保输入产品目录JSON有效完整，避免基于坏数据执行匹配\n## Applicable Signals\n\n- 收到产品目录JSON输入\n- 输入可能缺失或格式异常\n\n## Contraindications\n\n- 目录已确认有效且完整\n\n## Intervention Moves\n\n- 检查JSON是否可解析\n- 检查目录结构是否完整\n- 检查必要字段是否齐全\n- 对无效或不完整输入按规则处理并记录\n\n## Workflow Steps\n\n- 接收产品目录JSON输入\n- 校验JSON可解析性与结构完整性\n- 校验必要字段是否齐全\n- 若无效或不完整，按规则处理并记录\n- 校验通过后标记通过，允许进入匹配任务\n\n## Constraints\n\n- 校验未通过前不得执行语义匹配\n- 处理无效输入须留下记录\n\n## Cautions\n\n- 不要将格式异常误判为有效目录\n- 缺失字段可能导致后续匹配错误\n\n## Output Contract\n\n- 校验通过标记，或对无效/不完整输入的处理记录",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保输入产品目录JSON有效完整，避免基于坏数据执行匹配",
+    "domain": "产品目录运营",
+    "task_family": "输入校验",
+    "method_family": "数据有效性检查",
+    "stage": "前置校验",
+    "applicable_signals": [
+      "收到产品目录JSON输入",
+      "输入可能缺失或格式异常"
+    ],
+    "contraindications": [
+      "目录已确认有效且完整"
+    ],
+    "intervention_moves": [
+      "检查JSON是否可解析",
+      "检查目录结构是否完整",
+      "检查必要字段是否齐全",
+      "对无效或不完整输入按规则处理并记录"
+    ],
+    "triggers": [
+      "收到产品目录JSON输入",
+      "输入可能缺失或格式异常",
+      "即将开始语义匹配任务"
+    ],
+    "workflow_steps": [
+      "接收产品目录JSON输入",
+      "校验JSON可解析性与结构完整性",
+      "校验必要字段是否齐全",
+      "若无效或不完整，按规则处理并记录",
+      "校验通过后标记通过，允许进入匹配任务"
+    ],
+    "constraints": [
+      "校验未通过前不得执行语义匹配",
+      "处理无效输入须留下记录"
+    ],
+    "cautions": [
+      "不要将格式异常误判为有效目录",
+      "缺失字段可能导致后续匹配错误"
+    ],
+    "output_contract": [
+      "校验通过标记，或对无效/不完整输入的处理记录"
+    ],
+    "examples": [],
+    "tags": [
+      "输入校验",
+      "数据有效性",
+      "前置检查",
+      "产品目录"
+    ],
+    "support_ids": [
+      "a259a476-b498-549a-ae7d-f2dabd67fb8f"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "1c2f33d2-0859-52eb-87d4-036773960d9e"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|确保输入产品目录json有效完整，避免基于坏数据执行匹配|产品目录运营|输入校验|数据有效性检查|前置校验|产品目录json前置校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

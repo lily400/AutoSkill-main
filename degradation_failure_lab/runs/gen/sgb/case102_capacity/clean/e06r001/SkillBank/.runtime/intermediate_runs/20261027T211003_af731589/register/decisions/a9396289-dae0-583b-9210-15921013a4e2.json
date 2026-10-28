@@ -1,0 +1,108 @@
+{
+  "skill_id": "a9396289-dae0-583b-9210-15921013a4e2",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“未定义情形保守处理规则”和“规则歧义与冲突声明”高度重叠，核心约束（未定义情形不得假设行为、显式标记而非静默处理）已被覆盖，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a9396289-dae0-583b-9210-15921013a4e2",
+    "name": "未定义行为禁止假设规则",
+    "description": "当仿真规则未明确指定某情形下的行为时，将该情形视为未定义，控制器不得对其假设任何行为。用于控制器实现与验证阶段，防止对规范空白处进行臆测。",
+    "skill_body": "在执行或验证控制器逻辑时，先判断当前情形是否已被规则明确指定。若规则未覆盖该情形，则将其标记为未定义，并拒绝假设任何行为；不要用默认值、经验或推测填补规范空白。仅当行为已被规则明确指定时才继续正常执行。\n\n## Objective\n\n防止控制器对未定义情形做出未授权假设\n## Applicable Signals\n\n- 规则未覆盖某情形\n- 控制器需处理规范空白处\n\n## Contraindications\n\n- 行为已被规则明确指定\n\n## Intervention Moves\n\n- 判断情形是否被规则明确指定\n- 若未指定则标记为未定义\n- 拒绝假设任何行为并停止臆测\n\n## Workflow Steps\n\n- 检查当前情形是否被规则明确指定\n- 若规则未覆盖，则将该情形标记为未定义\n- 拒绝为该情形假设任何行为\n- 仅在行为被明确指定时继续正常执行\n\n## Constraints\n\n- 不得用默认值、经验或推测填补规范空白\n- 仅在行为已被规则明确指定时才可执行对应行为\n\n## Cautions\n\n- 未定义情形应显式标记，而非静默处理\n\n## Output Contract\n\n- 标记该情形为未定义并拒绝假设行为\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 控制器遇到规则文档未描述的情形\n- Therapist/Output: 将该情形标记为未定义，不假设任何行为\n- Notes: 对应 R51",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止控制器对未定义情形做出未授权假设",
+    "domain": "交通仿真规则",
+    "task_family": "未定义行为处理",
+    "method_family": "显式禁止假设",
+    "stage": "规则解释与实现",
+    "applicable_signals": [
+      "规则未覆盖某情形",
+      "控制器需处理规范空白处"
+    ],
+    "contraindications": [
+      "行为已被规则明确指定"
+    ],
+    "intervention_moves": [
+      "判断情形是否被规则明确指定",
+      "若未指定则标记为未定义",
+      "拒绝假设任何行为并停止臆测"
+    ],
+    "triggers": [
+      "规则未覆盖某情形",
+      "控制器需处理规范空白处",
+      "实现或验证控制器逻辑时遇到未指定行为"
+    ],
+    "workflow_steps": [
+      "检查当前情形是否被规则明确指定",
+      "若规则未覆盖，则将该情形标记为未定义",
+      "拒绝为该情形假设任何行为",
+      "仅在行为被明确指定时继续正常执行"
+    ],
+    "constraints": [
+      "不得用默认值、经验或推测填补规范空白",
+      "仅在行为已被规则明确指定时才可执行对应行为"
+    ],
+    "cautions": [
+      "未定义情形应显式标记，而非静默处理"
+    ],
+    "output_contract": [
+      "标记该情形为未定义并拒绝假设行为"
+    ],
+    "examples": [
+      {
+        "input": "控制器遇到规则文档未描述的情形",
+        "output": "将该情形标记为未定义，不假设任何行为",
+        "notes": "对应 R51"
+      }
+    ],
+    "tags": [
+      "未定义行为",
+      "禁止假设",
+      "控制器护栏",
+      "规则解释"
+    ],
+    "support_ids": [
+      "f3f2ee49-ab47-5b88-9d12-cfaf0c03b08e"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "a8d11e47-0165-5a1e-8c20-b705848b8c2a"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|防止控制器对未定义情形做出未授权假设|交通仿真规则|未定义行为处理|显式禁止假设|规则解释与实现|未定义行为禁止假设规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

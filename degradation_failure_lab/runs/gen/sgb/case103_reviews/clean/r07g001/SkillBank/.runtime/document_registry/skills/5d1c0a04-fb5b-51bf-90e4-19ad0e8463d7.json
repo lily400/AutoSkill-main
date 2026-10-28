@@ -1,0 +1,123 @@
+{
+  "skill_id": "5d1c0a04-fb5b-51bf-90e4-19ad0e8463d7",
+  "name": "抽样自检与纠错复核",
+  "description": "在返回最终分析输出前，随机抽取3-5个SKU进行抽样复核，核验评审计数、类目匹配与情感分类是否准确；若发现已知错误，先修正再输出，确保交付物无已知错误。",
+  "skill_body": "在即将交付最终分析输出时执行本技能：从结果中随机抽取3-5个SKU，逐一核验三项内容——(1) 被计为适用的评论是否确实讨论了语义相似的属性；(2) 类目匹配是否正确应用；(3) 情感分类是否准确。若自检发现任何问题，先修正分析再返回输出；不得在存在已知错误的情况下返回结果。\n\n## Objective\n\n在交付前通过抽样复核发现并修正分析错误，确保输出无已知错误\n## Applicable Signals\n\n- 已有完整或部分分析结果待交付\n- 结果涉及计数、类目匹配或情感分类\n- 处于最终输出返回前的检查点\n\n## Contraindications\n\n- 尚无任何分析结果可复核\n- 仅需生成原始数据而无交付输出\n\n## Intervention Moves\n\n- 随机抽取3-5个SKU作为复核样本\n- 核验被计为适用的评论是否讨论语义相似属性\n- 核验类目匹配是否正确应用\n- 核验情感分类是否准确\n- 发现错误时先修正分析再输出\n\n## Workflow Steps\n\n- 确认当前处于最终输出返回前的检查点\n- 从结果中随机抽取3-5个SKU\n- 对每个样本核验评审计数是否对应语义相似属性\n- 对每个样本核验类目匹配是否正确\n- 对每个样本核验情感分类是否准确\n- 若发现任何问题，修正分析后重新核验\n- 确认无已知错误后返回最终输出\n\n## Constraints\n\n- 抽样数量应为3-5个SKU\n- 抽样必须随机进行\n- 不得在存在已知错误的情况下返回输出\n\n## Cautions\n\n- 自检发现问题时必须先修正，不能仅记录问题后直接交付\n- 复核范围限于计数、类目匹配与情感分类三项\n\n## Output Contract\n\n- 经抽样核验并修正后的无已知错误输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 已完成SKU评论分析，准备返回最终输出\n- Therapist/Output: 随机抽取3-5个SKU复核计数、类目匹配与情感分类，修正发现的问题后返回无已知错误的输出\n- Notes: 若自检未发现问题，可直接返回输出",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "在交付前通过抽样复核发现并修正分析错误，确保输出无已知错误",
+  "domain": "运营流程",
+  "task_family": "输出质量校验",
+  "method_family": "抽样复核",
+  "stage": "交付前自检",
+  "applicable_signals": [
+    "已有完整或部分分析结果待交付",
+    "结果涉及计数、类目匹配或情感分类",
+    "处于最终输出返回前的检查点"
+  ],
+  "contraindications": [
+    "尚无任何分析结果可复核",
+    "仅需生成原始数据而无交付输出"
+  ],
+  "intervention_moves": [
+    "随机抽取3-5个SKU作为复核样本",
+    "核验被计为适用的评论是否讨论语义相似属性",
+    "核验类目匹配是否正确应用",
+    "核验情感分类是否准确",
+    "发现错误时先修正分析再输出"
+  ],
+  "triggers": [
+    "即将返回最终分析输出",
+    "输出包含评审计数、类目匹配或情感分类结果",
+    "需要确认交付物无已知错误"
+  ],
+  "workflow_steps": [
+    "确认当前处于最终输出返回前的检查点",
+    "从结果中随机抽取3-5个SKU",
+    "对每个样本核验评审计数是否对应语义相似属性",
+    "对每个样本核验类目匹配是否正确",
+    "对每个样本核验情感分类是否准确",
+    "若发现任何问题，修正分析后重新核验",
+    "确认无已知错误后返回最终输出"
+  ],
+  "constraints": [
+    "抽样数量应为3-5个SKU",
+    "抽样必须随机进行",
+    "不得在存在已知错误的情况下返回输出"
+  ],
+  "cautions": [
+    "自检发现问题时必须先修正，不能仅记录问题后直接交付",
+    "复核范围限于计数、类目匹配与情感分类三项"
+  ],
+  "output_contract": [
+    "经抽样核验并修正后的无已知错误输出"
+  ],
+  "examples": [
+    {
+      "input": "已完成SKU评论分析，准备返回最终输出",
+      "output": "随机抽取3-5个SKU复核计数、类目匹配与情感分类，修正发现的问题后返回无已知错误的输出",
+      "notes": "若自检未发现问题，可直接返回输出"
+    }
+  ],
+  "tags": [
+    "抽样复核",
+    "交付前自检",
+    "质量校验",
+    "纠错"
+  ],
+  "support_ids": [
+    "dd1d1668-f0cb-5353-bec2-70e871b5b792"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "01d7f80b-0a89-5349-af13-75fd9704ef46"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|在交付前通过抽样复核发现并修正分析错误，确保输出无已知错误|运营流程|输出质量校验|抽样复核|交付前自检|抽样自检与纠错复核",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

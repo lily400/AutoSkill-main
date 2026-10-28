@@ -126,6 +126,62 @@ def _registration_checkpoint(parent, checkpoint, ingest):
             'cached_registration_decision_ids':sorted(decisions)}
 
 
+def _budget_extraction_calls(parent, checkpoint, windows, completed, inherited):
+    """Account for known work replayed in the sole incomplete window after a budget stop."""
+    errors = read(parent/'official_result.json').get('errors', [])
+    if not errors or any(e.get('error') != 'P0 external observation budget exhausted' for e in errors):
+        raise ValueError('Only a recorded observation-budget stop permits window replay')
+    eligible = windows[len(inherited):len(completed)+1]
+    keys = {window_key({'excerpt':w['text'], 'section':{'span':w['span']}}): w['window_id'] for w in eligible}
+    groups = {}
+    for call in read(parent/'model_calls.json'):
+        groups.setdefault(call.get('logical_call_id', call['number']), []).append(call)
+    work = {w['window_id']: {'plans': [], 'expands': []} for w in eligible}
+    replayed = []
+    for logical, calls in groups.items():
+        last = calls[-1]
+        if (not last.get('success') or any(c.get('success') or not c.get('transport_retry_eligible')
+                                         or calls[i+1].get('retry_of') != logical for i,c in enumerate(calls[:-1]))):
+            raise ValueError('Unresolved HTTP delivery cannot be replayed as a budget stop')
+        for call in calls:
+            if call.get('success') and sha256(parent/'http'/f"{call['number']:03d}"/'response.json') != call['response_sha256']:
+                raise ValueError('Saved response hash mismatch')
+        functions = {f['function'] for f in last.get('stack', [])}
+        if '_outline_matches_from_llm' in functions:
+            continue
+        kind = 'plans' if '_plan_unit_skills' in functions else 'expands' if '_expand_planned_skill' in functions else None
+        if kind is None:
+            raise ValueError('Budget recovery supports extraction-only HTTP work')
+        payloads = [read(parent/'http'/f"{c['number']:03d}"/'request.json') for c in calls]
+        if any(p != payloads[0] for p in payloads):
+            raise ValueError('Transport retry payload changed')
+        user = json.loads(next(m['content'] for m in payloads[0]['messages'] if m['role']=='user'))
+        wid = keys.get(window_key(user))
+        if wid is None:
+            raise ValueError('Request does not match a checkpoint window')
+        work[wid][kind].append(last)
+        if wid == windows[len(completed)]['window_id']:
+            replayed.extend(c['number'] for c in calls)
+    for w in eligible:
+        values = work[w['window_id']]
+        if w['window_id'] in completed:
+            record = read(checkpoint/'extract/windows'/w['doc_id']/(w['window_id']+'.json'))
+            if len(values['plans']) != 1 or len(values['expands']) != len(record['skill_drafts']):
+                raise ValueError('Completed window calls disagree with checkpoint drafts')
+        elif len(values['plans']) > 1 or (values['expands'] and not values['plans']):
+            raise ValueError('Ambiguous incomplete-window work')
+    excluded = {}
+    for stage in ('compile', 'register', 'final'):
+        for p in (checkpoint/stage).rglob('*'):
+            if not p.is_file():
+                continue
+            if p.suffix == '.json' and any(read(p).get(k) for k in (
+                    'skill_specs', 'upserted_store_skills', 'lifecycles', 'change_logs', 'version_history', 'staging_runs')):
+                raise ValueError('Successful downstream artifacts cannot be discarded')
+            excluded[p.relative_to(parent/'SkillBank').as_posix()] = sha256(p)
+    return sorted(replayed), excluded
+
+
 def prepare_resume(root, run_id, new_run_id, budget_overrides=None):
     identity, parent = resolve_run(root, run_id)
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', new_run_id):
@@ -156,6 +212,7 @@ def prepare_resume(root, run_id, new_run_id, budget_overrides=None):
     ingest = read(checkpoint/'ingest/result.json')
     windows = ingest['windows']
     excluded = {}
+    budget_replayed = []
     registration = {}
     if registration_resume:
         registration = _registration_checkpoint(parent, checkpoint, ingest)
@@ -177,20 +234,25 @@ def prepare_resume(root, run_id, new_run_id, budget_overrides=None):
         k = len(previous.get('completed_window_ids', []))
         if completed[:k] != previous.get('completed_window_ids', []) or k > n:
             raise ValueError('Inherited completed windows changed')
-        calls = read(parent/'model_calls.json')
-        plans = [c for c in calls if any(f['function'] == '_plan_unit_skills' for f in c.get('stack', []))]
-        expands = [c for c in calls if any(f['function'] == '_expand_planned_skill' for f in c.get('stack', []))]
-        # A successful but uncheckpointed Plan/Expand must never be silently resent.
-        if len(plans) != n-k+1 or not all(c.get('success') for c in plans[:-1]) or plans[-1].get('success') or calls[-1] != plans[-1]:
-            raise ValueError('Pending window has uncheckpointed calls; automatic recovery refused')
-        for call,w in zip(plans, windows[k:]):
-            payload = read(parent/'http'/f"{call['number']:03d}"/'request.json')
-            user = json.loads(next(m['content'] for m in payload['messages'] if m['role'] == 'user'))
-            if window_key(user) != window_key({'excerpt':w['text'], 'section':{'span':w['span']}}):
-                raise ValueError('Plan request does not match checkpoint window')
-        drafts = [d for w in windows[k:n] for d in read(checkpoint/'extract/windows'/doc_id/(w['window_id']+'.json'))['skill_drafts']]
-        if len(expands) != len(drafts) or not all(c.get('success') for c in expands):
-            raise ValueError('Uncheckpointed Expand calls; automatic recovery refused')
+        budget_errors = result.get('errors', [])
+        if budget_errors and all(e.get('error') == 'P0 external observation budget exhausted' for e in budget_errors):
+            budget_replayed, excluded = _budget_extraction_calls(parent, checkpoint, windows, completed,
+                                                                 previous.get('completed_window_ids', []))
+        else:
+            calls = read(parent/'model_calls.json')
+            plans = [c for c in calls if any(f['function'] == '_plan_unit_skills' for f in c.get('stack', []))]
+            expands = [c for c in calls if any(f['function'] == '_expand_planned_skill' for f in c.get('stack', []))]
+            # A successful but uncheckpointed Plan/Expand must never be silently resent.
+            if len(plans) != n-k+1 or not all(c.get('success') for c in plans[:-1]) or plans[-1].get('success') or calls[-1] != plans[-1]:
+                raise ValueError('Pending window has uncheckpointed calls; automatic recovery refused')
+            for call,w in zip(plans, windows[k:]):
+                payload = read(parent/'http'/f"{call['number']:03d}"/'request.json')
+                user = json.loads(next(m['content'] for m in payload['messages'] if m['role'] == 'user'))
+                if window_key(user) != window_key({'excerpt':w['text'], 'section':{'span':w['span']}}):
+                    raise ValueError('Plan request does not match checkpoint window')
+            drafts = [d for w in windows[k:n] for d in read(checkpoint/'extract/windows'/doc_id/(w['window_id']+'.json'))['skill_drafts']]
+            if len(expands) != len(drafts) or not all(c.get('success') for c in expands):
+                raise ValueError('Uncheckpointed Expand calls; automatic recovery refused')
     logical_inputs = Path(invocation.get('store_path', str(parent/'SkillBank'))).parent/'inputs'
     source = Path(previous.get('source_path', str(logical_inputs)))
     input_manifest = read(parent/'input_manifest.json')
@@ -210,6 +272,7 @@ def prepare_resume(root, run_id, new_run_id, budget_overrides=None):
         'note':'Failed POST delivery/billing is unknown; recovering the failed Plan can repeat remote work.'
     }
     resume.update(registration)
+    resume['budget_replayed_call_numbers'] = budget_replayed
     config = read(parent/'config.json')
     budget_before = {k:config[k] for k in ('max_http_calls','max_observed_total_tokens')}
     for key,value in (budget_overrides or {}).items():

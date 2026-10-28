@@ -1,0 +1,114 @@
+{
+  "skill_id": "c3356e9a-2490-5941-8e71-dc1f0edf89ce",
+  "name": "品类硬匹配与语义相似度判定",
+  "description": "在存在品类硬性约束的商品匹配任务中，先按品类做硬性过滤，再在候选内做语义相似度判断，输出满足品类约束的匹配结果及相似度判定。",
+  "skill_body": "执行商品语义匹配时，先完成品类硬匹配：依据商品描述确定其品类，并仅保留与目标品类一致的候选；品类不一致的候选直接排除，不进入相似度评估。随后在剩余候选内做语义相似度判断，比较特征、材质、版型、用途与设计元素等维度，给出匹配结果与相似度判定。若输入商品目录未通过校验，停止匹配并说明原因。\n\n## Objective\n\n在品类硬约束下完成语义匹配判定\n## Applicable Signals\n\n- 存在品类匹配硬性要求\n- 需要在候选商品间做相似度判断\n- 候选集需要先按品类收敛再评估相似度\n\n## Contraindications\n\n- 无品类约束的纯相似度排序场景\n- 输入商品目录未通过校验\n\n## Intervention Moves\n\n- 从商品描述中确定品类\n- 按品类硬性过滤候选\n- 在剩余候选内比较特征、材质、版型、用途与设计元素\n- 输出匹配结果与相似度判定\n\n## Workflow Steps\n\n- 确认任务存在品类硬性匹配要求\n- 校验输入商品目录有效性，未通过则停止并说明\n- 依据商品描述确定品类\n- 按品类硬性过滤候选，排除品类不一致项\n- 在剩余候选内做语义相似度判断\n- 输出满足品类硬约束的匹配结果及相似度判定\n\n## Constraints\n\n- 品类不一致的候选不得进入相似度评估\n- 相似度判断仅在通过品类硬匹配的候选内进行\n- 输入商品目录未通过校验时不得输出匹配结果\n\n## Cautions\n\n- 品类判定依赖商品描述，描述不完整时需标注不确定性\n- 语义相似度为判断性结论，应说明所依据的维度\n\n## Output Contract\n\n- 返回满足品类硬约束的匹配结果，并附相似度判定及其依据维度；若输入未通过校验，返回停止原因说明。",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "在品类硬约束下完成语义匹配判定",
+  "domain": "商品目录运营",
+  "task_family": "商品语义匹配",
+  "method_family": "硬约束过滤加语义相似度评估",
+  "stage": "匹配判定",
+  "applicable_signals": [
+    "存在品类匹配硬性要求",
+    "需要在候选商品间做相似度判断",
+    "候选集需要先按品类收敛再评估相似度"
+  ],
+  "contraindications": [
+    "无品类约束的纯相似度排序场景",
+    "输入商品目录未通过校验"
+  ],
+  "intervention_moves": [
+    "从商品描述中确定品类",
+    "按品类硬性过滤候选",
+    "在剩余候选内比较特征、材质、版型、用途与设计元素",
+    "输出匹配结果与相似度判定"
+  ],
+  "triggers": [
+    "任务明确要求品类必须一致才能匹配",
+    "需要在多个候选商品之间做相似度判断并给出匹配结论"
+  ],
+  "workflow_steps": [
+    "确认任务存在品类硬性匹配要求",
+    "校验输入商品目录有效性，未通过则停止并说明",
+    "依据商品描述确定品类",
+    "按品类硬性过滤候选，排除品类不一致项",
+    "在剩余候选内做语义相似度判断",
+    "输出满足品类硬约束的匹配结果及相似度判定"
+  ],
+  "constraints": [
+    "品类不一致的候选不得进入相似度评估",
+    "相似度判断仅在通过品类硬匹配的候选内进行",
+    "输入商品目录未通过校验时不得输出匹配结果"
+  ],
+  "cautions": [
+    "品类判定依赖商品描述，描述不完整时需标注不确定性",
+    "语义相似度为判断性结论，应说明所依据的维度"
+  ],
+  "output_contract": [
+    "返回满足品类硬约束的匹配结果，并附相似度判定及其依据维度；若输入未通过校验，返回停止原因说明。"
+  ],
+  "examples": [],
+  "tags": [
+    "商品匹配",
+    "品类约束",
+    "语义相似度",
+    "候选过滤"
+  ],
+  "support_ids": [
+    "a51a33b0-7b98-5ac2-af59-f8bd2b3c743d"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "9815b45d-6bab-542e-b506-800fc974c8be"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.65,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|在品类硬约束下完成语义匹配判定|商品目录运营|商品语义匹配|硬约束过滤加语义相似度评估|匹配判定|品类硬匹配与语义相似度判定",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

@@ -1,0 +1,139 @@
+{
+  "doc_id": "85bf5954-44cd-5839-bb90-bfca92534a10",
+  "title": "input001\\depth.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md",
+  "documents": [
+    {
+      "doc_id": "85bf5954-44cd-5839-bb90-bfca92534a10",
+      "source_type": "document",
+      "title": "input001\\depth.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# scrapy.spidermiddlewares.depth — Scrapy 2.14.1 documentation\n\n- [Module code](../../index.html)\n- scrapy.spidermiddlewares.depth\n\n---\n\n# Source code for scrapy.spidermiddlewares.depth\n\n```\n\"\"\"\nDepth Spider Middleware\n\nSee documentation in docs/topics/spider-middleware.rst\n\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom typing import TYPE_CHECKING, Any\n\nfrom scrapy.spidermiddlewares.base import BaseSpiderMiddleware\nfrom scrapy.utils.decorators import _warn_spider_arg\n\nif TYPE_CHECKING:\n    from collections.abc import AsyncIterator, Iterable\n\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\n    from scrapy import Spider\n    from scrapy.crawler import Crawler\n    from scrapy.http import Request, Response\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass DepthMiddleware(BaseSpiderMiddleware):\n    crawler: Crawler\n\n    def __init__(  # pylint: disable=super-init-not-called\n        self,\n        maxdepth: int,\n        stats: StatsCollector,\n        verbose_stats: bool = False,\n        prio: int = 1,\n    ):\n        self.maxdepth = maxdepth\n        self.stats = stats\n        self.verbose_stats = verbose_stats\n        self.prio = prio\n\n    @classmethod\n    def from_crawler(cls, crawler: Crawler) -> Self:\n        settings = crawler.settings\n        maxdepth = settings.getint(\"DEPTH_LIMIT\")\n        verbose = settings.getbool(\"DEPTH_STATS_VERBOSE\")\n        prio = settings.getint(\"DEPTH_PRIORITY\")\n        assert crawler.stats\n        o = cls(maxdepth, crawler.stats, verbose, prio)\n        o.crawler = crawler\n        return o\n\n    @_warn_spider_arg\n    def process_spider_output(\n        self, response: Response, result: Iterable[Any], spider: Spider | None = None\n    ) -> Iterable[Any]:\n        self._init_depth(response)\n        yield from super().process_spider_output(response, result)\n\n    @_warn_spider_arg\n    async def process_spider_output_async(\n        self,\n        response: Response,\n        result: AsyncIterator[Any],\n        spider: Spider | None = None,\n    ) -> AsyncIterator[Any]:\n        self._init_depth(response)\n        async for o in super().process_spider_output_async(response, result):\n            yield o\n\n    def _init_depth(self, response: Response) -> None:\n        # base case (depth=0)\n        if \"depth\" not in response.meta:\n            response.meta[\"depth\"] = 0\n            if self.verbose_stats:\n                self.stats.inc_value(\"request_depth_count/0\")\n\n    def get_processed_request(\n        self, request: Request, response: Response | None\n    ) -> Request | None:\n        if response is None:\n            # start requests\n            return request\n        depth = response.meta[\"depth\"] + 1\n        request.meta[\"depth\"] = depth\n        if self.prio:\n            request.priority -= depth * self.prio\n        if self.maxdepth and depth > self.maxdepth:\n            logger.debug(\n                \"Ignoring link (depth > %(maxdepth)d): %(requrl)s \",\n                {\"maxdepth\": self.maxdepth, \"requrl\": request.url},\n                extra={\"spider\": self.crawler.spider},\n            )\n            return None\n        if self.verbose_stats:\n            self.stats.inc_value(f\"request_depth_count/{depth}\")\n        self.stats.max_value(\"request_depth_max\", depth)\n        return request\n```",
+      "sections": [
+        {
+          "heading": "input001\\depth.md",
+          "text": "# scrapy.spidermiddlewares.depth — Scrapy 2.14.1 documentation\n\n- [Module code](../../index.html)\n- scrapy.spidermiddlewares.depth\n\n---",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 137
+          },
+          "metadata": {
+            "heading_path": [
+              "input001\\depth.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# scrapy.spidermiddlewares.depth — Scrapy 2.14.1 documentation",
+            "sibling_headings": [
+              "# Source code for scrapy.spidermiddlewares.depth"
+            ]
+          }
+        },
+        {
+          "heading": "# Source code for scrapy.spidermiddlewares.depth",
+          "text": "```\n\"\"\"\nDepth Spider Middleware\n\nSee documentation in docs/topics/spider-middleware.rst\n\"\"\"\n\nfrom __future__ import annotations\n\nimport logging\nfrom typing import TYPE_CHECKING, Any\n\nfrom scrapy.spidermiddlewares.base import BaseSpiderMiddleware\nfrom scrapy.utils.decorators import _warn_spider_arg\n\nif TYPE_CHECKING:\n    from collections.abc import AsyncIterator, Iterable\n\n    # typing.Self requires Python 3.11\n    from typing_extensions import Self\n\n    from scrapy import Spider\n    from scrapy.crawler import Crawler\n    from scrapy.http import Request, Response\n    from scrapy.statscollectors import StatsCollector\n\nlogger = logging.getLogger(__name__)\n\n[docs]\nclass DepthMiddleware(BaseSpiderMiddleware):\n    crawler: Crawler\n\n    def __init__(  # pylint: disable=super-init-not-called\n        self,\n        maxdepth: int,\n        stats: StatsCollector,\n        verbose_stats: bool = False,\n        prio: int = 1,\n    ):\n        self.maxdepth = maxdepth\n        self.stats = stats\n        self.verbose_stats = verbose_stats\n        self.prio = prio\n\n    @classmethod\n    def from_crawler(cls, crawler: Crawler) -> Self:\n        settings = crawler.settings\n        maxdepth = settings.getint(\"DEPTH_LIMIT\")\n        verbose = settings.getbool(\"DEPTH_STATS_VERBOSE\")\n        prio = settings.getint(\"DEPTH_PRIORITY\")\n        assert crawler.stats\n        o = cls(maxdepth, crawler.stats, verbose, prio)\n        o.crawler = crawler\n        return o\n\n    @_warn_spider_arg\n    def process_spider_output(\n        self, response: Response, result: Iterable[Any], spider: Spider | None = None\n    ) -> Iterable[Any]:\n        self._init_depth(response)\n        yield from super().process_spider_output(response, result)\n\n    @_warn_spider_arg\n    async def process_spider_output_async(\n        self,\n        response: Response,\n        result: AsyncIterator[Any],\n        spider: Spider | None = None,\n    ) -> AsyncIterator[Any]:\n        self._init_depth(response)\n        async for o in super().process_spider_output_async(response, result):\n            yield o\n\n    def _init_depth(self, response: Response) -> None:\n        # base case (depth=0)\n        if \"depth\" not in response.meta:\n            response.meta[\"depth\"] = 0\n            if self.verbose_stats:\n                self.stats.inc_value(\"request_depth_count/0\")\n\n    def get_processed_request(\n        self, request: Request, response: Response | None\n    ) -> Request | None:\n        if response is None:\n            # start requests\n            return request\n        depth = response.meta[\"depth\"] + 1\n        request.meta[\"depth\"] = depth\n        if self.prio:\n            request.priority -= depth * self.prio\n        if self.maxdepth and depth > self.maxdepth:\n            logger.debug(\n                \"Ignoring link (depth > %(maxdepth)d): %(requrl)s \",\n                {\"maxdepth\": self.maxdepth, \"requrl\": request.url},\n                extra={\"spider\": self.crawler.spider},\n            )\n            return None\n        if self.verbose_stats:\n            self.stats.inc_value(f\"request_depth_count/{depth}\")\n        self.stats.max_value(\"request_depth_max\", depth)\n        return request\n```",
+          "level": 1,
+          "span": {
+            "start": 186,
+            "end": 3352
+          },
+          "metadata": {
+            "heading_path": [
+              "# Source code for scrapy.spidermiddlewares.depth"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "```",
+            "sibling_headings": [
+              "input001\\depth.md"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case050_scrapy",
+        "condition_id": "clean",
+        "lab_run_id": "s50g001",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case050_scrapy",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-6b74bf9a7222bcaa",
+              "source_sha256": "96e60bee5903c18a77068b2ea35a35b6d1c0edba6ec3fefcdabf10dd0c56941b",
+              "path": "inputs/input001/depth.md",
+              "sha256": "96e60bee5903c18a77068b2ea35a35b6d1c0edba6ec3fefcdabf10dd0c56941b",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/96e60bee5903c18a/depth.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-130f17a8b0fc43d9",
+              "source_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+              "path": "inputs/input002/settings.md",
+              "sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/fae2beedb6998e96/settings.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input002\\settings.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "scrapy",
+        "resume_key": "4dc8f3f2e7fea9c0345e0ad103f5428c35cc8fe7d2514cbb7e27665ce568245e",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\inputs\\input001\\depth.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "scrapy::未分类技能",
+        "taxonomy_id": "scrapy"
+      },
+      "checksum": "ffb8084eccaf911fb3a1abb3e5b7aedd0750cab0",
+      "content_hash": "ffb8084eccaf911fb3a1abb3e5b7aedd0750cab0",
+      "imported_at": "2026-10-28T05:06:29+00:00"
+    }
+  ],
+  "support_records": [],
+  "skill_specs": [],
+  "hierarchy_updates": [],
+  "lifecycles": [],
+  "change_logs": [],
+  "version_history": [],
+  "provenance_links": [],
+  "upserted_store_skills": [],
+  "staging_runs": [],
+  "visible_tree": {
+    "store_root": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\SkillBank",
+    "affected_families": [
+      "未分类技能"
+    ],
+    "parent_paths": [],
+    "child_paths": [],
+    "library_manifest_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\SkillBank\\.runtime\\library_manifest.json",
+    "readme_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case050_scrapy\\clean\\s50g001\\SkillBank\\README.md"
+  },
+  "errors": [],
+  "dry_run": false,
+  "processed_documents": 1,
+  "total_documents": 2,
+  "action_counts": {},
+  "skipped": false
+}

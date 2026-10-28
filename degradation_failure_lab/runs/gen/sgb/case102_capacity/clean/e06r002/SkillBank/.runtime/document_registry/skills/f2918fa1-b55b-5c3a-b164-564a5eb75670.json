@@ -1,0 +1,118 @@
+{
+  "skill_id": "f2918fa1-b55b-5c3a-b164-564a5eb75670",
+  "name": "装卸与任务分配流程",
+  "description": "依据车辆容量、当前位置与货物起点终点，将 PENDING_AT_ORIGIN 货物分配给合适车辆，并执行装卸与状态更新。适用于存在待分配货物且有空闲车辆位于货物起点的仿真装卸阶段。",
+  "skill_body": "在仿真装卸阶段，遍历 PENDING_AT_ORIGIN 货物，检查空闲车辆是否位于货物起点且容量足够，完成分配并更新车辆载货与货物状态；容量不足或位置不符时跳过该车辆。\n\n## Objective\n\n完成货物到车辆的分配与装卸状态更新\n## Applicable Signals\n\n- 货物状态为 PENDING_AT_ORIGIN 且无分配车辆\n- 车辆状态为空闲且位于货物起点\n- 车辆剩余容量满足货物尺寸\n\n## Contraindications\n\n- 货物已分配或已送达\n- 车辆容量不足以装载货物\n- 车辆不在货物起点\n\n## Intervention Moves\n\n- 按货物优先级或释放时间筛选待分配货物\n- 匹配位于货物起点且容量足够的空闲车辆\n- 将货物分配给车辆并更新车辆载货与货物状态\n\n## Workflow Steps\n\n- 识别状态为 PENDING_AT_ORIGIN 且无分配车辆的货物\n- 筛选位于货物起点且空闲的车辆\n- 校验车辆剩余容量是否满足货物尺寸\n- 将货物分配给满足条件的车辆\n- 更新车辆载货状态与货物状态\n\n## Constraints\n\n- 仅分配 PENDING_AT_ORIGIN 状态的货物\n- 车辆必须位于货物起点\n- 车辆剩余容量必须不小于货物尺寸\n\n## Cautions\n\n- 容量不足或位置不符的车辆应跳过，不得强行分配\n\n## Output Contract\n\n- 更新后的车辆载货状态与货物状态（已分配/已装载）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 货物 C1 位于 N1，尺寸 3，状态 PENDING_AT_ORIGIN；车辆 V1 位于 N1，容量 12，空闲\n- Therapist/Output: C1 分配给 V1，V1 载货更新，C1 状态更新为已分配\n- Notes: 容量与位置均满足",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "完成货物到车辆的分配与装卸状态更新",
+  "domain": "交通仿真规则",
+  "task_family": "物流任务分配",
+  "method_family": "容量匹配与装卸规则",
+  "stage": "装卸阶段",
+  "applicable_signals": [
+    "货物状态为 PENDING_AT_ORIGIN 且无分配车辆",
+    "车辆状态为空闲且位于货物起点",
+    "车辆剩余容量满足货物尺寸"
+  ],
+  "contraindications": [
+    "货物已分配或已送达",
+    "车辆容量不足以装载货物",
+    "车辆不在货物起点"
+  ],
+  "intervention_moves": [
+    "按货物优先级或释放时间筛选待分配货物",
+    "匹配位于货物起点且容量足够的空闲车辆",
+    "将货物分配给车辆并更新车辆载货与货物状态"
+  ],
+  "triggers": [
+    "存在状态为 PENDING_AT_ORIGIN 的待分配货物",
+    "存在空闲车辆且位于货物起点"
+  ],
+  "workflow_steps": [
+    "识别状态为 PENDING_AT_ORIGIN 且无分配车辆的货物",
+    "筛选位于货物起点且空闲的车辆",
+    "校验车辆剩余容量是否满足货物尺寸",
+    "将货物分配给满足条件的车辆",
+    "更新车辆载货状态与货物状态"
+  ],
+  "constraints": [
+    "仅分配 PENDING_AT_ORIGIN 状态的货物",
+    "车辆必须位于货物起点",
+    "车辆剩余容量必须不小于货物尺寸"
+  ],
+  "cautions": [
+    "容量不足或位置不符的车辆应跳过，不得强行分配"
+  ],
+  "output_contract": [
+    "更新后的车辆载货状态与货物状态（已分配/已装载）"
+  ],
+  "examples": [
+    {
+      "input": "货物 C1 位于 N1，尺寸 3，状态 PENDING_AT_ORIGIN；车辆 V1 位于 N1，容量 12，空闲",
+      "output": "C1 分配给 V1，V1 载货更新，C1 状态更新为已分配",
+      "notes": "容量与位置均满足"
+    }
+  ],
+  "tags": [
+    "交通仿真",
+    "物流任务分配",
+    "装卸",
+    "容量匹配"
+  ],
+  "support_ids": [
+    "285f23ce-bf4a-51c0-bdc1-b79eaf90cd7c"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "4a8fd03f-9a77-5a1f-88d1-1789b0f40550"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|完成货物到车辆的分配与装卸状态更新|交通仿真规则|物流任务分配|容量匹配与装卸规则|装卸阶段|装卸与任务分配流程",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

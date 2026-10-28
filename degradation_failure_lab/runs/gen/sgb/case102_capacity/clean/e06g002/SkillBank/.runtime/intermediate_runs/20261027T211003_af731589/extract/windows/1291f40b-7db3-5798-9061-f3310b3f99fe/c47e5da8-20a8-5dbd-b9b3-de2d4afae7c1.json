@@ -1,0 +1,240 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "c47e5da8-20a8-5dbd-b9b3-de2d4afae7c1",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "b9239b4b-47d6-55c8-80bc-712dece934b0",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 22576,
+        "end": 24120
+      },
+      "excerpt": "Suppose at tick 5, there are already 2 vehicles on E9. A third vehicle at N4 requests ENTER_EDGE(E9):\n- In the Capacity & Conflict Check Phase, approving this would exceed MaxVehicles = 2.\n- The request is denied; the vehicle instead performs WAIT at N4 for that tick.\n\n1. Overview\nR1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps.\n\nR2. Time is discrete. Each simulation step is called a tick. Ticks are indexed by non-negative integers t = 0, 1, 2,",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "边容量准入校验",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在容量与冲突检查阶段正确批准或拒绝车辆进入边的请求，避免超出边容量上限",
+        "task_family": "容量与冲突检查",
+        "method_family": "准入判定",
+        "stage": "容量与冲突检查阶段",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "c47e5da8-20a8-5dbd-b9b3-de2d4afae7c1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 3,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:22:38+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "ff0923ae-fdff-5a22-9187-48e9feadf3c3",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "边容量准入校验",
+      "description": "在离散 tick 仿真的容量与冲突检查阶段，对车辆 ENTER_EDGE 请求做准入判定：若目标边当前车辆数已达 MaxVehicles，则拒绝请求并让车辆在该节点执行 WAIT。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在容量与冲突检查阶段正确批准或拒绝车辆进入边的请求，避免超出边容量上限",
+      "domain": "交通仿真规则",
+      "task_family": "容量与冲突检查",
+      "method_family": "准入判定",
+      "stage": "容量与冲突检查阶段",
+      "applicable_signals": [
+        "车辆在节点请求 ENTER_EDGE 进入某条边",
+        "目标边已有车辆数接近或达到 MaxVehicles"
+      ],
+      "contraindications": [
+        "请求不是进入边而是其他动作（如 WAIT、装卸）",
+        "目标边不存在或未定义容量"
+      ],
+      "intervention_moves": [
+        "读取目标边当前车辆数与 MaxVehicles 上限",
+        "比较批准后车辆数是否超过上限",
+        "超限则拒绝请求并令车辆在本 tick 于当前节点执行 WAIT",
+        "未超限则批准进入"
+      ],
+      "workflow_steps": [
+        "识别当前 tick 的 ENTER_EDGE 请求及其目标边",
+        "读取目标边当前车辆数与 MaxVehicles 上限",
+        "判断批准后车辆数是否超过 MaxVehicles",
+        "若超过则拒绝请求，并令车辆在本 tick 于当前节点执行 WAIT",
+        "若未超过则批准进入",
+        "输出每个请求的批准或拒绝结果"
+      ],
+      "triggers": [
+        "车辆在节点请求 ENTER_EDGE 进入某条边",
+        "需要判断目标边是否已达 MaxVehicles 上限"
+      ],
+      "constraints": [
+        "判定须在容量与冲突检查阶段完成",
+        "不得批准导致目标边车辆数超过 MaxVehicles 的请求"
+      ],
+      "cautions": [
+        "被拒绝的车辆须在本 tick 执行 WAIT，而非静默丢弃请求"
+      ],
+      "output_contract": [
+        "对每个 ENTER_EDGE 请求给出批准或拒绝结果；被拒绝车辆在该 tick 执行 WAIT。"
+      ],
+      "examples": [
+        {
+          "input": "tick 5，E9 上已有 2 辆车，MaxVehicles = 2，N4 处第三辆车请求 ENTER_EDGE(E9)",
+          "output": "拒绝该请求；该车辆在本 tick 于 N4 执行 WAIT",
+          "notes": "批准将超过 MaxVehicles = 2"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "b9239b4b-47d6-55c8-80bc-712dece934b0"
+      ],
+      "metadata": {
+        "prompt": "在容量与冲突检查阶段处理每个 ENTER_EDGE 请求：读取目标边当前车辆数与 MaxVehicles 上限；若批准后车辆数将超过上限，则拒绝该请求，并令该车辆在本 tick 于当前节点执行 WAIT；否则批准进入。逐请求给出批准或拒绝结果。",
+        "tags": [
+          "交通仿真",
+          "容量检查",
+          "准入判定",
+          "ENTER_EDGE",
+          "离散tick"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "c47e5da8-20a8-5dbd-b9b3-de2d4afae7c1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 3,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

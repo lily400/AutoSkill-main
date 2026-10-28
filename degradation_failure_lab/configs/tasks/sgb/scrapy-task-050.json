@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "task_id": "scrapy-task-050",
+  "task_key": "t-40238f17cad4",
+  "case_id": "case050_scrapy",
+  "adapter": "downstream_eval.sgb.task_adapters.audited.code_task",
+  "task_path": "downstream_eval/tasks/sgb/audited/scrapy-task-050",
+  "runtime_lock": "downstream_eval/tasks/sgb/audited/scrapy-task-050/runtime.lock.json",
+  "profile_template": "downstream_eval/configs/p1_smoke.json",
+  "approval_environment_variable": "SGB_AUDIT_ALLOW_PAID",
+  "conditions": {
+    "NoSkill1": "NoSkill",
+    "CleanSkill1": "CleanSkill"
+  },
+  "fixtures": "tests/fixtures/sgb/audited/scrapy-task-050/candidates.json",
+  "probes": {
+    "NoSkill1": "correct",
+    "CleanSkill1": "rule_mutant"
+  },
+  "expected_oracle_tests": 8,
+  "code_observation": {
+    "family": "scrapy050",
+    "operations": [
+      {
+        "op": "finding",
+        "symbol": "get_depth_limit_zero_finding",
+        "value": null
+      },
+      {
+        "op": "finding",
+        "symbol": "get_depth_limit_zero_finding",
+        "value": null
+      }
+    ],
+    "test_names": [
+      "test_file_exists",
+      "test_file_not_empty",
+      "test_module_imports",
+      "test_has_required_api",
+      "test_depth_limit_setting_is_zero",
+      "test_finding_structure_and_semantics",
+      "test_runtime_behavior_crawls_beyond_depth_zero",
+      "test_finding_matches_runtime_behavior"
+    ],
+    "crawl_observer": {
+      "path": "results/sgb/rescores/s50f001-callback-signals-v2/crawl_probe.py",
+      "sha256": "57df3b0c02bb4a721f8ceacedf400c49bb4531bd6425f7a643af85e6e20338c9",
+      "protocol_id": "sgb-scrapy050-response-received-v2"
+    }
+  },
+  "freeze_files": [
+    "tests/fixtures/sgb/audited/scrapy-task-050/candidates.json",
+    "configs/tasks/sgb/scrapy-task-050.json",
+    "data/manifests/sgb/gates/t-40238f17cad4-clean-v1.json",
+    ".external/sgb_runtime/scrapy050-clean-v1/manifest.json",
+    "results/sgb/rescores/s50f001-callback-signals-v2/crawl_probe.py"
+  ],
+  "protocol_scope": "Released assertions with user-approved response_received-v2 observation preserving submitted callbacks; raw legacy-v1 records remain immutable."
+}

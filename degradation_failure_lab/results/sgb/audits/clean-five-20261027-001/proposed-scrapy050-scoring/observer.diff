@@ -1,0 +1,33 @@
+--- current/crawl_probe.py
++++ proposed/crawl_probe.py
+@@ -12,6 +12,7 @@
+ sys.path.insert(0, '/submission')
+ import agent_output
+ import scrapy
++from scrapy import signals
+ from scrapy.crawler import CrawlerProcess
+ 
+ # Create a tiny website with depth 0 -> 1 -> 2 -> 3
+@@ -46,16 +47,16 @@
+     name = "probe_depth_limit_zero"
+     start_urls = [f"http://127.0.0.1:{port}/index.html"]
+ 
+-    def parse(self, response):
+-        depth = response.meta.get("depth", 0)
+-        visited.append({"url": response.url, "depth": depth})
+-        for href in response.css("a::attr(href)").getall():
+-            yield response.follow(href, callback=self.parse)
++
++def record_response(response, request, spider):
++    visited.append({"url": response.url, "depth": response.meta.get("depth", 0)})
+ 
+ process = CrawlerProcess(settings={
+     "LOG_ENABLED": False,
+ })
+-process.crawl(ProbeSpider)
++crawler = process.create_crawler(ProbeSpider)
++crawler.signals.connect(record_response, signal=signals.response_received, weak=False)
++process.crawl(crawler)
+ process.start()
+ 
+ server.shutdown()

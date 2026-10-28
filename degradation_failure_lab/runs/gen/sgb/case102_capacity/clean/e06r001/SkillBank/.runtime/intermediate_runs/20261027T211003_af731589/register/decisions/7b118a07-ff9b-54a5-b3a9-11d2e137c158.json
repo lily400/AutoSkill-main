@@ -1,0 +1,117 @@
+{
+  "skill_id": "7b118a07-ff9b-54a5-b3a9-11d2e137c158",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "7b118a07-ff9b-54a5-b3a9-11d2e137c158",
+    "name": "动作前置条件守卫",
+    "description": "在生成车辆每tick动作请求时，对有条件动作（ENTER_EDGE、START_LOADING、START_UNLOADING、GO_OFFLINE、GO_ONLINE）校验其位置与状态前置条件；不满足则拒绝或修正该动作，仅保留合法动作请求。",
+    "skill_body": "对每个非离线车辆拟发出的有条件动作，逐项核对前置条件：ENTER_EDGE 需车辆当前位于节点；START_LOADING 需车辆位于当前节点且目标货物在该节点；START_UNLOADING 需指定货物已在车上且其目的地或允许转运节点与当前节点匹配；GO_OFFLINE 需车辆位于其 HomeDepot；GO_ONLINE 需车辆处于 OFFLINE 且位于 HomeDepot。任一条件不满足则不得发出该动作，改为拒绝或替换为合法动作（如 WAIT）。注意动作在容量与冲突校验前仅为请求，本守卫只做前置条件过滤，不处理容量与冲突。\n\n## Objective\n\n阻止不满足位置或状态前置条件的非法动作请求\n## Applicable Signals\n\n- 车辆拟发出 ENTER_EDGE 且需确认是否在节点\n- 车辆拟发出 START_LOADING 或 START_UNLOADING\n- 车辆拟切换 GO_OFFLINE 或 GO_ONLINE\n- 需判断动作在当前节点或状态是否允许\n\n## Contraindications\n\n- 动作本身无条件合法如 WAIT\n- 已进入容量与冲突校验阶段\n\n## Intervention Moves\n\n- 识别动作类型及其前置条件\n- 核对车辆当前位置与状态\n- 对不满足条件的动作拒绝或替换为合法动作\n\n## Workflow Steps\n\n- 确定车辆当前所在节点与状态（在线/离线）\n- 识别拟发出动作类型\n- 按动作类型核对前置条件：ENTER_EDGE 需在节点；START_LOADING 需在节点且货物在该节点；START_UNLOADING 需货物在车上且目的地或允许转运节点匹配当前节点；GO_OFFLINE 需在 HomeDepot；GO_ONLINE 需 OFFLINE 且在 HomeDepot\n- 对不满足条件的动作拒绝或修正为合法动作\n- 输出仅含满足前置条件的动作请求\n\n## Constraints\n\n- 每个非离线车辆每tick至多选择一个动作\n- 动作在容量与冲突校验前仅为请求，本守卫不替代该阶段\n\n## Cautions\n\n- 不要将前置条件校验与容量/冲突校验混淆\n- GO_ONLINE 仅在车辆已处于 OFFLINE 且位于 HomeDepot 时允许\n\n## Output Contract\n\n- 非法动作被拒绝或修正，仅保留满足前置条件的动作请求。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆位于非 HomeDepot 节点，请求 GO_OFFLINE\n- Therapist/Output: 拒绝 GO_OFFLINE，改为合法动作（如 WAIT）\n- Notes: GO_OFFLINE 需在 HomeDepot\n\n### Example 2\n\n- Client/Input: 车辆处于 OFFLINE 且位于 HomeDepot，请求 GO_ONLINE\n- Therapist/Output: 允许 GO_ONLINE，状态转为 IDLE_AT_NODE\n- Notes: 满足前置条件",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "阻止不满足位置或状态前置条件的非法动作请求",
+    "domain": "交通仿真规则",
+    "task_family": "动作合法性校验",
+    "method_family": "前置条件检查",
+    "stage": "动作请求过滤",
+    "applicable_signals": [
+      "车辆拟发出 ENTER_EDGE 且需确认是否在节点",
+      "车辆拟发出 START_LOADING 或 START_UNLOADING",
+      "车辆拟切换 GO_OFFLINE 或 GO_ONLINE",
+      "需判断动作在当前节点或状态是否允许"
+    ],
+    "contraindications": [
+      "动作本身无条件合法如 WAIT",
+      "已进入容量与冲突校验阶段"
+    ],
+    "intervention_moves": [
+      "识别动作类型及其前置条件",
+      "核对车辆当前位置与状态",
+      "对不满足条件的动作拒绝或替换为合法动作"
+    ],
+    "triggers": [
+      "车辆请求进入边、装卸、上下线等有条件动作",
+      "需要判断动作在当前节点或状态是否允许"
+    ],
+    "workflow_steps": [
+      "确定车辆当前所在节点与状态（在线/离线）",
+      "识别拟发出动作类型",
+      "按动作类型核对前置条件：ENTER_EDGE 需在节点；START_LOADING 需在节点且货物在该节点；START_UNLOADING 需货物在车上且目的地或允许转运节点匹配当前节点；GO_OFFLINE 需在 HomeDepot；GO_ONLINE 需 OFFLINE 且在 HomeDepot",
+      "对不满足条件的动作拒绝或修正为合法动作",
+      "输出仅含满足前置条件的动作请求"
+    ],
+    "constraints": [
+      "每个非离线车辆每tick至多选择一个动作",
+      "动作在容量与冲突校验前仅为请求，本守卫不替代该阶段"
+    ],
+    "cautions": [
+      "不要将前置条件校验与容量/冲突校验混淆",
+      "GO_ONLINE 仅在车辆已处于 OFFLINE 且位于 HomeDepot 时允许"
+    ],
+    "output_contract": [
+      "非法动作被拒绝或修正，仅保留满足前置条件的动作请求。"
+    ],
+    "examples": [
+      {
+        "input": "车辆位于非 HomeDepot 节点，请求 GO_OFFLINE",
+        "output": "拒绝 GO_OFFLINE，改为合法动作（如 WAIT）",
+        "notes": "GO_OFFLINE 需在 HomeDepot"
+      },
+      {
+        "input": "车辆处于 OFFLINE 且位于 HomeDepot，请求 GO_ONLINE",
+        "output": "允许 GO_ONLINE，状态转为 IDLE_AT_NODE",
+        "notes": "满足前置条件"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "动作合法性",
+      "前置条件",
+      "守卫规则"
+    ],
+    "support_ids": [
+      "15ab2be1-4b6d-56b4-aeff-7f5c7ce15422"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "24fc40be-d92c-5439-ae7d-bdf919f6b378"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|阻止不满足位置或状态前置条件的非法动作请求|交通仿真规则|动作合法性校验|前置条件检查|动作请求过滤|动作前置条件守卫"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,155 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "移动裁决",
+  "run_id": "20261027T222252_0e919771",
+  "skills": [
+    {
+      "skill_id": "cd5627d8-c0f5-5868-9922-a1d3cd86e988",
+      "name": "容量与冲突检查裁决",
+      "description": "在移动承诺阶段之后，依据边容量、信号与优先级逐条裁决每个移动承诺是否被批准或拒绝，并输出逐条裁决结果。",
+      "skill_body": "在 Movement Commitment Phase 产生移动承诺后执行本技能：收集本 tick 的移动承诺集合，按 VehicleID 升序、再按 NodeID 升序确定处理顺序（除非规则另有优先级），对每条承诺检查目标边容量是否允许进入，检查信号与优先级约束，逐条记录该承诺的批准或拒绝结果。仅输出裁决结果，不执行移动、不推进剩余行程时间、不更新指标。\n\n## Objective\n\n依据容量、信号和优先级裁决移动承诺的批准或拒绝\n## Applicable Signals\n\n- 车辆已提交进入某边的承诺\n- 需要判定移动是否被允许\n\n## Contraindications\n\n- 尚未产生移动承诺\n- 仅做指标统计\n- 处于 Incident Resolution 或 Movement Execution 等其他阶段\n\n## Intervention Moves\n\n- 读取当前边容量与占用情况\n- 检查目标边信号状态\n- 比较承诺之间的优先级\n- 对每条承诺给出批准或拒绝结论\n\n## Workflow Steps\n\n- 收集本 tick 的移动承诺集合\n- 按 VehicleID 升序、再按 NodeID 升序确定处理顺序（除非规则另有优先级）\n- 对每条承诺检查目标边容量是否允许进入\n- 检查信号与优先级约束\n- 记录该承诺的批准或拒绝结果\n\n## Constraints\n\n- 仅在本阶段裁决，不执行移动或推进剩余行程时间\n- 不更新交付延迟、行驶距离等指标\n- 排序遵循 VehicleID 升序、再 NodeID 升序，除非规则指定不同优先级\n\n## Cautions\n\n- 部分承诺可能因容量、信号或优先级被拒绝，需逐条记录而非整体判定\n\n## Output Contract\n\n- 每个移动承诺的批准/拒绝结果列表\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆已提交进入某边的承诺，该边容量已满\n- Therapist/Output: 该承诺裁决为拒绝\n- Notes: 容量不足导致拒绝",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "依据容量、信号和优先级裁决移动承诺的批准或拒绝",
+      "domain": "交通仿真",
+      "task_family": "移动裁决",
+      "method_family": "容量与冲突校验",
+      "stage": "Capacity & Conflict Check Phase",
+      "applicable_signals": [
+        "车辆已提交进入某边的承诺",
+        "需要判定移动是否被允许"
+      ],
+      "contraindications": [
+        "尚未产生移动承诺",
+        "仅做指标统计",
+        "处于 Incident Resolution 或 Movement Execution 等其他阶段"
+      ],
+      "intervention_moves": [
+        "读取当前边容量与占用情况",
+        "检查目标边信号状态",
+        "比较承诺之间的优先级",
+        "对每条承诺给出批准或拒绝结论"
+      ],
+      "triggers": [
+        "车辆已提交进入某边的移动承诺",
+        "需要判定某个移动是否被允许",
+        "进入 Capacity & Conflict Check Phase"
+      ],
+      "workflow_steps": [
+        "收集本 tick 的移动承诺集合",
+        "按 VehicleID 升序、再按 NodeID 升序确定处理顺序（除非规则另有优先级）",
+        "对每条承诺检查目标边容量是否允许进入",
+        "检查信号与优先级约束",
+        "记录该承诺的批准或拒绝结果"
+      ],
+      "constraints": [
+        "仅在本阶段裁决，不执行移动或推进剩余行程时间",
+        "不更新交付延迟、行驶距离等指标",
+        "排序遵循 VehicleID 升序、再 NodeID 升序，除非规则指定不同优先级"
+      ],
+      "cautions": [
+        "部分承诺可能因容量、信号或优先级被拒绝，需逐条记录而非整体判定"
+      ],
+      "output_contract": [
+        "每个移动承诺的批准/拒绝结果列表"
+      ],
+      "examples": [
+        {
+          "input": "车辆已提交进入某边的承诺，该边容量已满",
+          "output": "该承诺裁决为拒绝",
+          "notes": "容量不足导致拒绝"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "容量校验",
+        "冲突裁决",
+        "移动承诺"
+      ],
+      "support_ids": [
+        "46462d4f-b7cb-5b2e-8da0-136c2eb6b38f"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "320810bc-bb8e-50fd-a10f-beb76e252c58"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|依据容量、信号和优先级裁决移动承诺的批准或拒绝|交通仿真|移动裁决|容量与冲突校验|capacity & conflict check phase|容量与冲突检查裁决",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "5ca22734-4752-47b9-a485-4428041e8e59",
+      "entity_type": "skill",
+      "entity_id": "cd5627d8-c0f5-5868-9922-a1d3cd86e988",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "cd5627d8-c0f5-5868-9922-a1d3cd86e988",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "46462d4f-b7cb-5b2e-8da0-136c2eb6b38f"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

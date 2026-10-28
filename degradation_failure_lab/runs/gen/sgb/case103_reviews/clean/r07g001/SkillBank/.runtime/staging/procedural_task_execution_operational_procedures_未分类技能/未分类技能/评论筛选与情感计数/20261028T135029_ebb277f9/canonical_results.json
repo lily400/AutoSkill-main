@@ -1,0 +1,156 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "评论筛选与情感计数",
+  "run_id": "20261028T135029_ebb277f9",
+  "skills": [
+    {
+      "skill_id": "25bac3cc-3b87-5f35-ad2b-4f229c1d670f",
+      "name": "评论适用性判定与情感计数流程",
+      "description": "对每个产品SKU，按类别匹配与语义相似度双重条件判定评论是否适用，并分别统计Nike与竞品的正面/负面评论数量，用于量化消费者情感信号以支持选品决策。",
+      "skill_body": "针对产品目录中的每个SKU，逐条判定评论是否适用：先做类别匹配（硬性要求），再做语义相似度判断（判断性要求），两项条件同时满足才视为适用。对适用评论按品牌来源（Nike vs 竞品）与情感极性（正面/负面）分别计数，最终为每个SKU产出区分品牌来源的正面与负面适用评论计数表。\n\n## Objective\n\n为每个SKU产出区分品牌来源的正面与负面适用评论计数\n## Applicable Signals\n\n- 存在产品目录与评论数据\n- 需要按SKU量化消费者情感\n- 需区分Nike与竞品评论来源\n\n## Contraindications\n\n- 无产品目录或评论数据\n- 仅需定性摘要而非计数\n\n## Intervention Moves\n\n- 对每条评论执行类别匹配（硬性条件）\n- 对通过类别匹配的评论执行语义相似度判断\n- 两项条件均满足才标记为适用\n- 按品牌来源与情感极性分别计数\n\n## Workflow Steps\n\n- 读取产品目录与评论数据\n- 对每个SKU逐条评论执行类别匹配（硬性要求）\n- 对通过类别匹配的评论执行语义相似度判断（判断要求）\n- 两项条件同时满足则标记为适用\n- 对适用评论按Nike与竞品、正面与负面分别计数\n- 汇总为每个SKU的计数表\n\n## Constraints\n\n- 类别匹配为硬性要求，不满足即不适用\n- 语义相似度为判断性要求，需与类别匹配同时满足\n- 计数须区分品牌来源与情感极性\n\n## Cautions\n\n- 输入无效或不完整时需按既定处理规则应对，避免产生错误计数\n\n## Output Contract\n\n- 每个SKU的正面/负面适用评论计数表（区分Nike与竞品）",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "cf8603df-1272-5af0-8fd3-e794b4dd8635"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "为每个SKU产出区分品牌来源的正面与负面适用评论计数",
+      "domain": "商品评论分析",
+      "task_family": "评论筛选与情感计数",
+      "method_family": "规则判定加语义匹配",
+      "stage": "评论处理与统计",
+      "applicable_signals": [
+        "存在产品目录与评论数据",
+        "需要按SKU量化消费者情感",
+        "需区分Nike与竞品评论来源"
+      ],
+      "contraindications": [
+        "无产品目录或评论数据",
+        "仅需定性摘要而非计数"
+      ],
+      "intervention_moves": [
+        "对每条评论执行类别匹配（硬性条件）",
+        "对通过类别匹配的评论执行语义相似度判断",
+        "两项条件均满足才标记为适用",
+        "按品牌来源与情感极性分别计数"
+      ],
+      "triggers": [
+        "需要按SKU量化消费者情感",
+        "需区分Nike与竞品评论来源",
+        "需要将评论判定结果汇总为计数表"
+      ],
+      "workflow_steps": [
+        "读取产品目录与评论数据",
+        "对每个SKU逐条评论执行类别匹配（硬性要求）",
+        "对通过类别匹配的评论执行语义相似度判断（判断要求）",
+        "两项条件同时满足则标记为适用",
+        "对适用评论按Nike与竞品、正面与负面分别计数",
+        "汇总为每个SKU的计数表"
+      ],
+      "constraints": [
+        "类别匹配为硬性要求，不满足即不适用",
+        "语义相似度为判断性要求，需与类别匹配同时满足",
+        "计数须区分品牌来源与情感极性"
+      ],
+      "cautions": [
+        "输入无效或不完整时需按既定处理规则应对，避免产生错误计数"
+      ],
+      "output_contract": [
+        "每个SKU的正面/负面适用评论计数表（区分Nike与竞品）"
+      ],
+      "examples": [],
+      "tags": [
+        "评论分析",
+        "情感计数",
+        "SKU",
+        "语义匹配",
+        "选品支持"
+      ],
+      "support_ids": [
+        "3dba151c-546d-5733-9af3-daefe42a8360"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "ff04f10a-3cfb-5bf7-bc5d-01c45c6c43a7"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|为每个sku产出区分品牌来源的正面与负面适用评论计数|商品评论分析|评论筛选与情感计数|规则判定加语义匹配|评论处理与统计|评论适用性判定与情感计数流程",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "cf8603df-1272-5af0-8fd3-e794b4dd8635"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "b1615716-7125-47f2-95cb-5f6020c76c0a",
+      "entity_type": "skill",
+      "entity_id": "25bac3cc-3b87-5f35-ad2b-4f229c1d670f",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "25bac3cc-3b87-5f35-ad2b-4f229c1d670f",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "3dba151c-546d-5733-9af3-daefe42a8360"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

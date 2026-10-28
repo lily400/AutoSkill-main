@@ -1,0 +1,82 @@
+---
+id: "e6fa8c9e-42b0-5f33-aa08-11f1c16a7bf8"
+name: "车辆状态快照字段规范校验"
+description: "定义并校验 VEHICLES 状态快照中每辆车的必填字段集合，用于生成或解析仿真状态快照中的车辆条目。"
+version: "0.1.0"
+tags:
+  - "交通仿真"
+  - "状态快照"
+  - "字段规范"
+  - "VEHICLES"
+  - "未分类技能"
+  - "profile:traffic_simulation_rules::未分类技能"
+triggers:
+  - "需要生成 VEHICLES 段状态快照"
+  - "需要校验车辆条目字段完整性"
+  - "需要解析状态快照中的车辆条目"
+---
+
+# 车辆状态快照字段规范校验
+
+定义并校验 VEHICLES 状态快照中每辆车的必填字段集合，用于生成或解析仿真状态快照中的车辆条目。
+
+## Prompt
+
+当需要生成或校验 VEHICLES 段状态快照中的车辆条目时，按 T5 规定的字段集合逐项检查：VehicleID、VehicleType、LocationType（取值 NODE 或 EDGE）、LocationID（NodeID 或 EdgeID）、Status、LoadUnitsUsed、OnboardConsignments（ConsignmentID 列表）；若 LocationType 为 EDGE，则必须额外包含 RemainingTravelTime。输出符合该字段结构的车辆条目列表，并标注缺失或非法字段。
+
+## Objective
+
+确保车辆状态快照条目包含完整且合法的字段结构
+## Applicable Signals
+
+- 输入或输出涉及 VEHICLES 段
+- 需要确认车辆条目字段是否齐全
+- 需要区分车辆位于节点还是边
+
+## Contraindications
+
+- 处理节点或边等其他实体段
+- 需要仿真推进逻辑而非字段结构
+
+## Intervention Moves
+
+- 列出 T5 规定的必填字段集合
+- 校验 LocationType 取值属于 {NODE, EDGE}
+- 当 LocationType 为 EDGE 时要求存在 RemainingTravelTime
+- 校验 OnboardConsignments 为 ConsignmentID 列表
+- 标注缺失或非法字段并返回条目列表
+
+## Workflow Steps
+
+- 确认目标为 VEHICLES 段车辆条目
+- 逐项核对必填字段：VehicleID、VehicleType、LocationType、LocationID、Status、LoadUnitsUsed、OnboardConsignments
+- 根据 LocationType 判断是否需要 RemainingTravelTime
+- 校验字段取值合法性（如 LocationType 属于 {NODE, EDGE}）
+- 输出符合规范的车辆条目列表并标注问题字段
+
+## Constraints
+
+- LocationType 仅允许 NODE 或 EDGE
+- LocationID 必须为 NodeID 或 EdgeID
+- RemainingTravelTime 仅在车辆位于边上时出现
+- OnboardConsignments 为 ConsignmentID 列表
+
+## Cautions
+
+- 仅覆盖车辆实体字段结构，不涉及仿真推进或时间更新逻辑
+- 不适用于节点、边、货物等其他实体段
+
+## Output Contract
+
+- 符合字段规范的车辆条目列表，每条包含完整必填字段，并标注任何缺失或非法字段。
+
+## Files
+
+- `references/evidence.md`
+- `references/evidence_manifest.json`
+
+## Triggers
+
+- 需要生成 VEHICLES 段状态快照
+- 需要校验车辆条目字段完整性
+- 需要解析状态快照中的车辆条目

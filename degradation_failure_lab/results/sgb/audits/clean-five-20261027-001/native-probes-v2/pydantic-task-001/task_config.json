@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "task_id": "pydantic-task-001",
+  "task_key": "t-83713dafe254",
+  "case_id": "case001_pyd",
+  "adapter": "downstream_eval.sgb.task_adapters.audited.code_task",
+  "task_path": "downstream_eval/tasks/sgb/audited/pydantic-task-001",
+  "runtime_lock": "downstream_eval/tasks/sgb/audited/pydantic-task-001/runtime.lock.json",
+  "profile_template": "downstream_eval/configs/p1_smoke.json",
+  "approval_environment_variable": "SGB_AUDIT_ALLOW_PAID",
+  "conditions": {
+    "NoSkill1": "NoSkill",
+    "CleanSkill1": "CleanSkill"
+  },
+  "fixtures": "tests/fixtures/sgb/audited/pydantic-task-001/candidates.json",
+  "probes": {
+    "NoSkill1": "correct",
+    "CleanSkill1": "rule_mutant"
+  },
+  "expected_oracle_tests": 16,
+  "code_observation": {
+    "family": "pydantic001",
+    "operations": [
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 0
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 3
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 5
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 10
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 12
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": -5
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": -11
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": -1
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 1
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 7
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "MyModel",
+        "value": {
+          "value": 19
+        }
+      }
+    ],
+    "test_names": [
+      "test_model_exists",
+      "test_value_field_uses_annotated",
+      "test_required_validator_kinds_present",
+      "test_input_10_produces_output_30",
+      "test_multiple_inputs[0-10]",
+      "test_multiple_inputs[3-16]",
+      "test_multiple_inputs[5-20]",
+      "test_multiple_inputs[10-30]",
+      "test_multiple_inputs[12-34]",
+      "test_multiple_inputs[-5-0]",
+      "test_log_is_structured_and_nontrivial",
+      "test_wrap_sees_raw_input",
+      "test_order_matches_documented_pipeline_semantics",
+      "test_not_hardcoded_for_single_value",
+      "test_model_instantiation_uses_pydantic_validation",
+      "test_no_decorator_based_field_validator_requirement"
+    ]
+  },
+  "freeze_files": [
+    "tests/fixtures/sgb/audited/pydantic-task-001/candidates.json",
+    "configs/tasks/sgb/pydantic-task-001.json",
+    "data/manifests/sgb/gates/t-83713dafe254-clean-v1.json"
+  ]
+}

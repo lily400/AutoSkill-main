@@ -1,0 +1,107 @@
+[?2004hroot@29de058058bd:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ ls -la /harbor/skills
+[?2004ltotal 8
+drwxr-xr-x 2 root root 4096 Oct 28 06:30 .
+drwxr-xr-x 3 root root 4096 Oct 28 06:30 ..
+[?2004hp1$ find /harbor/skills -maxdepth 2 -name SKILL.md -print
+[?2004l[?2004hp1$ ls -la /workspace
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 28 06:30 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+[?2004hp1$ find /workspace/docs -maxdepth 2 -type f | sort
+[?2004l[?2004hp1$ find /workspace/skill -maxdepth 3 -type f | sort
+[?2004l[?2004hp1$ ls -la /workspace/input
+[?2004ltotal 8
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 ..
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> import csv
+[?2004l[?2004h> import io
+[?2004l[?2004h> from typing import Dict, Any, List
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> REQUIRED_COLUMNS = [
+[?2004l[?2004h>     "review_id",
+[?2004l[?2004h>     "review_text",
+[?2004l[?2004h>     "sentiment",
+[?2004l[?2004h>     "topic",
+[?2004l[?2004h> ]
+[?2004l[?2004h> 
+[?2004l[?2004h> # SOP-derived lowercase-only classification columns and allowed values.
+[?2004l[?2004h> CLASSIFICATION_RULES = {
+[?2004l[?2004h>     "sentiment": {"positive", "negative", "neutral"},
+[?2004l[?2004h>     "topic": {"quality", "price", "service", "shipping", "other"},
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> MIN_ROWS = 3
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _error(issue: str, row_count: int, missing_columns: List[str], invalid_values: List[Dict[str, Any]]):
+[?2004l[?2004h>     return {
+[?2004l[?2004h>         "ok": False,
+[?2004l[?2004h>         "message": f"ERROR: Processed reviews CSV validation failed. Issue: {issue}",
+[?2004l[?2004h>         "details": {
+[?2004l[?2004h>             "row_count": row_count,
+[?2004l[?2004h>             "missing_columns": missing_columns,
+[?2004l[?2004h>             "invalid_values": invalid_values,
+[?2004l[?2004h>         },
+[?2004l[?2004h>     }
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data):
+[?2004l[?2004h>     csv_text = input_data.get("csv_text", "") if isinstance(input_data, dict) else ""
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         reader = csv.DictReader(io.StringIO(csv_text))
+[?2004l[?2004h>         if reader.fieldnames is None:
+[?2004l[?2004h>             return _error("CSV is missing a header row", 0, REQUIRED_COLUMNS, [])
+[?2004l[?2004h> 
+[?2004l[?2004h>         headers = reader.fieldnames
+[?2004l[?2004h>         missing_columns = [c for c in REQUIRED_COLUMNS if c not in headers]
+[?2004l[?2004h>         rows = list(reader)
+[?2004l[?2004h>         row_count = len(rows)
+[?2004l[?2004h> 
+[?2004l[?2004h>         if missing_columns:
+[?2004l[?2004h>             return _error(
+[?2004l[?2004h>                 f"Missing required column(s): {', '.join(missing_columns)}",
+[?2004l[?2004h>                 row_count,
+[?2004l[?2004h>                 missing_columns,
+[?2004l[?2004h>                 [],
+[?2004l[?2004h>             )
+[?2004l[?2004h> 
+[?2004l[?2004h>         # Validate classification columns in SOP order and stop at the first invalid value.
+[?2004l[?2004h>         for idx, row in enumerate(rows, start=1):
+[?2004l[?2004h>             for column in [c for c in REQUIRED_COLUMNS if c in CLASSIFICATION_RULES]:
+[?2004l[?2004h>                 value = (row.get(column) or "").strip()
+[?2004l[?2004h>                 if value not in CLASSIFICATION_RULES[column]:
+[?2004l[?2004h>                     return _error(
+[?2004l[?2004h>                         f"Invalid value in column '{column}' at row {idx}: '{value}'. Expected lowercase values only.",
+[?2004l[?2004h>                         row_count,
+[?2004l[?2004h>                         [],
+[?2004l[?2004h>                         [{"row": idx, "column": column, "value": value}],
+[?2004l[?2004h>                     )
+[?2004l[?2004h> 
+[?2004l[?2004h>         if row_count < MIN_ROWS:
+[?2004l[?2004h>             return _error(
+[?2004l[?2004h>                 f"Only {row_count} rows found, expected at least {MIN_ROWS}",
+[?2004l[?2004h>                 row_count,
+[?2004l[?2004h>                 [],
+[?2004l[?2004h>                 [],
+[?2004l[?2004h>             )
+[?2004l[?2004h> 
+[?2004l[?2004h>         return {
+[?2004l[?2004h>             "ok": True,
+[?2004l[?2004h>             "message": f"SUCCESS: Processed reviews CSV validated ({row_count} rows).",
+[?2004l[?2004h>             "details": {
+[?2004l[?2004h>                 "row_count": row_count,
+[?2004l[?2004h>                 "missing_columns": [],
+[?2004l[?2004h>                 "invalid_values": [],
+[?2004l[?2004h>             },
+[?2004l[?2004h>         }
+[?2004l[?2004h>     except Exception as e:
+[?2004l[?2004h>         return _error(f"CSV parsing failed: {e}", 0, REQUIRED_COLUMNS, [])
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

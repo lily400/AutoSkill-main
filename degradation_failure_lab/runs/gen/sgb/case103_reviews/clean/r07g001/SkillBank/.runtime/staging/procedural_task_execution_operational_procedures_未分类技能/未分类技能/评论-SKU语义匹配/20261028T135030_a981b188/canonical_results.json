@@ -1,0 +1,161 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "评论-SKU语义匹配",
+  "run_id": "20261028T135030_a981b188",
+  "skills": [
+    {
+      "skill_id": "cec8d08c-dd63-5fc9-b329-41264046ef35",
+      "name": "评论-商品类目匹配校验",
+      "description": "在将评论匹配到SKU前，先判定评论讨论的服装类目，并强制要求评论类目与SKU的category字段一致，否则不得匹配。用于判断某条评论是否适用于某SKU、且评论或SKU涉及服装类目归属的场景。",
+      "skill_body": "对每条待匹配评论，先分析其讨论的服装类型并判定类目，再与目标SKU的category字段比对。仅当两者类目一致时才允许进入后续匹配；类目不一致则直接判定为不适用，不得匹配。若无法判定评论类目，按不可匹配处理。\n\n## Objective\n\n防止跨类目错误匹配，保证评论只适用于同类目SKU\n## Applicable Signals\n\n- 评论提及上衣/衬衫/连帽衫/夹克等上装词汇\n- 评论提及裤子/慢跑裤/短裤/紧身裤等下装词汇\n- 评论提及外套/派克大衣/防风衣/背心等外套词汇\n- SKU带有category字段需与评论类目比对\n\n## Contraindications\n\n- 评论未涉及任何服装类目信息且无法判定\n- 任务不涉及评论与SKU匹配\n\n## Intervention Moves\n\n- 分析评论讨论的服装类型以判定其类目\n- 将评论类目与SKU的category字段比对\n- 类目一致则放行进入匹配，不一致则判定不适用\n\n## Workflow Steps\n\n- 读取待匹配评论内容，识别其讨论的服装类型\n- 依据类目映射判定评论类目：上装类词汇→tops；下装类词汇→bottoms；外套类词汇→outerwear\n- 读取目标SKU的category字段\n- 比对评论类目与SKU类目是否一致\n- 一致则通过类目校验并允许后续匹配；不一致或无法判定则判定为不适用，不得匹配\n\n## Constraints\n\n- 类目一致性为硬性要求，不满足即不得匹配\n- 评论类目判定须基于评论实际讨论的服装类型，不得凭相似度推断\n- 类目映射：tops对应上衣/衬衫/连帽衫/夹克；bottoms对应裤子/慢跑裤/短裤/紧身裤；outerwear对应外套/派克大衣/防风衣/背心\n\n## Cautions\n\n- 评论可能提及多种服装类型，需判定其主要讨论的类目\n- 无法判定评论类目时应保守处理为不可匹配\n\n## Output Contract\n\n- 输出评论类目判定结果及是否通过类目一致性校验的结论（通过/不通过），不通过时不得进入匹配。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论提及连帽衫的穿着体验，目标SKU的category为\"tops\"\n- Therapist/Output: 评论类目=tops，与SKU类目一致，通过类目校验，允许匹配\n- Notes: 上装类词汇映射到tops\n\n### Example 2\n\n- Client/Input: 评论提及慢跑裤的版型，目标SKU的category为\"outerwear\"\n- Therapist/Output: 评论类目=bottoms，与SKU类目不一致，不通过类目校验，不得匹配\n- Notes: 跨类目硬性拒绝",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止跨类目错误匹配，保证评论只适用于同类目SKU",
+      "domain": "商品评论匹配",
+      "task_family": "评论-SKU语义匹配",
+      "method_family": "类目一致性硬约束",
+      "stage": "匹配前校验",
+      "applicable_signals": [
+        "评论提及上衣/衬衫/连帽衫/夹克等上装词汇",
+        "评论提及裤子/慢跑裤/短裤/紧身裤等下装词汇",
+        "评论提及外套/派克大衣/防风衣/背心等外套词汇",
+        "SKU带有category字段需与评论类目比对"
+      ],
+      "contraindications": [
+        "评论未涉及任何服装类目信息且无法判定",
+        "任务不涉及评论与SKU匹配"
+      ],
+      "intervention_moves": [
+        "分析评论讨论的服装类型以判定其类目",
+        "将评论类目与SKU的category字段比对",
+        "类目一致则放行进入匹配，不一致则判定不适用"
+      ],
+      "triggers": [
+        "需要判断某条评论是否适用于某SKU",
+        "评论或SKU涉及服装类目归属",
+        "进入评论-SKU语义匹配前的类目校验环节"
+      ],
+      "workflow_steps": [
+        "读取待匹配评论内容，识别其讨论的服装类型",
+        "依据类目映射判定评论类目：上装类词汇→tops；下装类词汇→bottoms；外套类词汇→outerwear",
+        "读取目标SKU的category字段",
+        "比对评论类目与SKU类目是否一致",
+        "一致则通过类目校验并允许后续匹配；不一致或无法判定则判定为不适用，不得匹配"
+      ],
+      "constraints": [
+        "类目一致性为硬性要求，不满足即不得匹配",
+        "评论类目判定须基于评论实际讨论的服装类型，不得凭相似度推断",
+        "类目映射：tops对应上衣/衬衫/连帽衫/夹克；bottoms对应裤子/慢跑裤/短裤/紧身裤；outerwear对应外套/派克大衣/防风衣/背心"
+      ],
+      "cautions": [
+        "评论可能提及多种服装类型，需判定其主要讨论的类目",
+        "无法判定评论类目时应保守处理为不可匹配"
+      ],
+      "output_contract": [
+        "输出评论类目判定结果及是否通过类目一致性校验的结论（通过/不通过），不通过时不得进入匹配。"
+      ],
+      "examples": [
+        {
+          "input": "评论提及连帽衫的穿着体验，目标SKU的category为\"tops\"",
+          "output": "评论类目=tops，与SKU类目一致，通过类目校验，允许匹配",
+          "notes": "上装类词汇映射到tops"
+        },
+        {
+          "input": "评论提及慢跑裤的版型，目标SKU的category为\"outerwear\"",
+          "output": "评论类目=bottoms，与SKU类目不一致，不通过类目校验，不得匹配",
+          "notes": "跨类目硬性拒绝"
+        }
+      ],
+      "tags": [
+        "类目匹配",
+        "硬约束",
+        "评论-SKU匹配",
+        "匹配前校验"
+      ],
+      "support_ids": [
+        "1933ef17-aeee-5fa7-87ab-d8a8ad02ce6e"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "760b9c0b-ef9b-5e93-97bf-968a4f3a45b2"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.9,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|防止跨类目错误匹配，保证评论只适用于同类目sku|商品评论匹配|评论-sku语义匹配|类目一致性硬约束|匹配前校验|评论-商品类目匹配校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "3116c870-dcd2-411b-a87f-13b3d4bd611f",
+      "entity_type": "skill",
+      "entity_id": "cec8d08c-dd63-5fc9-b329-41264046ef35",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "cec8d08c-dd63-5fc9-b329-41264046ef35",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "1933ef17-aeee-5fa7-87ab-d8a8ad02ce6e"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

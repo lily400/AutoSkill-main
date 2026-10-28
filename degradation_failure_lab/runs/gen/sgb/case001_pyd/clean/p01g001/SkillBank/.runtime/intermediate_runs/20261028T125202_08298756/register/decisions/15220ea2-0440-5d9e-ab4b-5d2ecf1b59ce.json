@@ -1,0 +1,101 @@
+{
+  "skill_id": "15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "Wrap 校验器是 Pydantic 中独立且必要的校验模式，与同批 before/after/返回值/错误抛出技能互补而非重复，支持证据充分且无冲突，保留为微技能。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce",
+    "name": "Wrap 校验器前后处理与提前终止",
+    "description": "使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。",
+    "skill_body": "实现一个 wrap 校验器：在标准校验前后插入自定义逻辑，或在需要时提前返回/抛错终止校验。先确认简单类型转换不适用本技能（应改用 annotated 校验器）。编写函数时明确前后处理分支与提前终止分支，并保证返回值为最终字段值。\n\n## Objective\n\n在字段校验中实现前后处理或提前终止逻辑\n## Applicable Signals\n\n- 标准校验前后需要自定义代码\n- 需要提前返回或抛错以终止校验\n\n## Contraindications\n\n- 简单类型转换用 annotated 校验器即可\n\n## Intervention Moves\n\n- 在 Pydantic 及其他校验器处理前后运行代码\n- 通过提前返回值终止校验\n- 通过抛错终止校验\n\n## Workflow Steps\n\n- 判断是否确需 wrap 校验器（否则改用 annotated 校验器）\n- 编写 wrap 校验器函数，明确前后处理逻辑\n- 在需要时提前返回最终值或抛出错误以终止校验\n- 确认返回值为最终字段值\n\n## Constraints\n\n- wrap 校验器为最灵活模式，应仅在需要前后处理或提前终止时使用\n\n## Cautions\n\n- 提前返回会跳过后续校验器处理，需确认符合预期\n\n## Output Contract\n\n- 可运行的 wrap 校验器函数，含前后处理或提前终止分支",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在字段校验中实现前后处理或提前终止逻辑",
+    "domain": "pydantic",
+    "task_family": "模型校验实现",
+    "method_family": "wrap 校验器",
+    "stage": "实现",
+    "applicable_signals": [
+      "标准校验前后需要自定义代码",
+      "需要提前返回或抛错以终止校验"
+    ],
+    "contraindications": [
+      "简单类型转换用 annotated 校验器即可"
+    ],
+    "intervention_moves": [
+      "在 Pydantic 及其他校验器处理前后运行代码",
+      "通过提前返回值终止校验",
+      "通过抛错终止校验"
+    ],
+    "triggers": [
+      "需要在标准校验前后插入自定义逻辑",
+      "需要在校验早期直接返回或抛错终止",
+      "需要最灵活的校验流程控制"
+    ],
+    "workflow_steps": [
+      "判断是否确需 wrap 校验器（否则改用 annotated 校验器）",
+      "编写 wrap 校验器函数，明确前后处理逻辑",
+      "在需要时提前返回最终值或抛出错误以终止校验",
+      "确认返回值为最终字段值"
+    ],
+    "constraints": [
+      "wrap 校验器为最灵活模式，应仅在需要前后处理或提前终止时使用"
+    ],
+    "cautions": [
+      "提前返回会跳过后续校验器处理，需确认符合预期"
+    ],
+    "output_contract": [
+      "可运行的 wrap 校验器函数，含前后处理或提前终止分支"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "validator",
+      "wrap",
+      "字段校验"
+    ],
+    "support_ids": [
+      "db11b3c0-2994-554a-865c-f32af3a3ec17"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "7608a7ef-94a0-5c3d-886a-c70ae10ffffb"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.55,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在字段校验中实现前后处理或提前终止逻辑|pydantic|模型校验实现|wrap 校验器|实现|wrap 校验器前后处理与提前终止"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

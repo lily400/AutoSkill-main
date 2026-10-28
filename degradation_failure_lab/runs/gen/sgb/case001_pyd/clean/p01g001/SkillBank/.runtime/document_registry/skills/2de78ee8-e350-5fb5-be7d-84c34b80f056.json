@@ -1,0 +1,123 @@
+{
+  "skill_id": "2de78ee8-e350-5fb5-be7d-84c34b80f056",
+  "name": "字段校验器显式返回值契约",
+  "description": "编写或审查 Pydantic 字段级 field_validator 时，确保校验逻辑在每条执行路径上显式返回最终值（原值或规范化后的值），避免字段被置空或校验失效。",
+  "skill_body": "在实现或审查 field_validator 函数体时，遵循返回值契约：校验器必须用 return 语句返回最终值（原值或规范化后的值）。若校验器只做检查而不返回，Pydantic 会将字段置为 None 或导致校验失效。检查步骤：1) 确认函数体每条执行路径都以 return 结束；2) 若对值做了转换或规范化，返回转换后的值；3) 若仅做校验，返回原值不变；4) 通过实例化模型验证字段值符合预期。\n\n## Objective\n\n保证字段校验器显式返回校验后的值，避免模型字段被置空或校验失效。\n## Applicable Signals\n\n- 正在编写 field_validator 函数体\n- 校验器对字段值做转换或规范化\n- 校验器仅做检查而不修改值\n\n## Contraindications\n\n- 仅需声明字段约束（如 gt、max_length）而无需自定义逻辑\n- 编写模型级校验器而非字段级校验器\n\n## Intervention Moves\n\n- 在每条执行路径末尾添加 return 语句\n- 转换场景返回转换后的值\n- 仅检查场景返回原值不变\n- 实例化模型验证字段值符合预期\n\n## Workflow Steps\n\n- 确认校验器为字段级 field_validator\n- 确保函数体每条执行路径都以 return 结束\n- 若做了转换或规范化，返回转换后的值\n- 若仅做校验，返回原值不变\n- 实例化模型并检查字段值是否符合预期\n\n## Constraints\n\n- 校验器必须显式返回最终值\n- 不得依赖隐式返回 None\n\n## Cautions\n\n- 遗漏 return 会导致字段被置空或校验失效\n- 转换逻辑需返回转换后的值而非原始输入\n\n## Output Contract\n\n- 校验器函数以 return 语句返回最终值，且模型实例化后字段值符合预期。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 编写一个校验数字为偶数的 field_validator，仅做检查不修改值\n- Therapist/Output: def check_even(cls, v):\n    if v % 2 != 0:\n        raise ValueError(f'{v} is not an even number')\n    return v\n- Notes: 仅做检查时返回原值不变",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+  "parent_candidate_ids": [
+    "0166b7ef-ec54-5e0c-9bd2-086b92fc3430"
+  ],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.82,
+  "hierarchy_status": "linked",
+  "visible_role": "leaf",
+  "objective": "保证字段校验器显式返回校验后的值，避免模型字段被置空或校验失效。",
+  "domain": "pydantic",
+  "task_family": "数据校验实现",
+  "method_family": "字段校验器编写",
+  "stage": "实现",
+  "applicable_signals": [
+    "正在编写 field_validator 函数体",
+    "校验器对字段值做转换或规范化",
+    "校验器仅做检查而不修改值"
+  ],
+  "contraindications": [
+    "仅需声明字段约束（如 gt、max_length）而无需自定义逻辑",
+    "编写模型级校验器而非字段级校验器"
+  ],
+  "intervention_moves": [
+    "在每条执行路径末尾添加 return 语句",
+    "转换场景返回转换后的值",
+    "仅检查场景返回原值不变",
+    "实例化模型验证字段值符合预期"
+  ],
+  "triggers": [
+    "编写或修改 field_validator 函数体",
+    "校验器需要转换或规范化字段值",
+    "审查字段校验器实现是否正确"
+  ],
+  "workflow_steps": [
+    "确认校验器为字段级 field_validator",
+    "确保函数体每条执行路径都以 return 结束",
+    "若做了转换或规范化，返回转换后的值",
+    "若仅做校验，返回原值不变",
+    "实例化模型并检查字段值是否符合预期"
+  ],
+  "constraints": [
+    "校验器必须显式返回最终值",
+    "不得依赖隐式返回 None"
+  ],
+  "cautions": [
+    "遗漏 return 会导致字段被置空或校验失效",
+    "转换逻辑需返回转换后的值而非原始输入"
+  ],
+  "output_contract": [
+    "校验器函数以 return 语句返回最终值，且模型实例化后字段值符合预期。"
+  ],
+  "examples": [
+    {
+      "input": "编写一个校验数字为偶数的 field_validator，仅做检查不修改值",
+      "output": "def check_even(cls, v):\n    if v % 2 != 0:\n        raise ValueError(f'{v} is not an even number')\n    return v",
+      "notes": "仅做检查时返回原值不变"
+    }
+  ],
+  "tags": [
+    "pydantic",
+    "field_validator",
+    "返回值契约",
+    "数据校验"
+  ],
+  "support_ids": [
+    "272d929a-d041-5fe9-848f-4dc9f3b6b3ef"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "646fb1eb-de0d-5fcf-8929-cf6f6f38a0d7"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.82,
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "pydantic::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|保证字段校验器显式返回校验后的值，避免模型字段被置空或校验失效。|pydantic|数据校验实现|字段校验器编写|实现|字段校验器显式返回值契约",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+    "parent_candidate_ids": [
+      "0166b7ef-ec54-5e0c-9bd2-086b92fc3430"
+    ],
+    "hierarchy_confidence": 0.82,
+    "hierarchy_status": "linked",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

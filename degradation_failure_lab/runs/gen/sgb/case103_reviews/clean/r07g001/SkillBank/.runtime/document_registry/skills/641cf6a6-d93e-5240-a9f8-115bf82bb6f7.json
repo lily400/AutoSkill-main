@@ -1,0 +1,110 @@
+{
+  "skill_id": "641cf6a6-d93e-5240-a9f8-115bf82bb6f7",
+  "name": "规范类别桶映射校验",
+  "description": "校验类别字段是否严格落在规定的三个规范桶内；发现越界标签时要求修正源数据，而不是事后静默重映射。适用于分类数据进入统计前的质量把关。",
+  "skill_body": "对输入数据中的类别字段执行合规校验：确认每个类别值都属于规定的三个规范桶。若发现越界或异常标签，不要静默重映射或事后修补，应明确指出不合规项，并要求提供修正后的源数据。输出类别合规结论及需修正的源数据清单。\n\n## Objective\n\n防止非规范类别值污染下游统计，强制以修正源数据方式处理\n## Applicable Signals\n\n- 类别字段出现异常或越界标签\n- 有人提议事后重映射以绕过校验\n\n## Contraindications\n\n- 类别值已全部符合规范桶\n- 任务不涉及类别字段\n\n## Intervention Moves\n\n- 逐项核对类别值是否属于三个规范桶\n- 标记越界标签并拒绝静默重映射\n- 要求提供修正后的源数据\n\n## Workflow Steps\n\n- 读取类别字段及规范桶定义\n- 逐项比对类别值与规范桶\n- 记录越界或异常标签\n- 拒绝事后静默重映射，要求修正源数据\n- 输出合规结论及需修正清单\n\n## Constraints\n\n- 类别值必须严格落在三个规范桶内\n- 重映射必须基于修正后的源数据，不得事后静默修补\n\n## Cautions\n\n- 在时间压力下仍不得以事后重映射替代源数据修正\n\n## Output Contract\n\n- 类别合规结论及需修正的源数据清单",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "防止非规范类别值污染下游统计，强制以修正源数据方式处理",
+  "domain": "运营流程执行",
+  "task_family": "数据规范校验",
+  "method_family": "类别合规检查",
+  "stage": "数据清洗校验",
+  "applicable_signals": [
+    "类别字段出现异常或越界标签",
+    "有人提议事后重映射以绕过校验"
+  ],
+  "contraindications": [
+    "类别值已全部符合规范桶",
+    "任务不涉及类别字段"
+  ],
+  "intervention_moves": [
+    "逐项核对类别值是否属于三个规范桶",
+    "标记越界标签并拒绝静默重映射",
+    "要求提供修正后的源数据"
+  ],
+  "triggers": [
+    "类别字段出现异常或越界标签",
+    "有人提议事后重映射以绕过校验",
+    "分类数据即将进入统计或下游处理"
+  ],
+  "workflow_steps": [
+    "读取类别字段及规范桶定义",
+    "逐项比对类别值与规范桶",
+    "记录越界或异常标签",
+    "拒绝事后静默重映射，要求修正源数据",
+    "输出合规结论及需修正清单"
+  ],
+  "constraints": [
+    "类别值必须严格落在三个规范桶内",
+    "重映射必须基于修正后的源数据，不得事后静默修补"
+  ],
+  "cautions": [
+    "在时间压力下仍不得以事后重映射替代源数据修正"
+  ],
+  "output_contract": [
+    "类别合规结论及需修正的源数据清单"
+  ],
+  "examples": [],
+  "tags": [
+    "类别合规",
+    "数据校验",
+    "规范桶",
+    "源数据修正"
+  ],
+  "support_ids": [
+    "9e8833b8-85b7-5bf2-ba40-fb344be18618"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "e8ebb401-abf9-58ff-a5f7-18f842179833"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.75,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|防止非规范类别值污染下游统计，强制以修正源数据方式处理|运营流程执行|数据规范校验|类别合规检查|数据清洗校验|规范类别桶映射校验",
+    "change_action": "create",
+    "llm_reason": "候选技能聚焦类别桶映射合规校验，与同批输入校验/输出校验技能在阶段与目标上不同，无冗余；有支持证据且无冲突，保留为独立安全规则。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"b406be03-8e06-5394-9a8b-37d02fccba04\", \"name\": \"卧推技术违规逐项核查\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"逐项确认卧推技术违规是否成立\", \"applicable_signals\": [\"侧视观察记录列出多个疑似违规点\", \"需要区分轻微技术瑕疵与判罚违规\"], \"contraindications\": [\"无任何观察证据\", \"需要综合多来源证据权衡时\"], \"workflow_steps\": [\"读取侧视观察记录的时间线与描述\", \"逐条对照关键违规点：胸部下沉、臀部离凳、锁定不完整、命令前动作\", \"为每个违规点引用对应观察证据\", \"标记每个违规点成立或不成立\", \"区分轻微技术瑕疵与判罚违规\"], \"constraints\": [\"仅依据观察证据定性\", \"不综合多来源证据权衡\", \"不输出整体判定\"], \"triggers\": [\"侧视观察记录列出多个疑似违规点\", \"需要区分轻微技术瑕疵与判罚违规\"], \"output_contract\": [\"每个违规点的成立/不成立标记及依据\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"0a069e5e-f441-5689-b79a-ec7135f99631\", \"name\": \"卧推试举裁判判定流程\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"对单次卧推试举做出可辩护的通过/失败判定\", \"applicable_signals\": [\"存在 Start/Press/Rack 命令时序记录\", \"存在侧视观察记录（含下沉、臀部离凳、锁定情况）\", \"需要输出正式裁判决定\"], \"workflow_steps\": [\"确认命令序列为 Start→Press→Rack 且时序记录可用\", \"核查胸部：Press 前杠铃是否静止\", \"核查按压阶段是否出现向下沉\", \"核查臀部等身体接触点是否保持\", \"核查完成时双臂是否完全伸展并清晰锁定\", \"逐项记录违规点与观察依据\"], \"output_contract\": [\"一份逐项列明违规点与最终通过/失败结论的裁判决定\"], \"score\": 0.5630823596074438}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

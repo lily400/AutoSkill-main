@@ -1,0 +1,707 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "4af87a55-1ff7-5b3b-b909-55436c9ace9d",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "6fa7a3dc-7f7a-5d5f-b541-8beb88f85f5b",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 32707,
+        "end": 33677
+      },
+      "excerpt": "R41. An incident is an event that changes the status or capacity of an edge for a range of ticks.\n\nR42. Each incident has:\n- IncidentID.\n- AffectedEdgeID.\n- StartTick, EndTick (EndTick is exclusive).\n- EffectType in {CLOSE_EDGE, REDUCE_CAPACITY}.\n- For REDUCE_CAPACITY, a CapacityMultiplier in (0,1].\n\nR43. During the Incident Resolution Phase of tick t:\n- If StartTick <= t < EndTick, the incident’s effect is applied.\n- If t >= EndTick, the edge returns to its baseline attributes unless modified by another active incident.\n\nR44. When a CLOSE_EDGE incident becomes active:\n- Vehicles already on the edge continue to travel as normal.\n- No new vehicles may enter while it is active.\n\n11. Priorities and Service Levels\n\nR45. Consignment priority affects penalties for lateness:\n- LOW: penalty weight 0.5 per tick late.\n- STANDARD: 1.0 per tick late.\n- HIGH: 2.0 per tick late.\n- CRITICAL: 4.0 per tick late.\n\nR46. The Network Service Score for a completed scenario is:",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "事件生命周期与容量影响应用",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "按 tick 正确应用和撤销事件对边状态/容量的影响",
+        "task_family": "事件处理",
+        "method_family": "规则判定与状态更新",
+        "stage": "事件解析阶段",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "4af87a55-1ff7-5b3b-b909-55436c9ace9d",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 2,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:35:29+00:00"
+    },
+    {
+      "support_id": "e6c76e7d-7c92-5918-8dac-fcb89602d98f",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 32707,
+        "end": 33677
+      },
+      "excerpt": "R41. An incident is an event that changes the status or capacity of an edge for a range of ticks.\n\nR42. Each incident has:\n- IncidentID.\n- AffectedEdgeID.\n- StartTick, EndTick (EndTick is exclusive).\n- EffectType in {CLOSE_EDGE, REDUCE_CAPACITY}.\n- For REDUCE_CAPACITY, a CapacityMultiplier in (0,1].\n\nR43. During the Incident Resolution Phase of tick t:\n- If StartTick <= t < EndTick, the incident’s effect is applied.\n- If t >= EndTick, the edge returns to its baseline attributes unless modified by another active incident.\n\nR44. When a CLOSE_EDGE incident becomes active:\n- Vehicles already on the edge continue to travel as normal.\n- No new vehicles may enter while it is active.\n\n11. Priorities and Service Levels\n\nR45. Consignment priority affects penalties for lateness:\n- LOW: penalty weight 0.5 per tick late.\n- STANDARD: 1.0 per tick late.\n- HIGH: 2.0 per tick late.\n- CRITICAL: 4.0 per tick late.\n\nR46. The Network Service Score for a completed scenario is:",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "关闭边期间车辆进入限制",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在边关闭期间正确限制新车辆进入同时放行已有车辆",
+        "task_family": "事件处理",
+        "method_family": "准入控制规则",
+        "stage": "车辆移动/事件解析阶段",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 2,
+        "window_id": "4af87a55-1ff7-5b3b-b909-55436c9ace9d",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 2,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:35:29+00:00"
+    },
+    {
+      "support_id": "3934c3b2-90fb-54fe-8de5-211b68ee856c",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 32707,
+        "end": 33677
+      },
+      "excerpt": "R41. An incident is an event that changes the status or capacity of an edge for a range of ticks.\n\nR42. Each incident has:\n- IncidentID.\n- AffectedEdgeID.\n- StartTick, EndTick (EndTick is exclusive).\n- EffectType in {CLOSE_EDGE, REDUCE_CAPACITY}.\n- For REDUCE_CAPACITY, a CapacityMultiplier in (0,1].\n\nR43. During the Incident Resolution Phase of tick t:\n- If StartTick <= t < EndTick, the incident’s effect is applied.\n- If t >= EndTick, the edge returns to its baseline attributes unless modified by another active incident.\n\nR44. When a CLOSE_EDGE incident becomes active:\n- Vehicles already on the edge continue to travel as normal.\n- No new vehicles may enter while it is active.\n\n11. Priorities and Service Levels\n\nR45. Consignment priority affects penalties for lateness:\n- LOW: penalty weight 0.5 per tick late.\n- STANDARD: 1.0 per tick late.\n- HIGH: 2.0 per tick late.\n- CRITICAL: 4.0 per tick late.\n\nR46. The Network Service Score for a completed scenario is:",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "按优先级计算迟到惩罚",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "按优先级权重正确计算迟到惩罚",
+        "task_family": "服务评分",
+        "method_family": "加权惩罚计算",
+        "stage": "评分/结算阶段",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 3,
+        "window_id": "4af87a55-1ff7-5b3b-b909-55436c9ace9d",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 2,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:35:29+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "762c6639-9869-598f-87a5-10e1afcfdea0",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "事件生命周期与容量影响应用",
+      "description": "在每 tick 的事件解析阶段，依据 StartTick/EndTick 判断事件是否生效，并对受影响边应用 CLOSE_EDGE 或 REDUCE_CAPACITY 效果；事件结束后恢复基线属性。用于需要判断某 tick 是否有事件生效或需要应用/撤销边容量与关闭效果时。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按 tick 正确应用和撤销事件对边状态/容量的影响",
+      "domain": "交通仿真规则",
+      "task_family": "事件处理",
+      "method_family": "规则判定与状态更新",
+      "stage": "事件解析阶段",
+      "applicable_signals": [
+        "存在带 StartTick/EndTick 的事件定义",
+        "需要判定事件在 tick t 是否生效",
+        "需要应用 CLOSE_EDGE 或 REDUCE_CAPACITY 效果"
+      ],
+      "contraindications": [
+        "无事件定义或事件已全部过期",
+        "需要处理车辆路径选择而非边状态"
+      ],
+      "intervention_moves": [
+        "按 StartTick <= t < EndTick 判定事件生效",
+        "对 CLOSE_EDGE 禁止新车辆进入但允许已在边上的车辆继续行驶",
+        "对 REDUCE_CAPACITY 按 CapacityMultiplier 缩减容量",
+        "事件失效后恢复基线属性，除非被其他生效事件修改"
+      ],
+      "workflow_steps": [
+        "读取事件定义字段（IncidentID、AffectedEdgeID、StartTick、EndTick、EffectType、CapacityMultiplier）",
+        "按 StartTick <= t < EndTick 判定本 tick 生效事件",
+        "对生效事件应用 CLOSE_EDGE 或 REDUCE_CAPACITY 效果",
+        "对 t >= EndTick 的事件恢复边基线属性（除非被其他生效事件修改）",
+        "输出更新后的边状态与事件生效/失效记录"
+      ],
+      "triggers": [
+        "需要判断某 tick 是否有事件生效",
+        "需要应用或撤销边容量/关闭效果",
+        "进入事件解析阶段处理事件生命周期"
+      ],
+      "constraints": [
+        "EndTick 为排他边界",
+        "CapacityMultiplier 取值在 (0,1] 区间",
+        "CLOSE_EDGE 生效期间禁止新车辆进入，已在边上的车辆继续正常行驶",
+        "恢复基线属性时需检查是否仍有其他生效事件修改该边"
+      ],
+      "cautions": [
+        "同一 tick 可能有多个事件作用于同一边，需按生效事件综合确定最终状态",
+        "事件失效不等于无条件恢复基线，需排除其他生效事件的影响"
+      ],
+      "output_contract": [
+        "更新后的边状态（关闭或容量乘数）及事件生效/失效记录"
+      ],
+      "examples": [
+        {
+          "input": "tick t 满足 StartTick <= t < EndTick，EffectType=CLOSE_EDGE",
+          "output": "该边关闭：已在边上的车辆继续行驶，禁止新车辆进入；记录该事件本 tick 生效",
+          "notes": null
+        },
+        {
+          "input": "tick t 满足 t >= EndTick，且无其他生效事件作用于该边",
+          "output": "该边恢复基线属性；记录该事件本 tick 失效",
+          "notes": null
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "6fa7a3dc-7f7a-5d5f-b541-8beb88f85f5b"
+      ],
+      "metadata": {
+        "prompt": "在事件解析阶段处理单个 tick：\n1. 遍历所有事件定义，读取 IncidentID、AffectedEdgeID、StartTick、EndTick（EndTick 为排他）、EffectType 与 CapacityMultiplier。\n2. 判定生效条件：若 StartTick <= t < EndTick，则该事件在本 tick 生效；若 t >= EndTick，则该事件失效。\n3. 对生效事件按 EffectType 应用效果：CLOSE_EDGE 时边关闭，已在边上的车辆继续正常行驶，但禁止新车辆进入；REDUCE_CAPACITY 时按 CapacityMultiplier（取值 (0,1]）缩减边容量。\n4. 对失效事件，将边恢复为基线属性，除非该边仍被另一个生效事件修改。\n5. 输出更新后的边状态及每个事件在本 tick 的生效/失效记录。",
+        "tags": [
+          "事件处理",
+          "容量影响",
+          "边状态更新",
+          "事件解析阶段"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "4af87a55-1ff7-5b3b-b909-55436c9ace9d",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 2,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "b74b5bf7-b4e1-5703-af90-1b7441b31deb",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "关闭边期间车辆进入限制",
+      "description": "当 CLOSE_EDGE 事件生效时，允许已在边上的车辆继续行驶，但阻止任何新车辆进入该边。用于在事件解析与车辆移动阶段判定某条边是否接受新车辆进入。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在边关闭期间正确限制新车辆进入同时放行已有车辆",
+      "domain": "交通仿真规则",
+      "task_family": "事件处理",
+      "method_family": "准入控制规则",
+      "stage": "车辆移动/事件解析阶段",
+      "applicable_signals": [
+        "目标边存在 StartTick <= t < EndTick 的 CLOSE_EDGE 事件",
+        "车辆请求进入某条边，需要判定准入"
+      ],
+      "contraindications": [
+        "边未关闭",
+        "仅容量降低而非关闭（REDUCE_CAPACITY）"
+      ],
+      "intervention_moves": [
+        "判定边是否处于 CLOSE_EDGE 生效区间",
+        "对边上已有车辆放行继续行驶",
+        "对新进入请求返回拒绝"
+      ],
+      "workflow_steps": [
+        "在 Incident Resolution Phase 检查目标边的活动事件。",
+        "若存在 CLOSE_EDGE 且 StartTick <= t < EndTick，标记该边为关闭。",
+        "对已在该边上的车辆保持正常行驶，不施加阻断。",
+        "对任何新进入该边的车辆返回拒绝进入。",
+        "若 t >= EndTick 且无其他活动事件，边恢复基线属性，解除进入限制。"
+      ],
+      "triggers": [
+        "边处于 CLOSE_EDGE 生效状态",
+        "需要决定车辆能否进入某边"
+      ],
+      "constraints": [
+        "EndTick 为排他边界，t >= EndTick 时不再视为关闭。",
+        "关闭期间不得允许新车辆进入。",
+        "关闭期间不得阻断已在边上的车辆。"
+      ],
+      "cautions": [
+        "若同时存在其他活动事件，需按事件解析结果综合判定，不得仅凭单一事件解除限制。"
+      ],
+      "output_contract": [
+        "车辆进入决策结果（允许/拒绝）及边上车辆继续行驶"
+      ],
+      "examples": [
+        {
+          "input": "边 E 存在 CLOSE_EDGE 事件，StartTick=5，EndTick=10，当前 t=7，车辆 V 请求进入 E。",
+          "output": "拒绝 V 进入 E；已在 E 上的车辆继续正常行驶。",
+          "notes": null
+        },
+        {
+          "input": "边 E 存在 CLOSE_EDGE 事件，StartTick=5，EndTick=10，当前 t=10，车辆 V 请求进入 E。",
+          "output": "允许 V 进入 E（t >= EndTick，关闭已结束）。",
+          "notes": null
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.85,
+      "support_ids": [
+        "e6c76e7d-7c92-5918-8dac-fcb89602d98f"
+      ],
+      "metadata": {
+        "prompt": "在事件解析阶段确认目标边是否存在生效中的 CLOSE_EDGE 事件（StartTick <= t < EndTick）。若生效：对已在该边上的车辆保持正常行驶，不阻断；对任何试图新进入该边的车辆一律拒绝进入。若边未关闭或仅为 REDUCE_CAPACITY，则不适用本规则，转由容量规则处理。",
+        "tags": [
+          "交通仿真",
+          "事件处理",
+          "准入控制",
+          "CLOSE_EDGE"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "4af87a55-1ff7-5b3b-b909-55436c9ace9d",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 2,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "3fb70e42-3a2c-5c95-9262-05e6b6f4099b",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "按优先级计算迟到惩罚",
+      "description": "根据托运单优先级（LOW/STANDARD/HIGH/CRITICAL）对应的每 tick 迟到惩罚权重，计算单张托运单的迟到惩罚值。用于评分/结算阶段需要按优先级区分迟到成本的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按优先级权重正确计算迟到惩罚",
+      "domain": "交通仿真规则",
+      "task_family": "服务评分",
+      "method_family": "加权惩罚计算",
+      "stage": "评分/结算阶段",
+      "applicable_signals": [
+        "托运单已完成且存在迟到 tick",
+        "需要按优先级映射惩罚权重",
+        "需要单项托运单的迟到惩罚值"
+      ],
+      "contraindications": [
+        "托运单未迟到（惩罚为 0，无需计算）",
+        "需要计算整体网络服务分而非单项惩罚"
+      ],
+      "intervention_moves": [
+        "读取托运单优先级",
+        "按优先级映射每 tick 惩罚权重",
+        "计算迟到 tick 数",
+        "以迟到 tick 数乘以权重得到惩罚值"
+      ],
+      "workflow_steps": [
+        "确认托运单已完成并确定迟到 tick 数",
+        "读取托运单优先级",
+        "按映射取权重：LOW=0.5，STANDARD=1.0，HIGH=2.0，CRITICAL=4.0",
+        "惩罚值 = 迟到 tick 数 × 权重",
+        "输出该托运单的迟到惩罚值"
+      ],
+      "triggers": [
+        "需要计算托运单迟到惩罚",
+        "需要按优先级区分惩罚权重",
+        "结算阶段需要单张托运单的迟到成本"
+      ],
+      "constraints": [
+        "权重必须严格按优先级映射，不得混用",
+        "仅计算单项惩罚，不汇总为整体服务分"
+      ],
+      "cautions": [
+        "迟到 tick 数为 0 时惩罚应为 0",
+        "优先级取值须为 LOW/STANDARD/HIGH/CRITICAL 之一"
+      ],
+      "output_contract": [
+        "每张托运单的迟到惩罚值（迟到 tick 数 × 对应优先级权重）"
+      ],
+      "examples": [
+        {
+          "input": "托运单优先级 HIGH，迟到 3 tick",
+          "output": "迟到惩罚 = 3 × 2.0 = 6.0",
+          "notes": "HIGH 权重为 2.0"
+        },
+        {
+          "input": "托运单优先级 LOW，迟到 2 tick",
+          "output": "迟到惩罚 = 2 × 0.5 = 1.0",
+          "notes": "LOW 权重为 0.5"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "3934c3b2-90fb-54fe-8de5-211b68ee856c"
+      ],
+      "metadata": {
+        "prompt": "在评分/结算阶段，对每张已迟到的托运单：1) 读取其优先级；2) 按映射取每 tick 迟到惩罚权重（LOW=0.5，STANDARD=1.0，HIGH=2.0，CRITICAL=4.0）；3) 计算迟到 tick 数（实际完成 tick 减去应完成 tick，未迟到则为 0）；4) 惩罚值 = 迟到 tick 数 × 对应权重。仅输出单项惩罚，不计算整体网络服务分。",
+        "tags": [
+          "交通仿真",
+          "服务评分",
+          "迟到惩罚",
+          "优先级权重"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "4af87a55-1ff7-5b3b-b909-55436c9ace9d",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 2,
+        "paragraph_end": 8,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

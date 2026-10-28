@@ -1,0 +1,405 @@
+{
+  "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+  "title": "input001\\validators.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+  "window_id": "ce128f65-0755-5c3b-aff8-8e2fde00d112",
+  "section_heading": "# Validators",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "74e99417-38b0-53c7-bf99-6da026b89517",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 6730,
+        "end": 7891
+      },
+      "excerpt": "print(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n- ***Plain* validators**: act similarly to *before* validators but they **terminate validation immediately** after returning,\n so no further validators are called and Pydantic does not do any of its internal validation against the field type.\n\nAnnotated patternDecorator",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 字段校验器模式选择",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "为给定字段校验需求选出正确的校验器模式并说明其行为边界",
+        "task_family": "字段校验设计",
+        "method_family": "校验器模式选型",
+        "stage": "设计",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "ce128f65-0755-5c3b-aff8-8e2fde00d112",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 52,
+        "paragraph_end": 54,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:54:20+00:00"
+    },
+    {
+      "support_id": "6f1f002c-bad4-5256-a210-1af0185ced20",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 6730,
+        "end": 7891
+      },
+      "excerpt": "print(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n- ***Plain* validators**: act similarly to *before* validators but they **terminate validation immediately** after returning,\n so no further validators are called and Pydantic does not do any of its internal validation against the field type.\n\nAnnotated patternDecorator",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Before 校验器处理原始输入",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在类型校验前对原始输入做规范化处理",
+        "task_family": "输入预处理",
+        "method_family": "before 校验器",
+        "stage": "校验执行",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "ce128f65-0755-5c3b-aff8-8e2fde00d112",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 52,
+        "paragraph_end": 54,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:54:20+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "5adf5789-ce6e-5a50-bf57-83e34338fab7",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic 字段校验器模式选择",
+      "description": "根据字段校验目标选择 before/after/plain 字段校验器模式（以及 annotated/decorator 写法），并说明各模式的执行时机与终止行为。用于为字段编写自定义校验逻辑时。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为给定字段校验需求选出正确的校验器模式并说明其行为边界",
+      "domain": "pydantic",
+      "task_family": "字段校验设计",
+      "method_family": "校验器模式选型",
+      "stage": "设计",
+      "applicable_signals": [
+        "需要在校验前转换或规范化原始输入",
+        "需要基于已校验值做进一步校验",
+        "需要在校验后立即终止后续校验"
+      ],
+      "contraindications": [
+        "仅使用内置字段约束即可满足需求",
+        "需要跨字段或模型级校验（应使用模型校验器）"
+      ],
+      "intervention_moves": [
+        "判断校验发生在类型校验之前还是之后",
+        "选择 before / after / plain 模式",
+        "选择 annotated 或 decorator 写法",
+        "说明模式的终止行为与内部类型校验是否仍执行"
+      ],
+      "workflow_steps": [
+        "明确校验目标与所需执行时机",
+        "若需处理原始输入（类型可为任意），选择 before 模式，并注意需覆盖元组等其他序列类型",
+        "若需处理已校验值，选择 after 模式",
+        "若需在返回后立即终止校验且不执行内部类型校验，选择 plain 模式",
+        "选择 annotated 或 decorator 写法实现",
+        "说明所选模式的行为边界：执行时机、输入类型假设、是否终止后续校验"
+      ],
+      "triggers": [
+        "需要为字段添加自定义校验逻辑",
+        "不确定 before/after/plain 校验器差异",
+        "需要决定使用 annotated 还是 decorator 写法"
+      ],
+      "constraints": [
+        "before 校验器接收原始输入，类型提示可为 Any，需自行覆盖所有可能的输入类型",
+        "before 校验器处理后，Pydantic 仍会对字段类型执行内部校验",
+        "plain 校验器返回后立即终止校验，不再调用后续校验器，也不执行内部类型校验"
+      ],
+      "cautions": [
+        "before 模式灵活性更高，但需考虑元组等通常可通过 list 校验的序列类型",
+        "不要假设 before 校验器的输出会跳过内部类型校验"
+      ],
+      "output_contract": [
+        "选定的校验器模式（before/after/plain 及 annotated/decorator 写法）及对应行为说明，包括执行时机、输入类型假设与终止行为"
+      ],
+      "examples": [
+        {
+          "input": "需要在类型校验前把单个整数转换为列表",
+          "output": "选择 before 模式：value 类型提示为 Any，需处理元组等其他序列类型；返回后 Pydantic 仍对 list[int] 执行内部校验",
+          "notes": "体现 before 模式的灵活性与内部校验仍执行"
+        },
+        {
+          "input": "需要在校验后立即终止后续校验且跳过内部类型校验",
+          "output": "选择 plain 模式：返回后立即终止校验，不再调用后续校验器，也不执行内部类型校验",
+          "notes": "体现 plain 模式的终止行为"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.75,
+      "support_ids": [
+        "74e99417-38b0-53c7-bf99-6da026b89517"
+      ],
+      "metadata": {
+        "prompt": "先明确校验目标：是否需要在 Pydantic 内部类型校验之前处理原始输入、是否需要在类型校验之后处理已校验值、是否需要在校验后立即终止后续校验。据此选择 before / after / plain 模式，并选择 annotated 或 decorator 写法。说明所选模式的执行时机、对原始输入类型的处理要求，以及是否终止后续校验与内部类型校验。",
+        "tags": [
+          "pydantic",
+          "validator",
+          "字段校验",
+          "模式选型"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "ce128f65-0755-5c3b-aff8-8e2fde00d112",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 52,
+        "paragraph_end": 54,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    },
+    {
+      "draft_id": "cfa61adc-c2b9-5590-8dff-4fee7a041243",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Before 校验器处理原始输入",
+      "description": "使用 before 校验器在 Pydantic 内部类型校验前处理任意原始输入（如将标量包装为列表），并需覆盖所有可能的输入类型；处理后的输入仍会继续进入 Pydantic 的类型校验。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在类型校验前对原始输入做规范化处理",
+      "domain": "pydantic",
+      "task_family": "输入预处理",
+      "method_family": "before 校验器",
+      "stage": "校验执行",
+      "applicable_signals": [
+        "字段可能收到标量而非列表等非预期形态",
+        "需要在类型转换前统一输入形态",
+        "原始输入类型无法预先确定"
+      ],
+      "contraindications": [
+        "无需在类型校验前干预输入",
+        "无法枚举所有可能的输入类型",
+        "希望跳过 Pydantic 内部类型校验（应改用 plain 校验器）"
+      ],
+      "intervention_moves": [
+        "用 Any 作为 value 的类型提示以接收任意原始输入",
+        "在校验器内将标量包装为列表等规范化处理",
+        "显式处理 tuple 等其它可能通过 list 校验的序列类型",
+        "返回处理后结果，交由 Pydantic 继续类型校验"
+      ],
+      "workflow_steps": [
+        "确认该字段需要在类型校验前干预原始输入",
+        "声明 before 校验器，value 使用 Any 类型提示",
+        "在校验器内枚举并处理所有可能的输入类型（含标量、tuple 等序列）",
+        "返回规范化后的值",
+        "依赖 Pydantic 继续对返回值执行字段类型校验"
+      ],
+      "triggers": [
+        "输入类型不确定，需要在校验前先规范化",
+        "需要把标量包装为列表等预处理动作",
+        "需要在 Pydantic 内部类型校验前干预原始输入"
+      ],
+      "constraints": [
+        "before 校验器接收的是原始输入，类型提示应为 Any",
+        "必须覆盖所有可能的输入类型，包括 tuple 等通常能通过 list 校验的序列",
+        "before 校验器不会跳过 Pydantic 对字段类型的内部校验"
+      ],
+      "cautions": [
+        "若只处理部分输入类型，未覆盖的形态可能在后续类型校验中报错",
+        "若需要在校验器返回后立即终止校验，应使用 plain 校验器而非 before 校验器"
+      ],
+      "output_contract": [
+        "经预处理的输入继续进入 Pydantic 类型校验；校验器返回规范化后的值，由 Pydantic 按字段类型完成后续校验。"
+      ],
+      "examples": [
+        {
+          "input": "字段为 list[int]，传入标量 2",
+          "output": "before 校验器将 2 包装为 [2]，随后 Pydantic 校验通过，numbers=[2]",
+          "notes": "value 使用 Any 类型提示以接收原始输入"
+        },
+        {
+          "input": "字段为 list[int]，传入 'str'",
+          "output": "校验器处理后仍由 Pydantic 执行 int 校验，产生 int_parsing 校验错误",
+          "notes": "说明 before 校验器不替代内部类型校验"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "6f1f002c-bad4-5256-a210-1af0185ced20"
+      ],
+      "metadata": {
+        "prompt": "在字段上声明 before 校验器，接收原始输入（类型提示用 Any，因为校验前输入可以是任何类型）。在校验器内对原始输入做规范化处理（例如把标量包装为列表），并显式覆盖所有可能的输入类型（包括 tuple 等通常能通过 list 校验的序列类型）。处理完成后返回结果，交由 Pydantic 继续按字段类型执行内部校验；不要假设校验器已替代类型校验。",
+        "tags": [
+          "pydantic",
+          "validator",
+          "before-validator",
+          "input-normalization"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "ce128f65-0755-5c3b-aff8-8e2fde00d112",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 52,
+        "paragraph_end": 54,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

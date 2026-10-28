@@ -1,0 +1,110 @@
+{
+  "skill_id": "3f0c5da5-3ebb-5a0d-8836-04f56b0c04af",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "3f0c5da5-3ebb-5a0d-8836-04f56b0c04af",
+    "name": "信号交叉口到达边识别",
+    "description": "根据信号设置说明，识别被信号控制的交叉口节点及其受控到达边集合，用于确定信号化节点范围。适用于需要明确哪些到达边受信号控制时。",
+    "skill_body": "读取信号设置说明，定位被声明为信号化的节点，提取该节点受控的到达边来源节点集合，输出信号化节点与受控到达边清单。仅依据说明中明确声明的信号化节点，不推断未声明的节点。\n\n## Objective\n\n确定信号化节点及其受控到达边\n## Applicable Signals\n\n- 信号设置说明中声明某节点为信号化\n- 需要列出受信号控制的到达边\n\n## Contraindications\n\n- 节点未声明为信号化\n- 信号设置说明缺失或未覆盖目标节点\n\n## Intervention Moves\n\n- 定位信号化节点声明\n- 提取该节点受控的到达边来源节点集合\n- 整理为信号化节点与受控到达边清单\n\n## Workflow Steps\n\n- 读取信号设置说明\n- 识别被声明为信号化的节点\n- 提取该节点受控的到达边来源节点\n- 输出信号化节点与受控到达边清单\n\n## Constraints\n\n- 仅依据说明中明确声明的信号化节点\n- 不推断未声明的节点或到达边\n\n## Cautions\n\n- 信号化节点可能受控多条到达边，需完整列出\n- 避免将未声明信号化的节点纳入清单\n\n## Output Contract\n\n- 信号化节点与受控到达边清单\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Node N3 (Central Intersection) is signalized for edges arriving from N2, N4, N5, N10, N7, and N8.\n- Therapist/Output: 信号化节点：N3；受控到达边来源：N2, N4, N5, N10, N7, N8",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确定信号化节点及其受控到达边",
+    "domain": "交通仿真",
+    "task_family": "信号配置",
+    "method_family": "规则匹配",
+    "stage": "场景初始化",
+    "applicable_signals": [
+      "信号设置说明中声明某节点为信号化",
+      "需要列出受信号控制的到达边"
+    ],
+    "contraindications": [
+      "节点未声明为信号化",
+      "信号设置说明缺失或未覆盖目标节点"
+    ],
+    "intervention_moves": [
+      "定位信号化节点声明",
+      "提取该节点受控的到达边来源节点集合",
+      "整理为信号化节点与受控到达边清单"
+    ],
+    "triggers": [
+      "需要确定哪些到达边受信号控制",
+      "需要确定信号化节点范围",
+      "场景初始化时解析信号设置"
+    ],
+    "workflow_steps": [
+      "读取信号设置说明",
+      "识别被声明为信号化的节点",
+      "提取该节点受控的到达边来源节点",
+      "输出信号化节点与受控到达边清单"
+    ],
+    "constraints": [
+      "仅依据说明中明确声明的信号化节点",
+      "不推断未声明的节点或到达边"
+    ],
+    "cautions": [
+      "信号化节点可能受控多条到达边，需完整列出",
+      "避免将未声明信号化的节点纳入清单"
+    ],
+    "output_contract": [
+      "信号化节点与受控到达边清单"
+    ],
+    "examples": [
+      {
+        "input": "Node N3 (Central Intersection) is signalized for edges arriving from N2, N4, N5, N10, N7, and N8.",
+        "output": "信号化节点：N3；受控到达边来源：N2, N4, N5, N10, N7, N8",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "信号配置",
+      "规则匹配",
+      "场景初始化"
+    ],
+    "support_ids": [
+      "a40f9d5b-a840-5542-9bef-13a44e4cbb3f"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "be4a9b9a-322a-5419-86fc-f5c052ac3618"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|确定信号化节点及其受控到达边|交通仿真|信号配置|规则匹配|场景初始化|信号交叉口到达边识别"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

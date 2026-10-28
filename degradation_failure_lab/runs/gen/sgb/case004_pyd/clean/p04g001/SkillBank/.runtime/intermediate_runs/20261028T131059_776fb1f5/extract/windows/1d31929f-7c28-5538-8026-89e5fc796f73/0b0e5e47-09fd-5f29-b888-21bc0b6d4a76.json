@@ -1,0 +1,190 @@
+{
+  "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+  "title": "input002\\unions.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+  "window_id": "0b0e5e47-09fd-5f29-b888-21bc0b6d4a76",
+  "section_heading": "# Unions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "26404bea-5236-53ec-80a6-f3bba33795fc",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 6097,
+        "end": 6574
+      },
+      "excerpt": "For `exactness`, Pydantic scores a match of a union member into one of the following three groups (from highest score to lowest score):\n\n- An exact type match, for example an `int` input to a `float | int` union validation is an exact type match for the `int` member\n- Validation would have succeeded in [`strict` mode](../strict_mode/)\n- Validation would have succeeded in lax mode\n\nThe union match which produced the highest exactness score will be considered the best match.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "联合类型精确度匹配评分",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "按精确度评分规则确定联合类型的最佳匹配成员",
+        "task_family": "联合类型校验",
+        "method_family": "精确度评分",
+        "stage": "匹配选择",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "0b0e5e47-09fd-5f29-b888-21bc0b6d4a76",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 46,
+        "paragraph_end": 48,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:13:09+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "1c73e9d3-2606-5f9a-81e1-791596fb67d1",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "联合类型精确度匹配评分",
+      "description": "说明 Pydantic 校验联合类型（Union）时如何按精确度对成员匹配打分并选出最佳匹配，用于判断或解释联合类型中哪个成员应胜出。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按精确度评分规则确定联合类型的最佳匹配成员",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "精确度评分",
+      "stage": "匹配选择",
+      "applicable_signals": [
+        "输入需要匹配多个候选类型之一",
+        "需要说明为何某个联合成员被选中"
+      ],
+      "contraindications": [
+        "非联合类型的单类型校验",
+        "需要自定义判别器逻辑而非精确度评分时"
+      ],
+      "intervention_moves": [
+        "对每个联合成员计算精确度得分",
+        "按精确类型匹配 > strict 模式成功 > lax 模式成功排序",
+        "选择得分最高的成员作为最佳匹配"
+      ],
+      "workflow_steps": [
+        "确认校验对象为联合类型且存在多个候选成员",
+        "对每个成员判断匹配层级：精确类型匹配、strict 模式成功、lax 模式成功",
+        "按层级从高到低赋分",
+        "选出最高精确度得分的成员作为最佳匹配",
+        "输出按精确度排序的成员匹配结论"
+      ],
+      "triggers": [
+        "需要判断联合类型多个成员中哪个匹配最优",
+        "解释联合类型校验结果的选择依据"
+      ],
+      "constraints": [
+        "评分仅依据三个精确度层级，不引入其他自定义权重",
+        "仅在联合类型场景下应用"
+      ],
+      "cautions": [
+        "精确类型匹配优先于 strict 模式成功，strict 模式成功优先于 lax 模式成功",
+        "若需自定义判别器逻辑，应改用判别联合而非精确度评分"
+      ],
+      "output_contract": [
+        "给出按精确度排序的成员匹配结论，并指明最佳匹配成员。"
+      ],
+      "examples": [
+        {
+          "input": "int 输入匹配 float | int 联合类型",
+          "output": "int 成员为精确类型匹配，得分最高，判定为最佳匹配。",
+          "notes": "精确类型匹配优先于其他层级"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "26404bea-5236-53ec-80a6-f3bba33795fc"
+      ],
+      "metadata": {
+        "prompt": "当需要判断联合类型多个成员中哪个匹配最优，或解释联合类型校验结果的选择依据时，按精确度评分规则对每个成员匹配打分：精确类型匹配得分最高，其次是在 strict 模式下会成功的匹配，再次是在 lax 模式下会成功的匹配；取得最高精确度得分的成员即为最佳匹配。仅用于联合类型匹配选择，不用于单类型校验或自定义判别器逻辑。",
+        "tags": [
+          "pydantic",
+          "union",
+          "exactness",
+          "匹配选择"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "0b0e5e47-09fd-5f29-b888-21bc0b6d4a76",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 46,
+        "paragraph_end": 48,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

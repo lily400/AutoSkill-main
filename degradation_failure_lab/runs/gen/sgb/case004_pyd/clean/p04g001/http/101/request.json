@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"4af0a451-fa59-56c0-b498-7eb801ffbcd2\", \"name\": \"联合校验错误聚合\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在所有联合成员失败时聚合返回全部错误\", \"applicable_signals\": [\"联合所有成员均校验失败\", \"需要向调用方提供完整错误集合以诊断\"], \"contraindications\": [\"已有成员校验成功\", \"仅需返回单一错误\"], \"workflow_steps\": [\"确认联合校验在所有成员上均失败\", \"收集各成员的错误信息\", \"聚合全部错误并返回给调用方\"], \"constraints\": [\"仅在所有成员均失败时执行聚合\", \"不得丢弃任何成员的错误\"], \"triggers\": [\"联合类型校验失败\", \"需要完整诊断反馈\"], \"output_contract\": [\"返回包含所有成员错误的聚合错误结果\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90\", \"name\": \"Union 智能模式成员选择\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"在联合类型校验中按有效字段数与精确度评分选出唯一最佳成员\", \"applicable_signals\": [\"联合成员为 BaseModel、dataclass 或 TypedDict 等结构化类型\", \"多个成员可能同时部分匹配，需要评分决胜\", \"需要返回单一最佳成员而非首个成功匹配\"], \"workflow_steps\": [\"从左到右依次尝试每个联合成员，记录成功匹配的精确度类别与有效字段数。\", \"全部成员评估完成后，返回有效字段数最高的成员。\", \"若有效字段数并列，使用精确度评分作为决胜，返回精确度最高的成员。\", \"若所有成员均校验失败，返回全部错误。\"], \"output_contract\": [\"返回有效字段数最高、平局时精确度最高的单一成员结果；若全部失败则返回所有错误。\"], \"score\": 0.6132703454398601}, {\"skill_id\": \"9fe92bc9-6546-50f8-bcae-efb34ffbb5f2\", \"name\": \"判别联合校验\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"依据判别字段将输入路由到唯一联合成员并校验\", \"applicable_signals\": [\"联合成员可由一个判别字段唯一区分\", \"需要支持 str 判别器、可调用 Discriminator 或嵌套判别联合\"], \"workflow_steps\": [\"确认联合成员可由一个判别字段唯一区分。\", \"确定判别器形式：str 判别器、可调用 Discriminator 或嵌套判别联合。\", \"读取判别字段取值并映射到唯一成员。\", \"对选中成员执行校验。\", \"返回该成员的校验结果。\"], \"output_contract\": [\"按判别值选中唯一成员并返回其校验结果\"], \"score\": 0.5981568581843693}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

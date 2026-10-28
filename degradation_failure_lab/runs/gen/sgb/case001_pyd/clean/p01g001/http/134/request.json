@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"9ac11db1-8466-56be-bf2b-9bed656dacd8\", \"name\": \"验证错误抛出与 ValidationInfo 使用\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在验证器中正确抛出错误并读取校验信息\", \"applicable_signals\": [\"需要自定义校验失败信息\", \"验证器需要访问 ValidationInfo 数据或上下文\", \"需要在验证器中读取同模型其他字段的已校验值\"], \"contraindications\": [\"默认错误信息已足够\", \"无需访问校验上下文\"], \"workflow_steps\": [\"判断是否需要自定义错误信息或访问校验上下文\", \"在验证器中检测失败条件并抛出含明确信息的验证错误\", \"如需上下文，在验证器签名中接收 ValidationInfo 并读取 data 或 context\", \"确认 after 验证器为实例方法且返回被校验实例\", \"核对错误信息与上下文读取结果\"], \"constraints\": [\"after 验证器必须返回被校验的实例\", \"错误信息应明确说明失败原因\"], \"triggers\": [\"需要自定义校验失败信息\", \"验证器需要访问 ValidationInfo 数据或上下文\", \"需要在验证器中读取同模型其他字段的已校验值\"], \"output_contract\": [\"抛出含明确信息的验证错误，并正确读取 ValidationInfo 的 data 或 context。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"4641701b-2dc0-5429-a380-d65c1c0ec55d\", \"name\": \"Pydantic 模型级校验器与 ValidationInfo 使用\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"实现模型级校验并正确读取校验信息与上下文\", \"applicable_signals\": [\"校验规则涉及两个及以上字段的相互依赖\", \"校验需要读取已校验字段数据（data）\", \"校验需要读取外部传入的校验上下文（context）\"], \"workflow_steps\": [\"判断校验是否确需跨字段依赖或访问校验上下文\", \"在模型中定义模型级校验器（annotated 或 decorator 模式）\", \"在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）\", \"当校验条件不满足时抛出校验错误\", \"构造模型实例验证校验器按预期工作\"], \"output_contract\": [\"可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误\"], \"score\": 0.762836194291172}, {\"skill_id\": \"0166b7ef-ec54-5e0c-9bd2-086b92fc3430\", \"name\": \"Pydantic 验证器模式选型与实现\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为给定校验需求选择并实现正确的 Pydantic 验证器模式\", \"applicable_signals\": [\"校验逻辑作用于单个字段\", \"校验逻辑需要访问整个已校验模型\", \"需要在初始化前后介入校验\"], \"workflow_steps\": [\"明确校验目标是单字段还是整个模型\", \"字段级：在 annotated 模式与 decorator 模式之间选择并实现\", \"模型级：在 before 与 after 验证器之间选择并实现\", \"after 验证器定义为实例方法并返回校验后的实例\", \"输出可运行代码并说明选型理由\"], \"output_contract\": [\"可运行的验证器代码，模式选择有明确理由\"], \"score\": 0.5944671652241201}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

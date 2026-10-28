@@ -73,11 +73,18 @@ async def native_trial(config, fixture=None, probe_hook=None):
     from downstream_eval.sgb.scrapy024 import native_trial as run_native
     original = Trial._run_agent_phase
     async def phase(self, *args, **kwargs):
-        result = await original(self, *args, **kwargs)
+        armed = bool(fixture and probe_hook)
+        if armed:
+            async def inside_probe():
+                await probe_hook(self)
+            self.agent._p1_probe_hook = inside_probe
+        try:
+            result = await original(self, *args, **kwargs)
+        finally:
+            if armed:
+                del self.agent._p1_probe_hook
         if fixture:
             await self.agent_environment.upload_file(source_path=fixture, target_path='/workspace/agent_output.py')
-            if probe_hook:
-                await probe_hook(self)
         try:
             self._scrapy041_export = await export_submission(
                 self.agent_environment, self.paths.trial_dir / 'submission-export')

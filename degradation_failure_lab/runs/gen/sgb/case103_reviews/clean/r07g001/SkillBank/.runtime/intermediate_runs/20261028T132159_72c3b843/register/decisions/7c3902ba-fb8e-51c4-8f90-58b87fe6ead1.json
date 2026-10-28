@@ -1,0 +1,110 @@
+{
+  "skill_id": "7c3902ba-fb8e-51c4-8f90-58b87fe6ead1",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "该候选为独立的输出阶段计数校验规则，与同批输入校验及约束升级规则职责不同，无冗余或冲突，建议保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "7c3902ba-fb8e-51c4-8f90-58b87fe6ead1",
+    "name": "产品目录计数输出校验",
+    "description": "在生成按 SKU 计数的结构化输出后，校验对象数量、字段完整性、计数为非负整数且 SKU 与产品目录完全一致。用于任何需要按目录逐项输出计数的批处理任务。",
+    "skill_body": "对已生成的按 SKU 计数的结构化输出执行合规校验：确认对象数量与产品目录中的 SKU 数量一致（每个 SKU 一个对象）；确认每个对象包含全部必需字段（sku_id 及四个计数字段）；确认所有计数均为 ≥ 0 的整数；确认 SKU ID 与产品目录完全一致。输出通过校验的对象列表，或列出明确的违规项清单。\n\n## Objective\n\n确保计数输出与产品目录一一对应且格式合规\n## Applicable Signals\n\n- 已生成按 SKU 计数的结构化输出\n- 存在固定的产品目录或 SKU 清单作为对照基准\n- 输出需交付给下游系统消费\n\n## Contraindications\n\n- 无固定目录或 SKU 清单\n- 输出为自由文本而非结构化计数\n\n## Intervention Moves\n\n- 核对输出对象数量与目录 SKU 数量是否一致\n- 逐对象检查必需字段是否齐全\n- 检查所有计数是否为 ≥ 0 的整数\n- 比对 SKU ID 与产品目录是否完全一致\n- 汇总通过项或列出违规项清单\n\n## Workflow Steps\n\n- 获取产品目录中的 SKU 清单作为对照基准\n- 统计输出对象数量，确认与目录 SKU 数量一致（每个 SKU 一个对象）\n- 逐对象检查是否包含全部必需字段（sku_id 及四个计数字段）\n- 检查所有计数字段是否为 ≥ 0 的整数\n- 比对每个对象的 SKU ID 与产品目录，确认完全一致\n- 输出通过校验的对象列表，或列出明确的违规项清单\n\n## Constraints\n\n- 对象数量必须与目录 SKU 数量一致，每个 SKU 对应一个对象\n- 每个对象必须包含全部必需字段\n- 所有计数必须为 ≥ 0 的整数\n- SKU ID 必须与产品目录完全一致\n\n## Cautions\n\n- 字段缺失、计数为负或非整数、SKU 不匹配均视为违规，需明确列出而非静默修正\n- 校验依赖准确的产品目录作为对照基准\n\n## Output Contract\n\n- 通过校验的计数对象列表，或明确的违规项清单",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保计数输出与产品目录一一对应且格式合规",
+    "domain": "运营流程",
+    "task_family": "结构化输出校验",
+    "method_family": "输出合规检查",
+    "stage": "输出验证",
+    "applicable_signals": [
+      "已生成按 SKU 计数的结构化输出",
+      "存在固定的产品目录或 SKU 清单作为对照基准",
+      "输出需交付给下游系统消费"
+    ],
+    "contraindications": [
+      "无固定目录或 SKU 清单",
+      "输出为自由文本而非结构化计数"
+    ],
+    "intervention_moves": [
+      "核对输出对象数量与目录 SKU 数量是否一致",
+      "逐对象检查必需字段是否齐全",
+      "检查所有计数是否为 ≥ 0 的整数",
+      "比对 SKU ID 与产品目录是否完全一致",
+      "汇总通过项或列出违规项清单"
+    ],
+    "triggers": [
+      "需要按目录 SKU 逐项输出计数",
+      "输出将被下游系统消费"
+    ],
+    "workflow_steps": [
+      "获取产品目录中的 SKU 清单作为对照基准",
+      "统计输出对象数量，确认与目录 SKU 数量一致（每个 SKU 一个对象）",
+      "逐对象检查是否包含全部必需字段（sku_id 及四个计数字段）",
+      "检查所有计数字段是否为 ≥ 0 的整数",
+      "比对每个对象的 SKU ID 与产品目录，确认完全一致",
+      "输出通过校验的对象列表，或列出明确的违规项清单"
+    ],
+    "constraints": [
+      "对象数量必须与目录 SKU 数量一致，每个 SKU 对应一个对象",
+      "每个对象必须包含全部必需字段",
+      "所有计数必须为 ≥ 0 的整数",
+      "SKU ID 必须与产品目录完全一致"
+    ],
+    "cautions": [
+      "字段缺失、计数为负或非整数、SKU 不匹配均视为违规，需明确列出而非静默修正",
+      "校验依赖准确的产品目录作为对照基准"
+    ],
+    "output_contract": [
+      "通过校验的计数对象列表，或明确的违规项清单"
+    ],
+    "examples": [],
+    "tags": [
+      "结构化输出校验",
+      "输出合规检查",
+      "计数校验",
+      "SKU 目录"
+    ],
+    "support_ids": [
+      "7c11a728-f72e-5a8c-8a8e-c6eb966bf2d2"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "a6dda950-d93e-59c3-9571-9bbb13134196"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|确保计数输出与产品目录一一对应且格式合规|运营流程|结构化输出校验|输出合规检查|输出验证|产品目录计数输出校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

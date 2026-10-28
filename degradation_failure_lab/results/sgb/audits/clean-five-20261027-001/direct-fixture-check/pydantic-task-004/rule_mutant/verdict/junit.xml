@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="20" time="0.276" timestamp="2026-10-27T14:48:23.086191+00:00" hostname="df59cc64ed47"><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_required_exports_exist" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_models_are_pydantic_models" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_source_mentions_annotated_discriminator_and_tag" time="0.002" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_source_defines_named_discriminator_function" time="0.002" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_dict_input_cat_validates_correctly_direct_union" time="0.001" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_dict_input_dog_validates_correctly_direct_union" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_dict_input_bird_validates_correctly_direct_union" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_container_validation_cat" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_container_validation_dog" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_container_validation_bird" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_discriminator_handles_dict_inputs" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_discriminator_handles_model_instances" time="0.000"><failure message="AssertionError: assert None == 'cat'&#10; +  where None = &lt;function pet_discriminator at 0x7586aefd8360&gt;(Cat(pet_type='cat', meow_volume=4))">self = &lt;eval.TestNestedDiscriminatorDifferentFieldNames object at 0x7586aef3bcb0&gt;
+
+    def test_discriminator_handles_model_instances(self):
+        """pet_discriminator should extract the tag from model instances, not only dicts."""
+        fn = agent_output.pet_discriminator
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=4)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=5)
+        bird = agent_output.Bird(animal_type="bird", wing_span=6)
+    
+&gt;       assert fn(cat) == "cat"
+E       AssertionError: assert None == 'cat'
+E        +  where None = &lt;function pet_discriminator at 0x7586aefd8360&gt;(Cat(pet_type='cat', meow_volume=4))
+
+/oracle/eval.py:142: AssertionError</failure></testcase><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_union_accepts_model_instances" time="0.001"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for tagged-union[Cat,Dog,Bird]&#10;  Unable to extract tag using discriminator pet_discriminator() [type=union_tag_not_found, input_value=Cat(pet_type='cat', meow_volume=9), input_type=Cat]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/union_tag_not_found">self = &lt;eval.TestNestedDiscriminatorDifferentFieldNames object at 0x7586aef48210&gt;
+
+    def test_union_accepts_model_instances(self):
+        """Direct union validation should also accept already-created model instances."""
+        adapter = _pet_adapter()
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=9)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=10)
+        bird = agent_output.Bird(animal_type="bird", wing_span=11)
+    
+&gt;       cat2 = adapter.validate_python(cat)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = TypeAdapter(Annotated[Union[Annotated[Cat, Tag], Annotated[Dog, Tag], Annotated[Bird, Tag]], Discriminator])
+object = Cat(pet_type='cat', meow_volume=9)
+
+    def validate_python(
+        self,
+        object: Any,
+        /,
+        *,
+        strict: bool | None = None,
+        extra: ExtraValues | None = None,
+        from_attributes: bool | None = None,
+        context: Any | None = None,
+        experimental_allow_partial: bool | Literal['off', 'on', 'trailing-strings'] = False,
+        by_alias: bool | None = None,
+        by_name: bool | None = None,
+    ) -&gt; T:
+        """Validate a Python object against the model.
+    
+        Args:
+            object: The Python object to validate against the model.
+            strict: Whether to strictly check types.
+            extra: Whether to ignore, allow, or forbid extra data during model validation.
+                See the [`extra` configuration value][pydantic.ConfigDict.extra] for details.
+            from_attributes: Whether to extract data from object attributes.
+            context: Additional context to pass to the validator.
+            experimental_allow_partial: **Experimental** whether to enable
+                [partial validation](../concepts/experimental.md#partial-validation), e.g. to process streams.
+                * False / 'off': Default behavior, no partial validation.
+                * True / 'on': Enable partial validation.
+                * 'trailing-strings': Enable partial validation and allow trailing strings in the input.
+            by_alias: Whether to use the field's alias when validating against the provided input data.
+            by_name: Whether to use the field's name when validating against the provided input data.
+    
+        !!! note
+            When using `TypeAdapter` with a Pydantic `dataclass`, the use of the `from_attributes`
+            argument is not supported.
+    
+        Returns:
+            The validated object.
+        """
+        if by_alias is False and by_name is not True:
+            raise PydanticUserError(
+                'At least one of `by_alias` or `by_name` must be set to True.',
+                code='validate-by-alias-and-name-false',
+            )
+    
+&gt;       return self.validator.validate_python(
+            object,
+            strict=strict,
+            extra=extra,
+            from_attributes=from_attributes,
+            context=context,
+            allow_partial=experimental_allow_partial,
+            by_alias=by_alias,
+            by_name=by_name,
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for tagged-union[Cat,Dog,Bird]
+E         Unable to extract tag using discriminator pet_discriminator() [type=union_tag_not_found, input_value=Cat(pet_type='cat', meow_volume=9), input_type=Cat]
+E           For further information visit https://errors.pydantic.dev/2.13/v/union_tag_not_found
+
+/opt/sgb/site/pydantic/type_adapter.py:441: ValidationError</failure></testcase><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_serialization_preserves_original_field_names" time="0.001" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_serialization_preserves_original_field_names" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_missing_discriminator_field_raises_validation_error" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_unknown_discriminator_value_raises_validation_error" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_wrong_field_name_for_variant_does_not_validate" time="0.001" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_each_model_uses_expected_discriminator_field_name" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_literal_values_are_correct" time="0.000" /></testsuite></testsuites>

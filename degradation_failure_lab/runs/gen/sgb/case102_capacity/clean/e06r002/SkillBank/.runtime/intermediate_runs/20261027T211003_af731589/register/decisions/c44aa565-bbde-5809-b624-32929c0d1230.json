@@ -1,0 +1,114 @@
+{
+  "skill_id": "c44aa565-bbde-5809-b624-32929c0d1230",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 e48aea98（货物状态与属性参考）高度重复，字段与枚举定义几乎一致，保留其一即可，本候选无额外价值。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "c44aa565-bbde-5809-b624-32929c0d1230",
+    "name": "货物属性与状态参考",
+    "description": "提供货物（Consignment）的标准字段与状态集合定义，供构造、解析货物对象或校验货物状态取值时引用；不包含装载或调度执行逻辑。",
+    "skill_body": "当需要构造或解析货物对象、或需要判断货物合法状态取值时，引用本参考：按标准字段列出货物属性（唯一标识、起点节点、终点节点、尺寸单位、释放时刻、截止时刻、优先级、状态、可选分配车辆标识），并仅使用规定的状态枚举取值。本资产只提供字段与枚举规范，不执行装载、调度或状态更新决策。\n\n## Objective\n\n统一货物数据结构与状态取值\n## Applicable Signals\n\n- 构造或解析货物对象\n- 校验货物状态字段取值\n- 需要货物字段清单作为实现依据\n\n## Contraindications\n\n- 需要执行具体装载或调度决策\n- 需要判断容量约束是否满足（属于装载校验规则，不在本参考范围）\n\n## Intervention Moves\n\n- 列出货物标准字段：ConsignmentID（唯一）、OriginNode、DestinationNode、SizeUnits（整数且>=1）、ReleaseTime、DueTime、PriorityLevel、Status、AssignedVehicleID（可选）\n- 限定 PriorityLevel 取值集合为 {LOW, STANDARD, HIGH, CRITICAL}\n- 限定 Status 取值集合为 {PENDING_AT_ORIGIN, ON_VEHICLE, DELIVERED, CANCELLED}\n\n## Workflow Steps\n\n- 确认调用目的是构造/解析货物对象或校验状态取值\n- 按标准字段清单输出货物属性定义\n- 对 PriorityLevel 与 Status 使用规定枚举取值\n- 将执行性决策（装载、调度、状态更新）交由相应执行技能处理\n\n## Constraints\n\n- ConsignmentID 必须唯一\n- SizeUnits 为整数且 >= 1\n- PriorityLevel 仅取 {LOW, STANDARD, HIGH, CRITICAL}\n- Status 仅取 {PENDING_AT_ORIGIN, ON_VEHICLE, DELIVERED, CANCELLED}\n- AssignedVehicleID 为可选字段\n\n## Cautions\n\n- 本资产为参考型知识，不含直接执行逻辑，不应替代装载或调度决策技能\n\n## Output Contract\n\n- 符合规范的货物字段与状态定义（字段清单及枚举取值集合）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要定义一个新货物的字段结构\n- Therapist/Output: ConsignmentID（唯一）、OriginNode、DestinationNode、SizeUnits（整数>=1）、ReleaseTime、DueTime、PriorityLevel∈{LOW,STANDARD,HIGH,CRITICAL}、Status∈{PENDING_AT_ORIGIN,ON_VEHICLE,DELIVERED,CANCELLED}、AssignedVehicleID（可选）\n- Notes: 仅提供字段与枚举规范，不涉及装载或调度",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "统一货物数据结构与状态取值",
+    "domain": "交通仿真规则",
+    "task_family": "数据模型定义",
+    "method_family": "字段与枚举规范",
+    "stage": "建模与实现",
+    "applicable_signals": [
+      "构造或解析货物对象",
+      "校验货物状态字段取值",
+      "需要货物字段清单作为实现依据"
+    ],
+    "contraindications": [
+      "需要执行具体装载或调度决策",
+      "需要判断容量约束是否满足（属于装载校验规则，不在本参考范围）"
+    ],
+    "intervention_moves": [
+      "列出货物标准字段：ConsignmentID（唯一）、OriginNode、DestinationNode、SizeUnits（整数且>=1）、ReleaseTime、DueTime、PriorityLevel、Status、AssignedVehicleID（可选）",
+      "限定 PriorityLevel 取值集合为 {LOW, STANDARD, HIGH, CRITICAL}",
+      "限定 Status 取值集合为 {PENDING_AT_ORIGIN, ON_VEHICLE, DELIVERED, CANCELLED}"
+    ],
+    "triggers": [
+      "需要构造或解析货物对象",
+      "需要判断货物合法状态取值",
+      "需要引用货物标准字段定义"
+    ],
+    "workflow_steps": [
+      "确认调用目的是构造/解析货物对象或校验状态取值",
+      "按标准字段清单输出货物属性定义",
+      "对 PriorityLevel 与 Status 使用规定枚举取值",
+      "将执行性决策（装载、调度、状态更新）交由相应执行技能处理"
+    ],
+    "constraints": [
+      "ConsignmentID 必须唯一",
+      "SizeUnits 为整数且 >= 1",
+      "PriorityLevel 仅取 {LOW, STANDARD, HIGH, CRITICAL}",
+      "Status 仅取 {PENDING_AT_ORIGIN, ON_VEHICLE, DELIVERED, CANCELLED}",
+      "AssignedVehicleID 为可选字段"
+    ],
+    "cautions": [
+      "本资产为参考型知识，不含直接执行逻辑，不应替代装载或调度决策技能"
+    ],
+    "output_contract": [
+      "符合规范的货物字段与状态定义（字段清单及枚举取值集合）"
+    ],
+    "examples": [
+      {
+        "input": "需要定义一个新货物的字段结构",
+        "output": "ConsignmentID（唯一）、OriginNode、DestinationNode、SizeUnits（整数>=1）、ReleaseTime、DueTime、PriorityLevel∈{LOW,STANDARD,HIGH,CRITICAL}、Status∈{PENDING_AT_ORIGIN,ON_VEHICLE,DELIVERED,CANCELLED}、AssignedVehicleID（可选）",
+        "notes": "仅提供字段与枚举规范，不涉及装载或调度"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "货物",
+      "数据模型",
+      "枚举规范",
+      "参考"
+    ],
+    "support_ids": [
+      "b4e96acd-7b2f-5ef4-8769-6c55fe7de0ca"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "f77b7d89-3e1b-5d19-920b-3fbe96d4ee85"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|统一货物数据结构与状态取值|交通仿真规则|数据模型定义|字段与枚举规范|建模与实现|货物属性与状态参考"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

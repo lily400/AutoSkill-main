@@ -1,0 +1,1788 @@
+{
+  "schema": "autoskill.document.staging.raw_candidates.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "联合类型校验",
+  "run_id": "20261028T132115_00f51950",
+  "documents": [
+    {
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "source_type": "document",
+      "title": "input002\\unions.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# Unions - Pydantic Validation\n\n# Unions\n\nUnions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.\n\nThis leads to some nuance around how to validate unions:\n\n- which member(s) of the union should you validate data against, and in which order?\n- which errors to raise when validation fails?\n\nValidating unions feels like adding another orthogonal dimension to the validation process.\n\nTo solve these problems, Pydantic supports three fundamental approaches to validating unions:\n\n1. left to right mode - the simplest approach, each member of the union is tried in order and the first match is returned\n2. smart mode - similar to \"left to right mode\" members are tried in order; however, validation will proceed past the first match to attempt to find a better match, this is the default mode for most union validation\n3. discriminated unions - only one member of the union is tried, based on a discriminator\n\nIn general, we recommend using discriminated unions. They are both more performant and more predictable than untagged unions, as they allow you to control which member of the union to validate against.\n\nFor complex cases, if you're using untagged unions, it's recommended to use `union_mode='left_to_right'` if you need guarantees about the order of validation attempts against the union members.\n\nIf you're looking for incredibly specialized behavior, you can use a [custom validator](../validators/#field-validators).\n\n## Union Modes\n\n### Left to Right Mode\n\nBecause this mode often leads to unexpected validation results, it is not the default in Pydantic >=2, instead `union_mode='smart'` is the default.\n\nWith this approach, validation is attempted against each member of the union in their order they're defined, and the first successful validation is accepted as input.\n\nIf validation fails on all members, the validation error includes the errors from all members of the union.\n\n`union_mode='left_to_right'` must be set as a [`Field`](../fields/) parameter on union fields where you want to use it.\n\nPython 3.9 and abovePython 3.10 and above\n\nUnion with left to right mode\n```\nfrom typing import Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass User(BaseModel):\n    id: Union[str, int] = Field(union_mode='left_to_right')\n\nprint(User(id=123))\n#> id=123\nprint(User(id='hello'))\n#> id='hello'\n\ntry:\n    User(id=[])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    2 validation errors for User\n    id.str\n      Input should be a valid string [type=string_type, input_value=[], input_type=list]\n    id.int\n      Input should be a valid integer [type=int_type, input_value=[], input_type=list]\n    \"\"\"\n```\n\nUnion with left to right mode\n```\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass User(BaseModel):\n    id: str | int = Field(union_mode='left_to_right')\n\nprint(User(id=123))\n#> id=123\nprint(User(id='hello'))\n#> id='hello'\n\ntry:\n    User(id=[])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    2 validation errors for User\n    id.str\n      Input should be a valid string [type=string_type, input_value=[], input_type=list]\n    id.int\n      Input should be a valid integer [type=int_type, input_value=[], input_type=list]\n    \"\"\"\n```\n\nThe order of members is very important in this case, as demonstrated by tweak the above example:\n\nPython 3.9 and abovePython 3.10 and above\n\nUnion with left to right - unexpected results\n```\nfrom typing import Union\n\nfrom pydantic import BaseModel, Field\n\nclass User(BaseModel):\n    id: Union[int, str] = Field(union_mode='left_to_right')\n\nprint(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nUnion with left to right - unexpected results\n```\nfrom pydantic import BaseModel, Field\n\nclass User(BaseModel):\n    id: int | str = Field(union_mode='left_to_right')\n\nprint(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\n### Smart Mode\n\nBecause of the potentially surprising results of `union_mode='left_to_right'`, in Pydantic >=2 the default mode for `Union` validation is `union_mode='smart'`.\n\nIn this mode, pydantic attempts to select the best match for the input from the union members. The exact algorithm may change between Pydantic minor releases to allow for improvements in both performance and accuracy.\n\nWe reserve the right to tweak the internal `smart` matching algorithm in future versions of Pydantic. If you rely on very specific\nmatching behavior, it's recommended to use `union_mode='left_to_right'` or discriminated unions.\n\nSmart Mode Algorithm\n\nThe smart mode algorithm uses two metrics to determine the best match for the input:\n\n1. The number of valid fields set (relevant for models, dataclasses, and typed dicts)\n2. The exactness of the match (relevant for all types)\n\n#### Number of valid fields set\n\nThis metric was introduced in Pydantic v2.8.0. Prior to this version, only exactness was used to determine the best match.\n\nThis metric is currently only relevant for models, dataclasses, and typed dicts.\n\nThe greater the number of valid fields set, the better the match. The number of fields set on nested models is also taken into account.\nThese counts bubble up to the top-level union, where the union member with the highest count is considered the best match.\n\nFor data types where this metric is relevant, we prioritize this count over exactness. For all other types, we use solely exactness.\n\n#### Exactness\n\nFor `exactness`, Pydantic scores a match of a union member into one of the following three groups (from highest score to lowest score):\n\n- An exact type match, for example an `int` input to a `float | int` union validation is an exact type match for the `int` member\n- Validation would have succeeded in [`strict` mode](../strict_mode/)\n- Validation would have succeeded in lax mode\n\nThe union match which produced the highest exactness score will be considered the best match.\n\nIn smart mode, the following steps are taken to try to select the best match for the input:\n\n`BaseModel`, `dataclass`, and `TypedDict`All other data types\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,\nwith the valid fields set count also tallied.\n2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned.\n3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned.\n4. If validation failed on all the members, return all the errors.\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above.\n  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted.\n2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned.\n3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned.\n4. Validation failed on all the members, return all the errors.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Union\nfrom uuid import UUID\n\nfrom pydantic import BaseModel\n\nclass User(BaseModel):\n    id: Union[int, str, UUID]\n    name: str\n\nuser_01 = User(id=123, name='John Doe')\nprint(user_01)\n#> id=123 name='John Doe'\nprint(user_01.id)\n#> 123\nuser_02 = User(id='1234', name='John Doe')\nprint(user_02)\n#> id='1234' name='John Doe'\nprint(user_02.id)\n#> 1234\nuser_03_uuid = UUID('cf57432e-809e-4353-adbd-9d5c0d733868')\nuser_03 = User(id=user_03_uuid, name='John Doe')\nprint(user_03)\n#> id=UUID('cf57432e-809e-4353-adbd-9d5c0d733868') name='John Doe'\nprint(user_03.id)\n#> cf57432e-809e-4353-adbd-9d5c0d733868\nprint(user_03_uuid.int)\n#> 275603287559914445491632874575877060712\n```\n\n```\nfrom uuid import UUID\n\nfrom pydantic import BaseModel\n\nclass User(BaseModel):\n    id: int | str | UUID\n    name: str\n\nuser_01 = User(id=123, name='John Doe')\nprint(user_01)\n#> id=123 name='John Doe'\nprint(user_01.id)\n#> 123\nuser_02 = User(id='1234', name='John Doe')\nprint(user_02)\n#> id='1234' name='John Doe'\nprint(user_02.id)\n#> 1234\nuser_03_uuid = UUID('cf57432e-809e-4353-adbd-9d5c0d733868')\nuser_03 = User(id=user_03_uuid, name='John Doe')\nprint(user_03)\n#> id=UUID('cf57432e-809e-4353-adbd-9d5c0d733868') name='John Doe'\nprint(user_03.id)\n#> cf57432e-809e-4353-adbd-9d5c0d733868\nprint(user_03_uuid.int)\n#> 275603287559914445491632874575877060712\n```\n\n## Discriminated Unions\n\n**Discriminated unions are sometimes referred to as \"Tagged Unions\".**\n\nWe can use discriminated unions to more efficiently validate `Union` types, by choosing which member of the union to validate against.\n\nThis makes validation more efficient and also avoids a proliferation of errors when validation fails.\n\nAdding discriminator to unions also means the generated JSON schema implements the [associated OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#discriminator-object).\n\n### Discriminated Unions with `str` discriminators\n\nFrequently, in the case of a `Union` with multiple models,\nthere is a common field to all members of the union that can be used to distinguish\nwhich union case the data should be validated against; this is referred to as the \"discriminator\" in\n[OpenAPI](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/).\n\nTo validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\nprint(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n#> pet=Dog(pet_type='dog', barks=3.14) n=1\ntry:\n    Model(pet={'pet_type': 'dog'}, n=1)\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.dog.barks\n      Field required [type=missing, input_value={'pet_type': 'dog'}, input_type=dict]\n    \"\"\"\n```\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nprint(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n#> pet=Dog(pet_type='dog', barks=3.14) n=1\ntry:\n    Model(pet={'pet_type': 'dog'}, n=1)\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.dog.barks\n      Field required [type=missing, input_value={'pet_type': 'dog'}, input_type=dict]\n    \"\"\"\n```\n\n### Discriminated Unions with callable `Discriminator`\n\nAPI Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Literal, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        Union[\n            Annotated[ApplePie, Tag('apple')],\n            Annotated[PumpkinPie, Tag('pumpkin')],\n        ],\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\npumpkin_variation = ThanksgivingDinner.model_validate(\n    {\n        'dessert': {\n            'filling': 'pumpkin',\n            'time_to_cook': 40,\n            'num_ingredients': 6,\n        }\n    }\n)\nprint(repr(pumpkin_variation))\n\"\"\"\nThanksgivingDinner(dessert=PumpkinPie(time_to_cook=40, num_ingredients=6, filling='pumpkin'))\n\"\"\"\n```\n\n```\nfrom typing import Annotated, Any, Literal\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        (\n            Annotated[ApplePie, Tag('apple')] |\n            Annotated[PumpkinPie, Tag('pumpkin')]\n        ),\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\npumpkin_variation = ThanksgivingDinner.model_validate(\n    {\n        'dessert': {\n            'filling': 'pumpkin',\n            'time_to_cook': 40,\n            'num_ingredients': 6,\n        }\n    }\n)\nprint(repr(pumpkin_variation))\n\"\"\"\nThanksgivingDinner(dessert=PumpkinPie(time_to_cook=40, num_ingredients=6, filling='pumpkin'))\n\"\"\"\n```\n\n`Discriminator`s can also be used to validate `Union` types with combinations of models and primitive types.\n\nFor example:\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\ntry:\n    DiscriminatedModel.model_validate({'value': 'not an int or a model'})\nexcept ValidationError as e:\n    print(e)  # (1)!\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    value\n      Unable to extract tag using discriminator model_x_discriminator() [type=union_tag_not_found, input_value='not an int or a model', input_type=str]\n    \"\"\"\n```\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\ntry:\n    DiscriminatedModel.model_validate({'value': 'not an int or a model'})\nexcept ValidationError as e:\n    print(e)  # (1)!\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    value\n      Unable to extract tag using discriminator model_x_discriminator() [type=union_tag_not_found, input_value='not an int or a model', input_type=str]\n    \"\"\"\n```\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```\n\nFor callable `Discriminator`s:\n\n```\nsome_field: Union[...] = Field(discriminator=Discriminator(...))\nsome_field: Annotated[Union[...], Discriminator(...)]\nsome_field: Annotated[Union[...], Field(discriminator=Discriminator(...))]\n```\n\nDiscriminated unions cannot be used with only a single variant, such as `Union[Cat]`.\n\nPython changes `Union[T]` into `T` at interpretation time, so it is not possible for `pydantic` to\ndistinguish fields of `Union[T]` from `T`.\n\n### Nested Discriminated Unions\n\nOnly one discriminator can be set for a field but sometimes you want to combine multiple discriminators.\nYou can do it by creating nested `Annotated` types, e.g.:\n\n```\nfrom typing import Annotated, Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass BlackCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['black']\n    black_name: str\n\nclass WhiteCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['white']\n    white_name: str\n\nCat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    name: str\n\nPet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n\nclass Model(BaseModel):\n    pet: Pet\n    n: int\n\nm = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\nprint(m)\n#> pet=BlackCat(pet_type='cat', color='black', black_name='felix') n=1\ntry:\n    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.cat\n      Input tag 'red' found using 'color' does not match any of the expected tags: 'black', 'white' [type=union_tag_invalid, input_value={'pet_type': 'cat', 'color': 'red'}, input_type=dict]\n    \"\"\"\ntry:\n    Model(pet={'pet_type': 'cat', 'color': 'black'}, n='1')\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.cat.black.black_name\n      Field required [type=missing, input_value={'pet_type': 'cat', 'color': 'black'}, input_type=dict]\n    \"\"\"\n```\n\nIf you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`.\n\nIn the context of the previous example, we have the following:\n\n```\ntype_adapter = TypeAdapter(Pet)\n\npet = type_adapter.validate_python(\n    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}\n)\nprint(repr(pet))\n#> BlackCat(pet_type='cat', color='black', black_name='felix')\n```\n\n## Union Validation Errors\n\nWhen `Union` validation fails, error messages can be quite verbose, as they will produce validation errors for\neach case in the union.\nThis is especially noticeable when dealing with recursive models, where reasons may be generated at each level of\nrecursion.\nDiscriminated unions help to simplify error messages in this case, as validation errors are only produced for\nthe case with a matching discriminator value.\n\nYou can also customize the error type, message, and context for a `Discriminator` by passing\nthese specifications as parameters to the `Discriminator` constructor, as seen in the example below.\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\n# Errors are quite verbose with a normal Union:\nclass Model(BaseModel):\n    x: Union[str, 'Model']\n\ntry:\n    Model.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    4 validation errors for Model\n    x.str\n      Input should be a valid string [type=string_type, input_value={'x': {'x': 1}}, input_type=dict]\n    x.Model.x.str\n      Input should be a valid string [type=string_type, input_value={'x': 1}, input_type=dict]\n    x.Model.x.Model.x.str\n      Input should be a valid string [type=string_type, input_value=1, input_type=int]\n    x.Model.x.Model.x.Model\n      Input should be a valid dictionary or instance of Model [type=model_type, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    Model.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    4 validation errors for Model\n    x.str\n      Input should be a valid string [type=string_type, input_value={'x': {'x': {}}}, input_type=dict]\n    x.Model.x.str\n      Input should be a valid string [type=string_type, input_value={'x': {}}, input_type=dict]\n    x.Model.x.Model.x.str\n      Input should be a valid string [type=string_type, input_value={}, input_type=dict]\n    x.Model.x.Model.x.Model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"\n\n# Errors are much simpler with a discriminated union:\ndef model_x_discriminator(v):\n    if isinstance(v, str):\n        return 'str'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n\nclass DiscriminatedModel(BaseModel):\n    x: Annotated[\n        Union[\n            Annotated[str, Tag('str')],\n            Annotated['DiscriminatedModel', Tag('model')],\n        ],\n        Discriminator(\n            model_x_discriminator,\n            custom_error_type='invalid_union_member',  # (1)!\n            custom_error_message='Invalid union member',  # (2)!\n            custom_error_context={'discriminator': 'str_or_model'},  # (3)!\n        ),\n    ]\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x\n      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x.model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"\n\n# The data is still handled properly when valid:\ndata = {'x': {'x': {'x': 'a'}}}\nm = DiscriminatedModel.model_validate(data)\nprint(m.model_dump())\n#> {'x': {'x': {'x': 'a'}}}\n```\n\n1. `custom_error_type` is the `type` attribute of the `ValidationError` raised when validation fails.\n2. `custom_error_message` is the `msg` attribute of the `ValidationError` raised when validation fails.\n3. `custom_error_context` is the `ctx` attribute of the `ValidationError` raised when validation fails.\n\nYou can also simplify error messages by labeling each case with a [`Tag`](../../api/types/#pydantic.types.Tag).\nThis is especially useful when you have complex types like those in this example:\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import AfterValidator, Tag, TypeAdapter, ValidationError\n\nDoubledList = Annotated[list[int], AfterValidator(lambda x: x * 2)]\nStringsMap = dict[str, str]\n\n# Not using any `Tag`s for each union case, the errors are not so nice to look at\nadapter = TypeAdapter(Union[DoubledList, StringsMap])\n\ntry:\n    adapter.validate_python(['a'])\nexcept ValidationError as exc_info:\n    print(exc_info)\n    \"\"\"\n    2 validation errors for union[function-after[<lambda>(), list[int]],dict[str,str]]\n    function-after[<lambda>(), list[int]].0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='a', input_type=str]\n    dict[str,str]\n      Input should be a valid dictionary [type=dict_type, input_value=['a'], input_type=list]\n    \"\"\"\n\ntag_adapter = TypeAdapter(\n    Union[\n        Annotated[DoubledList, Tag('DoubledList')],\n        Annotated[StringsMap, Tag('StringsMap')],\n    ]\n)\n\ntry:\n    tag_adapter.validate_python(['a'])\nexcept ValidationError as exc_info:\n    print(exc_info)\n    \"\"\"\n    2 validation errors for union[DoubledList,StringsMap]\n    DoubledList.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='a', input_type=str]\n    StringsMap\n      Input should be a valid dictionary [type=dict_type, input_value=['a'], input_type=list]\n    \"\"\"\n```\n\n Was this page helpful?\n\n Thanks for your feedback!\n\n Thanks for your feedback!\n\n Back to top",
+      "sections": [
+        {
+          "heading": "input002\\unions.md",
+          "text": "# Unions - Pydantic Validation",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 32
+          },
+          "metadata": {
+            "heading_path": [
+              "input002\\unions.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# Unions - Pydantic Validation",
+            "sibling_headings": [
+              "# Unions"
+            ]
+          }
+        },
+        {
+          "heading": "# Unions",
+          "text": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.\n\nThis leads to some nuance around how to validate unions:\n\n- which member(s) of the union should you validate data against, and in which order?\n- which errors to raise when validation fails?\n\nValidating unions feels like adding another orthogonal dimension to the validation process.\n\nTo solve these problems, Pydantic supports three fundamental approaches to validating unions:\n\n1. left to right mode - the simplest approach, each member of the union is tried in order and the first match is returned\n2. smart mode - similar to \"left to right mode\" members are tried in order; however, validation will proceed past the first match to attempt to find a better match, this is the default mode for most union validation\n3. discriminated unions - only one member of the union is tried, based on a discriminator\n\nIn general, we recommend using discriminated unions. They are both more performant and more predictable than untagged unions, as they allow you to control which member of the union to validate against.\n\nFor complex cases, if you're using untagged unions, it's recommended to use `union_mode='left_to_right'` if you need guarantees about the order of validation attempts against the union members.\n\nIf you're looking for incredibly specialized behavior, you can use a [custom validator](../validators/#field-validators).",
+          "level": 1,
+          "span": {
+            "start": 41,
+            "end": 1549
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid.",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ]
+          }
+        },
+        {
+          "heading": "### Left to Right Mode",
+          "text": "Because this mode often leads to unexpected validation results, it is not the default in Pydantic >=2, instead `union_mode='smart'` is the default.\n\nWith this approach, validation is attempted against each member of the union in their order they're defined, and the first successful validation is accepted as input.\n\nIf validation fails on all members, the validation error includes the errors from all members of the union.\n\n`union_mode='left_to_right'` must be set as a [`Field`](../fields/) parameter on union fields where you want to use it.\n\nPython 3.9 and abovePython 3.10 and above\n\nUnion with left to right mode\n```\nfrom typing import Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass User(BaseModel):\n    id: Union[str, int] = Field(union_mode='left_to_right')\n\nprint(User(id=123))\n#> id=123\nprint(User(id='hello'))\n#> id='hello'\n\ntry:\n    User(id=[])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    2 validation errors for User\n    id.str\n      Input should be a valid string [type=string_type, input_value=[], input_type=list]\n    id.int\n      Input should be a valid integer [type=int_type, input_value=[], input_type=list]\n    \"\"\"\n```\n\nUnion with left to right mode\n```\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass User(BaseModel):\n    id: str | int = Field(union_mode='left_to_right')\n\nprint(User(id=123))\n#> id=123\nprint(User(id='hello'))\n#> id='hello'\n\ntry:\n    User(id=[])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    2 validation errors for User\n    id.str\n      Input should be a valid string [type=string_type, input_value=[], input_type=list]\n    id.int\n      Input should be a valid integer [type=int_type, input_value=[], input_type=list]\n    \"\"\"\n```\n\nThe order of members is very important in this case, as demonstrated by tweak the above example:\n\nPython 3.9 and abovePython 3.10 and above\n\nUnion with left to right - unexpected results\n```\nfrom typing import Union\n\nfrom pydantic import BaseModel, Field\n\nclass User(BaseModel):\n    id: Union[int, str] = Field(union_mode='left_to_right')\n\nprint(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nUnion with left to right - unexpected results\n```\nfrom pydantic import BaseModel, Field\n\nclass User(BaseModel):\n    id: int | str = Field(union_mode='left_to_right')\n\nprint(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.",
+          "level": 3,
+          "span": {
+            "start": 1588,
+            "end": 4596
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions",
+              "## Union Modes",
+              "### Left to Right Mode"
+            ],
+            "parent_heading": "## Union Modes",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Because this mode often leads to unexpected validation results, it is not the default in Pydantic >=2, instead `union_mode='smart'` is the default.",
+            "sibling_headings": [
+              "Smart Mode"
+            ]
+          }
+        },
+        {
+          "heading": "Smart Mode",
+          "text": "Because of the potentially surprising results of `union_mode='left_to_right'`, in Pydantic >=2 the default mode for `Union` validation is `union_mode='smart'`.\n\nIn this mode, pydantic attempts to select the best match for the input from the union members. The exact algorithm may change between Pydantic minor releases to allow for improvements in both performance and accuracy.\n\nWe reserve the right to tweak the internal `smart` matching algorithm in future versions of Pydantic. If you rely on very specific\nmatching behavior, it's recommended to use `union_mode='left_to_right'` or discriminated unions.\n\nSmart Mode Algorithm\n\nThe smart mode algorithm uses two metrics to determine the best match for the input:\n\n1. The number of valid fields set (relevant for models, dataclasses, and typed dicts)\n2. The exactness of the match (relevant for all types)\n\n#### Number of valid fields set\n\nThis metric was introduced in Pydantic v2.8.0. Prior to this version, only exactness was used to determine the best match.\n\nThis metric is currently only relevant for models, dataclasses, and typed dicts.\n\nThe greater the number of valid fields set, the better the match. The number of fields set on nested models is also taken into account.\nThese counts bubble up to the top-level union, where the union member with the highest count is considered the best match.\n\nFor data types where this metric is relevant, we prioritize this count over exactness. For all other types, we use solely exactness.\n\n#### Exactness\n\nFor `exactness`, Pydantic scores a match of a union member into one of the following three groups (from highest score to lowest score):\n\n- An exact type match, for example an `int` input to a `float | int` union validation is an exact type match for the `int` member\n- Validation would have succeeded in [`strict` mode](../strict_mode/)\n- Validation would have succeeded in lax mode\n\nThe union match which produced the highest exactness score will be considered the best match.\n\nIn smart mode, the following steps are taken to try to select the best match for the input:\n\n`BaseModel`, `dataclass`, and `TypedDict`All other data types\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,\nwith the valid fields set count also tallied.\n2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned.\n3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned.\n4. If validation failed on all the members, return all the errors.\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above.\n  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted.\n2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned.\n3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned.\n4. Validation failed on all the members, return all the errors.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Union\nfrom uuid import UUID\n\nfrom pydantic import BaseModel\n\nclass User(BaseModel):\n    id: Union[int, str, UUID]\n    name: str\n\nuser_01 = User(id=123, name='John Doe')\nprint(user_01)\n#> id=123 name='John Doe'\nprint(user_01.id)\n#> 123\nuser_02 = User(id='1234', name='John Doe')\nprint(user_02)\n#> id='1234' name='John Doe'\nprint(user_02.id)\n#> 1234\nuser_03_uuid = UUID('cf57432e-809e-4353-adbd-9d5c0d733868')\nuser_03 = User(id=user_03_uuid, name='John Doe')\nprint(user_03)\n#> id=UUID('cf57432e-809e-4353-adbd-9d5c0d733868') name='John Doe'\nprint(user_03.id)\n#> cf57432e-809e-4353-adbd-9d5c0d733868\nprint(user_03_uuid.int)\n#> 275603287559914445491632874575877060712\n```\n\n```\nfrom uuid import UUID\n\nfrom pydantic import BaseModel\n\nclass User(BaseModel):\n    id: int | str | UUID\n    name: str\n\nuser_01 = User(id=123, name='John Doe')\nprint(user_01)\n#> id=123 name='John Doe'\nprint(user_01.id)\n#> 123\nuser_02 = User(id='1234', name='John Doe')\nprint(user_02)\n#> id='1234' name='John Doe'\nprint(user_02.id)\n#> 1234\nuser_03_uuid = UUID('cf57432e-809e-4353-adbd-9d5c0d733868')\nuser_03 = User(id=user_03_uuid, name='John Doe')\nprint(user_03)\n#> id=UUID('cf57432e-809e-4353-adbd-9d5c0d733868') name='John Doe'\nprint(user_03.id)\n#> cf57432e-809e-4353-adbd-9d5c0d733868\nprint(user_03_uuid.int)\n#> 275603287559914445491632874575877060712\n```",
+          "level": 3,
+          "span": {
+            "start": 4611,
+            "end": 9243
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions",
+              "## Union Modes",
+              "Smart Mode"
+            ],
+            "parent_heading": "## Union Modes",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Because of the potentially surprising results of `union_mode='left_to_right'`, in Pydantic >=2 the default mode for `Union` validation is `union_mode='smart'`.",
+            "sibling_headings": [
+              "### Left to Right Mode"
+            ]
+          }
+        },
+        {
+          "heading": "Discriminated Unions",
+          "text": "**Discriminated unions are sometimes referred to as \"Tagged Unions\".**\n\nWe can use discriminated unions to more efficiently validate `Union` types, by choosing which member of the union to validate against.\n\nThis makes validation more efficient and also avoids a proliferation of errors when validation fails.\n\nAdding discriminator to unions also means the generated JSON schema implements the [associated OpenAPI specification](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#discriminator-object).",
+          "level": 2,
+          "span": {
+            "start": 9267,
+            "end": 9794
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions",
+              "Discriminated Unions"
+            ],
+            "parent_heading": "# Unions",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "**Discriminated unions are sometimes referred to as \"Tagged Unions\".**",
+            "sibling_headings": [
+              "Union Validation Errors"
+            ]
+          }
+        },
+        {
+          "heading": "Discriminated Unions with `str` discriminators",
+          "text": "Frequently, in the case of a `Union` with multiple models,\nthere is a common field to all members of the union that can be used to distinguish\nwhich union case the data should be validated against; this is referred to as the \"discriminator\" in\n[OpenAPI](https://swagger.io/docs/specification/data-models/inheritance-and-polymorphism/).\n\nTo validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\nprint(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n#> pet=Dog(pet_type='dog', barks=3.14) n=1\ntry:\n    Model(pet={'pet_type': 'dog'}, n=1)\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.dog.barks\n      Field required [type=missing, input_value={'pet_type': 'dog'}, input_type=dict]\n    \"\"\"\n```\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nprint(Model(pet={'pet_type': 'dog', 'barks': 3.14}, n=1))\n#> pet=Dog(pet_type='dog', barks=3.14) n=1\ntry:\n    Model(pet={'pet_type': 'dog'}, n=1)\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.dog.barks\n      Field required [type=missing, input_value={'pet_type': 'dog'}, input_type=dict]\n    \"\"\"\n```",
+          "level": 3,
+          "span": {
+            "start": 9845,
+            "end": 12054
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators"
+            ],
+            "parent_heading": "Discriminated Unions",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Frequently, in the case of a `Union` with multiple models,",
+            "sibling_headings": [
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions"
+            ]
+          }
+        },
+        {
+          "heading": "Discriminated Unions with callable `Discriminator`",
+          "text": "API Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Literal, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        Union[\n            Annotated[ApplePie, Tag('apple')],\n            Annotated[PumpkinPie, Tag('pumpkin')],\n        ],\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\npumpkin_variation = ThanksgivingDinner.model_validate(\n    {\n        'dessert': {\n            'filling': 'pumpkin',\n            'time_to_cook': 40,\n            'num_ingredients': 6,\n        }\n    }\n)\nprint(repr(pumpkin_variation))\n\"\"\"\nThanksgivingDinner(dessert=PumpkinPie(time_to_cook=40, num_ingredients=6, filling='pumpkin'))\n\"\"\"\n```\n\n```\nfrom typing import Annotated, Any, Literal\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        (\n            Annotated[ApplePie, Tag('apple')] |\n            Annotated[PumpkinPie, Tag('pumpkin')]\n        ),\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\npumpkin_variation = ThanksgivingDinner.model_validate(\n    {\n        'dessert': {\n            'filling': 'pumpkin',\n            'time_to_cook': 40,\n            'num_ingredients': 6,\n        }\n    }\n)\nprint(repr(pumpkin_variation))\n\"\"\"\nThanksgivingDinner(dessert=PumpkinPie(time_to_cook=40, num_ingredients=6, filling='pumpkin'))\n\"\"\"\n```\n\n`Discriminator`s can also be used to validate `Union` types with combinations of models and primitive types.\n\nFor example:\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\ntry:\n    DiscriminatedModel.model_validate({'value': 'not an int or a model'})\nexcept ValidationError as e:\n    print(e)  # (1)!\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    value\n      Unable to extract tag using discriminator model_x_discriminator() [type=union_tag_not_found, input_value='not an int or a model', input_type=str]\n    \"\"\"\n```\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\ntry:\n    DiscriminatedModel.model_validate({'value': 'not an int or a model'})\nexcept ValidationError as e:\n    print(e)  # (1)!\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    value\n      Unable to extract tag using discriminator model_x_discriminator() [type=union_tag_not_found, input_value='not an int or a model', input_type=str]\n    \"\"\"\n```\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```\n\nFor callable `Discriminator`s:\n\n```\nsome_field: Union[...] = Field(discriminator=Discriminator(...))\nsome_field: Annotated[Union[...], Discriminator(...)]\nsome_field: Annotated[Union[...], Field(discriminator=Discriminator(...))]\n```\n\nDiscriminated unions cannot be used with only a single variant, such as `Union[Cat]`.\n\nPython changes `Union[T]` into `T` at interpretation time, so it is not possible for `pydantic` to\ndistinguish fields of `Union[T]` from `T`.",
+          "level": 3,
+          "span": {
+            "start": 12109,
+            "end": 19729
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions",
+              "Discriminated Unions",
+              "Discriminated Unions with callable `Discriminator`"
+            ],
+            "parent_heading": "Discriminated Unions",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "API Documentation",
+            "sibling_headings": [
+              "Discriminated Unions with `str` discriminators",
+              "Nested Discriminated Unions"
+            ]
+          }
+        },
+        {
+          "heading": "Nested Discriminated Unions",
+          "text": "Only one discriminator can be set for a field but sometimes you want to combine multiple discriminators.\nYou can do it by creating nested `Annotated` types, e.g.:\n\n```\nfrom typing import Annotated, Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass BlackCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['black']\n    black_name: str\n\nclass WhiteCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['white']\n    white_name: str\n\nCat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    name: str\n\nPet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n\nclass Model(BaseModel):\n    pet: Pet\n    n: int\n\nm = Model(pet={'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}, n=1)\nprint(m)\n#> pet=BlackCat(pet_type='cat', color='black', black_name='felix') n=1\ntry:\n    Model(pet={'pet_type': 'cat', 'color': 'red'}, n='1')\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.cat\n      Input tag 'red' found using 'color' does not match any of the expected tags: 'black', 'white' [type=union_tag_invalid, input_value={'pet_type': 'cat', 'color': 'red'}, input_type=dict]\n    \"\"\"\ntry:\n    Model(pet={'pet_type': 'cat', 'color': 'black'}, n='1')\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    pet.cat.black.black_name\n      Field required [type=missing, input_value={'pet_type': 'cat', 'color': 'black'}, input_type=dict]\n    \"\"\"\n```\n\nIf you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`.\n\nIn the context of the previous example, we have the following:\n\n```\ntype_adapter = TypeAdapter(Pet)\n\npet = type_adapter.validate_python(\n    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}\n)\nprint(repr(pet))\n#> BlackCat(pet_type='cat', color='black', black_name='felix')\n```",
+          "level": 3,
+          "span": {
+            "start": 19761,
+            "end": 21786
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions",
+              "Discriminated Unions",
+              "Nested Discriminated Unions"
+            ],
+            "parent_heading": "Discriminated Unions",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Only one discriminator can be set for a field but sometimes you want to combine multiple discriminators.",
+            "sibling_headings": [
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`"
+            ]
+          }
+        },
+        {
+          "heading": "Union Validation Errors",
+          "text": "When `Union` validation fails, error messages can be quite verbose, as they will produce validation errors for\neach case in the union.\nThis is especially noticeable when dealing with recursive models, where reasons may be generated at each level of\nrecursion.\nDiscriminated unions help to simplify error messages in this case, as validation errors are only produced for\nthe case with a matching discriminator value.\n\nYou can also customize the error type, message, and context for a `Discriminator` by passing\nthese specifications as parameters to the `Discriminator` constructor, as seen in the example below.\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\n# Errors are quite verbose with a normal Union:\nclass Model(BaseModel):\n    x: Union[str, 'Model']\n\ntry:\n    Model.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    4 validation errors for Model\n    x.str\n      Input should be a valid string [type=string_type, input_value={'x': {'x': 1}}, input_type=dict]\n    x.Model.x.str\n      Input should be a valid string [type=string_type, input_value={'x': 1}, input_type=dict]\n    x.Model.x.Model.x.str\n      Input should be a valid string [type=string_type, input_value=1, input_type=int]\n    x.Model.x.Model.x.Model\n      Input should be a valid dictionary or instance of Model [type=model_type, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    Model.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    4 validation errors for Model\n    x.str\n      Input should be a valid string [type=string_type, input_value={'x': {'x': {}}}, input_type=dict]\n    x.Model.x.str\n      Input should be a valid string [type=string_type, input_value={'x': {}}, input_type=dict]\n    x.Model.x.Model.x.str\n      Input should be a valid string [type=string_type, input_value={}, input_type=dict]\n    x.Model.x.Model.x.Model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"\n\n# Errors are much simpler with a discriminated union:\ndef model_x_discriminator(v):\n    if isinstance(v, str):\n        return 'str'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n\nclass DiscriminatedModel(BaseModel):\n    x: Annotated[\n        Union[\n            Annotated[str, Tag('str')],\n            Annotated['DiscriminatedModel', Tag('model')],\n        ],\n        Discriminator(\n            model_x_discriminator,\n            custom_error_type='invalid_union_member',  # (1)!\n            custom_error_message='Invalid union member',  # (2)!\n            custom_error_context={'discriminator': 'str_or_model'},  # (3)!\n        ),\n    ]\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x\n      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x.model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"\n\n# The data is still handled properly when valid:\ndata = {'x': {'x': {'x': 'a'}}}\nm = DiscriminatedModel.model_validate(data)\nprint(m.model_dump())\n#> {'x': {'x': {'x': 'a'}}}\n```\n\n1. `custom_error_type` is the `type` attribute of the `ValidationError` raised when validation fails.\n2. `custom_error_message` is the `msg` attribute of the `ValidationError` raised when validation fails.\n3. `custom_error_context` is the `ctx` attribute of the `ValidationError` raised when validation fails.\n\nYou can also simplify error messages by labeling each case with a [`Tag`](../../api/types/#pydantic.types.Tag).\nThis is especially useful when you have complex types like those in this example:\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import AfterValidator, Tag, TypeAdapter, ValidationError\n\nDoubledList = Annotated[list[int], AfterValidator(lambda x: x * 2)]\nStringsMap = dict[str, str]\n\n# Not using any `Tag`s for each union case, the errors are not so nice to look at\nadapter = TypeAdapter(Union[DoubledList, StringsMap])\n\ntry:\n    adapter.validate_python(['a'])\nexcept ValidationError as exc_info:\n    print(exc_info)\n    \"\"\"\n    2 validation errors for union[function-after[<lambda>(), list[int]],dict[str,str]]\n    function-after[<lambda>(), list[int]].0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='a', input_type=str]\n    dict[str,str]\n      Input should be a valid dictionary [type=dict_type, input_value=['a'], input_type=list]\n    \"\"\"\n\ntag_adapter = TypeAdapter(\n    Union[\n        Annotated[DoubledList, Tag('DoubledList')],\n        Annotated[StringsMap, Tag('StringsMap')],\n    ]\n)\n\ntry:\n    tag_adapter.validate_python(['a'])\nexcept ValidationError as exc_info:\n    print(exc_info)\n    \"\"\"\n    2 validation errors for union[DoubledList,StringsMap]\n    DoubledList.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='a', input_type=str]\n    StringsMap\n      Input should be a valid dictionary [type=dict_type, input_value=['a'], input_type=list]\n    \"\"\"\n```\n\n Was this page helpful?\n\n Thanks for your feedback!\n\n Thanks for your feedback!\n\n Back to top",
+          "level": 2,
+          "span": {
+            "start": 21813,
+            "end": 27250
+          },
+          "metadata": {
+            "heading_path": [
+              "# Unions",
+              "Union Validation Errors"
+            ],
+            "parent_heading": "# Unions",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "When `Union` validation fails, error messages can be quite verbose, as they will produce validation errors for",
+            "sibling_headings": [
+              "Discriminated Unions"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case004_pyd",
+        "condition_id": "clean",
+        "lab_run_id": "p04g001",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case004_pyd",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-1ef0a08ee484c17f",
+              "source_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+              "path": "inputs/input001/type_adapter.md",
+              "sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/b2eebb8a33d02993/type_adapter.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md"
+            },
+            {
+              "input_id": "input002",
+              "source_id": "sgb-bfff832235f53b65",
+              "source_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+              "path": "inputs/input002/unions.md",
+              "sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/199ce19614c5f513/unions.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "pydantic",
+        "resume_key": "7223bc1aa15b4f6b8e845445ffa2296cec6154a9017c6bf6603983431ceec0fc",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "pydantic::未分类技能",
+        "taxonomy_id": "pydantic"
+      },
+      "checksum": "61ff1354df03fe590491e012dd6dde739ef7c496",
+      "content_hash": "61ff1354df03fe590491e012dd6dde739ef7c496",
+      "imported_at": "2026-10-28T05:11:01+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "146cba65-2453-529b-a463-e35a98f44942",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "3df5f979-7629-5c57-8c24-746c21770722",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 3637,
+        "end": 4111
+      },
+      "excerpt": "print(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nUnion with left to right - unexpected results\n```\nfrom pydantic import BaseModel, Field",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "联合类型从左到右校验顺序控制",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱",
+        "task_family": "联合类型校验",
+        "method_family": "顺序校验规则",
+        "stage": "模型设计",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "e91ba773-ce3c-569b-9374-ea0a917b89cb",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 28,
+        "paragraph_end": 30,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:12:18+00:00"
+    },
+    {
+      "support_id": "26404bea-5236-53ec-80a6-f3bba33795fc",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 6097,
+        "end": 6574
+      },
+      "excerpt": "For `exactness`, Pydantic scores a match of a union member into one of the following three groups (from highest score to lowest score):\n\n- An exact type match, for example an `int` input to a `float | int` union validation is an exact type match for the `int` member\n- Validation would have succeeded in [`strict` mode](../strict_mode/)\n- Validation would have succeeded in lax mode\n\nThe union match which produced the highest exactness score will be considered the best match.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "联合类型精确度匹配评分",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "按精确度评分规则确定联合类型的最佳匹配成员",
+        "task_family": "联合类型校验",
+        "method_family": "精确度评分",
+        "stage": "匹配选择",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "0b0e5e47-09fd-5f29-b888-21bc0b6d4a76",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 46,
+        "paragraph_end": 48,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:13:09+00:00"
+    },
+    {
+      "support_id": "119de05c-37c6-55ca-8414-1aa8724e07e1",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 10151,
+        "end": 13211
+      },
+      "excerpt": "To validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nDiscriminated Unions with callable `Discriminator`\nAPI Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "可调用判别器设计",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "实现兼容 dict 与模型输入的 callable discriminator",
+        "task_family": "联合类型校验",
+        "method_family": "可调用判别器",
+        "stage": "判别逻辑实现",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 1,
+        "paragraph_end": 23,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:14:09+00:00"
+    },
+    {
+      "support_id": "c94da646-7dcd-5dc2-ae1e-e511b06cfec8",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 16129,
+        "end": 19225
+      },
+      "excerpt": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+      "relation_type": "support",
+      "confidence": 0.85,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "可调用判别器联合类型校验",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "为联合类型字段配置可调用判别器，实现按运行时类型分派校验",
+        "task_family": "联合类型校验",
+        "method_family": "判别器分派",
+        "stage": "模型定义与校验",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 47,
+        "paragraph_end": 66,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:15:03+00:00"
+    },
+    {
+      "support_id": "a80204c1-b5b6-5b69-a620-e3cf7b420ba2",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 16129,
+        "end": 19225
+      },
+      "excerpt": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "判别器未命中返回 None 的错误处理",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在判别函数中对未知类型返回 None 并预期 union_tag_not_found 错误",
+        "task_family": "联合类型校验",
+        "method_family": "错误处理",
+        "stage": "校验失败处理",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 47,
+        "paragraph_end": 66,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:15:03+00:00"
+    },
+    {
+      "support_id": "9f372687-7a80-5ee3-b90e-37de244c8cb3",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 16129,
+        "end": 19225
+      },
+      "excerpt": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "字符串判别器字段声明",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "为联合字段声明字符串判别器，实现按标签字段分派校验",
+        "task_family": "联合类型校验",
+        "method_family": "判别器声明",
+        "stage": "模型定义",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 3,
+        "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 47,
+        "paragraph_end": 66,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:15:03+00:00"
+    },
+    {
+      "support_id": "52871143-3b70-5022-a1fd-af6ce48fbc55",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 19692,
+        "end": 25009
+      },
+      "excerpt": "Nested Discriminated Unions\nOnly one discriminator can be set for a field but sometimes you want to combine multiple discriminators.\nYou can do it by creating nested `Annotated` types, e.g.:\n\n```\nfrom typing import Annotated, Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass BlackCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['black']\n    black_name: str\n\nclass WhiteCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['white']\n    white_name: str\n\nCat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    name: str\n\nPet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n\nclass Model(BaseModel):\n    pet: Pet\n    n: int\n\nIf you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`.\n\nIn the context of the previous example, we have the following:\n\n```\ntype_adapter = TypeAdapter(Pet)\n\npet = type_adapter.validate_python(\n    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}\n)\nprint(repr(pet))\n#> BlackCat(pet_type='cat', color='black', black_name='felix')\n```\n\nYou can also customize the error type, message, and context for a `Discriminator` by passing\nthese specifications as parameters to the `Discriminator` constructor, as seen in the example below.\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\n# Errors are quite verbose with a normal Union:\nclass Model(BaseModel):\n    x: Union[str, 'Model']\n\n# Errors are much simpler with a discriminated union:\ndef model_x_discriminator(v):\n    if isinstance(v, str):\n        return 'str'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x\n      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x.model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "TypeAdapter 校验纯联合",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "用 TypeAdapter 对纯联合类型执行校验",
+        "task_family": "联合类型校验",
+        "method_family": "TypeAdapter",
+        "stage": "数据校验",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "e202d0a5-4f50-5cc5-a2e4-74bfd73327b8",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 24,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:15:27+00:00"
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "3df5f979-7629-5c57-8c24-746c21770722",
+      "name": "联合类型从左到右校验顺序控制",
+      "description": "解释并预测 Pydantic 联合类型按声明顺序从左到右依次尝试成员校验的行为，以及 lax 模式下类型转换导致的意外匹配；用于调试或设计含混合成员（如 int/str）的联合字段。",
+      "skill_body": "当需要解释联合类型为何返回非预期成员类型，或设计含 int/str 混合成员的联合字段时，按以下要点说明：联合类型按成员声明顺序从左到右依次尝试校验，第一个通过校验的成员即为结果；在 lax 模式下，字符串等输入可能被转换为更早声明的成员类型（如 '123' 被转换为 int），从而产生意外匹配。若需要确定性区分成员类型，应改用判别联合而非依赖顺序。\n\n## Objective\n\n理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱\n## Applicable Signals\n\n- 联合字段返回了与预期不同的成员类型\n- 联合成员包含可相互转换的类型（如 int 与 str）\n- 输入为数字字符串但结果被解析为 int\n\n## Contraindications\n\n- 需要确定性区分成员类型时应改用判别联合，而非依赖顺序校验\n\n## Intervention Moves\n\n- 说明联合类型按声明顺序从左到右尝试成员校验\n- 指出 lax 模式下字符串可被转换为更早声明的 int 成员\n- 建议在需要确定性区分时改用判别联合\n\n## Workflow Steps\n\n- 确认联合成员的声明顺序\n- 判断输入是否可被更早声明的成员在 lax 模式下转换\n- 解释实际匹配到的成员及原因\n- 若需确定性区分，建议改用判别联合\n\n## Constraints\n\n- 仅适用于解释或预测联合类型校验顺序与类型转换行为\n- 不替代判别联合等确定性区分方案\n\n## Cautions\n\n- lax 模式下的隐式类型转换可能导致与直觉不符的解析结果\n\n## Output Contract\n\n- 能说明联合类型按声明顺序尝试且 lax 模式会转换字符串为 int 的规则\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合字段声明为 int | str，输入为字符串 '123'，结果 id 为 int 类型\n- Therapist/Output: 因为联合按声明顺序先尝试 int 成员，lax 模式下 '123' 被转换为 int 并通过校验，故结果为 int 而非 str。\n- Notes: 体现从左到右顺序与 lax 类型转换的意外匹配",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "顺序校验规则",
+      "stage": "模型设计",
+      "applicable_signals": [
+        "联合字段返回了与预期不同的成员类型",
+        "联合成员包含可相互转换的类型（如 int 与 str）",
+        "输入为数字字符串但结果被解析为 int"
+      ],
+      "contraindications": [
+        "需要确定性区分成员类型时应改用判别联合，而非依赖顺序校验"
+      ],
+      "intervention_moves": [
+        "说明联合类型按声明顺序从左到右尝试成员校验",
+        "指出 lax 模式下字符串可被转换为更早声明的 int 成员",
+        "建议在需要确定性区分时改用判别联合"
+      ],
+      "triggers": [
+        "需要解释联合类型为何返回非预期成员类型",
+        "设计含 int/str 混合成员的联合字段",
+        "调试联合类型解析结果"
+      ],
+      "workflow_steps": [
+        "确认联合成员的声明顺序",
+        "判断输入是否可被更早声明的成员在 lax 模式下转换",
+        "解释实际匹配到的成员及原因",
+        "若需确定性区分，建议改用判别联合"
+      ],
+      "constraints": [
+        "仅适用于解释或预测联合类型校验顺序与类型转换行为",
+        "不替代判别联合等确定性区分方案"
+      ],
+      "cautions": [
+        "lax 模式下的隐式类型转换可能导致与直觉不符的解析结果"
+      ],
+      "output_contract": [
+        "能说明联合类型按声明顺序尝试且 lax 模式会转换字符串为 int 的规则"
+      ],
+      "examples": [
+        {
+          "input": "联合字段声明为 int | str，输入为字符串 '123'，结果 id 为 int 类型",
+          "output": "因为联合按声明顺序先尝试 int 成员，lax 模式下 '123' 被转换为 int 并通过校验，故结果为 int 而非 str。",
+          "notes": "体现从左到右顺序与 lax 类型转换的意外匹配"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "validation-order",
+        "lax-mode",
+        "type-coercion"
+      ],
+      "support_ids": [
+        "146cba65-2453-529b-a463-e35a98f44942"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "21864a50-10ff-5b07-affb-cddba5a590e3"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱|pydantic|联合类型校验|顺序校验规则|模型设计|联合类型从左到右校验顺序控制"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "f535020a-8194-52f1-b428-29f2184ed2e3",
+      "name": "判别联合类型设计",
+      "description": "使用带 discriminator 的联合类型（含 str 判别器与可调用 Discriminator）为联合成员建立确定性路由，避免左到右顺序校验带来的歧义。适用于需要可靠区分联合成员、或成员存在顺序依赖问题的模型设计场景。",
+      "skill_body": "当联合类型成员存在歧义或顺序依赖时，为其设计判别联合：先确认成员间存在可用于区分的判别字段，再选择 str 判别器或可调用 Discriminator 建立确定性成员路由，最后验证输入能被正确路由到目标成员。若成员间无共同判别字段且无法构造判别器，则不要强行使用判别联合。\n\n## Objective\n\n通过判别器为联合类型建立确定性成员路由\n## Applicable Signals\n\n- 联合成员存在歧义或顺序依赖问题\n- 需要基于字段值确定性选择成员模型\n- 左到右模式下出现意外成员匹配\n\n## Contraindications\n\n- 成员间无共同判别字段且无法构造判别器\n\n## Intervention Moves\n\n- 确认成员间存在可用于区分的判别字段\n- 选择 str 判别器或可调用 Discriminator 建立路由\n- 验证输入被正确路由到目标成员\n\n## Workflow Steps\n\n- 识别联合成员歧义或顺序依赖问题\n- 确认成员间存在共同判别字段或可构造判别器\n- 选择判别方式：str 判别器或可调用 Discriminator\n- 定义带 discriminator 的联合类型\n- 验证输入能正确路由到目标成员\n\n## Constraints\n\n- 仅在成员间存在可用判别字段或可构造判别器时使用\n- 判别器需能确定性地区分成员\n\n## Cautions\n\n- 左到右模式下宽松校验可能导致意外成员匹配，判别联合可避免此类歧义\n\n## Output Contract\n\n- 定义出带 discriminator 的联合类型，并能正确路由到目标成员",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "通过判别器为联合类型建立确定性成员路由",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "判别联合",
+      "stage": "模型设计",
+      "applicable_signals": [
+        "联合成员存在歧义或顺序依赖问题",
+        "需要基于字段值确定性选择成员模型",
+        "左到右模式下出现意外成员匹配"
+      ],
+      "contraindications": [
+        "成员间无共同判别字段且无法构造判别器"
+      ],
+      "intervention_moves": [
+        "确认成员间存在可用于区分的判别字段",
+        "选择 str 判别器或可调用 Discriminator 建立路由",
+        "验证输入被正确路由到目标成员"
+      ],
+      "triggers": [
+        "联合成员存在歧义或顺序依赖问题",
+        "需要基于字段值确定性选择成员模型",
+        "左到右模式产生意外校验结果"
+      ],
+      "workflow_steps": [
+        "识别联合成员歧义或顺序依赖问题",
+        "确认成员间存在共同判别字段或可构造判别器",
+        "选择判别方式：str 判别器或可调用 Discriminator",
+        "定义带 discriminator 的联合类型",
+        "验证输入能正确路由到目标成员"
+      ],
+      "constraints": [
+        "仅在成员间存在可用判别字段或可构造判别器时使用",
+        "判别器需能确定性地区分成员"
+      ],
+      "cautions": [
+        "左到右模式下宽松校验可能导致意外成员匹配，判别联合可避免此类歧义"
+      ],
+      "output_contract": [
+        "定义出带 discriminator 的联合类型，并能正确路由到目标成员"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminated-union",
+        "discriminator",
+        "模型设计"
+      ],
+      "support_ids": [
+        "b6925c22-f5d2-5a75-b4b8-773230870a10"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "b40aa2fd-82d4-56e9-8696-3ed37d7068cb"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|通过判别器为联合类型建立确定性成员路由|pydantic|联合类型校验|判别联合|模型设计|判别联合类型设计"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+      "name": "联合类型精确度匹配评分",
+      "description": "说明 Pydantic 校验联合类型（Union）时如何按精确度对成员匹配打分并选出最佳匹配，用于判断或解释联合类型中哪个成员应胜出。",
+      "skill_body": "当需要判断联合类型多个成员中哪个匹配最优，或解释联合类型校验结果的选择依据时，按精确度评分规则对每个成员匹配打分：精确类型匹配得分最高，其次是在 strict 模式下会成功的匹配，再次是在 lax 模式下会成功的匹配；取得最高精确度得分的成员即为最佳匹配。仅用于联合类型匹配选择，不用于单类型校验或自定义判别器逻辑。\n\n## Objective\n\n按精确度评分规则确定联合类型的最佳匹配成员\n## Applicable Signals\n\n- 输入需要匹配多个候选类型之一\n- 需要说明为何某个联合成员被选中\n\n## Contraindications\n\n- 非联合类型的单类型校验\n- 需要自定义判别器逻辑而非精确度评分时\n\n## Intervention Moves\n\n- 对每个联合成员计算精确度得分\n- 按精确类型匹配 > strict 模式成功 > lax 模式成功排序\n- 选择得分最高的成员作为最佳匹配\n\n## Workflow Steps\n\n- 确认校验对象为联合类型且存在多个候选成员\n- 对每个成员判断匹配层级：精确类型匹配、strict 模式成功、lax 模式成功\n- 按层级从高到低赋分\n- 选出最高精确度得分的成员作为最佳匹配\n- 输出按精确度排序的成员匹配结论\n\n## Constraints\n\n- 评分仅依据三个精确度层级，不引入其他自定义权重\n- 仅在联合类型场景下应用\n\n## Cautions\n\n- 精确类型匹配优先于 strict 模式成功，strict 模式成功优先于 lax 模式成功\n- 若需自定义判别器逻辑，应改用判别联合而非精确度评分\n\n## Output Contract\n\n- 给出按精确度排序的成员匹配结论，并指明最佳匹配成员。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: int 输入匹配 float | int 联合类型\n- Therapist/Output: int 成员为精确类型匹配，得分最高，判定为最佳匹配。\n- Notes: 精确类型匹配优先于其他层级",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "按精确度评分规则确定联合类型的最佳匹配成员",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "精确度评分",
+      "stage": "匹配选择",
+      "applicable_signals": [
+        "输入需要匹配多个候选类型之一",
+        "需要说明为何某个联合成员被选中"
+      ],
+      "contraindications": [
+        "非联合类型的单类型校验",
+        "需要自定义判别器逻辑而非精确度评分时"
+      ],
+      "intervention_moves": [
+        "对每个联合成员计算精确度得分",
+        "按精确类型匹配 > strict 模式成功 > lax 模式成功排序",
+        "选择得分最高的成员作为最佳匹配"
+      ],
+      "triggers": [
+        "需要判断联合类型多个成员中哪个匹配最优",
+        "解释联合类型校验结果的选择依据"
+      ],
+      "workflow_steps": [
+        "确认校验对象为联合类型且存在多个候选成员",
+        "对每个成员判断匹配层级：精确类型匹配、strict 模式成功、lax 模式成功",
+        "按层级从高到低赋分",
+        "选出最高精确度得分的成员作为最佳匹配",
+        "输出按精确度排序的成员匹配结论"
+      ],
+      "constraints": [
+        "评分仅依据三个精确度层级，不引入其他自定义权重",
+        "仅在联合类型场景下应用"
+      ],
+      "cautions": [
+        "精确类型匹配优先于 strict 模式成功，strict 模式成功优先于 lax 模式成功",
+        "若需自定义判别器逻辑，应改用判别联合而非精确度评分"
+      ],
+      "output_contract": [
+        "给出按精确度排序的成员匹配结论，并指明最佳匹配成员。"
+      ],
+      "examples": [
+        {
+          "input": "int 输入匹配 float | int 联合类型",
+          "output": "int 成员为精确类型匹配，得分最高，判定为最佳匹配。",
+          "notes": "精确类型匹配优先于其他层级"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "exactness",
+        "匹配选择"
+      ],
+      "support_ids": [
+        "26404bea-5236-53ec-80a6-f3bba33795fc"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "1c73e9d3-2606-5f9a-81e1-791596fb67d1"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|按精确度评分规则确定联合类型的最佳匹配成员|pydantic|联合类型校验|精确度评分|匹配选择|联合类型精确度匹配评分"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "36d4c99c-7595-5284-9314-80050930848a",
+      "name": "Pydantic 判别式联合类型建模",
+      "description": "使用带 Literal 判别字段的成员模型和 Field(discriminator=...) 构建可区分的联合类型，使 Pydantic 按判别值选择正确成员模型。适用于多个候选模型共享一个标签字段、需要精确路由校验的场景。",
+      "skill_body": "为联合类型建立基于判别字段的确定性校验路由：先确认各候选模型存在共享的判别字段，再在每个成员模型中用 Literal 声明该字段的取值，最后在联合字段上用 Field(discriminator='<字段名>') 指定判别字段。确保判别值在各成员间不冲突，从而让校验按标签精确匹配唯一成员模型。\n\n## Objective\n\n为多模型联合类型建立基于判别字段的确定性校验路由\n## Applicable Signals\n\n- 候选模型之间存在一个可共享的标签字段\n- 标签字段可用 Literal 枚举取值\n- 需要联合校验按标签精确匹配而非逐个尝试\n\n## Contraindications\n\n- 候选模型之间没有可共享的判别字段\n- 仅需简单标量联合而非模型联合\n\n## Intervention Moves\n\n- 在每个成员模型中声明 Literal 判别字段\n- 在联合字段上设置 Field(discriminator='<字段名>')\n- 核对各成员判别取值互不冲突\n\n## Workflow Steps\n\n- 确认各候选模型存在可共享的判别字段\n- 在每个成员模型中用 Literal 声明该判别字段的取值\n- 在联合字段上使用 Field(discriminator='<字段名>') 指定判别字段\n- 检查各成员判别取值互不冲突，确保按判别值选中唯一成员模型\n\n## Constraints\n\n- 判别字段必须在每个成员模型中存在且为 Literal 取值\n- 各成员的判别取值不应重叠，否则无法唯一路由\n\n## Cautions\n\n- 若成员间无统一判别字段，应改用可调用 Discriminator 而非强行套用本流程\n\n## Output Contract\n\n- 一个带 discriminator 配置的 Union 字段模型定义，能按判别值选中唯一成员模型\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 多个宠物模型各自带有 pet_type 标签字段，需要联合校验\n- Therapist/Output: pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n- Notes: 各成员用 Literal 声明 pet_type 取值",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为多模型联合类型建立基于判别字段的确定性校验路由",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "判别式联合建模",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "候选模型之间存在一个可共享的标签字段",
+        "标签字段可用 Literal 枚举取值",
+        "需要联合校验按标签精确匹配而非逐个尝试"
+      ],
+      "contraindications": [
+        "候选模型之间没有可共享的判别字段",
+        "仅需简单标量联合而非模型联合"
+      ],
+      "intervention_moves": [
+        "在每个成员模型中声明 Literal 判别字段",
+        "在联合字段上设置 Field(discriminator='<字段名>')",
+        "核对各成员判别取值互不冲突"
+      ],
+      "triggers": [
+        "多个候选模型各自带有区分用的 Literal 标签字段",
+        "希望联合校验按标签精确匹配而非逐个尝试",
+        "需要为多模型联合类型建立确定性校验路由"
+      ],
+      "workflow_steps": [
+        "确认各候选模型存在可共享的判别字段",
+        "在每个成员模型中用 Literal 声明该判别字段的取值",
+        "在联合字段上使用 Field(discriminator='<字段名>') 指定判别字段",
+        "检查各成员判别取值互不冲突，确保按判别值选中唯一成员模型"
+      ],
+      "constraints": [
+        "判别字段必须在每个成员模型中存在且为 Literal 取值",
+        "各成员的判别取值不应重叠，否则无法唯一路由"
+      ],
+      "cautions": [
+        "若成员间无统一判别字段，应改用可调用 Discriminator 而非强行套用本流程"
+      ],
+      "output_contract": [
+        "一个带 discriminator 配置的 Union 字段模型定义，能按判别值选中唯一成员模型"
+      ],
+      "examples": [
+        {
+          "input": "多个宠物模型各自带有 pet_type 标签字段，需要联合校验",
+          "output": "pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')",
+          "notes": "各成员用 Literal 声明 pet_type 取值"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminated-union",
+        "literal",
+        "validation"
+      ],
+      "support_ids": [
+        "709c0694-5714-5e23-a79c-b3edd9d5e1dd"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "080c82b6-7859-535f-aeff-5779b38350f5"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.9,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|为多模型联合类型建立基于判别字段的确定性校验路由|pydantic|联合类型校验|判别式联合建模|模型定义|pydantic 判别式联合类型建模"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+      "name": "可调用判别器设计",
+      "description": "当联合成员之间没有统一判别字段时，编写可调用 Discriminator 函数，使其同时处理 dict 与模型实例输入，从而在验证与序列化阶段都能正确判别，避免序列化警告或运行时错误。",
+      "skill_body": "编写一个可调用判别器函数，用于联合类型中成员缺少统一判别字段的场景。函数需同时兼容 dict 输入与模型实例输入：对 dict 读取键值，对模型实例读取属性，返回对应成员的标签。设计时参照 mode='before' 校验器的思路，预先考虑多种输入形态，因为 Pydantic 在序列化阶段也会调用该判别器，此时输入很可能是模型实例。完成后确认函数在验证与序列化两条路径上均返回正确标签。\n\n## Objective\n\n实现兼容 dict 与模型输入的 callable discriminator\n## Applicable Signals\n\n- 联合成员缺少单一统一判别字段\n- 需要在序列化阶段也能正确判别\n\n## Contraindications\n\n- 存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器\n- 判别逻辑仅需处理单一输入形态时，无需引入可调用判别器\n\n## Intervention Moves\n\n- 确认联合成员间不存在可直接使用的统一 Literal 判别字段\n- 编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值\n- 返回与目标成员对应的标签\n- 在验证与序列化两条路径上验证判别结果\n\n## Workflow Steps\n\n- 检查联合成员，确认没有单一统一字段可作为字符串判别器\n- 设计判别函数签名，使其接受 dict 或模型实例\n- 在函数内分支处理：dict 走键访问，模型实例走属性访问\n- 返回对应成员的标签值\n- 分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误\n\n## Constraints\n\n- 判别函数必须同时处理 dict 与模型实例输入\n- 不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误\n\n## Cautions\n\n- Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例\n- 若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误\n\n## Output Contract\n\n- 一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。\n- Therapist/Output: 编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。\n- Notes: 参照 mode='before' 校验器的思路，预先考虑多种输入形态。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "实现兼容 dict 与模型输入的 callable discriminator",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "可调用判别器",
+      "stage": "判别逻辑实现",
+      "applicable_signals": [
+        "联合成员缺少单一统一判别字段",
+        "需要在序列化阶段也能正确判别"
+      ],
+      "contraindications": [
+        "存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器",
+        "判别逻辑仅需处理单一输入形态时，无需引入可调用判别器"
+      ],
+      "intervention_moves": [
+        "确认联合成员间不存在可直接使用的统一 Literal 判别字段",
+        "编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值",
+        "返回与目标成员对应的标签",
+        "在验证与序列化两条路径上验证判别结果"
+      ],
+      "triggers": [
+        "联合成员之间没有单一统一判别字段",
+        "需要在序列化阶段也能正确判别联合成员",
+        "准备为 Union 配置 callable Discriminator"
+      ],
+      "workflow_steps": [
+        "检查联合成员，确认没有单一统一字段可作为字符串判别器",
+        "设计判别函数签名，使其接受 dict 或模型实例",
+        "在函数内分支处理：dict 走键访问，模型实例走属性访问",
+        "返回对应成员的标签值",
+        "分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误"
+      ],
+      "constraints": [
+        "判别函数必须同时处理 dict 与模型实例输入",
+        "不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误"
+      ],
+      "cautions": [
+        "Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例",
+        "若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误"
+      ],
+      "output_contract": [
+        "一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。"
+      ],
+      "examples": [
+        {
+          "input": "联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。",
+          "output": "编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。",
+          "notes": "参照 mode='before' 校验器的思路，预先考虑多种输入形态。"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "callable",
+        "serialization"
+      ],
+      "support_ids": [
+        "119de05c-37c6-55ca-8414-1aa8724e07e1"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "cd2f99f3-ed69-51f1-9f04-a57aef19d8e7"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|实现兼容 dict 与模型输入的 callable discriminator|pydantic|联合类型校验|可调用判别器|判别逻辑实现|可调用判别器设计"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "334eddd6-ee35-5f1b-a28c-31fc3a8c49ec",
+      "name": "判别器输入形态兼容检查",
+      "description": "在部署可调用判别器（callable Discriminator）前，检查其是否同时覆盖 dict 与模型实例输入，避免序列化阶段出现警告或校验阶段出现运行时错误。适用于使用 callable Discriminator 且涉及序列化的场景。",
+      "skill_body": "在部署 callable Discriminator 前执行本检查：确认判别函数对 dict 输入与模型实例输入均能正确返回判别值。若判别函数仅按 dict 设计，需补充对模型实例输入的处理分支，因为 Pydantic 在序列化时也会调用判别器，此时输入很可能是模型实例。检查通过后再投入使用。\n\n## Objective\n\n防止判别器因输入形态不全导致序列化警告或校验期运行时错误\n## Applicable Signals\n\n- 使用 callable Discriminator 且涉及序列化\n- 判别函数仅按 dict 输入设计\n- 联合类型含多个模型且无统一判别字段\n\n## Contraindications\n\n- 使用静态 Literal 判别字段无需 callable 判别器\n\n## Intervention Moves\n\n- 确认判别函数同时处理 dict 与模型实例输入\n- 对仅处理 dict 的判别函数补充模型实例分支\n- 在序列化与校验两条路径上验证无警告与运行时错误\n\n## Workflow Steps\n\n- 识别是否使用 callable Discriminator 且涉及序列化\n- 检查判别函数是否同时覆盖 dict 与模型实例输入\n- 若仅覆盖 dict，补充模型实例输入处理分支\n- 在序列化与校验路径上验证无警告与运行时错误\n\n## Constraints\n\n- 判别函数必须同时处理 dict 与模型实例输入\n- 序列化时判别器输入很可能是模型实例\n\n## Cautions\n\n- 仅按 dict 设计判别函数，最好情况序列化时出现警告，最坏情况校验时出现运行时错误\n\n## Output Contract\n\n- 确认判别器对 dict 与模型输入均无警告和运行时错误\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 判别函数仅按 dict 输入设计，用于含多个模型的 Union 且涉及序列化\n- Therapist/Output: 提示补充模型实例输入处理分支，并在序列化与校验路径验证无警告与运行时错误\n- Notes: 序列化时判别器输入很可能是模型实例",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止判别器因输入形态不全导致序列化警告或校验期运行时错误",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "输入兼容性校验",
+      "stage": "校验前检查",
+      "applicable_signals": [
+        "使用 callable Discriminator 且涉及序列化",
+        "判别函数仅按 dict 输入设计",
+        "联合类型含多个模型且无统一判别字段"
+      ],
+      "contraindications": [
+        "使用静态 Literal 判别字段无需 callable 判别器"
+      ],
+      "intervention_moves": [
+        "确认判别函数同时处理 dict 与模型实例输入",
+        "对仅处理 dict 的判别函数补充模型实例分支",
+        "在序列化与校验两条路径上验证无警告与运行时错误"
+      ],
+      "triggers": [
+        "使用 callable Discriminator 且涉及序列化",
+        "判别函数仅按 dict 输入设计",
+        "联合类型含多个模型且无统一判别字段"
+      ],
+      "workflow_steps": [
+        "识别是否使用 callable Discriminator 且涉及序列化",
+        "检查判别函数是否同时覆盖 dict 与模型实例输入",
+        "若仅覆盖 dict，补充模型实例输入处理分支",
+        "在序列化与校验路径上验证无警告与运行时错误"
+      ],
+      "constraints": [
+        "判别函数必须同时处理 dict 与模型实例输入",
+        "序列化时判别器输入很可能是模型实例"
+      ],
+      "cautions": [
+        "仅按 dict 设计判别函数，最好情况序列化时出现警告，最坏情况校验时出现运行时错误"
+      ],
+      "output_contract": [
+        "确认判别器对 dict 与模型输入均无警告和运行时错误"
+      ],
+      "examples": [
+        {
+          "input": "判别函数仅按 dict 输入设计，用于含多个模型的 Union 且涉及序列化",
+          "output": "提示补充模型实例输入处理分支，并在序列化与校验路径验证无警告与运行时错误",
+          "notes": "序列化时判别器输入很可能是模型实例"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "discriminated-union",
+        "callable-discriminator",
+        "serialization",
+        "input-compatibility"
+      ],
+      "support_ids": [
+        "0918dcea-fb13-56b0-a37b-2c6f2a0cf02c"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "c9daeffe-ba11-5476-bb2c-853dba75f2df"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||safety_rule|micro|safety_rule_node|防止判别器因输入形态不全导致序列化警告或校验期运行时错误|pydantic|联合类型校验|输入兼容性校验|校验前检查|判别器输入形态兼容检查"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+      "name": "可调用判别器联合类型校验",
+      "description": "使用 callable Discriminator 配合 Tag 注解，将联合类型按运行时类型分派到对应成员进行校验。适用于联合成员无法用单一字符串字段区分、需要自定义判别逻辑的场景。",
+      "skill_body": "为联合类型字段配置可调用判别器：定义判别函数，按运行时类型返回对应 Tag 标签；用 Annotated 将各联合成员标注 Tag，并用 Discriminator 包裹整个联合；判别值未找到时返回 None。随后用 model_validate 验证不同输入能分派到正确成员。\n\n## Objective\n\n为联合类型字段配置可调用判别器，实现按运行时类型分派校验\n## Applicable Signals\n\n- 联合成员需按运行时类型（如 int 与 dict/BaseModel）区分\n- 字符串判别字段无法覆盖判别逻辑\n\n## Contraindications\n\n- 联合成员可用单一字符串字段直接区分时优先用 str 判别器\n- 判别函数无法稳定返回标签时\n\n## Intervention Moves\n\n- 定义判别函数，按 isinstance 判断运行时类型并返回对应标签\n- 判别值未找到时返回 None\n- 用 Annotated 为每个联合成员标注 Tag\n- 用 Discriminator 包裹联合并传入判别函数\n- 用 model_validate 验证不同输入分派到正确成员\n\n## Workflow Steps\n\n- 定义判别函数，按运行时类型返回对应标签字符串\n- 判别值未找到时返回 None\n- 用 Annotated 为每个联合成员标注 Tag\n- 用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型\n- 用 model_validate 验证不同输入分派到正确成员实例\n\n## Constraints\n\n- 判别函数必须对每个可接受输入返回稳定标签\n- 判别值未找到时应返回 None 而非抛出异常\n\n## Cautions\n\n- 判别函数返回 None 时会触发 union_tag_not_found 错误\n\n## Output Contract\n\n- 带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: value 字段联合 int 与 SpecialValue，判别函数按 isinstance 返回 'int' 或 'model'\n- Therapist/Output: 输入 {'value': {'value': 1}} 得到 SpecialValue(value=1)；输入 {'value': 123} 得到 123\n- Notes: 判别值未找到时返回 None，触发 union_tag_not_found",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为联合类型字段配置可调用判别器，实现按运行时类型分派校验",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "判别器分派",
+      "stage": "模型定义与校验",
+      "applicable_signals": [
+        "联合成员需按运行时类型（如 int 与 dict/BaseModel）区分",
+        "字符串判别字段无法覆盖判别逻辑"
+      ],
+      "contraindications": [
+        "联合成员可用单一字符串字段直接区分时优先用 str 判别器",
+        "判别函数无法稳定返回标签时"
+      ],
+      "intervention_moves": [
+        "定义判别函数，按 isinstance 判断运行时类型并返回对应标签",
+        "判别值未找到时返回 None",
+        "用 Annotated 为每个联合成员标注 Tag",
+        "用 Discriminator 包裹联合并传入判别函数",
+        "用 model_validate 验证不同输入分派到正确成员"
+      ],
+      "triggers": [
+        "联合成员需按运行时类型（如 int 与 dict/BaseModel）区分",
+        "字符串判别字段无法覆盖判别逻辑"
+      ],
+      "workflow_steps": [
+        "定义判别函数，按运行时类型返回对应标签字符串",
+        "判别值未找到时返回 None",
+        "用 Annotated 为每个联合成员标注 Tag",
+        "用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型",
+        "用 model_validate 验证不同输入分派到正确成员实例"
+      ],
+      "constraints": [
+        "判别函数必须对每个可接受输入返回稳定标签",
+        "判别值未找到时应返回 None 而非抛出异常"
+      ],
+      "cautions": [
+        "判别函数返回 None 时会触发 union_tag_not_found 错误"
+      ],
+      "output_contract": [
+        "带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例"
+      ],
+      "examples": [
+        {
+          "input": "value 字段联合 int 与 SpecialValue，判别函数按 isinstance 返回 'int' 或 'model'",
+          "output": "输入 {'value': {'value': 1}} 得到 SpecialValue(value=1)；输入 {'value': 123} 得到 123",
+          "notes": "判别值未找到时返回 None，触发 union_tag_not_found"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "callable",
+        "tag"
+      ],
+      "support_ids": [
+        "c94da646-7dcd-5dc2-ae1e-e511b06cfec8"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "65966fab-f30e-5588-ad70-71b55dd3b75d"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|为联合类型字段配置可调用判别器，实现按运行时类型分派校验|pydantic|联合类型校验|判别器分派|模型定义与校验|可调用判别器联合类型校验"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+      "name": "Callable Discriminator Returns None for Unknown Tags",
+      "description": "When writing a callable Discriminator for a Pydantic union, explicitly return None for input types not covered by known branches so that a union_tag_not_found error is raised, and ensure the caller handles that error.",
+      "skill_body": "When writing a callable discriminator for a Pydantic union, cover all known input types and return their corresponding tags. For any input type not covered, explicitly return None in an else branch rather than raising another exception or returning an arbitrary default tag. Expect that returning None raises a union_tag_not_found error, and ensure the calling code anticipates and handles that error.\n\n## Objective\n\nReturn None from a callable discriminator for unknown input types and expect a union_tag_not_found error\n## Applicable Signals\n\n- 判别函数遇到未覆盖的输入类型\n- 需要明确未知判别值的失败行为\n\n## Contraindications\n\n- 判别逻辑已保证覆盖所有输入类型时\n\n## Intervention Moves\n\n- 在判别函数末尾添加返回 None 的分支\n- 确认已知类型分支返回对应标签\n- 调用方捕获 union_tag_not_found 错误\n\n## Workflow Steps\n\n- 检查判别函数是否覆盖所有已知输入类型并返回对应标签\n- 为未覆盖的输入类型添加显式返回 None 的分支\n- 在调用方预期并捕获 union_tag_not_found 错误\n\n## Constraints\n\n- 判别函数在无法确定标签时必须返回 None，而非抛出其他异常或返回任意默认标签\n\n## Cautions\n\n- 返回 None 会触发 union_tag_not_found 错误，需确保调用方已处理该错误\n\n## Output Contract\n\n- 判别函数在未知分支返回 None，调用方捕获 union_tag_not_found 错误\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 判别函数仅处理 int 与 dict/BaseModel，其他类型未覆盖\n- Therapist/Output: 在 else 分支返回 None，触发 union_tag_not_found 错误\n- Notes: 显式处理未知类型分支",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "Return None from a callable discriminator for unknown input types and expect a union_tag_not_found error",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "错误处理",
+      "stage": "校验失败处理",
+      "applicable_signals": [
+        "判别函数遇到未覆盖的输入类型",
+        "需要明确未知判别值的失败行为"
+      ],
+      "contraindications": [
+        "判别逻辑已保证覆盖所有输入类型时"
+      ],
+      "intervention_moves": [
+        "在判别函数末尾添加返回 None 的分支",
+        "确认已知类型分支返回对应标签",
+        "调用方捕获 union_tag_not_found 错误"
+      ],
+      "triggers": [
+        "判别函数遇到未覆盖的输入类型",
+        "需要明确未知判别值的失败行为"
+      ],
+      "workflow_steps": [
+        "检查判别函数是否覆盖所有已知输入类型并返回对应标签",
+        "为未覆盖的输入类型添加显式返回 None 的分支",
+        "在调用方预期并捕获 union_tag_not_found 错误"
+      ],
+      "constraints": [
+        "判别函数在无法确定标签时必须返回 None，而非抛出其他异常或返回任意默认标签"
+      ],
+      "cautions": [
+        "返回 None 会触发 union_tag_not_found 错误，需确保调用方已处理该错误"
+      ],
+      "output_contract": [
+        "判别函数在未知分支返回 None，调用方捕获 union_tag_not_found 错误"
+      ],
+      "examples": [
+        {
+          "input": "判别函数仅处理 int 与 dict/BaseModel，其他类型未覆盖",
+          "output": "在 else 分支返回 None，触发 union_tag_not_found 错误",
+          "notes": "显式处理未知类型分支"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "error-handling"
+      ],
+      "support_ids": [
+        "a80204c1-b5b6-5b69-a620-e3cf7b420ba2"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "1eed385c-5adf-541a-b7c4-d188099c3111"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|return none from a callable discriminator for unknown input types and expect a union_tag_not_found error|pydantic|联合类型校验|错误处理|校验失败处理|callable discriminator returns none for unknown tags"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a",
+      "name": "字符串判别器字段声明",
+      "description": "在 Pydantic 模型定义中，为联合字段声明字符串判别器（str discriminator），使校验时按标签字段分派到对应联合成员。适用于联合成员可由单一字符串字段区分的场景，提供 Field(discriminator=...) 与 Annotated 两种声明语法。",
+      "skill_body": "当联合字段的各成员可通过一个字符串标签字段区分时，使用本技能声明判别器。\n\n执行要点：\n1. 确认联合成员各自拥有一个可区分的字符串标签字段（判别字段）。\n2. 选择声明语法：\n   - 直接字段声明：some_field: Union[...] = Field(discriminator='my_discriminator')\n   - Annotated 模式：some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n3. 判别器参数值必须与各成员中用于分派的标签字段名一致。\n4. 若判别依赖运行时类型而非字段值，改用 callable Discriminator，不要使用本技能。\n5. 声明后通过 model_validate 验证：输入应被分派到正确的联合成员。\n\n## Objective\n\n为联合字段声明字符串判别器，实现按标签字段分派校验\n## Applicable Signals\n\n- 联合成员各自带有可区分的字符串标签字段\n- 需要以声明式语法指定判别器\n- 希望避免运行时类型判断逻辑\n\n## Contraindications\n\n- 判别需依赖运行时类型而非字段值时，应改用 callable Discriminator\n- 联合成员缺少可区分的字符串标签字段时\n\n## Intervention Moves\n\n- 识别联合成员中的判别字段\n- 选择 Field(discriminator=...) 或 Annotated 声明语法\n- 将判别器参数设为对应标签字段名\n- 用 model_validate 验证分派结果\n\n## Workflow Steps\n\n- 确认联合成员可通过单一字符串字段区分\n- 选择声明语法：some_field: Union[...] = Field(discriminator='my_discriminator') 或 some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n- 确保判别器参数值与成员标签字段名一致\n- 通过 model_validate 验证输入被分派到正确成员\n\n## Constraints\n\n- 判别器参数值必须与成员中用于分派的标签字段名一致\n- 仅在判别依据为字段值时使用；运行时类型判别应使用 callable Discriminator\n\n## Cautions\n\n- 若判别值未找到，校验会失败；需确保输入包含有效标签字段\n\n## Output Contract\n\n- 带 discriminator 参数的联合字段声明，校验时按标签字段分派到对应联合成员\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: some_field: Union[...] = Field(discriminator='my_discriminator')\n- Therapist/Output: 联合字段按 my_discriminator 标签字段分派校验\n- Notes: 直接字段声明语法\n\n### Example 2\n\n- Client/Input: some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n- Therapist/Output: 联合字段按 my_discriminator 标签字段分派校验\n- Notes: Annotated 模式，便于将 Union 与 discriminator 信息归组",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为联合字段声明字符串判别器，实现按标签字段分派校验",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "判别器声明",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "联合成员各自带有可区分的字符串标签字段",
+        "需要以声明式语法指定判别器",
+        "希望避免运行时类型判断逻辑"
+      ],
+      "contraindications": [
+        "判别需依赖运行时类型而非字段值时，应改用 callable Discriminator",
+        "联合成员缺少可区分的字符串标签字段时"
+      ],
+      "intervention_moves": [
+        "识别联合成员中的判别字段",
+        "选择 Field(discriminator=...) 或 Annotated 声明语法",
+        "将判别器参数设为对应标签字段名",
+        "用 model_validate 验证分派结果"
+      ],
+      "triggers": [
+        "联合字段的成员可通过单一字符串字段区分",
+        "需要简洁的判别器声明语法",
+        "希望用 Field(discriminator=...) 或 Annotated 模式声明判别器"
+      ],
+      "workflow_steps": [
+        "确认联合成员可通过单一字符串字段区分",
+        "选择声明语法：some_field: Union[...] = Field(discriminator='my_discriminator') 或 some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]",
+        "确保判别器参数值与成员标签字段名一致",
+        "通过 model_validate 验证输入被分派到正确成员"
+      ],
+      "constraints": [
+        "判别器参数值必须与成员中用于分派的标签字段名一致",
+        "仅在判别依据为字段值时使用；运行时类型判别应使用 callable Discriminator"
+      ],
+      "cautions": [
+        "若判别值未找到，校验会失败；需确保输入包含有效标签字段"
+      ],
+      "output_contract": [
+        "带 discriminator 参数的联合字段声明，校验时按标签字段分派到对应联合成员"
+      ],
+      "examples": [
+        {
+          "input": "some_field: Union[...] = Field(discriminator='my_discriminator')",
+          "output": "联合字段按 my_discriminator 标签字段分派校验",
+          "notes": "直接字段声明语法"
+        },
+        {
+          "input": "some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]",
+          "output": "联合字段按 my_discriminator 标签字段分派校验",
+          "notes": "Annotated 模式，便于将 Union 与 discriminator 信息归组"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "str-discriminator",
+        "model-definition"
+      ],
+      "support_ids": [
+        "9f372687-7a80-5ee3-b90e-37de244c8cb3"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "41861892-bce6-5286-a8ad-f621b883461e"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|为联合字段声明字符串判别器，实现按标签字段分派校验|pydantic|联合类型校验|判别器声明|模型定义|字符串判别器字段声明"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+      "name": "TypeAdapter 校验纯联合类型",
+      "description": "当校验目标仅为联合类型本身、且不希望继承 BaseModel 时，使用 TypeAdapter 包装联合类型并调用 validate_python 对数据执行校验，返回解析后的具体联合成员实例。",
+      "skill_body": "确认校验目标是一个联合类型（而非完整模型字段）。用 TypeAdapter 包装该联合类型构造适配器，调用 validate_python 传入待校验数据，返回解析后的具体联合成员实例。若联合为可辨识联合，确保判别字段存在且取值匹配。\n\n## Objective\n\n用 TypeAdapter 对纯联合类型执行校验\n## Applicable Signals\n\n- 校验目标仅为联合类型本身\n- 不希望继承 BaseModel\n- 已有联合类型定义但无外层模型承载\n\n## Contraindications\n\n- 需要完整模型字段校验\n- 已有 BaseModel 承载该字段\n\n## Intervention Moves\n\n- 用 TypeAdapter 包装联合类型构造适配器\n- 调用 validate_python 传入待校验数据\n- 返回解析后的具体联合成员实例\n\n## Workflow Steps\n\n- 确认校验目标为联合类型本身而非完整模型\n- 用 TypeAdapter(联合类型) 构造适配器\n- 调用 type_adapter.validate_python(数据)\n- 返回解析后的具体联合成员实例\n\n## Constraints\n\n- 仅用于纯联合类型校验，不替代 BaseModel 字段校验\n- 若为可辨识联合，判别字段须存在且取值匹配\n\n## Cautions\n\n- 联合校验错误信息可能较冗长，可考虑可辨识联合简化错误\n\n## Output Contract\n\n- 返回解析后的具体联合成员实例\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: type_adapter = TypeAdapter(Pet); type_adapter.validate_python({'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'})\n- Therapist/Output: BlackCat(pet_type='cat', color='black', black_name='felix')\n- Notes: Pet 为嵌套可辨识联合类型",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "用 TypeAdapter 对纯联合类型执行校验",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "TypeAdapter",
+      "stage": "数据校验",
+      "applicable_signals": [
+        "校验目标仅为联合类型本身",
+        "不希望继承 BaseModel",
+        "已有联合类型定义但无外层模型承载"
+      ],
+      "contraindications": [
+        "需要完整模型字段校验",
+        "已有 BaseModel 承载该字段"
+      ],
+      "intervention_moves": [
+        "用 TypeAdapter 包装联合类型构造适配器",
+        "调用 validate_python 传入待校验数据",
+        "返回解析后的具体联合成员实例"
+      ],
+      "triggers": [
+        "需要校验的数据目标仅为联合类型本身",
+        "不希望为校验而继承 BaseModel",
+        "需要对联合类型单独执行 validate_python"
+      ],
+      "workflow_steps": [
+        "确认校验目标为联合类型本身而非完整模型",
+        "用 TypeAdapter(联合类型) 构造适配器",
+        "调用 type_adapter.validate_python(数据)",
+        "返回解析后的具体联合成员实例"
+      ],
+      "constraints": [
+        "仅用于纯联合类型校验，不替代 BaseModel 字段校验",
+        "若为可辨识联合，判别字段须存在且取值匹配"
+      ],
+      "cautions": [
+        "联合校验错误信息可能较冗长，可考虑可辨识联合简化错误"
+      ],
+      "output_contract": [
+        "返回解析后的具体联合成员实例"
+      ],
+      "examples": [
+        {
+          "input": "type_adapter = TypeAdapter(Pet); type_adapter.validate_python({'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'})",
+          "output": "BlackCat(pet_type='cat', color='black', black_name='felix')",
+          "notes": "Pet 为嵌套可辨识联合类型"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "TypeAdapter",
+        "validation"
+      ],
+      "support_ids": [
+        "52871143-3b70-5022-a1fd-af6ce48fbc55"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "565b2424-8f94-56bd-a680-c1eb1098da78"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|用 typeadapter 对纯联合类型执行校验|pydantic|联合类型校验|typeadapter|数据校验|typeadapter 校验纯联合类型"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ]
+}

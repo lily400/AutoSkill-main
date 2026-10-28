@@ -1,0 +1,124 @@
+{
+  "skill_id": "c5959a6e-be53-5f60-a3a5-eb58a1c4c9e8",
+  "name": "评论到SKU语义匹配与四类情感计数",
+  "description": "对已规范化的评论数据，先按类别匹配规则、再以语义相似度补充，将评论归属到产品目录SKU，并对每条评论做四类情感分类，最终按SKU汇总输出四类情感计数JSON；输入校验不通过时按程序化错误格式上报阻塞问题。",
+  "skill_body": "执行评论到SKU的匹配与情感计数：先确认输入已通过必填字段校验且分类字段已规范化（小写）；再按类别匹配（硬性要求）与语义相似度（判断要求）将每条评论归属到目录中的SKU；随后对每条评论做四类情感分类；最后按SKU汇总计数并按既定输出格式产出JSON。若输入缺失必填字段或含无效值，停止转换并以约定的程序化错误格式上报阻塞问题；目录存在缺口时不得擅自假设缺失项内容。\n\n## Objective\n\n完成评论与SKU的匹配并产出按SKU组织的四类情感计数结果\n## Applicable Signals\n\n- 评论数据已完成过滤与字段规范化（分类字段为小写）\n- 产品目录已提供且可解析\n- 需要输出每个SKU的四类情感计数\n\n## Contraindications\n\n- 产品目录未通过必填字段校验\n- 评论分类字段未规范化\n- 输入缺少必需列或含无效值\n\n## Intervention Moves\n\n- 逐条校验输入必填字段与取值有效性\n- 先按类别匹配规则做硬性归属判定\n- 对类别匹配不足的评论使用语义相似度判定归属\n- 对每条评论执行四类情感分类\n- 按SKU汇总四类情感计数并输出JSON\n\n## Workflow Steps\n\n- 校验评论数据与产品目录的必填字段及取值有效性；不通过则按程序化错误格式上报阻塞问题并停止。\n- 对每条评论执行类别匹配（硬性要求），确定候选SKU归属。\n- 对类别匹配无法确定的评论，依据语义相似度（判断要求）完成SKU归属。\n- 对每条已归属评论执行四类情感分类。\n- 按SKU汇总四类情感计数，按既定输出格式产出JSON。\n\n## Constraints\n\n- 类别匹配为硬性要求，须先于语义相似度判定执行\n- 语义相似度仅作为判断性补充，不得替代类别匹配的硬性约束\n- 仅在输入通过必填字段校验后才进行转换与分析\n- 输出须按SKU组织并包含四类情感计数\n\n## Cautions\n\n- 目录存在缺口时不得擅自假设缺失项内容，应按约定上报阻塞问题\n- 分类字段须保持规范化（小写）后再参与匹配与计数\n\n## Output Contract\n\n- 按SKU组织的四类情感计数JSON；若输入校验失败，则返回约定的程序化错误格式说明阻塞问题。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 已规范化的评论数据（分类字段为小写）与通过校验的产品目录\n- Therapist/Output: 按SKU组织的四类情感计数JSON\n- Notes: 匹配先类别后语义相似度，计数按SKU汇总",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "完成评论与SKU的匹配并产出按SKU组织的四类情感计数结果",
+  "domain": "数据分析运营",
+  "task_family": "评论-产品匹配",
+  "method_family": "类别匹配+语义相似度判定",
+  "stage": "分析执行",
+  "applicable_signals": [
+    "评论数据已完成过滤与字段规范化（分类字段为小写）",
+    "产品目录已提供且可解析",
+    "需要输出每个SKU的四类情感计数"
+  ],
+  "contraindications": [
+    "产品目录未通过必填字段校验",
+    "评论分类字段未规范化",
+    "输入缺少必需列或含无效值"
+  ],
+  "intervention_moves": [
+    "逐条校验输入必填字段与取值有效性",
+    "先按类别匹配规则做硬性归属判定",
+    "对类别匹配不足的评论使用语义相似度判定归属",
+    "对每条评论执行四类情感分类",
+    "按SKU汇总四类情感计数并输出JSON"
+  ],
+  "triggers": [
+    "已获得规范化评论数据与产品目录",
+    "需要按SKU汇总情感计数供下游建模",
+    "下游预测环节等待按SKU的情感计数输入"
+  ],
+  "workflow_steps": [
+    "校验评论数据与产品目录的必填字段及取值有效性；不通过则按程序化错误格式上报阻塞问题并停止。",
+    "对每条评论执行类别匹配（硬性要求），确定候选SKU归属。",
+    "对类别匹配无法确定的评论，依据语义相似度（判断要求）完成SKU归属。",
+    "对每条已归属评论执行四类情感分类。",
+    "按SKU汇总四类情感计数，按既定输出格式产出JSON。"
+  ],
+  "constraints": [
+    "类别匹配为硬性要求，须先于语义相似度判定执行",
+    "语义相似度仅作为判断性补充，不得替代类别匹配的硬性约束",
+    "仅在输入通过必填字段校验后才进行转换与分析",
+    "输出须按SKU组织并包含四类情感计数"
+  ],
+  "cautions": [
+    "目录存在缺口时不得擅自假设缺失项内容，应按约定上报阻塞问题",
+    "分类字段须保持规范化（小写）后再参与匹配与计数"
+  ],
+  "output_contract": [
+    "按SKU组织的四类情感计数JSON；若输入校验失败，则返回约定的程序化错误格式说明阻塞问题。"
+  ],
+  "examples": [
+    {
+      "input": "已规范化的评论数据（分类字段为小写）与通过校验的产品目录",
+      "output": "按SKU组织的四类情感计数JSON",
+      "notes": "匹配先类别后语义相似度，计数按SKU汇总"
+    }
+  ],
+  "tags": [
+    "评论匹配",
+    "SKU归属",
+    "情感计数",
+    "语义相似度",
+    "数据质量校验"
+  ],
+  "support_ids": [
+    "5d9f017e-9c81-51aa-8d25-1f00e7b3aed6"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "1ff3cb95-7d0c-53aa-a5bd-e45b87a96b03"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|完成评论与sku的匹配并产出按sku组织的四类情感计数结果|数据分析运营|评论-产品匹配|类别匹配+语义相似度判定|分析执行|评论到sku语义匹配与四类情感计数",
+    "change_action": "create",
+    "llm_reason": "候选技能是独立的评论到SKU匹配与四类情感计数能力，与同批候选在输入前提、输出粒度上存在差异，无直接冗余；支持证据无冲突，保留。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

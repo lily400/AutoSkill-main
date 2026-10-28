@@ -1,0 +1,111 @@
+{
+  "skill_id": "ee9175f9-9f74-5545-8e7e-6b461e5721f3",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的多个候选（未定义情形保守处理规则、规则歧义与冲突声明）高度重叠，均表达“规则未覆盖时标记未定义并停止推断”的同一能力，属于同批冗余，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "ee9175f9-9f74-5545-8e7e-6b461e5721f3",
+    "name": "未定义情形标记与暂停推断规则",
+    "description": "在执行或判定交通仿真行为前，先核对文档中的明确规则；若情形未被任何明确规则覆盖，则将其标记为未定义并停止按推测执行，直到补充规则为止。",
+    "skill_body": "在执行或判定任一仿真行为前，先确认该行为是否被文档中的明确规则覆盖。若被覆盖，则严格按规则执行；若未被覆盖，则将该情形标记为未定义，不自行推断或补全规则，并等待补充规则后再继续。\n\n## Objective\n\n确保仿真行为严格遵循既定规则并标记未定义情形\n## Applicable Signals\n\n- 待执行行为在文档中找不到对应规则\n- 需要确认行为是否合规\n- 规则描述存在空白或冲突\n\n## Contraindications\n\n- 情形已被明确规则覆盖时，直接按规则执行，无需标记未定义\n\n## Intervention Moves\n\n- 检索文档中是否有覆盖该情形的明确规则\n- 若有覆盖则按规则执行\n- 若无覆盖则标记为未定义并暂停推断\n\n## Workflow Steps\n\n- 识别待执行的仿真行为或待判定的情形\n- 在文档规则中检索是否有明确覆盖\n- 若被覆盖：按规则执行该行为\n- 若未被覆盖：将该情形标记为未定义，不自行补全规则\n- 等待补充规则后再继续处理该情形\n\n## Constraints\n\n- 所有仿真行为必须遵循文档中的规则\n- 未覆盖情形在补充规则前一律视为未定义\n\n## Cautions\n\n- 不得以推测替代缺失规则\n- 不得将未定义情形当作已定义规则执行\n\n## Output Contract\n\n- 返回合规行为的执行结果，或返回明确的未定义情形标记（含该情形描述），供下游等待补充规则。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某仿真行为在文档规则中找不到对应条款\n- Therapist/Output: 标记该情形为未定义，暂停执行并等待补充规则\n- Notes: 不自行推断规则",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保仿真行为严格遵循既定规则并标记未定义情形",
+    "domain": "交通仿真",
+    "task_family": "规则合规",
+    "method_family": "规则约束与异常标记",
+    "stage": "规则执行",
+    "applicable_signals": [
+      "待执行行为在文档中找不到对应规则",
+      "需要确认行为是否合规",
+      "规则描述存在空白或冲突"
+    ],
+    "contraindications": [
+      "情形已被明确规则覆盖时，直接按规则执行，无需标记未定义"
+    ],
+    "intervention_moves": [
+      "检索文档中是否有覆盖该情形的明确规则",
+      "若有覆盖则按规则执行",
+      "若无覆盖则标记为未定义并暂停推断"
+    ],
+    "triggers": [
+      "遇到文档未覆盖的仿真情形",
+      "需要判定某行为是否合规",
+      "规则之间出现冲突或空白"
+    ],
+    "workflow_steps": [
+      "识别待执行的仿真行为或待判定的情形",
+      "在文档规则中检索是否有明确覆盖",
+      "若被覆盖：按规则执行该行为",
+      "若未被覆盖：将该情形标记为未定义，不自行补全规则",
+      "等待补充规则后再继续处理该情形"
+    ],
+    "constraints": [
+      "所有仿真行为必须遵循文档中的规则",
+      "未覆盖情形在补充规则前一律视为未定义"
+    ],
+    "cautions": [
+      "不得以推测替代缺失规则",
+      "不得将未定义情形当作已定义规则执行"
+    ],
+    "output_contract": [
+      "返回合规行为的执行结果，或返回明确的未定义情形标记（含该情形描述），供下游等待补充规则。"
+    ],
+    "examples": [
+      {
+        "input": "某仿真行为在文档规则中找不到对应条款",
+        "output": "标记该情形为未定义，暂停执行并等待补充规则",
+        "notes": "不自行推断规则"
+      }
+    ],
+    "tags": [
+      "规则合规",
+      "未定义情形",
+      "护栏",
+      "交通仿真"
+    ],
+    "support_ids": [
+      "b71a76ba-39f8-5862-afba-9a3f399ff292"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "94b2a87a-b53c-588c-959c-6607ac737cfa"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|确保仿真行为严格遵循既定规则并标记未定义情形|交通仿真|规则合规|规则约束与异常标记|规则执行|未定义情形标记与暂停推断规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

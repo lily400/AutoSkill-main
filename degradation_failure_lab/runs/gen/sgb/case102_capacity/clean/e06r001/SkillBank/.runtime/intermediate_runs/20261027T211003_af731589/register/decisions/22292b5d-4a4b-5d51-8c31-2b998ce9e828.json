@@ -1,0 +1,110 @@
+{
+  "skill_id": "22292b5d-4a4b-5d51-8c31-2b998ce9e828",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“信号交叉口相位-绿灯边映射查询”(7ba74262) 及“信号相位激活判定”(eb75592e) 高度重复，均为按 CycleLength 取模映射相位并返回 GreenEdges，无新增独立能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "22292b5d-4a4b-5d51-8c31-2b998ce9e828",
+    "name": "信号配时相位判定",
+    "description": "根据信号化节点的周期长度与当前 tick 的模运算，判定该节点当前所处相位及其绿灯边集合，用于车辆通行合法性判断。",
+    "skill_body": "给定一个信号化节点及其 CycleLength 与相位定义，以及当前 tick，按 tick mod CycleLength 落入的相位区间确定当前相位，并返回该相位的 GreenEdges 集合。若节点为 UNSIGNALIZED 或缺少 CycleLength/相位定义，则不做判定并说明原因。\n\n## Objective\n\n确定给定节点在给定 tick 的绿灯边集合\n## Applicable Signals\n\n- 节点为 SIGNALIZED\n- 已知节点 CycleLength 与各相位 tick 区间及 GreenEdges\n- 已知当前 tick\n\n## Contraindications\n\n- 节点为 UNSIGNALIZED\n- 缺少 CycleLength 或相位定义\n\n## Intervention Moves\n\n- 计算 tick mod CycleLength 得到周期内位置\n- 将周期内位置匹配到对应相位的 tick 区间\n- 返回该相位的相位标识与 GreenEdges 集合\n\n## Workflow Steps\n\n- 确认目标节点为 SIGNALIZED 且具备 CycleLength 与相位定义\n- 计算 tick mod CycleLength\n- 将结果落入对应相位的 tick 区间，确定当前相位\n- 输出相位标识与该相位的 GreenEdges 集合\n\n## Constraints\n\n- 相位区间按 mod CycleLength 判定\n- 仅返回当前相位对应的绿灯边集合，不涉及容量或队列处理\n\n## Cautions\n\n- 若 tick 区间定义存在重叠或空缺，应报告规则冲突而非臆断相位\n\n## Output Contract\n\n- 输出当前相位标识与绿灯边集合\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 节点 N3，CycleLength=6，tick=0，Phase A 为 ticks 0-1 mod 6，GreenEdges={E2,E10}\n- Therapist/Output: 当前相位 Phase A，绿灯边集合 {E2,E10}",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确定给定节点在给定 tick 的绿灯边集合",
+    "domain": "交通仿真规则",
+    "task_family": "信号控制判定",
+    "method_family": "周期相位模运算",
+    "stage": "每tick状态更新",
+    "applicable_signals": [
+      "节点为 SIGNALIZED",
+      "已知节点 CycleLength 与各相位 tick 区间及 GreenEdges",
+      "已知当前 tick"
+    ],
+    "contraindications": [
+      "节点为 UNSIGNALIZED",
+      "缺少 CycleLength 或相位定义"
+    ],
+    "intervention_moves": [
+      "计算 tick mod CycleLength 得到周期内位置",
+      "将周期内位置匹配到对应相位的 tick 区间",
+      "返回该相位的相位标识与 GreenEdges 集合"
+    ],
+    "triggers": [
+      "需要判断某车辆能否通过信号化节点",
+      "需要计算节点当前相位",
+      "需要获取某 tick 下节点的绿灯边集合"
+    ],
+    "workflow_steps": [
+      "确认目标节点为 SIGNALIZED 且具备 CycleLength 与相位定义",
+      "计算 tick mod CycleLength",
+      "将结果落入对应相位的 tick 区间，确定当前相位",
+      "输出相位标识与该相位的 GreenEdges 集合"
+    ],
+    "constraints": [
+      "相位区间按 mod CycleLength 判定",
+      "仅返回当前相位对应的绿灯边集合，不涉及容量或队列处理"
+    ],
+    "cautions": [
+      "若 tick 区间定义存在重叠或空缺，应报告规则冲突而非臆断相位"
+    ],
+    "output_contract": [
+      "输出当前相位标识与绿灯边集合"
+    ],
+    "examples": [
+      {
+        "input": "节点 N3，CycleLength=6，tick=0，Phase A 为 ticks 0-1 mod 6，GreenEdges={E2,E10}",
+        "output": "当前相位 Phase A，绿灯边集合 {E2,E10}",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "信号控制",
+      "相位判定",
+      "模运算"
+    ],
+    "support_ids": [
+      "6f46ef5c-d71f-53ea-bfd2-6d9efdeb21a4"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "ba95c74f-2663-5b3a-bcf4-d897a2c78eae"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|确定给定节点在给定 tick 的绿灯边集合|交通仿真规则|信号控制判定|周期相位模运算|每tick状态更新|信号配时相位判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

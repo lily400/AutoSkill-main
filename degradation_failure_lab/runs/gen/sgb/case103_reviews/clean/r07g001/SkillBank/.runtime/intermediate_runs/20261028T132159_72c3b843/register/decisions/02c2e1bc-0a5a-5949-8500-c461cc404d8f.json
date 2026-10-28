@@ -1,0 +1,114 @@
+{
+  "skill_id": "02c2e1bc-0a5a-5949-8500-c461cc404d8f",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "02c2e1bc-0a5a-5949-8500-c461cc404d8f",
+    "name": "评论与SKU语义匹配判定",
+    "description": "判断单条用户评论与单个产品SKU描述之间是否存在概念性语义匹配（语义等价或相关），从而决定该评论是否适用于该SKU。用于将评论映射到产品目录条目时的匹配判定环节。",
+    "skill_body": "针对每一条评论-SKU对，判断二者是否在概念层面语义等价或相关，而非仅做字面关键词匹配。若评论用词与SKU描述不同但表达同一或相关概念，判为适用并说明理由；若概念不相关，判为不适用。输出每条评论-SKU对的适用/不适用判定及简要理由。\n\n## Objective\n\n判定单条评论与单个SKU描述之间是否存在概念性语义匹配\n## Applicable Signals\n\n- 评论与SKU描述用词不同但概念可能相关\n- 需要判断评论是否适用于某SKU\n\n## Contraindications\n\n- 仅需字面关键词匹配\n- SKU目录未通过校验\n\n## Intervention Moves\n\n- 识别评论与SKU描述中的核心概念\n- 判断概念是否语义等价或相关\n- 给出适用/不适用判定并说明理由\n\n## Workflow Steps\n\n- 提取评论中的核心概念（如功能、版型、风格）\n- 提取SKU描述中的对应概念\n- 判断二者是否语义等价或相关\n- 输出适用/不适用判定及理由\n\n## Constraints\n\n- 判定基于概念语义而非字面关键词\n- 每条评论-SKU对需给出明确判定与理由\n\n## Cautions\n\n- 用词不同但概念相关时应判为适用，避免仅凭字面不匹配而误判为不适用\n\n## Output Contract\n\n- 对每条评论-SKU对给出适用/不适用的判定及理由\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论：\"Love the moisture-wicking fabric on my workout shirts\"；SKU：\"Performance tee with Dri-FIT technology and quick-dry fabric\"\n- Therapist/Output: 适用（概念匹配）：吸湿排汗与Dri-FIT/快干为语义等价概念\n- Notes: 概念等价\n\n### Example 2\n\n- Client/Input: 评论：\"Oversized fit is perfect for streetwear style\"；SKU：\"Relaxed fit hoodie with dropped shoulders and extended length\"\n- Therapist/Output: 适用（概念相关）：Oversized与relaxed fit加延长版型为相关概念\n- Notes: 概念相关",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "判定单条评论与单个SKU描述之间是否存在概念性语义匹配",
+    "domain": "产品目录运营",
+    "task_family": "语义匹配",
+    "method_family": "概念等价判断",
+    "stage": "匹配判定",
+    "applicable_signals": [
+      "评论与SKU描述用词不同但概念可能相关",
+      "需要判断评论是否适用于某SKU"
+    ],
+    "contraindications": [
+      "仅需字面关键词匹配",
+      "SKU目录未通过校验"
+    ],
+    "intervention_moves": [
+      "识别评论与SKU描述中的核心概念",
+      "判断概念是否语义等价或相关",
+      "给出适用/不适用判定并说明理由"
+    ],
+    "triggers": [
+      "需要判断评论是否适用于某SKU",
+      "评论与SKU描述用词不同但概念可能相关",
+      "将评论映射到产品目录条目"
+    ],
+    "workflow_steps": [
+      "提取评论中的核心概念（如功能、版型、风格）",
+      "提取SKU描述中的对应概念",
+      "判断二者是否语义等价或相关",
+      "输出适用/不适用判定及理由"
+    ],
+    "constraints": [
+      "判定基于概念语义而非字面关键词",
+      "每条评论-SKU对需给出明确判定与理由"
+    ],
+    "cautions": [
+      "用词不同但概念相关时应判为适用，避免仅凭字面不匹配而误判为不适用"
+    ],
+    "output_contract": [
+      "对每条评论-SKU对给出适用/不适用的判定及理由"
+    ],
+    "examples": [
+      {
+        "input": "评论：\"Love the moisture-wicking fabric on my workout shirts\"；SKU：\"Performance tee with Dri-FIT technology and quick-dry fabric\"",
+        "output": "适用（概念匹配）：吸湿排汗与Dri-FIT/快干为语义等价概念",
+        "notes": "概念等价"
+      },
+      {
+        "input": "评论：\"Oversized fit is perfect for streetwear style\"；SKU：\"Relaxed fit hoodie with dropped shoulders and extended length\"",
+        "output": "适用（概念相关）：Oversized与relaxed fit加延长版型为相关概念",
+        "notes": "概念相关"
+      }
+    ],
+    "tags": [
+      "语义匹配",
+      "概念等价判断",
+      "评论映射",
+      "SKU"
+    ],
+    "support_ids": [
+      "67a54d5d-dccf-52e9-9074-c3e0072ae773"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "27a6d3eb-271e-5ea3-8748-1b5240f9d6ff"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|判定单条评论与单个sku描述之间是否存在概念性语义匹配|产品目录运营|语义匹配|概念等价判断|匹配判定|评论与sku语义匹配判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

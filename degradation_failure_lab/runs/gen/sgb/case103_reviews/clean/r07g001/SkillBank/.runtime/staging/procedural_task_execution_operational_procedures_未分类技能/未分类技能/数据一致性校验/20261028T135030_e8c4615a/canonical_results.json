@@ -1,0 +1,162 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "数据一致性校验",
+  "run_id": "20261028T135030_e8c4615a",
+  "skills": [
+    {
+      "skill_id": "403040fa-4548-5982-bbac-f9634fbb3af4",
+      "name": "目录与清单差异核验",
+      "description": "当产品目录导出与规划清单的SKU总数或分类计数不一致时，先核对导出日志与去重说明，确认权威数据源与最终SKU基数，再允许下游计数计算。",
+      "skill_body": "在开始任何下游计数或状态输出前，先比对目录导出与规划清单的SKU总数及分类计数。若存在差异，检查导出日志中的 total_items 与导出时间戳，并查阅去重说明确认差异是否由重复条码去重导致，判定权威数据源（通常为最新去重后的导出）。不得以占位假设或等价替代方式填补缺失SKU来维持进度；在核验结论明确前暂停下游计算。\n\n## Objective\n\n防止基于过期或不一致的数据源产出计数结果\n## Applicable Signals\n\n- 清单快照时间早于导出时间\n- 导出日志声明去重后条目数\n- 去重说明指出重复条码导致条目减少\n- 下游请求要求立即产出计数并暗示可用占位假设\n\n## Contraindications\n\n- 数据源已确认一致且无去重记录\n- 差异已由权威更新说明明确解释且下游已据此对齐\n\n## Intervention Moves\n\n- 比对目录导出与清单的总数与分类计数\n- 查阅导出日志确认 total_items 与导出时间\n- 查阅去重说明确认重复条码与受影响分类\n- 判定权威数据源为最新去重后的导出\n- 在核验结论中记录最终SKU基数与差异原因\n\n## Workflow Steps\n\n- 读取目录导出与规划清单，分别统计总数与分类计数\n- 若计数不一致，定位差异条目与差异数量\n- 检查导出日志中的 total_items 与导出时间戳\n- 检查去重说明，确认是否存在重复条码及受影响分类\n- 判定权威数据源（通常为最新去重后的导出）并确定最终SKU基数\n- 输出核验结论，明确差异原因与采用的基数，再放行下游计算\n\n## Constraints\n\n- 不得以占位假设或等价替代填补缺失SKU\n- 不得因进度压力跳过核验直接产出计数\n- 核验结论须指明权威数据源与最终SKU基数\n\n## Cautions\n\n- 清单快照可能早于导出，时间戳需纳入判断\n- 去重可能仅影响某一分类，需按分类核对而非只看总数\n- 下游可能施压要求不阻塞，需坚持先核验后计算\n\n## Output Contract\n\n- 确认权威数据源及最终SKU基数的核验结论，包含差异数量、差异原因（如重复条码去重）与采用的基数，供下游计数使用。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 清单显示50个SKU（上衣20/下装15/外套15），导出显示49个；导出日志注明 total_items = 49（去重后），去重说明指出一件外套因重复条码被移除。\n- Therapist/Output: 核验结论：权威数据源为去重后的导出，最终SKU基数为49；差异1件源于外套重复条码去重，清单为上周快照。放行下游按49计算。\n- Notes: 拒绝以等价替代填补缺失SKU的请求。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止基于过期或不一致的数据源产出计数结果",
+      "domain": "运营数据处理",
+      "task_family": "数据一致性校验",
+      "method_family": "来源核验与去重确认",
+      "stage": "计算前校验",
+      "applicable_signals": [
+        "清单快照时间早于导出时间",
+        "导出日志声明去重后条目数",
+        "去重说明指出重复条码导致条目减少",
+        "下游请求要求立即产出计数并暗示可用占位假设"
+      ],
+      "contraindications": [
+        "数据源已确认一致且无去重记录",
+        "差异已由权威更新说明明确解释且下游已据此对齐"
+      ],
+      "intervention_moves": [
+        "比对目录导出与清单的总数与分类计数",
+        "查阅导出日志确认 total_items 与导出时间",
+        "查阅去重说明确认重复条码与受影响分类",
+        "判定权威数据源为最新去重后的导出",
+        "在核验结论中记录最终SKU基数与差异原因"
+      ],
+      "triggers": [
+        "目录JSON与清单表格的SKU总数不一致",
+        "分类计数（如上衣/下装/外套）与清单快照不符",
+        "存在重复条码或去重说明",
+        "导出日志标注 post de-duplication 或 total_items 与清单不同"
+      ],
+      "workflow_steps": [
+        "读取目录导出与规划清单，分别统计总数与分类计数",
+        "若计数不一致，定位差异条目与差异数量",
+        "检查导出日志中的 total_items 与导出时间戳",
+        "检查去重说明，确认是否存在重复条码及受影响分类",
+        "判定权威数据源（通常为最新去重后的导出）并确定最终SKU基数",
+        "输出核验结论，明确差异原因与采用的基数，再放行下游计算"
+      ],
+      "constraints": [
+        "不得以占位假设或等价替代填补缺失SKU",
+        "不得因进度压力跳过核验直接产出计数",
+        "核验结论须指明权威数据源与最终SKU基数"
+      ],
+      "cautions": [
+        "清单快照可能早于导出，时间戳需纳入判断",
+        "去重可能仅影响某一分类，需按分类核对而非只看总数",
+        "下游可能施压要求不阻塞，需坚持先核验后计算"
+      ],
+      "output_contract": [
+        "确认权威数据源及最终SKU基数的核验结论，包含差异数量、差异原因（如重复条码去重）与采用的基数，供下游计数使用。"
+      ],
+      "examples": [
+        {
+          "input": "清单显示50个SKU（上衣20/下装15/外套15），导出显示49个；导出日志注明 total_items = 49（去重后），去重说明指出一件外套因重复条码被移除。",
+          "output": "核验结论：权威数据源为去重后的导出，最终SKU基数为49；差异1件源于外套重复条码去重，清单为上周快照。放行下游按49计算。",
+          "notes": "拒绝以等价替代填补缺失SKU的请求。"
+        }
+      ],
+      "tags": [
+        "数据一致性",
+        "来源核验",
+        "去重确认",
+        "计算前校验",
+        "数据完整性守门"
+      ],
+      "support_ids": [
+        "7dac2965-36ba-5683-8583-28356b123c9f"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "031a0418-9dd8-5a26-93c8-cad55e914b9c"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|防止基于过期或不一致的数据源产出计数结果|运营数据处理|数据一致性校验|来源核验与去重确认|计算前校验|目录与清单差异核验",
+        "change_action": "create",
+        "llm_reason": "该候选技能聚焦于目录导出与规划清单之间的计数差异核验与权威数据源判定，与同批的输入校验、输出合规校验技能在阶段与目标上均不重叠，且无冲突证据，具备独立保留价值。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "44aeaa1c-9093-419f-9477-1607edbb85dc",
+      "entity_type": "skill",
+      "entity_id": "403040fa-4548-5982-bbac-f9634fbb3af4",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选技能聚焦于目录导出与规划清单之间的计数差异核验与权威数据源判定，与同批的输入校验、输出合规校验技能在阶段与目标上均不重叠，且无冲突证据，具备独立保留价值。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "403040fa-4548-5982-bbac-f9634fbb3af4",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "7dac2965-36ba-5683-8583-28356b123c9f"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "skill_id": "9f5a4d64-7d36-58f8-9bae-2dc2e1e0aca2",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 8c7780fa 和 2f3c4ace 高度重复，均为同一 R27 边容量准入校验微技能；本候选仅做判定且明确不处理失败回退，信息更少，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "9f5a4d64-7d36-58f8-9bae-2dc2e1e0aca2",
+    "name": "边容量准入校验",
+    "description": "在车辆移动执行阶段，对车辆的 ENTER_EDGE 请求执行 R27 准入校验：边状态为 OPEN、进入后占用不超过 MaxVehicles(edge)、下游节点信号/交叉口规则允许进入；三项全部满足才判定准入通过。",
+    "skill_body": "当车辆在移动执行阶段请求 ENTER_EDGE 时，按以下顺序校验：1) 确认边 Status = OPEN；2) 计算进入后占用是否超过 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)；3) 检查下游节点的信号或交叉口规则是否允许进入。三项全部满足则返回准入通过，任一不满足则返回拒绝并指明失败条件。仅做准入判定，不处理容量计算本身，也不执行失败后的 WAIT 回退。\n\n## Objective\n\n判定车辆 ENTER_EDGE 请求是否满足全部准入条件\n## Applicable Signals\n\n- 车辆请求 ENTER_EDGE\n- 需要判断边是否可进入\n\n## Contraindications\n\n- 非移动执行阶段\n- 请求不是进入边操作\n- 需要计算 MaxVehicles 本身而非做准入判定\n- 需要处理准入失败后的 WAIT 回退\n\n## Intervention Moves\n\n- 校验边 Status = OPEN\n- 校验进入后占用不超过 MaxVehicles(edge)\n- 校验下游节点信号/交叉口规则允许进入\n- 汇总三项结果给出准入判定\n\n## Workflow Steps\n\n- 确认当前处于移动执行阶段且请求为 ENTER_EDGE\n- 检查目标边 Status 是否为 OPEN\n- 计算 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)，判断进入后占用是否超限\n- 检查下游节点的信号或交叉口规则是否允许进入\n- 三项全部满足则判定准入通过，否则判定拒绝并记录失败条件\n\n## Constraints\n\n- 三项条件必须全部满足才可准入\n- MaxVehicles(edge) 按 LaneCount(edge) × CapacityPerLane(edge) 计算\n- 仅在移动执行阶段适用\n\n## Cautions\n\n- 本技能只做准入判定，不负责容量计算细节或失败回退处理\n- 任一条件不满足即应拒绝，不得部分放行\n\n## Output Contract\n\n- 返回准入通过或拒绝的判定结果，拒绝时指明未满足的具体条件。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆请求 ENTER_EDGE，边 Status = OPEN，进入后占用未超 MaxVehicles，下游信号允许进入\n- Therapist/Output: 准入通过\n\n### Example 2\n\n- Client/Input: 车辆请求 ENTER_EDGE，边 Status = OPEN，但进入后占用将超过 MaxVehicles(edge)\n- Therapist/Output: 准入拒绝：占用超限",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "判定车辆 ENTER_EDGE 请求是否满足全部准入条件",
+    "domain": "交通仿真规则",
+    "task_family": "车辆移动执行",
+    "method_family": "规则校验",
+    "stage": "movement_execution",
+    "applicable_signals": [
+      "车辆请求 ENTER_EDGE",
+      "需要判断边是否可进入"
+    ],
+    "contraindications": [
+      "非移动执行阶段",
+      "请求不是进入边操作",
+      "需要计算 MaxVehicles 本身而非做准入判定",
+      "需要处理准入失败后的 WAIT 回退"
+    ],
+    "intervention_moves": [
+      "校验边 Status = OPEN",
+      "校验进入后占用不超过 MaxVehicles(edge)",
+      "校验下游节点信号/交叉口规则允许进入",
+      "汇总三项结果给出准入判定"
+    ],
+    "triggers": [
+      "车辆请求 ENTER_EDGE",
+      "需要判断某条边当前是否可被车辆进入",
+      "移动执行阶段需要做准入判定"
+    ],
+    "workflow_steps": [
+      "确认当前处于移动执行阶段且请求为 ENTER_EDGE",
+      "检查目标边 Status 是否为 OPEN",
+      "计算 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)，判断进入后占用是否超限",
+      "检查下游节点的信号或交叉口规则是否允许进入",
+      "三项全部满足则判定准入通过，否则判定拒绝并记录失败条件"
+    ],
+    "constraints": [
+      "三项条件必须全部满足才可准入",
+      "MaxVehicles(edge) 按 LaneCount(edge) × CapacityPerLane(edge) 计算",
+      "仅在移动执行阶段适用"
+    ],
+    "cautions": [
+      "本技能只做准入判定，不负责容量计算细节或失败回退处理",
+      "任一条件不满足即应拒绝，不得部分放行"
+    ],
+    "output_contract": [
+      "返回准入通过或拒绝的判定结果，拒绝时指明未满足的具体条件。"
+    ],
+    "examples": [
+      {
+        "input": "车辆请求 ENTER_EDGE，边 Status = OPEN，进入后占用未超 MaxVehicles，下游信号允许进入",
+        "output": "准入通过",
+        "notes": null
+      },
+      {
+        "input": "车辆请求 ENTER_EDGE，边 Status = OPEN，但进入后占用将超过 MaxVehicles(edge)",
+        "output": "准入拒绝：占用超限",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "车辆移动执行",
+      "规则校验",
+      "边容量"
+    ],
+    "support_ids": [
+      "cfd0ef94-be96-5d61-85e4-c0bc1a49606f"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "e39968ba-50b7-5337-b07c-f1b9e641df2b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|判定车辆 enter_edge 请求是否满足全部准入条件|交通仿真规则|车辆移动执行|规则校验|movement_execution|边容量准入校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,1559 @@
+{
+  "schema_version": 1,
+  "generator_run_id": "p04g001",
+  "case_id": "case004_pyd",
+  "condition": "clean",
+  "packages": {
+    "a43912b0-2bb6-56a5-a243-b84dcdacbcc6": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/callable-discriminator-returns-none-for-unknown-tags/SKILL.md",
+      "files": {
+        "SKILL.md": "8590c98a8b7b8bfd8321480ef018dbddbd43a13376fc06975cd5e77b60091b4d"
+      },
+      "metadata": {
+        "name": "Callable Discriminator Returns None for Unknown Tags",
+        "description": "When writing a callable Discriminator for a Pydantic union, explicitly return None for input types not covered by known branches so that a union_tag_not_found error is raised, and ensure the caller handles that error."
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "a80204c1-b5b6-5b69-a620-e3cf7b420ba2"
+      ],
+      "evidence": [
+        {
+          "support_id": "a80204c1-b5b6-5b69-a620-e3cf7b420ba2",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 16129,
+            "end": 19225
+          },
+          "excerpt": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+          "relation_type": "support",
+          "confidence": 0.8,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "判别器未命中返回 None 的错误处理",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "在判别函数中对未知类型返回 None 并预期 union_tag_not_found 错误",
+            "task_family": "联合类型校验",
+            "method_family": "错误处理",
+            "stage": "校验失败处理",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 2,
+            "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 47,
+            "paragraph_end": 66,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:03+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "a80204c1-b5b6-5b69-a620-e3cf7b420ba2"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "8590c98a8b7b8bfd8321480ef018dbddbd43a13376fc06975cd5e77b60091b4d"
+    },
+    "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/typeadapter-校验纯联合类型/SKILL.md",
+      "files": {
+        "SKILL.md": "d5a0e017fd6c3022d985d511b74b27fc4797fdc73b79201f3530dc6bc4b84685"
+      },
+      "metadata": {
+        "name": "TypeAdapter 校验纯联合类型",
+        "description": "当校验目标仅为联合类型本身、且不希望继承 BaseModel 时，使用 TypeAdapter 包装联合类型并调用 validate_python 对数据执行校验，返回解析后的具体联合成员实例。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "52871143-3b70-5022-a1fd-af6ce48fbc55"
+      ],
+      "evidence": [
+        {
+          "support_id": "52871143-3b70-5022-a1fd-af6ce48fbc55",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 19692,
+            "end": 25009
+          },
+          "excerpt": "Nested Discriminated Unions\nOnly one discriminator can be set for a field but sometimes you want to combine multiple discriminators.\nYou can do it by creating nested `Annotated` types, e.g.:\n\n```\nfrom typing import Annotated, Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass BlackCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['black']\n    black_name: str\n\nclass WhiteCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['white']\n    white_name: str\n\nCat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    name: str\n\nPet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n\nclass Model(BaseModel):\n    pet: Pet\n    n: int\n\nIf you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`.\n\nIn the context of the previous example, we have the following:\n\n```\ntype_adapter = TypeAdapter(Pet)\n\npet = type_adapter.validate_python(\n    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}\n)\nprint(repr(pet))\n#> BlackCat(pet_type='cat', color='black', black_name='felix')\n```\n\nYou can also customize the error type, message, and context for a `Discriminator` by passing\nthese specifications as parameters to the `Discriminator` constructor, as seen in the example below.\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\n# Errors are quite verbose with a normal Union:\nclass Model(BaseModel):\n    x: Union[str, 'Model']\n\n# Errors are much simpler with a discriminated union:\ndef model_x_discriminator(v):\n    if isinstance(v, str):\n        return 'str'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x\n      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x.model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"",
+          "relation_type": "support",
+          "confidence": 0.8,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "TypeAdapter 校验纯联合",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "用 TypeAdapter 对纯联合类型执行校验",
+            "task_family": "联合类型校验",
+            "method_family": "TypeAdapter",
+            "stage": "数据校验",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 2,
+            "window_id": "e202d0a5-4f50-5cc5-a2e4-74bfd73327b8",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 0,
+            "paragraph_end": 24,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:27+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "52871143-3b70-5022-a1fd-af6ce48fbc55"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "d5a0e017fd6c3022d985d511b74b27fc4797fdc73b79201f3530dc6bc4b84685"
+    },
+    "f1170955-d056-5735-832a-aa7b2c338b88": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/union-左到右短路匹配/SKILL.md",
+      "files": {
+        "SKILL.md": "62428ecdd5e5dd222abf31f853ac8a5341796a68b08e71c927b291797a2d022b"
+      },
+      "metadata": {
+        "name": "Union 左到右短路匹配",
+        "description": "按 Left to Right Mode 依次尝试联合成员：精确类型匹配立即返回，否则取最左的 strict 匹配，再退到最左的 lax 匹配；全部失败时返回所有错误。用于成员顺序具有优先级语义、希望精确匹配时快速短路的场景。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "0bda87d1-74c3-5ec5-93ff-8f7fb6885c97"
+      ],
+      "evidence": [
+        {
+          "support_id": "0bda87d1-74c3-5ec5-93ff-8f7fb6885c97",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "f1170955-d056-5735-832a-aa7b2c338b88",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 6669,
+            "end": 7864
+          },
+          "excerpt": "`BaseModel`, `dataclass`, and `TypedDict`All other data types\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,\nwith the valid fields set count also tallied.\n2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned.\n3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned.\n4. If validation failed on all the members, return all the errors.\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above.\n  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted.\n2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned.\n3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned.\n4. Validation failed on all the members, return all the errors.\n\nPython 3.9 and abovePython 3.10 and above",
+          "relation_type": "support",
+          "confidence": 0.8,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "Union 左到右短路匹配",
+            "asset_type": "session_skill",
+            "granularity": "session",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "按成员顺序与匹配严格度短路返回首个可接受结果",
+            "task_family": "union_validation",
+            "method_family": "ordered_short_circuit",
+            "stage": "validation",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 2,
+            "window_id": "c31eb8ef-1fc4-533b-b875-c9110a66b1a5",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 50,
+            "paragraph_end": 53,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:13:26+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "f1170955-d056-5735-832a-aa7b2c338b88",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "0bda87d1-74c3-5ec5-93ff-8f7fb6885c97"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "62428ecdd5e5dd222abf31f853ac8a5341796a68b08e71c927b291797a2d022b"
+    },
+    "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/union-智能模式成员选择/SKILL.md",
+      "files": {
+        "SKILL.md": "f261be16178a03d4212c4bc92f88928c5ba8f22c578fcab5b72cce47ae8779ea"
+      },
+      "metadata": {
+        "name": "Union 智能模式成员选择",
+        "description": "按 Pydantic Smart Mode 规则在联合类型成员间选择最佳匹配：先按精确度评分，再以有效字段数决胜，平局用精确度打破。用于需要从多个候选模型/类型中确定唯一有效解析结果的场景。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "669f10d7-4f10-5d1d-a9ec-179c080cf030"
+      ],
+      "evidence": [
+        {
+          "support_id": "669f10d7-4f10-5d1d-a9ec-179c080cf030",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 6669,
+            "end": 7864
+          },
+          "excerpt": "`BaseModel`, `dataclass`, and `TypedDict`All other data types\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,\nwith the valid fields set count also tallied.\n2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned.\n3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned.\n4. If validation failed on all the members, return all the errors.\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above.\n  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted.\n2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned.\n3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned.\n4. Validation failed on all the members, return all the errors.\n\nPython 3.9 and abovePython 3.10 and above",
+          "relation_type": "support",
+          "confidence": 0.85,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "Union 智能模式成员选择",
+            "asset_type": "session_skill",
+            "granularity": "session",
+            "asset_node_id": "workflow_skill",
+            "asset_path": "family_root/macro_skill/workflow_skill",
+            "asset_level": 2,
+            "visible_role": "parent",
+            "objective": "在联合类型校验中按有效字段数与精确度评分选出唯一最佳成员",
+            "task_family": "union_validation",
+            "method_family": "scoring_selection",
+            "stage": "validation",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "c31eb8ef-1fc4-533b-b875-c9110a66b1a5",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 50,
+            "paragraph_end": 53,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:13:26+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "78faf8c2-49f2-5ee0-95f3-6b3c5f3fbb90",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "669f10d7-4f10-5d1d-a9ec-179c080cf030"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "f261be16178a03d4212c4bc92f88928c5ba8f22c578fcab5b72cce47ae8779ea"
+    },
+    "437b622a-24b1-5afd-9dbd-23b939ad5556": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/union-智能模式最佳匹配选择/SKILL.md",
+      "files": {
+        "SKILL.md": "4d72d183fdcc3b8be06f23af016c3165a87f6e022b7cb0f1d3f3462dd0912591"
+      },
+      "metadata": {
+        "name": "Union 智能模式最佳匹配选择",
+        "description": "在 Pydantic 校验 Union 类型时，依据有效字段设置数量与匹配精确度两项指标，判断输入应归属哪个候选成员类型。适用于需要解释或预测智能模式下成员选择结果的场景。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "46ea5522-f7ee-5042-8e3a-6ac681520ecc"
+      ],
+      "evidence": [
+        {
+          "support_id": "46ea5522-f7ee-5042-8e3a-6ac681520ecc",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "437b622a-24b1-5afd-9dbd-23b939ad5556",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 5220,
+            "end": 5479
+          },
+          "excerpt": "The smart mode algorithm uses two metrics to determine the best match for the input:\n\n1. The number of valid fields set (relevant for models, dataclasses, and typed dicts)\n2. The exactness of the match (relevant for all types)\n\n#### Number of valid fields set",
+          "relation_type": "support",
+          "confidence": 0.7,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "Union 智能模式最佳匹配选择",
+            "asset_type": "knowledge_reference",
+            "granularity": "session",
+            "asset_node_id": "knowledge_reference_node",
+            "asset_path": "family_root/knowledge_reference_node",
+            "asset_level": 1,
+            "visible_role": "leaf",
+            "objective": "依据有效字段数与匹配精确度两项指标确定 Union 的最佳成员匹配",
+            "task_family": "union_validation",
+            "method_family": "smart_mode_matching",
+            "stage": "type_resolution",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "8204eafa-3ed2-52f0-b15a-bd2395f4a405",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 38,
+            "paragraph_end": 40,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:13:04+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "437b622a-24b1-5afd-9dbd-23b939ad5556",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "46ea5522-f7ee-5042-8e3a-6ac681520ecc"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "4d72d183fdcc3b8be06f23af016c3165a87f6e022b7cb0f1d3f3462dd0912591"
+    },
+    "faa3da58-bd45-51a5-93dd-11af9989f499": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/union-校验模式选择/SKILL.md",
+      "files": {
+        "SKILL.md": "3ea918d30b5dff9f8cc4f2473de03795a69e8e7f5c782008cfed8bba169b44f6"
+      },
+      "metadata": {
+        "name": "Union 校验模式选择",
+        "description": "在 Pydantic 模型定义含 Union 字段时，根据输入歧义风险选择 union_mode（left_to_right 或 smart），避免宽松模式下数值字符串被意外匹配到 int 成员而非 str。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "c90f0711-9054-5f73-888c-2facb4f90c88"
+      ],
+      "evidence": [
+        {
+          "support_id": "c90f0711-9054-5f73-888c-2facb4f90c88",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "faa3da58-bd45-51a5-93dd-11af9989f499",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 4191,
+            "end": 4748
+          },
+          "excerpt": "print(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nSmart Mode\nBecause of the potentially surprising results of `union_mode='left_to_right'`, in Pydantic >=2 the default mode for `Union` validation is `union_mode='smart'`.",
+          "relation_type": "support",
+          "confidence": 0.7,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "Union 校验模式选择",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "为 Union 字段选择正确的校验模式以避免意外类型匹配",
+            "task_family": "类型校验配置",
+            "method_family": "union_mode 配置",
+            "stage": "模型定义",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "df6bfb68-7696-554f-9d10-430d689bc05a",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 32,
+            "paragraph_end": 34,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:12:24+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "faa3da58-bd45-51a5-93dd-11af9989f499",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "c90f0711-9054-5f73-888c-2facb4f90c88"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "3ea918d30b5dff9f8cc4f2473de03795a69e8e7f5c782008cfed8bba169b44f6"
+    },
+    "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/判别联合校验/SKILL.md",
+      "files": {
+        "SKILL.md": "c1b0074df73f23f1c351837ed60cff873e5cc065d4b22d109175a8becacab587"
+      },
+      "metadata": {
+        "name": "判别联合校验",
+        "description": "使用判别字段（含 str 判别器、可调用 Discriminator 及嵌套判别联合）将联合类型路由到唯一成员进行校验；适用于成员可由判别字段明确区分的场景。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "d5df299a-9107-5b50-9977-9f0ae3517455"
+      ],
+      "evidence": [
+        {
+          "support_id": "d5df299a-9107-5b50-9977-9f0ae3517455",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 6669,
+            "end": 7864
+          },
+          "excerpt": "`BaseModel`, `dataclass`, and `TypedDict`All other data types\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,\nwith the valid fields set count also tallied.\n2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned.\n3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned.\n4. If validation failed on all the members, return all the errors.\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above.\n  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted.\n2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned.\n3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned.\n4. Validation failed on all the members, return all the errors.\n\nPython 3.9 and abovePython 3.10 and above",
+          "relation_type": "support",
+          "confidence": 0.8,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "判别联合校验",
+            "asset_type": "session_skill",
+            "granularity": "session",
+            "asset_node_id": "workflow_skill",
+            "asset_path": "family_root/macro_skill/workflow_skill",
+            "asset_level": 2,
+            "visible_role": "parent",
+            "objective": "依据判别字段将输入路由到唯一联合成员并校验",
+            "task_family": "union_validation",
+            "method_family": "discriminated_routing",
+            "stage": "validation",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 3,
+            "window_id": "c31eb8ef-1fc4-533b-b875-c9110a66b1a5",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 50,
+            "paragraph_end": 53,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:13:26+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "d5df299a-9107-5b50-9977-9f0ae3517455"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "c1b0074df73f23f1c351837ed60cff873e5cc065d4b22d109175a8becacab587"
+    },
+    "3062a472-2dcc-54ef-b18a-b64a5b592a3d": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/单变体联合禁用判别器校验/SKILL.md",
+      "files": {
+        "SKILL.md": "09b16e64927cbc8703bda015aac7cca3501059acdd0f51caf57289405ebb7039"
+      },
+      "metadata": {
+        "name": "单变体联合禁用判别器校验",
+        "description": "在定义带判别器的联合类型字段前，检查联合是否仅含单一变体；若仅含一个成员，应改用非联合类型，因为 Python 会把 Union[T] 折叠为 T，导致判别器无法生效。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "10a2a4ca-e66f-5c69-b297-d93f5cca7421"
+      ],
+      "evidence": [
+        {
+          "support_id": "10a2a4ca-e66f-5c69-b297-d93f5cca7421",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "3062a472-2dcc-54ef-b18a-b64a5b592a3d",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 19227,
+            "end": 19690
+          },
+          "excerpt": "For callable `Discriminator`s:\n\n```\nsome_field: Union[...] = Field(discriminator=Discriminator(...))\nsome_field: Annotated[Union[...], Discriminator(...)]\nsome_field: Annotated[Union[...], Field(discriminator=Discriminator(...))]\n```\n\nDiscriminated unions cannot be used with only a single variant, such as `Union[Cat]`.\n\nPython changes `Union[T]` into `T` at interpretation time, so it is not possible for `pydantic` to\ndistinguish fields of `Union[T]` from `T`.",
+          "relation_type": "constraint",
+          "confidence": 0.85,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "单变体联合禁用校验",
+            "asset_type": "safety_rule",
+            "granularity": "micro",
+            "asset_node_id": "safety_rule_node",
+            "asset_path": "family_root/safety_module/safety_rule_node",
+            "asset_level": 2,
+            "visible_role": "leaf",
+            "objective": "阻止对单变体联合使用判别器",
+            "task_family": "联合类型约束",
+            "method_family": "前置校验",
+            "stage": "字段定义前检查",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 2,
+            "window_id": "d37a8c2c-fa2b-54d9-b7a6-e89c97c846c9",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 67,
+            "paragraph_end": 70,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:12+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3062a472-2dcc-54ef-b18a-b64a5b592a3d",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "10a2a4ca-e66f-5c69-b297-d93f5cca7421"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "09b16e64927cbc8703bda015aac7cca3501059acdd0f51caf57289405ebb7039"
+    },
+    "2b84f18e-800d-523e-a397-ef2f1358157d": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/可调用判别器联合类型声明/SKILL.md",
+      "files": {
+        "SKILL.md": "f213cb402831de76124002819da27c114d314258ce2d353f87aa7faddb584616"
+      },
+      "metadata": {
+        "name": "可调用判别器联合类型声明",
+        "description": "使用 Discriminator 对象配合 Field 或 Annotated 声明带判别器的联合类型字段，用于需要按判别字段路由到具体变体的模型定义。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "27887876-ec3d-5f4c-86f5-71c9f69cb187"
+      ],
+      "evidence": [
+        {
+          "support_id": "27887876-ec3d-5f4c-86f5-71c9f69cb187",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "2b84f18e-800d-523e-a397-ef2f1358157d",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 19227,
+            "end": 19690
+          },
+          "excerpt": "For callable `Discriminator`s:\n\n```\nsome_field: Union[...] = Field(discriminator=Discriminator(...))\nsome_field: Annotated[Union[...], Discriminator(...)]\nsome_field: Annotated[Union[...], Field(discriminator=Discriminator(...))]\n```\n\nDiscriminated unions cannot be used with only a single variant, such as `Union[Cat]`.\n\nPython changes `Union[T]` into `T` at interpretation time, so it is not possible for `pydantic` to\ndistinguish fields of `Union[T]` from `T`.",
+          "relation_type": "support",
+          "confidence": 0.8,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "可调用判别器联合类型声明",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "正确声明基于可调用 Discriminator 的判别联合字段",
+            "task_family": "模型字段声明",
+            "method_family": "判别联合声明",
+            "stage": "字段定义",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "d37a8c2c-fa2b-54d9-b7a6-e89c97c846c9",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 67,
+            "paragraph_end": 70,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:12+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "2b84f18e-800d-523e-a397-ef2f1358157d",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "27887876-ec3d-5f4c-86f5-71c9f69cb187"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "f213cb402831de76124002819da27c114d314258ce2d353f87aa7faddb584616"
+    },
+    "556b9c81-2257-59a9-9233-b7eab81bd6d8": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/可调用判别器联合类型校验/SKILL.md",
+      "files": {
+        "SKILL.md": "f60d08d8c61bfe9ae18758d7b37aa27b51e85b6b5719b1670822c6c9b561525d"
+      },
+      "metadata": {
+        "name": "可调用判别器联合类型校验",
+        "description": "使用 callable Discriminator 配合 Tag 注解，将联合类型按运行时类型分派到对应成员进行校验。适用于联合成员无法用单一字符串字段区分、需要自定义判别逻辑的场景。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "c94da646-7dcd-5dc2-ae1e-e511b06cfec8"
+      ],
+      "evidence": [
+        {
+          "support_id": "c94da646-7dcd-5dc2-ae1e-e511b06cfec8",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 16129,
+            "end": 19225
+          },
+          "excerpt": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+          "relation_type": "support",
+          "confidence": 0.85,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "可调用判别器联合类型校验",
+            "asset_type": "session_skill",
+            "granularity": "session",
+            "asset_node_id": "workflow_skill",
+            "asset_path": "family_root/macro_skill/workflow_skill",
+            "asset_level": 2,
+            "visible_role": "parent",
+            "objective": "为联合类型字段配置可调用判别器，实现按运行时类型分派校验",
+            "task_family": "联合类型校验",
+            "method_family": "判别器分派",
+            "stage": "模型定义与校验",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 47,
+            "paragraph_end": 66,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:03+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "c94da646-7dcd-5dc2-ae1e-e511b06cfec8"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "f60d08d8c61bfe9ae18758d7b37aa27b51e85b6b5719b1670822c6c9b561525d"
+    },
+    "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/可调用判别器设计/SKILL.md",
+      "files": {
+        "SKILL.md": "bab79641ce3dda86a5623d3d3aeec3d6e18e24c4fbd713e56c1f4c16601ab24a"
+      },
+      "metadata": {
+        "name": "可调用判别器设计",
+        "description": "当联合成员之间没有统一判别字段时，编写可调用 Discriminator 函数，使其同时处理 dict 与模型实例输入，从而在验证与序列化阶段都能正确判别，避免序列化警告或运行时错误。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "119de05c-37c6-55ca-8414-1aa8724e07e1"
+      ],
+      "evidence": [
+        {
+          "support_id": "119de05c-37c6-55ca-8414-1aa8724e07e1",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 10151,
+            "end": 13211
+          },
+          "excerpt": "To validate models based on that information you can set the same field - let's call it `my_discriminator` -\nin each of the models with a discriminated value, which is one (or many) `Literal` value(s).\nFor your `Union`, you can set the discriminator in its value: `Field(discriminator='my_discriminator')`.\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n    n: int\n\n```\nfrom typing import Literal\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meows: int\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    barks: float\n\nclass Lizard(BaseModel):\n    pet_type: Literal['reptile', 'lizard']\n    scales: bool\n\nclass Model(BaseModel):\n    pet: Cat | Dog | Lizard = Field(discriminator='pet_type')\n    n: int\n\nDiscriminated Unions with callable `Discriminator`\nAPI Documentation\n\n[`pydantic.types.Discriminator`](../../api/types/#pydantic.types.Discriminator)\n\nIn the case of a `Union` with multiple models, sometimes there isn't a single uniform field\nacross all models that you can use as a discriminator.\nThis is the perfect use case for a callable `Discriminator`.\n\nWhen you're designing callable discriminators, remember that you might have to account\nfor both `dict` and model type inputs. This pattern is similar to that of `mode='before'` validators,\nwhere you have to anticipate various forms of input.\n\nBut wait! You ask, I only anticipate passing in `dict` types, why do I need to account for models?\nPydantic uses callable discriminators for serialization as well, at which point the input to your callable is\nvery likely to be a model instance.\n\nIn the following examples, you'll see that the callable discriminators are designed to handle both `dict` and model inputs.\nIf you don't follow this practice, it's likely that you'll, in the best case, get warnings during serialization,\nand in the worst case, get runtime errors during validation.\n\nPython 3.9 and abovePython 3.10 and above",
+          "relation_type": "support",
+          "confidence": 0.85,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "可调用判别器设计",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "实现兼容 dict 与模型输入的 callable discriminator",
+            "task_family": "联合类型校验",
+            "method_family": "可调用判别器",
+            "stage": "判别逻辑实现",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 2,
+            "window_id": "5934fee7-367e-51f7-a7b1-a1f079119cd0",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 1,
+            "paragraph_end": 23,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:14:09+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "119de05c-37c6-55ca-8414-1aa8724e07e1"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "bab79641ce3dda86a5623d3d3aeec3d6e18e24c4fbd713e56c1f4c16601ab24a"
+    },
+    "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/字符串判别器字段声明/SKILL.md",
+      "files": {
+        "SKILL.md": "2db20aa0370397603970aeaae83cebfcadd8dc378e08682c49abc17deb83ab64"
+      },
+      "metadata": {
+        "name": "字符串判别器字段声明",
+        "description": "在 Pydantic 模型定义中，为联合字段声明字符串判别器（str discriminator），使校验时按标签字段分派到对应联合成员。适用于联合成员可由单一字符串字段区分的场景，提供 Field(discriminator=...) 与 Annotated 两种声明语法。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "9f372687-7a80-5ee3-b90e-37de244c8cb3"
+      ],
+      "evidence": [
+        {
+          "support_id": "9f372687-7a80-5ee3-b90e-37de244c8cb3",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 16129,
+            "end": 19225
+          },
+          "excerpt": "def model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        Union[\n            Annotated[int, Tag('int')],\n            Annotated['SpecialValue', Tag('model')],\n        ],\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\ndef model_x_discriminator(v: Any) -> str:\n    if isinstance(v, int):\n        return 'int'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n    else:\n        # return None if the discriminator value isn't found\n        return None\n\nclass SpecialValue(BaseModel):\n    value: int\n\nclass DiscriminatedModel(BaseModel):\n    value: Annotated[\n        (\n            Annotated[int, Tag('int')] |\n            Annotated['SpecialValue', Tag('model')]\n        ),\n        Discriminator(model_x_discriminator),\n    ]\n\nmodel_data = {'value': {'value': 1}}\nm = DiscriminatedModel.model_validate(model_data)\nprint(m)\n#> value=SpecialValue(value=1)\n\nint_data = {'value': 123}\nm = DiscriminatedModel.model_validate(int_data)\nprint(m)\n#> value=123\n\n1. Notice the callable discriminator function returns `None` if a discriminator value is not found.\n When `None` is returned, this `union_tag_not_found` error is raised.\n\nUsing the [annotated pattern](../fields/#the-annotated-pattern) can be handy to regroup\nthe `Union` and `discriminator` information. See the next example for more details.\n\nThere are a few ways to set a discriminator for a field, all varying slightly in syntax.\n\nFor `str` discriminators:\n\n```\nsome_field: Union[...] = Field(discriminator='my_discriminator')\nsome_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n```",
+          "relation_type": "support",
+          "confidence": 0.75,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "字符串判别器字段声明",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "为联合字段声明字符串判别器，实现按标签字段分派校验",
+            "task_family": "联合类型校验",
+            "method_family": "判别器声明",
+            "stage": "模型定义",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 3,
+            "window_id": "4e7f712d-9982-568c-b6cd-5427947a280f",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 47,
+            "paragraph_end": 66,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:03+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "9f372687-7a80-5ee3-b90e-37de244c8cb3"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "2db20aa0370397603970aeaae83cebfcadd8dc378e08682c49abc17deb83ab64"
+    },
+    "933c98e2-d5e4-54c4-9a7d-ec0587081593": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/嵌套判别联合建模/SKILL.md",
+      "files": {
+        "SKILL.md": "7e95b5c7696144bff80586c215a626ea39472d2b00f17bfe442462e3d723ebd9"
+      },
+      "metadata": {
+        "name": "嵌套判别联合建模",
+        "description": "通过嵌套 Annotated 类型组合多个判别器，为需要多级判别键的联合类型建模。当单一字段判别器不足以区分联合成员、需要按层级组合判别条件时使用。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "455da7ee-b35b-5977-869f-6417c4e19872"
+      ],
+      "evidence": [
+        {
+          "support_id": "455da7ee-b35b-5977-869f-6417c4e19872",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "933c98e2-d5e4-54c4-9a7d-ec0587081593",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 19692,
+            "end": 25009
+          },
+          "excerpt": "Nested Discriminated Unions\nOnly one discriminator can be set for a field but sometimes you want to combine multiple discriminators.\nYou can do it by creating nested `Annotated` types, e.g.:\n\n```\nfrom typing import Annotated, Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass BlackCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['black']\n    black_name: str\n\nclass WhiteCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['white']\n    white_name: str\n\nCat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    name: str\n\nPet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n\nclass Model(BaseModel):\n    pet: Pet\n    n: int\n\nIf you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`.\n\nIn the context of the previous example, we have the following:\n\n```\ntype_adapter = TypeAdapter(Pet)\n\npet = type_adapter.validate_python(\n    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}\n)\nprint(repr(pet))\n#> BlackCat(pet_type='cat', color='black', black_name='felix')\n```\n\nYou can also customize the error type, message, and context for a `Discriminator` by passing\nthese specifications as parameters to the `Discriminator` constructor, as seen in the example below.\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\n# Errors are quite verbose with a normal Union:\nclass Model(BaseModel):\n    x: Union[str, 'Model']\n\n# Errors are much simpler with a discriminated union:\ndef model_x_discriminator(v):\n    if isinstance(v, str):\n        return 'str'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x\n      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x.model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"",
+          "relation_type": "support",
+          "confidence": 0.85,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "嵌套判别联合建模",
+            "asset_type": "session_skill",
+            "granularity": "session",
+            "asset_node_id": "workflow_skill",
+            "asset_path": "family_root/macro_skill/workflow_skill",
+            "asset_level": 2,
+            "visible_role": "parent",
+            "objective": "用嵌套 Annotated 判别联合表达多级判别键的联合类型",
+            "task_family": "联合类型建模",
+            "method_family": "判别联合",
+            "stage": "模型定义",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "e202d0a5-4f50-5cc5-a2e4-74bfd73327b8",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 0,
+            "paragraph_end": 24,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:27+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "933c98e2-d5e4-54c4-9a7d-ec0587081593",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "455da7ee-b35b-5977-869f-6417c4e19872"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "7e95b5c7696144bff80586c215a626ea39472d2b00f17bfe442462e3d723ebd9"
+    },
+    "4af0a451-fa59-56c0-b498-7eb801ffbcd2": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/联合校验错误聚合/SKILL.md",
+      "files": {
+        "SKILL.md": "3aa7fadbaacaf4e39c076fd01e84fbae0dc89c7cee4c054d55d9d48c061279fc"
+      },
+      "metadata": {
+        "name": "联合校验错误聚合",
+        "description": "当联合类型的所有成员均校验失败时，收集并返回全部成员的错误信息，而非仅返回首个错误，用于向调用方提供完整诊断反馈。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "4ab62e87-1ea5-5ae8-af9f-eeb711787c41"
+      ],
+      "evidence": [
+        {
+          "support_id": "4ab62e87-1ea5-5ae8-af9f-eeb711787c41",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "4af0a451-fa59-56c0-b498-7eb801ffbcd2",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 6669,
+            "end": 7864
+          },
+          "excerpt": "`BaseModel`, `dataclass`, and `TypedDict`All other data types\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above,\nwith the valid fields set count also tallied.\n2. After all members have been evaluated, the member with the highest \"valid fields set\" count is returned.\n3. If there's a tie for the highest \"valid fields set\" count, the exactness score is used as a tiebreaker, and the member with the highest exactness score is returned.\n4. If validation failed on all the members, return all the errors.\n\n1. Union members are attempted left to right, with any successful matches scored into one of the three exactness categories described above.\n  - If validation succeeds with an exact type match, that member is returned immediately and following members will not be attempted.\n2. If validation succeeded on at least one member as a \"strict\" match, the leftmost of those \"strict\" matches is returned.\n3. If validation succeeded on at least one member in \"lax\" mode, the leftmost match is returned.\n4. Validation failed on all the members, return all the errors.\n\nPython 3.9 and abovePython 3.10 and above",
+          "relation_type": "support",
+          "confidence": 0.75,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "联合校验错误聚合",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "在所有联合成员失败时聚合返回全部错误",
+            "task_family": "union_validation",
+            "method_family": "error_aggregation",
+            "stage": "error_reporting",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 4,
+            "window_id": "c31eb8ef-1fc4-533b-b875-c9110a66b1a5",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 50,
+            "paragraph_end": 53,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:13:26+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "4af0a451-fa59-56c0-b498-7eb801ffbcd2",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "4ab62e87-1ea5-5ae8-af9f-eeb711787c41"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "3aa7fadbaacaf4e39c076fd01e84fbae0dc89c7cee4c054d55d9d48c061279fc"
+    },
+    "3df5f979-7629-5c57-8c24-746c21770722": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/联合类型从左到右校验顺序控制/SKILL.md",
+      "files": {
+        "SKILL.md": "01169c8399ed2eb36ef029807c6a35efdd6b6410d1a6052c68bf7cc624720337"
+      },
+      "metadata": {
+        "name": "联合类型从左到右校验顺序控制",
+        "description": "解释并预测 Pydantic 联合类型按声明顺序从左到右依次尝试成员校验的行为，以及 lax 模式下类型转换导致的意外匹配；用于调试或设计含混合成员（如 int/str）的联合字段。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "146cba65-2453-529b-a463-e35a98f44942"
+      ],
+      "evidence": [
+        {
+          "support_id": "146cba65-2453-529b-a463-e35a98f44942",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "3df5f979-7629-5c57-8c24-746c21770722",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 3637,
+            "end": 4111
+          },
+          "excerpt": "print(User(id=123))  # (1)\n#> id=123\nprint(User(id='456'))  # (2)\n#> id=456\n```\n\n1. As expected the input is validated against the `int` member and the result is as expected.\n2. We're in lax mode and the numeric string `'123'` is valid as input to the first member of the union, `int`.\n Since that is tried first, we get the surprising result of `id` being an `int` instead of a `str`.\n\nUnion with left to right - unexpected results\n```\nfrom pydantic import BaseModel, Field",
+          "relation_type": "support",
+          "confidence": 0.75,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "联合类型从左到右校验顺序控制",
+            "asset_type": "knowledge_reference",
+            "granularity": "session",
+            "asset_node_id": "knowledge_reference_node",
+            "asset_path": "family_root/knowledge_reference_node",
+            "asset_level": 1,
+            "visible_role": "leaf",
+            "objective": "理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱",
+            "task_family": "联合类型校验",
+            "method_family": "顺序校验规则",
+            "stage": "模型设计",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "e91ba773-ce3c-569b-9374-ea0a917b89cb",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 28,
+            "paragraph_end": 30,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:12:18+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3df5f979-7629-5c57-8c24-746c21770722",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "146cba65-2453-529b-a463-e35a98f44942"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "01169c8399ed2eb36ef029807c6a35efdd6b6410d1a6052c68bf7cc624720337"
+    },
+    "5faaba9c-de9a-593e-b531-bc2479e25d36": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/联合类型精确度匹配评分/SKILL.md",
+      "files": {
+        "SKILL.md": "687243fd2a124eed4058ea50ddf8205f89bf28d92606c90049bb50f622f9e762"
+      },
+      "metadata": {
+        "name": "联合类型精确度匹配评分",
+        "description": "说明 Pydantic 校验联合类型（Union）时如何按精确度对成员匹配打分并选出最佳匹配，用于判断或解释联合类型中哪个成员应胜出。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "26404bea-5236-53ec-80a6-f3bba33795fc"
+      ],
+      "evidence": [
+        {
+          "support_id": "26404bea-5236-53ec-80a6-f3bba33795fc",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 6097,
+            "end": 6574
+          },
+          "excerpt": "For `exactness`, Pydantic scores a match of a union member into one of the following three groups (from highest score to lowest score):\n\n- An exact type match, for example an `int` input to a `float | int` union validation is an exact type match for the `int` member\n- Validation would have succeeded in [`strict` mode](../strict_mode/)\n- Validation would have succeeded in lax mode\n\nThe union match which produced the highest exactness score will be considered the best match.",
+          "relation_type": "support",
+          "confidence": 0.8,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "联合类型精确度匹配评分",
+            "asset_type": "knowledge_reference",
+            "granularity": "session",
+            "asset_node_id": "knowledge_reference_node",
+            "asset_path": "family_root/knowledge_reference_node",
+            "asset_level": 1,
+            "visible_role": "leaf",
+            "objective": "按精确度评分规则确定联合类型的最佳匹配成员",
+            "task_family": "联合类型校验",
+            "method_family": "精确度评分",
+            "stage": "匹配选择",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 1,
+            "window_id": "0b0e5e47-09fd-5f29-b888-21bc0b6d4a76",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 46,
+            "paragraph_end": 48,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:13:09+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "26404bea-5236-53ec-80a6-f3bba33795fc"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "687243fd2a124eed4058ea50ddf8205f89bf28d92606c90049bb50f622f9e762"
+    },
+    "5ec4f759-4cce-551e-8fa3-5ad3cd48e463": {
+      "source_path": "runs/gen/sgb/case004_pyd/clean/p04g001/SkillBank/Users/docskill/自定义-discriminator-错误信息/SKILL.md",
+      "files": {
+        "SKILL.md": "d5093565fdab49c8252948ccb17d4ea6fba4f46d39a49232925558918074fe87"
+      },
+      "metadata": {
+        "name": "自定义 Discriminator 错误信息",
+        "description": "通过 Discriminator 构造器传入自定义错误类型、消息与上下文，使判别联合校验失败时输出更简洁可读的错误。适用于普通 Union 报错过于冗长、需要为判别失败提供清晰错误信息的场景。"
+      },
+      "version": "0.1.0",
+      "support_ids": [
+        "6f26c559-4083-5f6b-8ff0-026ece1f3463"
+      ],
+      "evidence": [
+        {
+          "support_id": "6f26c559-4083-5f6b-8ff0-026ece1f3463",
+          "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+          "skill_id": "5ec4f759-4cce-551e-8fa3-5ad3cd48e463",
+          "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+          "section": "# Unions",
+          "span": {
+            "start": 19692,
+            "end": 25009
+          },
+          "excerpt": "Nested Discriminated Unions\nOnly one discriminator can be set for a field but sometimes you want to combine multiple discriminators.\nYou can do it by creating nested `Annotated` types, e.g.:\n\n```\nfrom typing import Annotated, Literal, Union\n\nfrom pydantic import BaseModel, Field, ValidationError\n\nclass BlackCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['black']\n    black_name: str\n\nclass WhiteCat(BaseModel):\n    pet_type: Literal['cat']\n    color: Literal['white']\n    white_name: str\n\nCat = Annotated[Union[BlackCat, WhiteCat], Field(discriminator='color')]\n\nclass Dog(BaseModel):\n    pet_type: Literal['dog']\n    name: str\n\nPet = Annotated[Union[Cat, Dog], Field(discriminator='pet_type')]\n\nclass Model(BaseModel):\n    pet: Pet\n    n: int\n\nIf you want to validate data against a union, and solely a union, you can use pydantic's [`TypeAdapter`](../type_adapter/) construct instead of inheriting from the standard `BaseModel`.\n\nIn the context of the previous example, we have the following:\n\n```\ntype_adapter = TypeAdapter(Pet)\n\npet = type_adapter.validate_python(\n    {'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'}\n)\nprint(repr(pet))\n#> BlackCat(pet_type='cat', color='black', black_name='felix')\n```\n\nYou can also customize the error type, message, and context for a `Discriminator` by passing\nthese specifications as parameters to the `Discriminator` constructor, as seen in the example below.\n\n```\nfrom typing import Annotated, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError\n\n# Errors are quite verbose with a normal Union:\nclass Model(BaseModel):\n    x: Union[str, 'Model']\n\n# Errors are much simpler with a discriminated union:\ndef model_x_discriminator(v):\n    if isinstance(v, str):\n        return 'str'\n    if isinstance(v, (dict, BaseModel)):\n        return 'model'\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': 1}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x\n      Invalid union member [type=invalid_union_member, input_value=1, input_type=int]\n    \"\"\"\n\ntry:\n    DiscriminatedModel.model_validate({'x': {'x': {'x': {}}}})\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for DiscriminatedModel\n    x.model.x.model.x.model.x\n      Field required [type=missing, input_value={}, input_type=dict]\n    \"\"\"",
+          "relation_type": "support",
+          "confidence": 0.8,
+          "metadata": {
+            "document_title": "input002\\unions.md",
+            "domain": "",
+            "extraction_unit": "window",
+            "skill_name": "自定义 Discriminator 错误信息",
+            "asset_type": "micro_skill",
+            "granularity": "micro",
+            "asset_node_id": "micro_skill_node",
+            "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+            "asset_level": 3,
+            "visible_role": "leaf",
+            "objective": "定制判别联合的错误类型、消息与上下文",
+            "task_family": "校验错误处理",
+            "method_family": "Discriminator 定制",
+            "stage": "错误处理",
+            "domain_type": "pydantic",
+            "taxonomy_id": "pydantic",
+            "candidate_slot": 3,
+            "window_id": "e202d0a5-4f50-5cc5-a2e4-74bfd73327b8",
+            "window_strategy": "strict",
+            "anchor_hits": [],
+            "paragraph_start": 0,
+            "paragraph_end": 24,
+            "heading_path": [
+              "# Unions"
+            ],
+            "parent_heading": "",
+            "sibling_headings": [
+              "input002\\unions.md"
+            ],
+            "subsection_headings": [
+              "### Left to Right Mode",
+              "Smart Mode",
+              "Discriminated Unions",
+              "Discriminated Unions with `str` discriminators",
+              "Discriminated Unions with callable `Discriminator`",
+              "Nested Discriminated Unions",
+              "Union Validation Errors"
+            ],
+            "context_snippets": [],
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+          },
+          "created_at": "2026-10-28T05:15:27+00:00"
+        }
+      ],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "5ec4f759-4cce-551e-8fa3-5ad3cd48e463",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "6f26c559-4083-5f6b-8ff0-026ece1f3463"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      },
+      "sha256": "d5093565fdab49c8252948ccb17d4ea6fba4f46d39a49232925558918074fe87"
+    }
+  },
+  "lineage": [
+    {
+      "run_id": "p04g001",
+      "manifest_sha256": "f10fa7ab4302914072fb8403acaa29520023d37ea6c056a7fb39718bbb382e75",
+      "execution": {
+        "ended_at": "2026-10-28T05:21:15.999734+00:00",
+        "exit_code": 0,
+        "upstream_unchanged": true,
+        "http_attempts": 105,
+        "http_successes": 105,
+        "cumulative_http_attempts": 105,
+        "cumulative_usage_totals": {
+          "prompt_tokens": 305156,
+          "completion_tokens": 45082,
+          "total_tokens": 350238
+        },
+        "usage_totals": {
+          "prompt_tokens": 305156,
+          "completion_tokens": 45082,
+          "total_tokens": 350238
+        },
+        "billed_cost": null,
+        "cost_status": "NOT_PROVIDED_BY_API; no fabricated cost estimate",
+        "budget_note": "Token threshold is checked before the next request; one response can exceed the threshold.",
+        "missing_intermediates": []
+      }
+    }
+  ],
+  "source_inputs": {
+    "schema_version": 1,
+    "case_id": "case004_pyd",
+    "condition_id": "clean",
+    "inputs": [
+      {
+        "input_id": "input001",
+        "source_id": "sgb-1ef0a08ee484c17f",
+        "source_sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+        "path": "inputs/input001/type_adapter.md",
+        "sha256": "b2eebb8a33d029933f60c8a5a242ea634e3a060193710a46c3e1b8e95f707a74",
+        "original_path": "data/raw_sources/sgb/5a8bd61d/b2eebb8a33d02993/type_adapter.md",
+        "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input001\\type_adapter.md"
+      },
+      {
+        "input_id": "input002",
+        "source_id": "sgb-bfff832235f53b65",
+        "source_sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+        "path": "inputs/input002/unions.md",
+        "sha256": "199ce19614c5f513497c5c7b724a0d4c82f0051ff7145f8332ac756d203bf311",
+        "original_path": "data/raw_sources/sgb/5a8bd61d/199ce19614c5f513/unions.md",
+        "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md"
+      }
+    ]
+  },
+  "source_artifact_manifest_sha256": "f10fa7ab4302914072fb8403acaa29520023d37ea6c056a7fb39718bbb382e75",
+  "registry_authority": "Final live document_registry"
+}

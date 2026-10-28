@@ -1,0 +1,111 @@
+{
+  "skill_id": "df167f9e-a404-51ed-b209-1de695503362",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“Scrapy 设置优先级与作用域配置”高度重叠，后者已覆盖相同的优先级顺序并额外包含作用域约束，本候选冗余且信息更少。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "df167f9e-a404-51ed-b209-1de695503362",
+    "name": "Scrapy 设置优先级解析",
+    "description": "按固定优先级顺序解析 Scrapy 配置来源（命令行 > Spider > 项目 > 附加组件 > 命令默认 > 全局默认），用于确定某设置项在多来源冲突时的最终生效值，或排查设置未按预期生效的问题。",
+    "skill_body": "当需要判断多个配置来源对同一 Scrapy 设置项的覆盖关系时，按以下优先级从高到低解析：1) 命令行设置（最高优先级，可通过 -s 或 --set 显式覆盖）；2) Spider 设置；3) 项目设置；4) 附加组件设置；5) 命令特定默认设置；6) 全局默认设置（最低优先级）。对目标设置项逐层比对，取最高优先级来源的取值作为最终生效值，并说明生效来源。\n\n## Objective\n\n确定多来源配置冲突时某设置项的最终生效值\n## Applicable Signals\n\n- 同一设置项在多个来源中出现不同取值\n- 设置未按预期生效\n- 需要确认命令行覆盖的优先级\n\n## Contraindications\n\n- 仅需修改单个来源的配置值而无需解析优先级\n\n## Intervention Moves\n\n- 按优先级顺序列出各来源：命令行 > Spider > 项目 > 附加组件 > 命令默认 > 全局默认\n- 识别目标设置项在各来源中的取值\n- 取最高优先级来源的取值作为最终生效值\n- 标注最终生效来源\n\n## Workflow Steps\n\n- 确认目标设置项名称\n- 按优先级从高到低检查各来源是否定义了该设置项\n- 记录各来源的取值\n- 取最高优先级来源的取值作为最终生效值\n- 输出最终生效来源与取值\n\n## Constraints\n\n- 优先级顺序固定：命令行 > Spider > 项目 > 附加组件 > 命令默认 > 全局默认\n- 命令行设置具有最高优先级，可覆盖其他所有设置\n\n## Cautions\n\n- 本技能仅解析优先级，不包含具体覆盖操作步骤\n\n## Output Contract\n\n- 给出某设置项按优先级排序后的最终生效来源与取值\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某设置项在项目设置与命令行 -s 中取值不同，需确认最终生效值\n- Therapist/Output: 命令行设置优先级最高，最终生效值为命令行 -s 指定的取值，生效来源为命令行设置",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确定多来源配置冲突时某设置项的最终生效值",
+    "domain": "scrapy",
+    "task_family": "配置管理",
+    "method_family": "优先级解析",
+    "stage": "配置加载",
+    "applicable_signals": [
+      "同一设置项在多个来源中出现不同取值",
+      "设置未按预期生效",
+      "需要确认命令行覆盖的优先级"
+    ],
+    "contraindications": [
+      "仅需修改单个来源的配置值而无需解析优先级"
+    ],
+    "intervention_moves": [
+      "按优先级顺序列出各来源：命令行 > Spider > 项目 > 附加组件 > 命令默认 > 全局默认",
+      "识别目标设置项在各来源中的取值",
+      "取最高优先级来源的取值作为最终生效值",
+      "标注最终生效来源"
+    ],
+    "triggers": [
+      "需要判断多个来源对同一设置项的覆盖关系",
+      "排查设置未按预期生效的问题",
+      "需要确认命令行 -s/--set 覆盖是否生效"
+    ],
+    "workflow_steps": [
+      "确认目标设置项名称",
+      "按优先级从高到低检查各来源是否定义了该设置项",
+      "记录各来源的取值",
+      "取最高优先级来源的取值作为最终生效值",
+      "输出最终生效来源与取值"
+    ],
+    "constraints": [
+      "优先级顺序固定：命令行 > Spider > 项目 > 附加组件 > 命令默认 > 全局默认",
+      "命令行设置具有最高优先级，可覆盖其他所有设置"
+    ],
+    "cautions": [
+      "本技能仅解析优先级，不包含具体覆盖操作步骤"
+    ],
+    "output_contract": [
+      "给出某设置项按优先级排序后的最终生效来源与取值"
+    ],
+    "examples": [
+      {
+        "input": "某设置项在项目设置与命令行 -s 中取值不同，需确认最终生效值",
+        "output": "命令行设置优先级最高，最终生效值为命令行 -s 指定的取值，生效来源为命令行设置",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "settings",
+      "配置优先级",
+      "配置管理"
+    ],
+    "support_ids": [
+      "6ed655cf-4605-5e15-8e36-6949fef30588"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "3f428ba1-083a-55f3-a3e4-078431d12329"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||knowledge_reference|session|knowledge_reference_node|确定多来源配置冲突时某设置项的最终生效值|scrapy|配置管理|优先级解析|配置加载|scrapy 设置优先级解析"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

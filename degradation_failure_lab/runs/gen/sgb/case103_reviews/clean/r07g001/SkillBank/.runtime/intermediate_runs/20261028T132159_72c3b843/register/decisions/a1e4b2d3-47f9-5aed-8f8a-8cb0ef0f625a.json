@@ -1,0 +1,114 @@
+{
+  "skill_id": "a1e4b2d3-47f9-5aed-8f8a-8cb0ef0f625a",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a1e4b2d3-47f9-5aed-8f8a-8cb0ef0f625a",
+    "name": "逐SKU情感适用性计数流程",
+    "description": "基于产品目录与已处理评论数据，对目录中每个SKU计算情感适用性计数，并输出覆盖全部目录SKU的计数JSON与状态消息。适用于已提供目录与已处理评论、需要按SKU汇总情感适用性计数的场景。",
+    "skill_body": "按以下步骤执行：1) 读取产品目录（Artifact 1）与已处理评论（Artifact 2），确认目录为最新去重后的实际导出；2) 对目录中每个SKU，依据评论与SKU的类别匹配与语义相似度判定情感适用性；3) 逐SKU累计适用性计数，确保覆盖目录全部条目；4) 输出计数JSON与状态消息。若目录数据未通过一致性校验，不得以占位假设替代缺失SKU，应停止并报告。\n\n## Objective\n\n产出覆盖全部目录SKU的情感适用性计数结果\n## Applicable Signals\n\n- 已提供产品目录与已处理评论导出\n- 需要按SKU维度汇总情感适用性\n- 需要交付计数JSON与状态消息\n\n## Contraindications\n\n- 目录数据未通过一致性校验\n- 目录与导出条目数不一致且未澄清\n\n## Intervention Moves\n\n- 确认目录为最新去重后的实际导出\n- 对每个SKU执行类别匹配与语义相似度判定\n- 逐SKU累计情感适用性计数\n- 输出计数JSON与状态消息\n\n## Workflow Steps\n\n- 读取产品目录与已处理评论数据\n- 确认目录为最新去重后的实际导出\n- 对目录中每个SKU判定评论情感适用性\n- 逐SKU累计适用性计数，确保覆盖全部目录条目\n- 输出计数JSON与状态消息\n\n## Constraints\n\n- 计数须覆盖目录全部SKU\n- 不得以占位假设替代缺失SKU以维持进度\n- 目录数据未通过一致性校验时不得继续计数\n\n## Cautions\n\n- 目录清单与导出条目数可能不一致，需以最新去重后的实际导出为准\n- 避免为赶进度而用等价假设填补缺失SKU\n\n## Output Contract\n\n- 返回覆盖全部目录SKU的情感适用性计数JSON与状态消息。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 提供产品目录与已处理评论导出，要求产出逐SKU情感适用性计数\n- Therapist/Output: 覆盖全部目录SKU的计数JSON与状态消息\n- Notes: 目录须为最新去重后的实际导出",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "产出覆盖全部目录SKU的情感适用性计数结果",
+    "domain": "运营数据处理",
+    "task_family": "评论情感计数",
+    "method_family": "逐项匹配与计数",
+    "stage": "计数执行与输出",
+    "applicable_signals": [
+      "已提供产品目录与已处理评论导出",
+      "需要按SKU维度汇总情感适用性",
+      "需要交付计数JSON与状态消息"
+    ],
+    "contraindications": [
+      "目录数据未通过一致性校验",
+      "目录与导出条目数不一致且未澄清"
+    ],
+    "intervention_moves": [
+      "确认目录为最新去重后的实际导出",
+      "对每个SKU执行类别匹配与语义相似度判定",
+      "逐SKU累计情感适用性计数",
+      "输出计数JSON与状态消息"
+    ],
+    "triggers": [
+      "需要按SKU汇总评论情感适用性",
+      "已提供产品目录与已处理评论数据",
+      "需要产出计数JSON与状态消息"
+    ],
+    "workflow_steps": [
+      "读取产品目录与已处理评论数据",
+      "确认目录为最新去重后的实际导出",
+      "对目录中每个SKU判定评论情感适用性",
+      "逐SKU累计适用性计数，确保覆盖全部目录条目",
+      "输出计数JSON与状态消息"
+    ],
+    "constraints": [
+      "计数须覆盖目录全部SKU",
+      "不得以占位假设替代缺失SKU以维持进度",
+      "目录数据未通过一致性校验时不得继续计数"
+    ],
+    "cautions": [
+      "目录清单与导出条目数可能不一致，需以最新去重后的实际导出为准",
+      "避免为赶进度而用等价假设填补缺失SKU"
+    ],
+    "output_contract": [
+      "返回覆盖全部目录SKU的情感适用性计数JSON与状态消息。"
+    ],
+    "examples": [
+      {
+        "input": "提供产品目录与已处理评论导出，要求产出逐SKU情感适用性计数",
+        "output": "覆盖全部目录SKU的计数JSON与状态消息",
+        "notes": "目录须为最新去重后的实际导出"
+      }
+    ],
+    "tags": [
+      "情感计数",
+      "逐SKU汇总",
+      "运营数据处理",
+      "计数输出"
+    ],
+    "support_ids": [
+      "971059c1-9eb4-5e2c-b7bd-ad4fde1756a2"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "3210b980-f58d-5fbb-8c0b-a71dcc4afe37"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|产出覆盖全部目录sku的情感适用性计数结果|运营数据处理|评论情感计数|逐项匹配与计数|计数执行与输出|逐sku情感适用性计数流程"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

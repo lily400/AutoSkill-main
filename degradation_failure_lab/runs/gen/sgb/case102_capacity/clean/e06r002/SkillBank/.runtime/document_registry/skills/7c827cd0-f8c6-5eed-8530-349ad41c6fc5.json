@@ -1,0 +1,110 @@
+{
+  "skill_id": "7c827cd0-f8c6-5eed-8530-349ad41c6fc5",
+  "name": "信号相位激活判定",
+  "description": "根据固定信号周期（CycleLength）与有序相位列表（各相位含 Duration 与 GreenEdges），计算给定 tick t 的激活相位及其允许放行的入边集合，用于信号化节点的放行判定。",
+  "skill_body": "当节点为信号化节点且需要判定当前 tick 哪些入边可放行时使用本技能。\n步骤：\n1. 确认该节点为信号化节点，且已定义 CycleLength 与有序相位列表（每相位含 Duration 与 GreenEdges）。\n2. 计算 tick t 在周期内的位置：pos = t mod CycleLength。\n3. 按相位顺序累加各相位 Duration，找到使累加和首次大于 pos 的相位，即为 tick t 的激活相位。\n4. 输出该激活相位及其 GreenEdges 集合，作为本 tick 允许放行的入边。\n若节点无信号控制，或信号周期/相位列表未定义，则不适用本技能。\n\n## Objective\n\n确定 tick t 的激活信号相位及其允许放行的入边集合\n## Applicable Signals\n\n- 节点为信号化节点\n- 需要判定当前 tick 哪些入边可放行\n\n## Contraindications\n\n- 节点无信号控制\n- 信号周期或相位列表未定义\n\n## Intervention Moves\n\n- 计算 tick t 在周期内的位置 pos = t mod CycleLength\n- 按相位顺序累加 Duration，定位覆盖 pos 的相位\n- 返回激活相位及其 GreenEdges 集合\n\n## Workflow Steps\n\n- 确认节点为信号化节点且已定义 CycleLength 与有序相位列表\n- 计算 pos = t mod CycleLength\n- 按相位顺序累加 Duration，找到使累加和首次大于 pos 的相位\n- 输出该激活相位及其 GreenEdges 集合\n\n## Constraints\n\n- 相位按有序列表顺序轮转\n- 每相位含 Duration 与 GreenEdges\n- 周期长度为 CycleLength 个 tick\n\n## Cautions\n\n- 信号周期或相位列表缺失时不应推断相位\n\n## Output Contract\n\n- 返回 tick t 的激活相位及其 GreenEdges 集合（允许放行的入边集合）。",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "确定 tick t 的激活信号相位及其允许放行的入边集合",
+  "domain": "交通仿真",
+  "task_family": "信号控制",
+  "method_family": "固定周期相位轮转",
+  "stage": "每 tick 信号更新",
+  "applicable_signals": [
+    "节点为信号化节点",
+    "需要判定当前 tick 哪些入边可放行"
+  ],
+  "contraindications": [
+    "节点无信号控制",
+    "信号周期或相位列表未定义"
+  ],
+  "intervention_moves": [
+    "计算 tick t 在周期内的位置 pos = t mod CycleLength",
+    "按相位顺序累加 Duration，定位覆盖 pos 的相位",
+    "返回激活相位及其 GreenEdges 集合"
+  ],
+  "triggers": [
+    "节点为信号化节点",
+    "需要判定当前 tick 哪些入边可放行",
+    "需要计算给定 tick 的激活相位"
+  ],
+  "workflow_steps": [
+    "确认节点为信号化节点且已定义 CycleLength 与有序相位列表",
+    "计算 pos = t mod CycleLength",
+    "按相位顺序累加 Duration，找到使累加和首次大于 pos 的相位",
+    "输出该激活相位及其 GreenEdges 集合"
+  ],
+  "constraints": [
+    "相位按有序列表顺序轮转",
+    "每相位含 Duration 与 GreenEdges",
+    "周期长度为 CycleLength 个 tick"
+  ],
+  "cautions": [
+    "信号周期或相位列表缺失时不应推断相位"
+  ],
+  "output_contract": [
+    "返回 tick t 的激活相位及其 GreenEdges 集合（允许放行的入边集合）。"
+  ],
+  "examples": [],
+  "tags": [
+    "交通仿真",
+    "信号控制",
+    "固定周期相位轮转",
+    "相位激活"
+  ],
+  "support_ids": [
+    "00a53854-916b-5c0f-8be2-0228b0e0636d"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "bcc41d40-4f93-5c35-a63f-8ee1e9a2119d"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|确定 tick t 的激活信号相位及其允许放行的入边集合|交通仿真|信号控制|固定周期相位轮转|每 tick 信号更新|信号相位激活判定",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

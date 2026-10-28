@@ -1,0 +1,119 @@
+{
+  "skill_id": "b83091ad-f88a-5897-b757-7ed8e81a35d5",
+  "name": "目录缺口不臆测的完整性守则",
+  "description": "当产品目录的SKU数量与既定口径不一致或存在缺口时，不按假设补齐或臆测缺失项，先标记缺口并升级确认，再决定是否继续分析。",
+  "skill_body": "在开始分析前核对目录SKU数量与既定口径。若发现数量不一致或存在缺口，不要按假设补齐或臆测缺失项；先记录缺口（缺失数量、疑似原因、影响范围），以程序化错误格式或升级说明通知上游确认或回填，并在获得确认前暂停依赖完整目录的分析步骤。\n\n## Objective\n\n防止在目录不完整时基于假设产出误导性结果\n## Applicable Signals\n\n- 目录SKU数与预期口径不符\n- 上游要求以假设补齐缺失SKU继续分析\n- 目录存在去重后缺口或待回填项\n\n## Contraindications\n\n- 缺口已确认并完成回填\n- 缺口不影响目标分析范围\n\n## Intervention Moves\n\n- 核对目录SKU数量与既定口径\n- 记录缺口数量、疑似原因与影响范围\n- 以程序化错误格式或升级说明通知上游确认或回填\n- 在确认前暂停依赖完整目录的分析步骤\n\n## Workflow Steps\n\n- 分析前核对目录SKU数量与既定口径。\n- 若发现不一致或缺口，记录缺口数量、疑似原因与影响范围。\n- 以程序化错误格式或升级说明通知上游确认或回填。\n- 在获得确认或回填前，暂停依赖完整目录的分析步骤，不按假设补齐。\n\n## Constraints\n\n- 不得按假设补齐或臆测缺失SKU\n- 缺口未确认前不得产出依赖完整目录的最终结果\n- 缺口信息须以可被上游快速处理的格式传达\n\n## Cautions\n\n- 上游可能以时间压力要求继续，需坚持先标记缺口再决定\n- 缺口影响范围需明确，避免误判为不影响目标分析\n\n## Output Contract\n\n- 缺口标记记录与待确认/回填的升级说明，包含缺失数量、疑似原因、影响范围及当前暂停状态。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 目录去重后仅49个SKU，既定口径为50个；上游要求假设缺失项与现有款相同并继续分析。\n- Therapist/Output: 记录缺口：缺失1个SKU，疑似去重碰撞导致，影响依赖完整目录的匹配分析；已升级通知上游确认或回填，确认前暂停匹配分析。\n- Notes: 不按假设补齐，先标记并升级。",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "防止在目录不完整时基于假设产出误导性结果",
+  "domain": "数据分析运营",
+  "task_family": "数据完整性治理",
+  "method_family": "缺口标记与升级确认",
+  "stage": "分析前准备",
+  "applicable_signals": [
+    "目录SKU数与预期口径不符",
+    "上游要求以假设补齐缺失SKU继续分析",
+    "目录存在去重后缺口或待回填项"
+  ],
+  "contraindications": [
+    "缺口已确认并完成回填",
+    "缺口不影响目标分析范围"
+  ],
+  "intervention_moves": [
+    "核对目录SKU数量与既定口径",
+    "记录缺口数量、疑似原因与影响范围",
+    "以程序化错误格式或升级说明通知上游确认或回填",
+    "在确认前暂停依赖完整目录的分析步骤"
+  ],
+  "triggers": [
+    "目录SKU数与预期口径不符",
+    "上游要求以假设补齐缺失SKU继续分析",
+    "目录存在去重后缺口或待回填项"
+  ],
+  "workflow_steps": [
+    "分析前核对目录SKU数量与既定口径。",
+    "若发现不一致或缺口，记录缺口数量、疑似原因与影响范围。",
+    "以程序化错误格式或升级说明通知上游确认或回填。",
+    "在获得确认或回填前，暂停依赖完整目录的分析步骤，不按假设补齐。"
+  ],
+  "constraints": [
+    "不得按假设补齐或臆测缺失SKU",
+    "缺口未确认前不得产出依赖完整目录的最终结果",
+    "缺口信息须以可被上游快速处理的格式传达"
+  ],
+  "cautions": [
+    "上游可能以时间压力要求继续，需坚持先标记缺口再决定",
+    "缺口影响范围需明确，避免误判为不影响目标分析"
+  ],
+  "output_contract": [
+    "缺口标记记录与待确认/回填的升级说明，包含缺失数量、疑似原因、影响范围及当前暂停状态。"
+  ],
+  "examples": [
+    {
+      "input": "目录去重后仅49个SKU，既定口径为50个；上游要求假设缺失项与现有款相同并继续分析。",
+      "output": "记录缺口：缺失1个SKU，疑似去重碰撞导致，影响依赖完整目录的匹配分析；已升级通知上游确认或回填，确认前暂停匹配分析。",
+      "notes": "不按假设补齐，先标记并升级。"
+    }
+  ],
+  "tags": [
+    "数据完整性",
+    "目录缺口",
+    "升级确认",
+    "分析前校验"
+  ],
+  "support_ids": [
+    "6e0ff685-4221-54fe-9b84-79e21f4a44e8"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "e8d0a3c1-cee3-586e-9192-022158becac3"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.75,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|防止在目录不完整时基于假设产出误导性结果|数据分析运营|数据完整性治理|缺口标记与升级确认|分析前准备|目录缺口不臆测的完整性守则",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

@@ -1,0 +1,64 @@
+{
+  "support_id": "6f1f002c-bad4-5256-a210-1af0185ced20",
+  "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+  "skill_id": "50016175-02e2-59a2-b10a-9128ffd4676a",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+  "section": "# Validators",
+  "span": {
+    "start": 6730,
+    "end": 7891
+  },
+  "excerpt": "print(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n- ***Plain* validators**: act similarly to *before* validators but they **terminate validation immediately** after returning,\n so no further validators are called and Pydantic does not do any of its internal validation against the field type.\n\nAnnotated patternDecorator",
+  "relation_type": "support",
+  "confidence": 0.7,
+  "metadata": {
+    "document_title": "input001\\validators.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "Before 校验器处理原始输入",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "visible_role": "leaf",
+    "objective": "在类型校验前对原始输入做规范化处理",
+    "task_family": "输入预处理",
+    "method_family": "before 校验器",
+    "stage": "校验执行",
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "candidate_slot": 2,
+    "window_id": "ce128f65-0755-5c3b-aff8-8e2fde00d112",
+    "window_strategy": "strict",
+    "anchor_hits": [],
+    "paragraph_start": 52,
+    "paragraph_end": 54,
+    "heading_path": [
+      "# Validators"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input001\\validators.md"
+    ],
+    "subsection_headings": [
+      "## Field validators",
+      "Example mutating the value",
+      "Which validator pattern to use",
+      "Using the annotated pattern",
+      "Using the decorator pattern",
+      "Model validators",
+      "Raising validation errors",
+      "Validation info",
+      "Validation data",
+      "Validation context",
+      "Ordering of validators",
+      "Special types"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+  },
+  "created_at": "2026-10-28T04:54:20+00:00"
+}

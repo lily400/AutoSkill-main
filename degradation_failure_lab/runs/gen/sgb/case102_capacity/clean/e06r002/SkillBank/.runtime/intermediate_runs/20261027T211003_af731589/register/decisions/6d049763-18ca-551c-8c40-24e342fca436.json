@@ -1,0 +1,103 @@
+{
+  "skill_id": "6d049763-18ca-551c-8c40-24e342fca436",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 e5589ce3-1fe7-5de8-ba17-09daa7e33281 完全重复（同一 tick 内到达先于离开的排序规则），保留该候选即可，本候选冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "6d049763-18ca-551c-8c40-24e342fca436",
+    "name": "节点到达先于离开的事件排序规则",
+    "description": "在离散时间步交通仿真中，当同一 tick 内车辆到达节点与其他车辆尝试离开该节点同时发生时，强制先处理到达事件、再处理离开事件，以消除节点事件排序歧义。",
+    "skill_body": "在每个 tick 处理节点事件时，先检查是否存在同一 tick 内到达与离开同时发生的情况。若存在，则先执行所有到达事件（车辆进入节点），再执行所有离开事件（车辆尝试离开节点）。不要颠倒该顺序，也不要将到达与离开合并处理。\n\n## Objective\n\n确保同一 tick 内节点到达事件先于离开事件被处理，避免顺序歧义\n## Applicable Signals\n\n- 同一 tick 内到达与离开事件冲突\n- 需要确定节点事件处理优先级\n\n## Contraindications\n\n- 到达与离开不在同一 tick 发生\n- 非节点级事件排序场景\n\n## Intervention Moves\n\n- 识别同一 tick 内到达与离开同时发生的节点\n- 先处理该节点所有到达事件\n- 再处理该节点所有离开事件\n\n## Workflow Steps\n\n- 在每个 tick 收集节点级到达事件与离开事件\n- 判断是否存在同一 tick 内到达与离开同时发生的节点\n- 对存在冲突的节点，先执行到达事件\n- 随后执行离开事件\n\n## Constraints\n\n- 到达事件必须先于离开事件处理\n- 不得颠倒或合并到达与离开的处理顺序\n\n## Cautions\n\n- 仅在到达与离开发生于同一 tick 时适用该排序规则\n\n## Output Contract\n\n- 确定的事件处理顺序：先到达后离开",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保同一 tick 内节点到达事件先于离开事件被处理，避免顺序歧义",
+    "domain": "交通仿真",
+    "task_family": "事件排序",
+    "method_family": "离散时间步更新顺序",
+    "stage": "每 tick 更新",
+    "applicable_signals": [
+      "同一 tick 内到达与离开事件冲突",
+      "需要确定节点事件处理优先级"
+    ],
+    "contraindications": [
+      "到达与离开不在同一 tick 发生",
+      "非节点级事件排序场景"
+    ],
+    "intervention_moves": [
+      "识别同一 tick 内到达与离开同时发生的节点",
+      "先处理该节点所有到达事件",
+      "再处理该节点所有离开事件"
+    ],
+    "triggers": [
+      "同一 tick 内到达与离开事件冲突",
+      "需要确定节点事件处理优先级",
+      "每 tick 节点事件更新排序"
+    ],
+    "workflow_steps": [
+      "在每个 tick 收集节点级到达事件与离开事件",
+      "判断是否存在同一 tick 内到达与离开同时发生的节点",
+      "对存在冲突的节点，先执行到达事件",
+      "随后执行离开事件"
+    ],
+    "constraints": [
+      "到达事件必须先于离开事件处理",
+      "不得颠倒或合并到达与离开的处理顺序"
+    ],
+    "cautions": [
+      "仅在到达与离开发生于同一 tick 时适用该排序规则"
+    ],
+    "output_contract": [
+      "确定的事件处理顺序：先到达后离开"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "事件排序",
+      "离散时间步",
+      "节点更新"
+    ],
+    "support_ids": [
+      "e85aa534-e24e-5da8-9bed-539dbe3cea79"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "e2387b9e-91a2-5af4-bc77-9bd4c3b9ae5f"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|确保同一 tick 内节点到达事件先于离开事件被处理，避免顺序歧义|交通仿真|事件排序|离散时间步更新顺序|每 tick 更新|节点到达先于离开的事件排序规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,105 @@
+{
+  "skill_id": "4258652f-6619-5cca-92e2-c5104a4aa9cf",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批候选“Pydantic 校验器模式选择”高度重叠，后者已覆盖字段级/模型级、Annotated 与装饰器模式选择及 before/after 时机判断，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "4258652f-6619-5cca-92e2-c5104a4aa9cf",
+    "name": "Pydantic 校验器模式与时机选择",
+    "description": "根据自定义校验需求，在字段校验器（annotated 或 decorator 模式）与模型校验器之间选择合适模式，并决定使用 before 还是 after 校验时机。适用于需要为字段或模型添加自定义校验逻辑、但尚未确定实现模式时。",
+    "skill_body": "先判断校验对象是单个字段还是整个模型：字段级需求在 annotated 与 decorator 两种字段校验器模式中选择，模型级需求使用模型校验器。再判断执行时机：需要在 Pydantic 内部解析与校验（如 str 到 int 的强制转换）之前处理原始输入时选 before；需要在内部校验之后基于已解析值处理时选 after（decorator 默认模式，可省略）。输出选定的模式与时机，并说明理由。\n\n## Objective\n\n为给定校验需求选择正确的 Pydantic 校验器模式与执行时机\n## Applicable Signals\n\n- 需要为字段或模型添加自定义校验逻辑\n- 不确定使用 annotated 还是 decorator 模式\n- 需要决定 before 或 after 校验时机\n\n## Contraindications\n\n- 仅使用内置字段约束即可满足需求\n\n## Intervention Moves\n\n- 判断校验对象是字段级还是模型级\n- 字段级在 annotated 与 decorator 模式间选择\n- 模型级使用模型校验器\n- 判断执行时机：before 处理原始输入，after 处理已解析值\n\n## Workflow Steps\n\n- 确认校验需求是字段级还是模型级。\n- 字段级：在 annotated 模式与 decorator 模式之间选择；模型级：使用模型校验器。\n- 判断时机：需在内部解析与校验前处理原始输入则选 before；需在内部校验后基于已解析值处理则选 after（decorator 默认，可省略）。\n- 输出选定的模式与时机，并给出简要理由。\n\n## Constraints\n\n- before 校验器需处理原始输入，输入理论上可为任意对象。\n- 若在 before 校验器中后续会抛出校验错误，应避免直接修改值，因为修改后的值可能在其他校验器（如 unions 场景）中被使用。\n\n## Cautions\n\n- before 校验器更灵活但需自行应对原始输入的不确定性。\n- after 校验器基于已解析值工作，不适用于需要干预解析过程的场景。\n\n## Output Contract\n\n- 明确选定的校验器模式（annotated / decorator / 模型校验器）与 before/after 时机说明。",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为给定校验需求选择正确的 Pydantic 校验器模式与执行时机",
+    "domain": "pydantic",
+    "task_family": "数据校验",
+    "method_family": "校验器模式选择",
+    "stage": "设计",
+    "applicable_signals": [
+      "需要为字段或模型添加自定义校验逻辑",
+      "不确定使用 annotated 还是 decorator 模式",
+      "需要决定 before 或 after 校验时机"
+    ],
+    "contraindications": [
+      "仅使用内置字段约束即可满足需求"
+    ],
+    "intervention_moves": [
+      "判断校验对象是字段级还是模型级",
+      "字段级在 annotated 与 decorator 模式间选择",
+      "模型级使用模型校验器",
+      "判断执行时机：before 处理原始输入，after 处理已解析值"
+    ],
+    "triggers": [
+      "需要为字段或模型添加自定义校验逻辑",
+      "不确定使用 annotated 还是 decorator 模式",
+      "需要决定 before 或 after 校验时机"
+    ],
+    "workflow_steps": [
+      "确认校验需求是字段级还是模型级。",
+      "字段级：在 annotated 模式与 decorator 模式之间选择；模型级：使用模型校验器。",
+      "判断时机：需在内部解析与校验前处理原始输入则选 before；需在内部校验后基于已解析值处理则选 after（decorator 默认，可省略）。",
+      "输出选定的模式与时机，并给出简要理由。"
+    ],
+    "constraints": [
+      "before 校验器需处理原始输入，输入理论上可为任意对象。",
+      "若在 before 校验器中后续会抛出校验错误，应避免直接修改值，因为修改后的值可能在其他校验器（如 unions 场景）中被使用。"
+    ],
+    "cautions": [
+      "before 校验器更灵活但需自行应对原始输入的不确定性。",
+      "after 校验器基于已解析值工作，不适用于需要干预解析过程的场景。"
+    ],
+    "output_contract": [
+      "明确选定的校验器模式（annotated / decorator / 模型校验器）与 before/after 时机说明。"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "validator",
+      "模式选择",
+      "数据校验"
+    ],
+    "support_ids": [
+      "7e26f6ca-59aa-5650-a45c-ee5d58bb99ad"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "14a16453-82e3-55db-b2af-32515e47f877"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|为给定校验需求选择正确的 pydantic 校验器模式与执行时机|pydantic|数据校验|校验器模式选择|设计|pydantic 校验器模式与时机选择"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

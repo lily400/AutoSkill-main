@@ -2906,8 +2906,13 @@ def register_versions(
         logger=logger,
         progress_callback=progress_callback,
     )
+    family_metadata = {
+        key: value
+        for key, value in _layout_metadata(metadata).items()
+        if key in ("family_name", "family_id", "profile_id")
+    }
     reconciled = manager.reconcile(
-        skills=skill_specs,
+        skills=[_merge_layout_metadata(skill, metadata=family_metadata) for skill in skill_specs],
         support_records=support_records,
         target_state=effective_state,
         intermediate_writer=intermediate_writer,

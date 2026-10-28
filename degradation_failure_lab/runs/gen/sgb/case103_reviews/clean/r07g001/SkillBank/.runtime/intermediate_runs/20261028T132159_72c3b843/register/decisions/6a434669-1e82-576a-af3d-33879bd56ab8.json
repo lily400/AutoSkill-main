@@ -1,0 +1,115 @@
+{
+  "skill_id": "6a434669-1e82-576a-af3d-33879bd56ab8",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批多个候选（尤其评论到SKU语义匹配与四类情感计数）高度重叠，仅聚焦按SKU拆分执行，缺乏独立可区分能力，属同批冗余，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "6a434669-1e82-576a-af3d-33879bd56ab8",
+    "name": "逐SKU评论分析",
+    "description": "对已完成筛选与品牌分组的评论数据，按SKU逐一执行类别匹配、语义相似度判断、情感分类与计数分析，产出每个SKU的结构化分析结果。适用于评论子集已就绪、需要以SKU为维度拆分并分析时。",
+    "skill_body": "在评论子集已完成筛选与品牌分组后，按SKU逐一分析：对每个SKU分别执行语义匹配（含类别匹配的硬性要求与语义相似度判断）、情感分类与计数任务，并按既定输出格式汇总为结构化结果。若输入无效或不完整，按无效输入处理规则处理，不臆造结果。\n\n## Objective\n\n对每个SKU产出结构化分析结果\n## Applicable Signals\n\n- 评论数据已按is_sportswear与is_apparel_product筛选为子集\n- 子集已按competitor_or_nike分为Nike与竞品两组\n- 存在可拆分的SKU维度\n\n## Contraindications\n\n- 尚未完成数据筛选分组\n- 无SKU维度可拆分\n- 输入数据无效或不完整且未按无效输入规则处理\n\n## Intervention Moves\n\n- 对每个SKU执行类别匹配（硬性要求）\n- 对每个SKU执行语义相似度判断\n- 对每个SKU执行情感分类\n- 对每个SKU执行计数任务\n- 按输出格式汇总每个SKU的结构化结果\n\n## Workflow Steps\n\n- 确认输入为已筛选（is_sportswear=yes且is_apparel_product=yes）并按品牌分组的评论子集\n- 按SKU拆分评论\n- 对每个SKU执行类别匹配（硬性要求）\n- 对每个SKU执行语义相似度判断\n- 对每个SKU执行情感分类\n- 对每个SKU执行计数任务\n- 按输出格式汇总每个SKU的结构化分析结果\n- 遇到无效或不完整输入时按无效输入处理规则处理\n\n## Constraints\n\n- 类别匹配为硬性要求，须先满足\n- 语义相似度为判断性要求\n- 仅在完成筛选与分组后执行\n- 输出须遵循既定输出格式\n\n## Cautions\n\n- 输入无效或不完整时不得臆造分析结果\n- SKU维度缺失时不应强行拆分\n\n## Output Contract\n\n- 每个SKU的结构化分析输出，包含语义匹配、相似度判断、情感分类与计数结果，并符合既定输出格式。",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "对每个SKU产出结构化分析结果",
+    "domain": "产品评论分析",
+    "task_family": "SKU级分析",
+    "method_family": "语义匹配与情感分类",
+    "stage": "分析执行",
+    "applicable_signals": [
+      "评论数据已按is_sportswear与is_apparel_product筛选为子集",
+      "子集已按competitor_or_nike分为Nike与竞品两组",
+      "存在可拆分的SKU维度"
+    ],
+    "contraindications": [
+      "尚未完成数据筛选分组",
+      "无SKU维度可拆分",
+      "输入数据无效或不完整且未按无效输入规则处理"
+    ],
+    "intervention_moves": [
+      "对每个SKU执行类别匹配（硬性要求）",
+      "对每个SKU执行语义相似度判断",
+      "对每个SKU执行情感分类",
+      "对每个SKU执行计数任务",
+      "按输出格式汇总每个SKU的结构化结果"
+    ],
+    "triggers": [
+      "已完成评论子集筛选与品牌分组",
+      "需要按SKU逐一分析评论",
+      "需要产出SKU级结构化分析结果"
+    ],
+    "workflow_steps": [
+      "确认输入为已筛选（is_sportswear=yes且is_apparel_product=yes）并按品牌分组的评论子集",
+      "按SKU拆分评论",
+      "对每个SKU执行类别匹配（硬性要求）",
+      "对每个SKU执行语义相似度判断",
+      "对每个SKU执行情感分类",
+      "对每个SKU执行计数任务",
+      "按输出格式汇总每个SKU的结构化分析结果",
+      "遇到无效或不完整输入时按无效输入处理规则处理"
+    ],
+    "constraints": [
+      "类别匹配为硬性要求，须先满足",
+      "语义相似度为判断性要求",
+      "仅在完成筛选与分组后执行",
+      "输出须遵循既定输出格式"
+    ],
+    "cautions": [
+      "输入无效或不完整时不得臆造分析结果",
+      "SKU维度缺失时不应强行拆分"
+    ],
+    "output_contract": [
+      "每个SKU的结构化分析输出，包含语义匹配、相似度判断、情感分类与计数结果，并符合既定输出格式。"
+    ],
+    "examples": [],
+    "tags": [
+      "评论分析",
+      "SKU级分析",
+      "语义匹配",
+      "情感分类",
+      "计数"
+    ],
+    "support_ids": [
+      "338f83d7-15c1-5fd7-9f8f-369a889fccc7"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "dd81900e-0704-5e29-b58a-30f13df09953"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.65,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|对每个sku产出结构化分析结果|产品评论分析|sku级分析|语义匹配与情感分类|分析执行|逐sku评论分析"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

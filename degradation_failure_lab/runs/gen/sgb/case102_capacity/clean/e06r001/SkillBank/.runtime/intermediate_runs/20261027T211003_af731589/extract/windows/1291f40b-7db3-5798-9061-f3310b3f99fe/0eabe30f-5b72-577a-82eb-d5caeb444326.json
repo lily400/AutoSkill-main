@@ -1,0 +1,919 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "f45626aa-845c-53a4-8314-0c5b28f81d1e",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 50373,
+        "end": 51669
+      },
+      "excerpt": "R21. A consignment is considered delivered when it is unloaded at DestinationNode.\n\nR22. Lateness of a consignment is defined as:\n- 0 if delivered at or before DueTime.\n- Otherwise, DeliveredTime:DueTime in ticks.\n\n6. Legal Actions Per Tick\n\nR23. At each tick, each non-offline vehicle may choose exactly one action from this list:\n- WAIT: remain at its current node and do nothing.\n- ENTER_EDGE(edgeID): if currently at a node, request to enter a specific outgoing edge.\n- CONTINUE_TRAVEL: if already on an edge, continue moving (implicit if no other action is available).\n- START_LOADING(consignmentIDs): begin loading one or more consignments at the current node.\n- START_UNLOADING(consignmentIDs): begin unloading specified consignments that are on the vehicle and whose destination or allowed transfer node matches the current node.\n- GO_OFFLINE: switch status to OFFLINE if at its HomeDepot.\n- GO_ONLINE: switch from OFFLINE to IDLE_AT_NODE at HomeDepot (only if already at that node).\n\nR24. Actions are requests until validated in the capacity & conflict check phase.\n\nR25. If a vehicle is on an edge (Status = MOVING), it may not start loading or unloading; its only valid action is CONTINUE_TRAVEL.\n\n7. Edge Capacity, Queues, and Conflicts\n\nR26. Each edge has a total vehicle capacity:",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "每Tick合法动作选择与校验",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "为每个车辆在每个tick生成唯一合法动作请求并交由校验阶段裁决",
+        "task_family": "车辆动作调度",
+        "method_family": "离散时间步动作选择",
+        "stage": "每tick动作生成",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:41:58+00:00"
+    },
+    {
+      "support_id": "93e500f6-dac7-5621-a6fa-24131567719c",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 50373,
+        "end": 51669
+      },
+      "excerpt": "R21. A consignment is considered delivered when it is unloaded at DestinationNode.\n\nR22. Lateness of a consignment is defined as:\n- 0 if delivered at or before DueTime.\n- Otherwise, DeliveredTime:DueTime in ticks.\n\n6. Legal Actions Per Tick\n\nR23. At each tick, each non-offline vehicle may choose exactly one action from this list:\n- WAIT: remain at its current node and do nothing.\n- ENTER_EDGE(edgeID): if currently at a node, request to enter a specific outgoing edge.\n- CONTINUE_TRAVEL: if already on an edge, continue moving (implicit if no other action is available).\n- START_LOADING(consignmentIDs): begin loading one or more consignments at the current node.\n- START_UNLOADING(consignmentIDs): begin unloading specified consignments that are on the vehicle and whose destination or allowed transfer node matches the current node.\n- GO_OFFLINE: switch status to OFFLINE if at its HomeDepot.\n- GO_ONLINE: switch from OFFLINE to IDLE_AT_NODE at HomeDepot (only if already at that node).\n\nR24. Actions are requests until validated in the capacity & conflict check phase.\n\nR25. If a vehicle is on an edge (Status = MOVING), it may not start loading or unloading; its only valid action is CONTINUE_TRAVEL.\n\n7. Edge Capacity, Queues, and Conflicts\n\nR26. Each edge has a total vehicle capacity:",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "边容量与冲突校验",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "依据边容量裁决动作请求，处理排队与冲突",
+        "task_family": "容量与冲突裁决",
+        "method_family": "容量约束校验",
+        "stage": "动作校验阶段",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 2,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:41:58+00:00"
+    },
+    {
+      "support_id": "bf652b72-d3c7-5c87-8b05-3ee6a1f7dbe0",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 50373,
+        "end": 51669
+      },
+      "excerpt": "R21. A consignment is considered delivered when it is unloaded at DestinationNode.\n\nR22. Lateness of a consignment is defined as:\n- 0 if delivered at or before DueTime.\n- Otherwise, DeliveredTime:DueTime in ticks.\n\n6. Legal Actions Per Tick\n\nR23. At each tick, each non-offline vehicle may choose exactly one action from this list:\n- WAIT: remain at its current node and do nothing.\n- ENTER_EDGE(edgeID): if currently at a node, request to enter a specific outgoing edge.\n- CONTINUE_TRAVEL: if already on an edge, continue moving (implicit if no other action is available).\n- START_LOADING(consignmentIDs): begin loading one or more consignments at the current node.\n- START_UNLOADING(consignmentIDs): begin unloading specified consignments that are on the vehicle and whose destination or allowed transfer node matches the current node.\n- GO_OFFLINE: switch status to OFFLINE if at its HomeDepot.\n- GO_ONLINE: switch from OFFLINE to IDLE_AT_NODE at HomeDepot (only if already at that node).\n\nR24. Actions are requests until validated in the capacity & conflict check phase.\n\nR25. If a vehicle is on an edge (Status = MOVING), it may not start loading or unloading; its only valid action is CONTINUE_TRAVEL.\n\n7. Edge Capacity, Queues, and Conflicts\n\nR26. Each edge has a total vehicle capacity:",
+      "relation_type": "constraint",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "运输中车辆动作限制规则",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "防止运输中车辆执行非法装卸动作",
+        "task_family": "动作合法性约束",
+        "method_family": "状态约束规则",
+        "stage": "动作生成",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 3,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:41:58+00:00"
+    },
+    {
+      "support_id": "86f4f642-e618-525b-8ead-3675741e668d",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 50373,
+        "end": 51669
+      },
+      "excerpt": "R21. A consignment is considered delivered when it is unloaded at DestinationNode.\n\nR22. Lateness of a consignment is defined as:\n- 0 if delivered at or before DueTime.\n- Otherwise, DeliveredTime:DueTime in ticks.\n\n6. Legal Actions Per Tick\n\nR23. At each tick, each non-offline vehicle may choose exactly one action from this list:\n- WAIT: remain at its current node and do nothing.\n- ENTER_EDGE(edgeID): if currently at a node, request to enter a specific outgoing edge.\n- CONTINUE_TRAVEL: if already on an edge, continue moving (implicit if no other action is available).\n- START_LOADING(consignmentIDs): begin loading one or more consignments at the current node.\n- START_UNLOADING(consignmentIDs): begin unloading specified consignments that are on the vehicle and whose destination or allowed transfer node matches the current node.\n- GO_OFFLINE: switch status to OFFLINE if at its HomeDepot.\n- GO_ONLINE: switch from OFFLINE to IDLE_AT_NODE at HomeDepot (only if already at that node).\n\nR24. Actions are requests until validated in the capacity & conflict check phase.\n\nR25. If a vehicle is on an edge (Status = MOVING), it may not start loading or unloading; its only valid action is CONTINUE_TRAVEL.\n\n7. Edge Capacity, Queues, and Conflicts\n\nR26. Each edge has a total vehicle capacity:",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "交付与延误计算规则",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "统一判定交付状态并计算延误tick",
+        "task_family": "交付评估",
+        "method_family": "指标计算规则",
+        "stage": "结果评估",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 4,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:41:58+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "c0e64103-cb1a-5a8d-8078-4325786414e3",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "每Tick合法动作选择与校验",
+      "description": "为每个非离线车辆在每个tick生成唯一合法动作请求（WAIT/ENTER_EDGE/CONTINUE_TRAVEL/START_LOADING/START_UNLOADING/GO_OFFLINE/GO_ONLINE），并将动作视为请求交由容量与冲突校验阶段裁决。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为每个车辆在每个tick生成唯一合法动作请求并交由校验阶段裁决",
+      "domain": "交通仿真",
+      "task_family": "车辆动作调度",
+      "method_family": "离散时间步动作选择",
+      "stage": "每tick动作生成",
+      "applicable_signals": [
+        "需要为车辆生成下一tick动作",
+        "需要判断某动作是否合法",
+        "车辆状态为 IDLE_AT_NODE 或 MOVING 需确定动作"
+      ],
+      "contraindications": [
+        "车辆处于MOVING状态却请求装卸",
+        "需要跨多阶段整体调度协议",
+        "需要在此阶段直接裁决容量或冲突"
+      ],
+      "intervention_moves": [
+        "读取车辆当前状态与位置",
+        "按状态筛选合法动作集",
+        "为每车选择恰好一个动作",
+        "标注为待校验请求并移交容量与冲突校验"
+      ],
+      "workflow_steps": [
+        "确认车辆是否非离线；离线车辆不参与本tick动作选择",
+        "若 Status = MOVING，仅输出 CONTINUE_TRAVEL",
+        "若在节点上，依据状态与位置从合法动作集中选择一个动作",
+        "校验动作前置条件（HomeDepot、货物匹配等）",
+        "将动作标记为请求，移交容量与冲突校验阶段"
+      ],
+      "triggers": [
+        "需要为车辆生成下一tick动作",
+        "需要判断某动作是否合法",
+        "需要枚举某车辆在当前状态下的可选动作"
+      ],
+      "constraints": [
+        "每个非离线车辆每tick恰好选择一个动作",
+        "MOVING 状态车辆唯一合法动作为 CONTINUE_TRAVEL",
+        "GO_OFFLINE 仅在 HomeDepot 且非离线时合法",
+        "GO_ONLINE 仅在 HomeDepot 且为 OFFLINE 时合法",
+        "动作在容量与冲突校验前仅为请求"
+      ],
+      "cautions": [
+        "不得将动作请求视为已生效结果",
+        "不得为同一车辆在同一tick生成多个动作",
+        "装卸动作需确认货物在车上且目的地或允许换装节点匹配当前节点"
+      ],
+      "output_contract": [
+        "每车辆每tick一个合法动作请求，标注为待校验，进入容量与冲突校验阶段"
+      ],
+      "examples": [
+        {
+          "input": "车辆在节点上，Status = IDLE_AT_NODE，位于 HomeDepot",
+          "output": "GO_OFFLINE（请求，待校验）",
+          "notes": "仅在 HomeDepot 且非离线时合法"
+        },
+        {
+          "input": "车辆 Status = MOVING，位于某边上",
+          "output": "CONTINUE_TRAVEL（请求，待校验）",
+          "notes": "MOVING 状态唯一合法动作"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "f45626aa-845c-53a4-8314-0c5b28f81d1e"
+      ],
+      "metadata": {
+        "prompt": "对每个非离线车辆，在每个tick只选择一个合法动作，并明确该动作是待校验的请求而非已生效结果。\n\n执行要点：\n1. 确认车辆状态：若 Status = MOVING（在边上），唯一合法动作为 CONTINUE_TRAVEL，不得装卸。\n2. 若车辆在节点上，从合法动作集中选择一个：WAIT、ENTER_EDGE(edgeID)、START_LOADING(consignmentIDs)、START_UNLOADING(consignmentIDs)、GO_OFFLINE、GO_ONLINE。\n3. 约束校验：GO_OFFLINE 仅在 HomeDepot 且当前非离线时合法；GO_ONLINE 仅在 HomeDepot 且当前为 OFFLINE 时合法；START_UNLOADING 仅对在车上且目的地或允许换装节点匹配当前节点的货物合法。\n4. 每车每tick恰好一个动作，不得多选或省略。\n5. 将动作标记为请求，交由容量与冲突校验阶段确认，不在此阶段判定生效。",
+        "tags": [
+          "交通仿真",
+          "离散时间步",
+          "动作选择",
+          "合法性校验",
+          "车辆调度"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "b0e0c4b6-b857-5cf7-ba82-bcf317c626ea",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "边容量与冲突校验",
+      "description": "在动作请求生成之后执行容量与冲突检查阶段，依据每条边的总车辆容量裁决 ENTER_EDGE 等动作请求是否被接受，并处理排队与冲突。适用于动作请求已生成、需要裁决且边容量可能超限的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "依据边容量裁决动作请求，处理排队与冲突",
+      "domain": "交通仿真",
+      "task_family": "容量与冲突裁决",
+      "method_family": "容量约束校验",
+      "stage": "动作校验阶段",
+      "applicable_signals": [
+        "动作请求已生成需裁决",
+        "边容量可能超限"
+      ],
+      "contraindications": [
+        "尚未生成动作请求",
+        "仅需判定交付状态"
+      ],
+      "intervention_moves": [
+        "将动作视为待校验请求而非已生效动作",
+        "依据目标边总车辆容量判断是否接受请求",
+        "对超限请求按排队与冲突规则处理"
+      ],
+      "workflow_steps": [
+        "接收本 tick 内各车辆提交的动作请求",
+        "对每个请求识别目标边及其总车辆容量",
+        "依据容量与冲突规则裁决请求是否被接受",
+        "对未被接受的请求按排队与冲突规则处理",
+        "输出被接受或被拒绝的动作结果及排队状态"
+      ],
+      "triggers": [
+        "动作请求已生成需裁决",
+        "边容量可能超限",
+        "需要判定 ENTER_EDGE 等请求是否被接受"
+      ],
+      "constraints": [
+        "动作在被校验前仅为请求，不得视为已生效",
+        "裁决须依据每条边的总车辆容量"
+      ],
+      "cautions": [
+        "裁决阶段与动作生成阶段分离，不应在此阶段重新生成动作"
+      ],
+      "output_contract": [
+        "被接受或被拒绝的动作结果及排队状态"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.75,
+      "support_ids": [
+        "93e500f6-dac7-5621-a6fa-24131567719c"
+      ],
+      "metadata": {
+        "prompt": "在动作请求生成后进入容量与冲突检查阶段：将每个动作视为待校验请求，依据目标边的总车辆容量判断是否接受；对超限请求按排队与冲突规则处理，输出被接受或被拒绝的动作结果及相应排队状态。",
+        "tags": [
+          "交通仿真",
+          "容量校验",
+          "冲突裁决",
+          "动作校验"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 2,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "495fcbf7-66b9-53f7-8690-72fcd8a92b95",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "运输中车辆动作限制规则",
+      "description": "当车辆状态为MOVING（位于边上）时，禁止其开始装载或卸载，唯一合法动作为CONTINUE_TRAVEL；用于在动作生成阶段校验车辆动作合法性。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止运输中车辆执行非法装卸动作",
+      "domain": "交通仿真",
+      "task_family": "动作合法性约束",
+      "method_family": "状态约束规则",
+      "stage": "动作生成",
+      "applicable_signals": [
+        "车辆Status=MOVING",
+        "车辆位于边上",
+        "需要对车辆动作做合法性校验"
+      ],
+      "contraindications": [
+        "车辆位于节点上且可执行装卸",
+        "车辆状态非MOVING"
+      ],
+      "intervention_moves": [
+        "检查车辆Status字段",
+        "若为MOVING则拒绝START_LOADING/START_UNLOADING",
+        "将唯一合法动作限定为CONTINUE_TRAVEL"
+      ],
+      "workflow_steps": [
+        "读取车辆当前Status",
+        "若Status=MOVING，则屏蔽START_LOADING与START_UNLOADING动作",
+        "仅允许CONTINUE_TRAVEL作为该车辆本tick动作",
+        "输出校验后的合法动作"
+      ],
+      "triggers": [
+        "车辆状态为MOVING",
+        "校验车辆动作合法性",
+        "生成车辆每tick动作"
+      ],
+      "constraints": [
+        "MOVING车辆不得开始装载或卸载",
+        "MOVING车辆唯一合法动作为CONTINUE_TRAVEL"
+      ],
+      "cautions": [
+        "动作在容量与冲突检查阶段前仅为请求，本规则在动作生成阶段先行约束",
+        "仅对Status=MOVING的车辆生效，勿误用于节点上的车辆"
+      ],
+      "output_contract": [
+        "MOVING车辆仅产生CONTINUE_TRAVEL动作，非法装卸动作被拒绝。"
+      ],
+      "examples": [],
+      "risk_class": "medium",
+      "confidence": 0.8,
+      "support_ids": [
+        "bf652b72-d3c7-5c87-8b05-3ee6a1f7dbe0"
+      ],
+      "metadata": {
+        "prompt": "在生成或校验车辆动作时，先检查车辆状态。若Status=MOVING（车辆位于边上），则不得生成START_LOADING或START_UNLOADING动作，唯一合法动作为CONTINUE_TRAVEL；若车辆位于节点上，则不适用本规则，按常规动作枚举处理。",
+        "tags": [
+          "交通仿真",
+          "动作合法性",
+          "状态约束",
+          "MOVING",
+          "CONTINUE_TRAVEL"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "709ed34d-7c03-526c-b4e4-c9094e9cba34",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "交付与延误计算规则",
+      "description": "用于交通仿真结果评估：判定consignment是否已在DestinationNode卸载完成交付，并按规则计算延误tick值（按时或提前为0，否则为DeliveredTime减DueTime）。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "统一判定交付状态并计算延误tick",
+      "domain": "交通仿真",
+      "task_family": "交付评估",
+      "method_family": "指标计算规则",
+      "stage": "结果评估",
+      "applicable_signals": [
+        "存在consignment的卸载记录或DeliveredTime",
+        "需要DueTime与DeliveredTime对比",
+        "需要输出交付状态或延误指标"
+      ],
+      "contraindications": [
+        "需生成车辆动作",
+        "需进行容量与冲突校验",
+        "需调度或路径规划"
+      ],
+      "intervention_moves": [
+        "检查consignment是否在DestinationNode卸载以判定交付",
+        "对已交付consignment比较DeliveredTime与DueTime",
+        "按规则计算延误tick值"
+      ],
+      "workflow_steps": [
+        "确认consignment是否已在DestinationNode卸载；是则标记为已交付，否则标记为未交付。",
+        "对已交付consignment读取DeliveredTime与DueTime。",
+        "若DeliveredTime小于等于DueTime，延误记为0；否则延误记为DeliveredTime减DueTime的tick数。",
+        "输出交付状态与延误tick值。"
+      ],
+      "triggers": [
+        "需判定consignment是否交付",
+        "需计算consignment延误tick",
+        "需汇总交付结果用于评估"
+      ],
+      "constraints": [
+        "交付判定仅以在DestinationNode卸载为准",
+        "延误仅在已交付时计算",
+        "延误不得为负值，按时或提前统一记为0"
+      ],
+      "cautions": [
+        "未交付的consignment不适用延误公式，应单独标记为未交付",
+        "本规则不涉及车辆动作合法性或容量校验"
+      ],
+      "output_contract": [
+        "返回每个consignment的交付状态（已交付/未交付）及已交付者的延误tick值（0或DeliveredTime减DueTime）。"
+      ],
+      "examples": [
+        {
+          "input": "consignment已在DestinationNode卸载，DeliveredTime=12，DueTime=10",
+          "output": "交付状态：已交付；延误：2 ticks",
+          "notes": "DeliveredTime大于DueTime"
+        },
+        {
+          "input": "consignment已在DestinationNode卸载，DeliveredTime=8，DueTime=10",
+          "output": "交付状态：已交付；延误：0 ticks",
+          "notes": "提前交付，延误记为0"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "86f4f642-e618-525b-8ead-3675741e668d"
+      ],
+      "metadata": {
+        "prompt": "当需要评估consignment的交付状态或计算延误时使用本规则。先确认该consignment是否已在DestinationNode卸载：已卸载则标记为已交付；未卸载则视为未交付。对已交付的consignment计算延误：若DeliveredTime小于等于DueTime，延误为0；否则延误为DeliveredTime减DueTime的tick数。仅输出交付状态与延误tick值，不生成车辆动作或进行容量校验。",
+        "tags": [
+          "交通仿真",
+          "交付评估",
+          "延误计算",
+          "指标规则"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 4,
+        "window_id": "0eabe30f-5b72-577a-82eb-d5caeb444326",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 45,
+        "paragraph_end": 52,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

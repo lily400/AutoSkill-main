@@ -1,0 +1,211 @@
+{
+  "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+  "window_id": "7c414aed-7976-540b-bbfe-12588f0d722e",
+  "section_heading": "# System Context",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "48d1b682-6c0b-59c4-9133-ad42c6e0b22e",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+      "section": "# System Context",
+      "span": {
+        "start": 19106,
+        "end": 19416
+      },
+      "excerpt": "**3C. Classify sentiment** (if semantically applicable):\n\n* Analyze the tone and language used  \n* Identify positive/negative attribute descriptions  \n* Consider overall evaluation (recommendation vs. criticism)  \n* For mixed reviews, determine which sentiment dominates\n\n**3D. Increment appropriate counter**:",
+      "relation_type": "support",
+      "confidence": 0.6,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "评论情感分类与计数",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "判定单条评论的主导情感并更新对应计数",
+        "task_family": "情感分类",
+        "method_family": "规则化情感判定",
+        "stage": "分类与计数",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "candidate_slot": 1,
+        "window_id": "7c414aed-7976-540b-bbfe-12588f0d722e",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 81,
+        "paragraph_end": 83,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      },
+      "created_at": "2026-10-28T05:29:27+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "caee4562-2efb-5550-bdd7-087627ab54d8",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "name": "评论情感分类与计数",
+      "description": "对语义上可判定情感的评论文本判定主导情感（正面/负面/混合），并据此递增对应计数器；用于需要从评论中提取情感倾向并汇总统计的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "判定单条评论的主导情感并更新对应计数",
+      "domain": "评论分析",
+      "task_family": "情感分类",
+      "method_family": "规则化情感判定",
+      "stage": "分类与计数",
+      "applicable_signals": [
+        "评论文本包含可解读的语气与用词",
+        "评论包含正面或负面属性描述",
+        "评论含整体评价（推荐或批评）",
+        "需要按情感类别汇总统计"
+      ],
+      "contraindications": [
+        "评论语义不适用或无法判定情感",
+        "输入缺失或无效"
+      ],
+      "intervention_moves": [
+        "分析评论的语气与用词",
+        "识别正面/负面属性描述",
+        "结合整体评价判断推荐还是批评",
+        "对混合评论判断主导情感",
+        "递增对应情感类别的计数器"
+      ],
+      "workflow_steps": [
+        "确认评论语义上可判定情感，否则跳过分类与计数",
+        "分析语气与用词",
+        "识别正面/负面属性描述",
+        "结合整体评价判断倾向",
+        "若为混合评论，判断主导情感",
+        "递增对应情感类别的计数器"
+      ],
+      "triggers": [
+        "评论语义上可判定情感",
+        "需要按情感类别累计计数"
+      ],
+      "constraints": [
+        "仅在评论语义上可判定情感时执行分类",
+        "混合评论必须确定主导情感后再计数",
+        "每条评论只递增一个对应类别的计数器"
+      ],
+      "cautions": [
+        "语义不适用或无法判定情感时不应强行分类",
+        "输入缺失或无效时不应计数"
+      ],
+      "output_contract": [
+        "每条评论的情感标签（正面/负面/混合）及更新后的分类计数器"
+      ],
+      "examples": [
+        {
+          "input": "评论语气积极、以推荐为主，含正面属性描述",
+          "output": "情感标签：正面；正面计数器递增",
+          "notes": "整体评价为推荐时判定为正面"
+        },
+        {
+          "input": "评论同时含正面与负面描述，但批评占主导",
+          "output": "情感标签：混合（负面主导）；负面计数器递增",
+          "notes": "混合评论需判断主导情感"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.6,
+      "support_ids": [
+        "48d1b682-6c0b-59c4-9133-ad42c6e0b22e"
+      ],
+      "metadata": {
+        "prompt": "对每条语义上可判定情感的评论执行情感判定：分析语气与用词，识别正面/负面属性描述，结合整体评价（推荐还是批评）判断倾向；若为混合评论，判断哪种情感占主导；随后递增与该情感类别对应的计数器。若评论语义不适用或无法判定情感，或输入缺失/无效，则不进行分类与计数。",
+        "tags": [
+          "情感分类",
+          "计数",
+          "评论分析",
+          "规则化判定"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# System Context"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "7c414aed-7976-540b-bbfe-12588f0d722e",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 81,
+        "paragraph_end": 83,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

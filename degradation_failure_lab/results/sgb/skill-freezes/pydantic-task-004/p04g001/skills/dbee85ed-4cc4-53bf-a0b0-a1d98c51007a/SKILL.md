@@ -1,0 +1,131 @@
+---
+id: "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a"
+name: "字符串判别器字段声明"
+description: "在 Pydantic 模型定义中，为联合字段声明字符串判别器（str discriminator），使校验时按标签字段分派到对应联合成员。适用于联合成员可由单一字符串字段区分的场景，提供 Field(discriminator=...) 与 Annotated 两种声明语法。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "union"
+  - "discriminator"
+  - "str-discriminator"
+  - "model-definition"
+triggers:
+  - "联合字段的成员可通过单一字符串字段区分"
+  - "需要简洁的判别器声明语法"
+  - "希望用 Field(discriminator=...) 或 Annotated 模式声明判别器"
+examples:
+  - input: "some_field: Union[...] = Field(discriminator='my_discriminator')"
+    output: "联合字段按 my_discriminator 标签字段分派校验"
+    notes: "直接字段声明语法"
+  - input: "some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]"
+    output: "联合字段按 my_discriminator 标签字段分派校验"
+    notes: "Annotated 模式，便于将 Union 与 discriminator 信息归组"
+---
+
+# 字符串判别器字段声明
+
+在 Pydantic 模型定义中，为联合字段声明字符串判别器（str discriminator），使校验时按标签字段分派到对应联合成员。适用于联合成员可由单一字符串字段区分的场景，提供 Field(discriminator=...) 与 Annotated 两种声明语法。
+
+## Prompt
+
+当联合字段的各成员可通过一个字符串标签字段区分时，使用本技能声明判别器。
+
+执行要点：
+1. 确认联合成员各自拥有一个可区分的字符串标签字段（判别字段）。
+2. 选择声明语法：
+   - 直接字段声明：some_field: Union[...] = Field(discriminator='my_discriminator')
+   - Annotated 模式：some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]
+3. 判别器参数值必须与各成员中用于分派的标签字段名一致。
+4. 若判别依赖运行时类型而非字段值，改用 callable Discriminator，不要使用本技能。
+5. 声明后通过 model_validate 验证：输入应被分派到正确的联合成员。
+
+## Objective
+
+为联合字段声明字符串判别器，实现按标签字段分派校验
+## Applicable Signals
+
+- 联合成员各自带有可区分的字符串标签字段
+- 需要以声明式语法指定判别器
+- 希望避免运行时类型判断逻辑
+
+## Contraindications
+
+- 判别需依赖运行时类型而非字段值时，应改用 callable Discriminator
+- 联合成员缺少可区分的字符串标签字段时
+
+## Intervention Moves
+
+- 识别联合成员中的判别字段
+- 选择 Field(discriminator=...) 或 Annotated 声明语法
+- 将判别器参数设为对应标签字段名
+- 用 model_validate 验证分派结果
+
+## Workflow Steps
+
+- 确认联合成员可通过单一字符串字段区分
+- 选择声明语法：some_field: Union[...] = Field(discriminator='my_discriminator') 或 some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]
+- 确保判别器参数值与成员标签字段名一致
+- 通过 model_validate 验证输入被分派到正确成员
+
+## Constraints
+
+- 判别器参数值必须与成员中用于分派的标签字段名一致
+- 仅在判别依据为字段值时使用；运行时类型判别应使用 callable Discriminator
+
+## Cautions
+
+- 若判别值未找到，校验会失败；需确保输入包含有效标签字段
+
+## Output Contract
+
+- 带 discriminator 参数的联合字段声明，校验时按标签字段分派到对应联合成员
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: some_field: Union[...] = Field(discriminator='my_discriminator')
+- Therapist/Output: 联合字段按 my_discriminator 标签字段分派校验
+- Notes: 直接字段声明语法
+
+### Example 2
+
+- Client/Input: some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]
+- Therapist/Output: 联合字段按 my_discriminator 标签字段分派校验
+- Notes: Annotated 模式，便于将 Union 与 discriminator 信息归组
+
+## Triggers
+
+- 联合字段的成员可通过单一字符串字段区分
+- 需要简洁的判别器声明语法
+- 希望用 Field(discriminator=...) 或 Annotated 模式声明判别器
+
+## Examples
+
+### Example 1
+
+Input:
+
+  some_field: Union[...] = Field(discriminator='my_discriminator')
+
+Output:
+
+  联合字段按 my_discriminator 标签字段分派校验
+
+Notes:
+
+  直接字段声明语法
+
+### Example 2
+
+Input:
+
+  some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]
+
+Output:
+
+  联合字段按 my_discriminator 标签字段分派校验
+
+Notes:
+
+  Annotated 模式，便于将 Union 与 discriminator 信息归组

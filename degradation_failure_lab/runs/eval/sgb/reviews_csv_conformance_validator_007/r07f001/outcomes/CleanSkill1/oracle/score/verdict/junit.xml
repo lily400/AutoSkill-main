@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="7" time="0.192" timestamp="2026-10-28T06:34:48.548273+00:00" hostname="4e6e6c69c696"><testcase classname="eval" name="test_cl_case[1-case0]" time="0.002" /><testcase classname="eval" name="test_cl_case[2-case1]" time="0.003"><failure message="AssertionError: case_2.message: 'ERROR: Processed reviews CSV validation failed. Issue: Missing required column(s): competitor_or_nike' != &quot;ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Missing column 'competitor_or_nike'\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.&quot;&#10;assert 'ERROR: Proce...titor_or_nike' == 'ERROR: Inval...ssed reviews.'&#10;  &#10;  + ERROR: Processed reviews CSV validation failed. Issue: Missing required column(s): competitor_or_nike&#10;  - ERROR: Invalid processed reviews received from orchestrator.&#10;  - &#10;  - Issue: Missing column 'competitor_or_nike'&#10;  - &#10;  - Required format: CSV output from review_processor with all classification columns.&#10;  - &#10;  - Cannot proceed with review analysis. Please provide corrected processed reviews.">case_index = 2
+case = {'expected_output': {'details': {'invalid_values': [], 'missing_columns': ['competitor_or_nike'], 'row_count': 20}, 'm...nr016,"a",yes,yes,Nike\nr017,"a",yes,yes,Nike\nr018,"a",yes,yes,Nike\nr019,"a",yes,yes,Nike\nr020,"a",yes,yes,Nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'ERROR: Processed reviews CSV validation failed. Issue: Missing required column(s): competitor_or_nike'
+expected = "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Missing column 'competitor_or_nike'\n\nRequire...r with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+path = 'case_2.message'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+&gt;           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_2.message: 'ERROR: Processed reviews CSV validation failed. Issue: Missing required column(s): competitor_or_nike' != "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Missing column 'competitor_or_nike'\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+E           assert 'ERROR: Proce...titor_or_nike' == 'ERROR: Inval...ssed reviews.'
+E             
+E             + ERROR: Processed reviews CSV validation failed. Issue: Missing required column(s): competitor_or_nike
+E             - ERROR: Invalid processed reviews received from orchestrator.
+E             - 
+E             - Issue: Missing column 'competitor_or_nike'
+E             - 
+E             - Required format: CSV output from review_processor with all classification columns.
+E             - 
+E             - Cannot proceed with review analysis. Please provide corrected processed reviews.
+
+oracle/eval.py:80: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[3-case2]" time="0.002"><failure message="AssertionError: case_3.message: &quot;ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set&quot; != &quot;ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.&quot;&#10;assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'&#10;  &#10;  + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set&#10;  - ERROR: Invalid processed reviews received from orchestrator.&#10;  - &#10;  - Issue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')&#10;  - &#10;  - Required format: CSV output from review_processor with all classification columns.&#10;  - &#10;  - Cannot proceed with review analysis. Please provide corrected processed reviews.">case_index = 3
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'is_sportswear', 'row': 1, 'value': 'Yes'}], 'missing_c...ke\nr017,"a",yes,yes,Nike,nike\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set"
+expected = "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear col...r with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+path = 'case_3.message'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+&gt;           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_3.message: "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set" != "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+E           assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'
+E             
+E             + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set
+E             - ERROR: Invalid processed reviews received from orchestrator.
+E             - 
+E             - Issue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')
+E             - 
+E             - Required format: CSV output from review_processor with all classification columns.
+E             - 
+E             - Cannot proceed with review analysis. Please provide corrected processed reviews.
+
+oracle/eval.py:80: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[4-case3]" time="0.002"><failure message="AssertionError: case_4.message: &quot;ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_apparel_product: 'YES'; values must be lowercase and within the allowed set&quot; != &quot;ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'YES' in is_apparel_product column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.&quot;&#10;assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'&#10;  &#10;  + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_apparel_product: 'YES'; values must be lowercase and within the allowed set&#10;  - ERROR: Invalid processed reviews received from orchestrator.&#10;  - &#10;  - Issue: Found invalid value 'YES' in is_apparel_product column (must be lowercase 'yes')&#10;  - &#10;  - Required format: CSV output from review_processor with all classification columns.&#10;  - &#10;  - Cannot proceed with review analysis. Please provide corrected processed reviews.">case_index = 4
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'is_apparel_product', 'row': 1, 'value': 'YES'}], 'miss...ke\nr017,"a",yes,yes,Nike,nike\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_apparel_product: 'YES'; values must be lowercase and within the allowed set"
+expected = "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'YES' in is_apparel_produc...r with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+path = 'case_4.message'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+&gt;           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_4.message: "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_apparel_product: 'YES'; values must be lowercase and within the allowed set" != "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'YES' in is_apparel_product column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+E           assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'
+E             
+E             + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column is_apparel_product: 'YES'; values must be lowercase and within the allowed set
+E             - ERROR: Invalid processed reviews received from orchestrator.
+E             - 
+E             - Issue: Found invalid value 'YES' in is_apparel_product column (must be lowercase 'yes')
+E             - 
+E             - Required format: CSV output from review_processor with all classification columns.
+E             - 
+E             - Cannot proceed with review analysis. Please provide corrected processed reviews.
+
+oracle/eval.py:80: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[5-case4]" time="0.003"><failure message="AssertionError: case_5.message: &quot;ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column competitor_or_nike: 'Nike'; values must be lowercase and within the allowed set&quot; != &quot;ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Nike' in competitor_or_nike column\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.&quot;&#10;assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'&#10;  &#10;  + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column competitor_or_nike: 'Nike'; values must be lowercase and within the allowed set&#10;  - ERROR: Invalid processed reviews received from orchestrator.&#10;  - &#10;  - Issue: Found invalid value 'Nike' in competitor_or_nike column&#10;  - &#10;  - Required format: CSV output from review_processor with all classification columns.&#10;  - &#10;  - Cannot proceed with review analysis. Please provide corrected processed reviews.">case_index = 5
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'competitor_or_nike', 'row': 1, 'value': 'Nike'}], 'mis...ke\nr017,"a",yes,yes,Nike,nike\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column competitor_or_nike: 'Nike'; values must be lowercase and within the allowed set"
+expected = "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Nike' in competitor_or_ni...r with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+path = 'case_5.message'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+&gt;           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_5.message: "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column competitor_or_nike: 'Nike'; values must be lowercase and within the allowed set" != "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Nike' in competitor_or_nike column\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+E           assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'
+E             
+E             + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 1 column competitor_or_nike: 'Nike'; values must be lowercase and within the allowed set
+E             - ERROR: Invalid processed reviews received from orchestrator.
+E             - 
+E             - Issue: Found invalid value 'Nike' in competitor_or_nike column
+E             - 
+E             - Required format: CSV output from review_processor with all classification columns.
+E             - 
+E             - Cannot proceed with review analysis. Please provide corrected processed reviews.
+
+oracle/eval.py:80: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[6-case5]" time="0.003"><failure message="AssertionError: case_6.message: 'ERROR: Processed reviews CSV validation failed. Issue: Only 19 rows found, expected at least 20' != 'ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Only 19 rows found, expected at least 20\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.'&#10;assert 'ERROR: Proce...d at least 20' == 'ERROR: Inval...ssed reviews.'&#10;  &#10;  + ERROR: Processed reviews CSV validation failed. Issue: Only 19 rows found, expected at least 20&#10;  - ERROR: Invalid processed reviews received from orchestrator.&#10;  - &#10;  - Issue: Only 19 rows found, expected at least 20&#10;  - &#10;  - Required format: CSV output from review_processor with all classification columns.&#10;  - &#10;  - Cannot proceed with review analysis. Please provide corrected processed reviews.">case_index = 6
+case = {'expected_output': {'details': {'invalid_values': [], 'missing_columns': [], 'row_count': 19}, 'message': 'ERROR: Inv...ke\nr016,"a",yes,yes,Nike,nike\nr017,"a",yes,yes,Nike,nike\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'ERROR: Processed reviews CSV validation failed. Issue: Only 19 rows found, expected at least 20'
+expected = 'ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Only 19 rows found, expected at least 20\n\nRe...r with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.'
+path = 'case_6.message'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+&gt;           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_6.message: 'ERROR: Processed reviews CSV validation failed. Issue: Only 19 rows found, expected at least 20' != 'ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Only 19 rows found, expected at least 20\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.'
+E           assert 'ERROR: Proce...d at least 20' == 'ERROR: Inval...ssed reviews.'
+E             
+E             + ERROR: Processed reviews CSV validation failed. Issue: Only 19 rows found, expected at least 20
+E             - ERROR: Invalid processed reviews received from orchestrator.
+E             - 
+E             - Issue: Only 19 rows found, expected at least 20
+E             - 
+E             - Required format: CSV output from review_processor with all classification columns.
+E             - 
+E             - Cannot proceed with review analysis. Please provide corrected processed reviews.
+
+oracle/eval.py:80: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[7-case6]" time="0.003"><failure message="AssertionError: case_7.message: &quot;ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 21 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set&quot; != &quot;ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.&quot;&#10;assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'&#10;  &#10;  + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 21 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set&#10;  - ERROR: Invalid processed reviews received from orchestrator.&#10;  - &#10;  - Issue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')&#10;  - &#10;  - Required format: CSV output from review_processor with all classification columns.&#10;  - &#10;  - Cannot proceed with review analysis. Please provide corrected processed reviews.">case_index = 7
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'is_sportswear', 'row': 21, 'value': 'Yes'}], 'missing_...ke\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\nr021,"a",Yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 21 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set"
+expected = "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear col...r with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+path = 'case_7.message'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+&gt;           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_7.message: "ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 21 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set" != "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews."
+E           assert 'ERROR: Proce...e allowed set' == 'ERROR: Inval...ssed reviews.'
+E             
+E             + ERROR: Processed reviews CSV validation failed. Issue: Invalid value in row 21 column is_sportswear: 'Yes'; values must be lowercase and within the allowed set
+E             - ERROR: Invalid processed reviews received from orchestrator.
+E             - 
+E             - Issue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')
+E             - 
+E             - Required format: CSV output from review_processor with all classification columns.
+E             - 
+E             - Cannot proceed with review analysis. Please provide corrected processed reviews.
+
+oracle/eval.py:80: AssertionError</failure></testcase></testsuite></testsuites>

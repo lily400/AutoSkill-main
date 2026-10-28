@@ -1,0 +1,115 @@
+{
+  "skill_id": "d5819e3a-52b8-5d7e-ae63-fc922c47c24a",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "d5819e3a-52b8-5d7e-ae63-fc922c47c24a",
+    "name": "输出完整性与有效性校验",
+    "description": "对批量结构化输出执行完整性检查（数量、覆盖、去重、字段齐全）与数据有效性检查，确认交付物符合既定规格；适用于任何需要验证批量结构化输出是否合规的场景。",
+    "skill_body": "在交付前对结构化输出执行两阶段校验：先做完整性检查（对象数量是否与预期一致、是否覆盖全部源条目、是否存在重复ID、每个对象字段是否齐全），再做数据有效性检查。逐项记录通过/不通过结果，汇总问题清单后给出总体校验结论。\n\n## Objective\n\n验证输出满足数量、覆盖、去重与字段完整性要求\n## Applicable Signals\n\n- 输出为批量结构化对象且存在明确规格\n- 存在预期数量、源条目清单或字段定义可供对照\n\n## Contraindications\n\n- 输出为非结构化自由文本\n- 无明确规格可对照\n\n## Intervention Moves\n\n- 核对输出对象数量与预期数量是否一致\n- 核对源条目是否全部出现在输出中\n- 检查输出中是否存在重复ID\n- 检查每个对象是否包含全部必需字段\n- 执行数据有效性检查并记录异常\n\n## Workflow Steps\n\n- 完整性检查：确认输出对象数量与预期一致\n- 完整性检查：确认源条目全部覆盖，无遗漏\n- 完整性检查：确认无重复ID\n- 完整性检查：确认每个对象字段齐全\n- 数据有效性检查：按规格核验字段内容有效性\n- 汇总通过/不通过结论及问题清单\n\n## Constraints\n\n- 校验须以既定规格为唯一对照标准\n- 完整性与有效性检查须分别执行并分别记录结果\n\n## Cautions\n\n- 规格不明确时不应臆造校验标准，应标记为无法校验\n- 问题清单需可定位到具体对象或字段\n\n## Output Contract\n\n- 通过/不通过的校验结论及问题清单\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 输出包含50个SKU对象，需对照产品目录校验\n- Therapist/Output: 完整性检查：数量一致、目录全覆盖、无重复SKU ID、5个字段齐全；数据有效性检查结果与问题清单；总体结论：通过/不通过\n- Notes: 完整性与有效性分阶段记录",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "验证输出满足数量、覆盖、去重与字段完整性要求",
+    "domain": "程序化任务执行",
+    "task_family": "输出质量校验",
+    "method_family": "规则化校验",
+    "stage": "交付前验证",
+    "applicable_signals": [
+      "输出为批量结构化对象且存在明确规格",
+      "存在预期数量、源条目清单或字段定义可供对照"
+    ],
+    "contraindications": [
+      "输出为非结构化自由文本",
+      "无明确规格可对照"
+    ],
+    "intervention_moves": [
+      "核对输出对象数量与预期数量是否一致",
+      "核对源条目是否全部出现在输出中",
+      "检查输出中是否存在重复ID",
+      "检查每个对象是否包含全部必需字段",
+      "执行数据有效性检查并记录异常"
+    ],
+    "triggers": [
+      "需要确认输出对象数量与预期一致",
+      "需要检查是否存在重复ID或缺失字段",
+      "批量结构化输出交付前需要合规确认"
+    ],
+    "workflow_steps": [
+      "完整性检查：确认输出对象数量与预期一致",
+      "完整性检查：确认源条目全部覆盖，无遗漏",
+      "完整性检查：确认无重复ID",
+      "完整性检查：确认每个对象字段齐全",
+      "数据有效性检查：按规格核验字段内容有效性",
+      "汇总通过/不通过结论及问题清单"
+    ],
+    "constraints": [
+      "校验须以既定规格为唯一对照标准",
+      "完整性与有效性检查须分别执行并分别记录结果"
+    ],
+    "cautions": [
+      "规格不明确时不应臆造校验标准，应标记为无法校验",
+      "问题清单需可定位到具体对象或字段"
+    ],
+    "output_contract": [
+      "通过/不通过的校验结论及问题清单"
+    ],
+    "examples": [
+      {
+        "input": "输出包含50个SKU对象，需对照产品目录校验",
+        "output": "完整性检查：数量一致、目录全覆盖、无重复SKU ID、5个字段齐全；数据有效性检查结果与问题清单；总体结论：通过/不通过",
+        "notes": "完整性与有效性分阶段记录"
+      }
+    ],
+    "tags": [
+      "输出校验",
+      "完整性检查",
+      "数据有效性",
+      "交付前验证",
+      "规则化校验"
+    ],
+    "support_ids": [
+      "c582ea63-bafe-524d-9b6c-28d187bcd04f"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "0a8db05d-a997-5fe6-8c30-772b09090af3"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|验证输出满足数量、覆盖、去重与字段完整性要求|程序化任务执行|输出质量校验|规则化校验|交付前验证|输出完整性与有效性校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

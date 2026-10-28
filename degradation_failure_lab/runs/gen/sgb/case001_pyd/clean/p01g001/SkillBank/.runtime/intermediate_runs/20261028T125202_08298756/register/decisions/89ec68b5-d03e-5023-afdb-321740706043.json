@@ -1,0 +1,109 @@
+{
+  "skill_id": "89ec68b5-d03e-5023-afdb-321740706043",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批 peer 候选“Pydantic 模型级 before/after 校验器实现”高度重叠，后者更具体地覆盖 model_validator 的 before/after 实现细节；本候选内容泛化且缺乏可区分的独立能力，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "89ec68b5-d03e-5023-afdb-321740706043",
+    "name": "模型级校验器实现",
+    "description": "在 Pydantic 模型级别实现校验器，对多个字段或整体数据执行跨字段一致性检查与变更，适用于字段级校验无法覆盖的整体数据约束。",
+    "skill_body": "实现模型级校验器：定义一个接收模型数据（或模型实例）的校验函数，在其中执行跨字段一致性检查或整体数据约束校验，必要时对数据进行变更，并在不满足条件时抛出校验错误。校验器应返回校验后的数据，保持类型安全，避免与单字段校验器职责重叠。\n\n## Objective\n\n实现跨字段或模型级校验逻辑\n## Applicable Signals\n\n- 约束涉及多个字段之间的关系\n- 需要在整体数据层面执行校验\n- 单字段校验器无法表达该约束\n\n## Contraindications\n\n- 仅涉及单字段校验时不应使用模型校验器\n- 约束可由字段级校验器表达时优先使用字段级校验\n\n## Intervention Moves\n\n- 定义接收模型数据的校验函数\n- 在函数内执行跨字段一致性检查\n- 对校验后的数据进行必要的变更或强制转换\n- 在不满足条件时抛出校验错误\n- 返回校验后的数据\n\n## Workflow Steps\n\n- 确认约束为跨字段或模型级，字段级校验无法覆盖\n- 编写模型校验器函数，接收模型数据作为输入\n- 在函数内实现一致性检查与必要的值变更\n- 对不满足条件的情况抛出校验错误\n- 返回校验后的数据并确认校验器可运行\n\n## Constraints\n\n- 校验器应返回校验后的值\n- 校验器应保持类型安全\n- 校验器职责限定在模型级，不与字段级校验器重复\n\n## Cautions\n\n- 校验器可对值进行变更（强制转换或修改），需确保变更符合预期\n- 抛出校验错误时应提供清晰的错误信息\n\n## Output Contract\n\n- 一个可运行的模型校验器，能够对模型级或跨字段数据进行校验并在不满足条件时抛出校验错误。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "实现跨字段或模型级校验逻辑",
+    "domain": "pydantic",
+    "task_family": "模型校验",
+    "method_family": "model validator 实现",
+    "stage": "模型级校验",
+    "applicable_signals": [
+      "约束涉及多个字段之间的关系",
+      "需要在整体数据层面执行校验",
+      "单字段校验器无法表达该约束"
+    ],
+    "contraindications": [
+      "仅涉及单字段校验时不应使用模型校验器",
+      "约束可由字段级校验器表达时优先使用字段级校验"
+    ],
+    "intervention_moves": [
+      "定义接收模型数据的校验函数",
+      "在函数内执行跨字段一致性检查",
+      "对校验后的数据进行必要的变更或强制转换",
+      "在不满足条件时抛出校验错误",
+      "返回校验后的数据"
+    ],
+    "triggers": [
+      "需要跨字段一致性检查",
+      "字段级校验无法覆盖整体数据约束",
+      "需要在模型级别对整体数据进行校验或变更"
+    ],
+    "workflow_steps": [
+      "确认约束为跨字段或模型级，字段级校验无法覆盖",
+      "编写模型校验器函数，接收模型数据作为输入",
+      "在函数内实现一致性检查与必要的值变更",
+      "对不满足条件的情况抛出校验错误",
+      "返回校验后的数据并确认校验器可运行"
+    ],
+    "constraints": [
+      "校验器应返回校验后的值",
+      "校验器应保持类型安全",
+      "校验器职责限定在模型级，不与字段级校验器重复"
+    ],
+    "cautions": [
+      "校验器可对值进行变更（强制转换或修改），需确保变更符合预期",
+      "抛出校验错误时应提供清晰的错误信息"
+    ],
+    "output_contract": [
+      "一个可运行的模型校验器，能够对模型级或跨字段数据进行校验并在不满足条件时抛出校验错误。"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "model-validator",
+      "跨字段校验",
+      "模型级校验"
+    ],
+    "support_ids": [
+      "39003716-eaee-58c9-b628-e5747815a166"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "95026d5f-7483-54a9-9bc9-078a168f063b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|实现跨字段或模型级校验逻辑|pydantic|模型校验|model validator 实现|模型级校验|模型级校验器实现"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

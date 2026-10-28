@@ -1,0 +1,293 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+____________________________ test_cl_case[1-case0] _____________________________
+
+case_index = 1
+case = {'expected_output': {'decisions': [{'action': 'ENTER_EDGE', 'approved': True, 'edge_id': 'E1', 'effective_max_vehicles...e_occupancy': {'E1': ['V9']}, 'enter_requests': [{'edge_id': 'E1', 'from_node': 'N1', 'vehicle_id': 'V1'}], 'tick': 1}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = False, expected = True, path = 'case_1.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_1.decisions[0].approved: False != True
+E           assert False is True
+
+oracle/eval.py:59: AssertionError
+____________________________ test_cl_case[2-case1] _____________________________
+
+case_index = 2
+case = {'expected_output': {'decisions': [{'action': 'WAIT', 'approved': False, 'edge_id': 'E6', 'effective_max_vehicles': 1,...e_occupancy': {'E6': ['Vx']}, 'enter_requests': [{'edge_id': 'E6', 'from_node': 'N2', 'vehicle_id': 'V2'}], 'tick': 0}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = True, expected = False, path = 'case_2.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_2.decisions[0].approved: True != False
+E           assert True is False
+
+oracle/eval.py:59: AssertionError
+____________________________ test_cl_case[3-case2] _____________________________
+
+case_index = 3
+case = {'expected_output': {'decisions': [{'action': 'WAIT', 'approved': False, 'edge_id': 'E9', 'effective_max_vehicles': 2,...pancy': {'E9': ['V1', 'V2']}, 'enter_requests': [{'edge_id': 'E9', 'from_node': 'N4', 'vehicle_id': 'V4'}], 'tick': 4}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = True, expected = False, path = 'case_3.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_3.decisions[0].approved: True != False
+E           assert True is False
+
+oracle/eval.py:59: AssertionError
+____________________________ test_cl_case[4-case3] _____________________________
+
+case_index = 4
+case = {'expected_output': {'decisions': [{'action': 'WAIT', 'approved': False, 'edge_id': 'E4', 'effective_max_vehicles': 2,...'edge_occupancy': {'E4': []}, 'enter_requests': [{'edge_id': 'E4', 'from_node': 'N4', 'vehicle_id': 'V7'}], 'tick': 5}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = True, expected = False, path = 'case_4.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_4.decisions[0].approved: True != False
+E           assert True is False
+
+oracle/eval.py:59: AssertionError
+____________________________ test_cl_case[5-case4] _____________________________
+
+case_index = 5
+case = {'expected_output': {'decisions': [{'action': 'ENTER_EDGE', 'approved': True, 'edge_id': 'E2', 'effective_max_vehicles...'edge_occupancy': {'E2': []}, 'enter_requests': [{'edge_id': 'E2', 'from_node': 'N2', 'vehicle_id': 'V8'}], 'tick': 0}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = False, expected = True, path = 'case_5.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_5.decisions[0].approved: False != True
+E           assert False is True
+
+oracle/eval.py:59: AssertionError
+____________________________ test_cl_case[6-case5] _____________________________
+
+case_index = 6
+case = {'expected_output': {'decisions': [{'action': 'WAIT', 'approved': False, 'edge_id': 'E2', 'effective_max_vehicles': 4,...'edge_occupancy': {'E2': []}, 'enter_requests': [{'edge_id': 'E2', 'from_node': 'N2', 'vehicle_id': 'V8'}], 'tick': 2}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = True, expected = False, path = 'case_6.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_6.decisions[0].approved: True != False
+E           assert True is False
+
+oracle/eval.py:59: AssertionError
+____________________________ test_cl_case[7-case6] _____________________________
+
+case_index = 7
+case = {'expected_output': {'decisions': [{'action': 'ENTER_EDGE', 'approved': True, 'edge_id': 'E20', 'effective_max_vehicle...dge_occupancy': {'E20': []}, 'enter_requests': [{'edge_id': 'E20', 'from_node': 'N9', 'vehicle_id': 'V9'}], 'tick': 3}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = False, expected = True, path = 'case_7.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_7.decisions[0].approved: False != True
+E           assert False is True
+
+oracle/eval.py:59: AssertionError
+____________________________ test_cl_case[8-case7] _____________________________
+
+case_index = 8
+case = {'expected_output': {'decisions': [{'action': 'ENTER_EDGE', 'approved': True, 'edge_id': 'E9', 'effective_max_vehicles..._occupancy': {'E9': ['A']}, 'enter_requests': [{'edge_id': 'E9', 'from_node': 'N4', 'vehicle_id': 'V10'}], 'tick': 10}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:87: in assert_close
+    assert_close(actual_item, expected_item, f"{path}[{idx}]")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = False, expected = True, path = 'case_8.decisions[0].approved'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+>           assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_8.decisions[0].approved: False != True
+E           assert False is True
+
+oracle/eval.py:59: AssertionError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED oracle/eval.py::test_cl_case[1-case0] - AssertionError: case_1.decisio...
+FAILED oracle/eval.py::test_cl_case[2-case1] - AssertionError: case_2.decisio...
+FAILED oracle/eval.py::test_cl_case[3-case2] - AssertionError: case_3.decisio...
+FAILED oracle/eval.py::test_cl_case[4-case3] - AssertionError: case_4.decisio...
+FAILED oracle/eval.py::test_cl_case[5-case4] - AssertionError: case_5.decisio...
+FAILED oracle/eval.py::test_cl_case[6-case5] - AssertionError: case_6.decisio...
+FAILED oracle/eval.py::test_cl_case[7-case6] - AssertionError: case_7.decisio...
+FAILED oracle/eval.py::test_cl_case[8-case7] - AssertionError: case_8.decisio...
+8 failed in 0.29s

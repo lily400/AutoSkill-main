@@ -1,0 +1,101 @@
+{
+  "skill_id": "4af0a451-fa59-56c0-b498-7eb801ffbcd2",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "4af0a451-fa59-56c0-b498-7eb801ffbcd2",
+    "name": "联合校验错误聚合",
+    "description": "当联合类型的所有成员均校验失败时，收集并返回全部成员的错误信息，而非仅返回首个错误，用于向调用方提供完整诊断反馈。",
+    "skill_body": "在联合校验流程中，当所有成员均校验失败时，遍历各成员产生的错误并聚合为完整错误集合返回；不要只返回首个错误，也不要在已有成员成功时触发聚合。\n\n## Objective\n\n在所有联合成员失败时聚合返回全部错误\n## Applicable Signals\n\n- 联合所有成员均校验失败\n- 需要向调用方提供完整错误集合以诊断\n\n## Contraindications\n\n- 已有成员校验成功\n- 仅需返回单一错误\n\n## Intervention Moves\n\n- 确认所有联合成员均已尝试且失败\n- 收集每个成员产生的错误\n- 将全部错误聚合为单一结果返回\n\n## Workflow Steps\n\n- 确认联合校验在所有成员上均失败\n- 收集各成员的错误信息\n- 聚合全部错误并返回给调用方\n\n## Constraints\n\n- 仅在所有成员均失败时执行聚合\n- 不得丢弃任何成员的错误\n\n## Cautions\n\n- 若存在成功成员则不应进入聚合路径\n\n## Output Contract\n\n- 返回包含所有成员错误的聚合错误结果",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在所有联合成员失败时聚合返回全部错误",
+    "domain": "pydantic",
+    "task_family": "union_validation",
+    "method_family": "error_aggregation",
+    "stage": "error_reporting",
+    "applicable_signals": [
+      "联合所有成员均校验失败",
+      "需要向调用方提供完整错误集合以诊断"
+    ],
+    "contraindications": [
+      "已有成员校验成功",
+      "仅需返回单一错误"
+    ],
+    "intervention_moves": [
+      "确认所有联合成员均已尝试且失败",
+      "收集每个成员产生的错误",
+      "将全部错误聚合为单一结果返回"
+    ],
+    "triggers": [
+      "联合类型校验失败",
+      "需要完整诊断反馈"
+    ],
+    "workflow_steps": [
+      "确认联合校验在所有成员上均失败",
+      "收集各成员的错误信息",
+      "聚合全部错误并返回给调用方"
+    ],
+    "constraints": [
+      "仅在所有成员均失败时执行聚合",
+      "不得丢弃任何成员的错误"
+    ],
+    "cautions": [
+      "若存在成功成员则不应进入聚合路径"
+    ],
+    "output_contract": [
+      "返回包含所有成员错误的聚合错误结果"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "union",
+      "error_aggregation",
+      "validation"
+    ],
+    "support_ids": [
+      "4ab62e87-1ea5-5ae8-af9f-eeb711787c41"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "69939a10-1a96-5f9f-83f0-15a512adf9c5"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在所有联合成员失败时聚合返回全部错误|pydantic|union_validation|error_aggregation|error_reporting|联合校验错误聚合"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

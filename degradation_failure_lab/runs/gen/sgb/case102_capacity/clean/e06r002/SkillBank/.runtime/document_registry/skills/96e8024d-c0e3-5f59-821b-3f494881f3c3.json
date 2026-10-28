@@ -1,0 +1,108 @@
+{
+  "skill_id": "96e8024d-c0e3-5f59-821b-3f494881f3c3",
+  "name": "动作请求待校验约束",
+  "description": "将所有车辆动作视为请求，必须经容量与冲突校验阶段验证后才生效，防止未校验动作直接改变仿真状态。适用于任何动作执行前的合规检查。",
+  "skill_body": "在执行任何车辆动作前，先将其视为待校验请求，而非已生效动作。确认该请求已进入容量与冲突校验阶段并得到校验结果（通过或拒绝）后，才允许其改变仿真状态；未校验的请求不得直接更新状态。\n\n## Objective\n\n确保动作在执行前经过容量与冲突校验\n## Applicable Signals\n\n- 车辆提交了动作请求\n- 即将更新仿真状态\n\n## Contraindications\n\n- 动作已通过校验并进入执行阶段\n\n## Intervention Moves\n\n- 将动作标记为待校验请求\n- 等待容量与冲突校验阶段给出结果\n- 仅在校验通过后允许动作生效\n\n## Workflow Steps\n\n- 接收车辆动作请求\n- 将请求标记为待校验状态，不直接改变仿真状态\n- 交由容量与冲突校验阶段验证\n- 根据校验结果标记为已校验或拒绝\n- 仅对已校验通过的动作执行状态更新\n\n## Constraints\n\n- 动作在校验前不得直接改变仿真状态\n- 校验结果必须明确为通过或拒绝\n\n## Cautions\n\n- 不得跳过容量与冲突校验阶段直接执行动作\n\n## Output Contract\n\n- 动作请求被标记为已校验或拒绝",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "确保动作在执行前经过容量与冲突校验",
+  "domain": "交通仿真规则",
+  "task_family": "动作合规校验",
+  "method_family": "前置校验守卫",
+  "stage": "校验阶段",
+  "applicable_signals": [
+    "车辆提交了动作请求",
+    "即将更新仿真状态"
+  ],
+  "contraindications": [
+    "动作已通过校验并进入执行阶段"
+  ],
+  "intervention_moves": [
+    "将动作标记为待校验请求",
+    "等待容量与冲突校验阶段给出结果",
+    "仅在校验通过后允许动作生效"
+  ],
+  "triggers": [
+    "车辆提交了动作请求",
+    "即将更新仿真状态"
+  ],
+  "workflow_steps": [
+    "接收车辆动作请求",
+    "将请求标记为待校验状态，不直接改变仿真状态",
+    "交由容量与冲突校验阶段验证",
+    "根据校验结果标记为已校验或拒绝",
+    "仅对已校验通过的动作执行状态更新"
+  ],
+  "constraints": [
+    "动作在校验前不得直接改变仿真状态",
+    "校验结果必须明确为通过或拒绝"
+  ],
+  "cautions": [
+    "不得跳过容量与冲突校验阶段直接执行动作"
+  ],
+  "output_contract": [
+    "动作请求被标记为已校验或拒绝"
+  ],
+  "examples": [],
+  "tags": [
+    "交通仿真",
+    "动作校验",
+    "合规守卫",
+    "前置校验"
+  ],
+  "support_ids": [
+    "4da851da-050d-5b41-85ff-56987737196e"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "155460fe-25a5-5d21-a70d-5e6c5d7baaa9"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.85,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|确保动作在执行前经过容量与冲突校验|交通仿真规则|动作合规校验|前置校验守卫|校验阶段|动作请求待校验约束",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

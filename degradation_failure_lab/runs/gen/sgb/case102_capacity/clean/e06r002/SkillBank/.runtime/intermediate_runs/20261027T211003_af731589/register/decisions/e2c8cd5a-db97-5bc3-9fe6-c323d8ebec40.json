@@ -1,0 +1,118 @@
+{
+  "skill_id": "e2c8cd5a-db97-5bc3-9fe6-c323d8ebec40",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“车辆实体状态与属性建模”高度重复，字段、约束与流程几乎一致，保留该候选会造成冗余，故丢弃。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "e2c8cd5a-db97-5bc3-9fe6-c323d8ebec40",
+    "name": "车辆属性与状态建模",
+    "description": "按规则定义并校验车辆实体的核心属性与状态字段，输出规范化的车辆属性与状态字段集合，用于创建或核对车辆状态快照。",
+    "skill_body": "依据车辆实体规则，为每个车辆定义并校验以下字段：VehicleID（唯一）、VehicleType（BIKE/VAN/TRUCK/MINI_TRUCK）、CapacityUnits（整数且>=1）、HomeDepot（节点）、CurrentLocation（节点含可选停车位，或边含RemainingTravelTime）、LoadUnitsUsed（整数）及当前在车上的已分配货物列表、Status（IDLE_AT_NODE/MOVING/LOADING/UNLOADING/OFFLINE）。逐字段检查取值合法性与一致性，输出规范化的车辆属性与状态字段集合。\n\n## Objective\n\n按规范定义并校验车辆实体的属性与状态字段\n## Applicable Signals\n\n- 需要创建或校验车辆实体\n- 需要生成车辆状态快照\n- 需要核对车辆字段取值是否合法\n\n## Contraindications\n\n- 仅涉及路段或信号规则\n- 需要计算行驶时间\n\n## Intervention Moves\n\n- 枚举车辆必备字段\n- 校验VehicleType取值属于{BIKE, VAN, TRUCK, MINI_TRUCK}\n- 校验CapacityUnits为>=1的整数\n- 校验CurrentLocation为节点或边两种形态之一\n- 校验Status取值属于{IDLE_AT_NODE, MOVING, LOADING, UNLOADING, OFFLINE}\n- 核对LoadUnitsUsed与在车货物列表一致\n\n## Workflow Steps\n\n- 确认车辆实体范围与所需字段\n- 为每个车辆填写VehicleID、VehicleType、CapacityUnits、HomeDepot\n- 确定CurrentLocation形态（节点含可选停车位，或边含RemainingTravelTime）\n- 填写LoadUnitsUsed与在车已分配货物列表\n- 填写Status并校验取值合法\n- 输出规范化车辆属性与状态字段集合\n\n## Constraints\n\n- VehicleID必须唯一\n- VehicleType必须属于{BIKE, VAN, TRUCK, MINI_TRUCK}\n- CapacityUnits必须为>=1的整数\n- Status必须属于{IDLE_AT_NODE, MOVING, LOADING, UNLOADING, OFFLINE}\n\n## Cautions\n\n- CurrentLocation为边时需携带RemainingTravelTime\n- LoadUnitsUsed应与在车货物列表保持一致\n\n## Output Contract\n\n- 符合规范的车辆属性与状态字段集合，每个车辆包含VehicleID、VehicleType、CapacityUnits、HomeDepot、CurrentLocation、LoadUnitsUsed及在车货物列表、Status。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 创建一辆配送车辆实体\n- Therapist/Output: VehicleID唯一；VehicleType=VAN；CapacityUnits>=1；HomeDepot=某节点；CurrentLocation=节点或边(含RemainingTravelTime)；LoadUnitsUsed与在车货物列表一致；Status=IDLE_AT_NODE\n- Notes: 字段取值需符合枚举与整数约束",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按规范定义并校验车辆实体的属性与状态字段",
+    "domain": "交通仿真规则",
+    "task_family": "实体建模",
+    "method_family": "规则化数据建模",
+    "stage": "初始化/校验",
+    "applicable_signals": [
+      "需要创建或校验车辆实体",
+      "需要生成车辆状态快照",
+      "需要核对车辆字段取值是否合法"
+    ],
+    "contraindications": [
+      "仅涉及路段或信号规则",
+      "需要计算行驶时间"
+    ],
+    "intervention_moves": [
+      "枚举车辆必备字段",
+      "校验VehicleType取值属于{BIKE, VAN, TRUCK, MINI_TRUCK}",
+      "校验CapacityUnits为>=1的整数",
+      "校验CurrentLocation为节点或边两种形态之一",
+      "校验Status取值属于{IDLE_AT_NODE, MOVING, LOADING, UNLOADING, OFFLINE}",
+      "核对LoadUnitsUsed与在车货物列表一致"
+    ],
+    "triggers": [
+      "需要创建或校验车辆实体",
+      "需要生成车辆状态快照",
+      "需要核对车辆字段取值是否合法"
+    ],
+    "workflow_steps": [
+      "确认车辆实体范围与所需字段",
+      "为每个车辆填写VehicleID、VehicleType、CapacityUnits、HomeDepot",
+      "确定CurrentLocation形态（节点含可选停车位，或边含RemainingTravelTime）",
+      "填写LoadUnitsUsed与在车已分配货物列表",
+      "填写Status并校验取值合法",
+      "输出规范化车辆属性与状态字段集合"
+    ],
+    "constraints": [
+      "VehicleID必须唯一",
+      "VehicleType必须属于{BIKE, VAN, TRUCK, MINI_TRUCK}",
+      "CapacityUnits必须为>=1的整数",
+      "Status必须属于{IDLE_AT_NODE, MOVING, LOADING, UNLOADING, OFFLINE}"
+    ],
+    "cautions": [
+      "CurrentLocation为边时需携带RemainingTravelTime",
+      "LoadUnitsUsed应与在车货物列表保持一致"
+    ],
+    "output_contract": [
+      "符合规范的车辆属性与状态字段集合，每个车辆包含VehicleID、VehicleType、CapacityUnits、HomeDepot、CurrentLocation、LoadUnitsUsed及在车货物列表、Status。"
+    ],
+    "examples": [
+      {
+        "input": "创建一辆配送车辆实体",
+        "output": "VehicleID唯一；VehicleType=VAN；CapacityUnits>=1；HomeDepot=某节点；CurrentLocation=节点或边(含RemainingTravelTime)；LoadUnitsUsed与在车货物列表一致；Status=IDLE_AT_NODE",
+        "notes": "字段取值需符合枚举与整数约束"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "车辆建模",
+      "状态快照",
+      "实体校验"
+    ],
+    "support_ids": [
+      "44c5f58d-c237-5239-baf8-0b7ee200495b"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "6d25a986-6583-5d9c-812d-9487d663a8f3"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|按规范定义并校验车辆实体的属性与状态字段|交通仿真规则|实体建模|规则化数据建模|初始化/校验|车辆属性与状态建模"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

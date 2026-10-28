@@ -1,0 +1,333 @@
+
+<available_skills>
+  <skill>
+    <name>Consignment Lateness Penalty Weighting</name>
+    <description>Computes lateness penalties per tick for a late consignment based on its priority tier (LOW 0.5, STANDARD 1.0, HIGH 2.0, CRITICAL 4.0). Use when tallying penalties for late consignments during objective evaluation or Network Service Score computation.</description>
+    <location>/harbor/skills/051b46c6-eb00-5693-995a-de8aaefaff4d/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>到达先于离开的时序处理</name>
+    <description>在同一 tick 内，当车辆到达节点与其它车辆尝试离开该节点同时发生时，先处理到达事件再处理离开事件，以保证每 tick 更新顺序一致。</description>
+    <location>/harbor/skills/06335499-935b-54df-8a05-71ba06f71653/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>信号交叉口绿灯放行与FIFO排队判定</name>
+    <description>在信号化下游节点，按入边信号组的当前相位判定车辆本tick能否进入交叉口，并按到达队列的FIFO顺序确定同一入边多车的放行顺序。</description>
+    <location>/harbor/skills/0693600c-9b20-5996-8e38-1b1d384e424d/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>规则冲突优先级裁决</name>
+    <description>当两条或多条交通仿真规则对同一对象给出不同约束时，按作用域具体性裁决：更具体的规则（如针对单条边的场景规则）覆盖更通用的规则（如通用容量规则）。用于规则解释、状态推进或控制器决策前的冲突消解。</description>
+    <location>/harbor/skills/0a34413e-f719-56fc-b923-223ce3f98e44/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>货物状态快照解析</name>
+    <description>解析状态快照中 CONSIGNMENTS 段的货物条目，按货物状态条件读取并结构化 ConsignmentID、Status、CurrentNode、AssignedVehicleID 与 DeliveredTime 等字段，用于读取或校验货物分配与交付状态。</description>
+    <location>/harbor/skills/12d1ad66-9416-5cce-87f7-c629df2206c1/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>容量削减事件下的边容量与准入判定</name>
+    <description>在容量削减事件生效期间，按基线车道容量乘以事件容量系数并向下取整计算边的有效最大车辆数，并在容量与冲突检查阶段据此批准或拒绝 ENTER_EDGE 请求。</description>
+    <location>/harbor/skills/15dc5310-2210-53f1-a5fe-b75dd3ad5173/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>信号相位通行准入校验</name>
+    <description>在离散时间步交通仿真中，依据当前激活相位的 GreenEdges 集合，判定某车辆能否从其所在边进入交叉口；用于每 tick 的车辆移动合法性检查。</description>
+    <location>/harbor/skills/17677650-7bed-5e92-9636-10946f5ad5ba/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>未交付货物延迟计分规则</name>
+    <description>在场景结束时，对仍未交付的货物按统一公式计算延迟量，用于结算服务评分。适用于场景收尾结算阶段，需要为每个未交付货物给出延迟数值时使用。</description>
+    <location>/harbor/skills/1c367e1d-c7f3-5cc3-a526-ae75a40a061a/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>装卸期间车辆锁定约束</name>
+    <description>当车辆处于 LOADING 或 UNLOADING 状态且存在进行中的装卸作业时，判定该车辆本 tick 的合法动作：拒绝移动或启动新作业请求，保持装卸状态直至作业完成。</description>
+    <location>/harbor/skills/1d99d4c7-ebb1-59e6-9050-779cd4dc28b3/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>货运交付与延误判定</name>
+    <description>依据货运是否在目的节点完成卸载来判定交付状态，并按DueTime计算延误tick数（准时为0，否则为DeliveredTime减DueTime）。用于评估货运完成情况与服务指标。</description>
+    <location>/harbor/skills/20fcdd02-8fae-5c9e-a2e7-d5e30a089d04/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>装卸作业工作量推进结算</name>
+    <description>按车辆 HandlingRate 逐 tick 递减装卸作业的 WorkUnits，并在归零时结算货物状态（装载转 ON_VEHICLE，卸载转 DELIVERED 或 PENDING_AT_ORIGIN）。用于模拟车辆执行 START_LOADING/START_UNLOADING 后的多 tick 装卸过程。</description>
+    <location>/harbor/skills/21a93e15-34ac-5aa9-84f9-e281d0a7f541/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>到达先于离开的节点tick更新顺序规则</name>
+    <description>在节点级离散tick更新中，当同一tick既有车辆到达该节点、又有车辆尝试离开该节点时，强制先处理到达再处理离开，以保证更新顺序一致。</description>
+    <location>/harbor/skills/229c44db-e7ea-5d6e-b34d-aa7c88339b4d/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>事故容量折减计算</name>
+    <description>在事故生效区间内，按 CapacityMultiplier 对受影响边的基础最大车辆数做向下取整折减，得到有效 MaxVehicles，用于事故期间更新边容量约束。</description>
+    <location>/harbor/skills/272c6898-fbc4-5677-abfc-bc4e991d997c/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>同相位实体规范排序规则</name>
+    <description>当同一相位内需要确定多个实体的处理顺序且规则未指定其他优先级时，按VehicleID升序、再按NodeID升序的规范顺序处理，以消除顺序歧义并保证仿真确定性。</description>
+    <location>/harbor/skills/2a0027f2-f608-579c-82cb-dd9b628d283a/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>边容量准入校验</name>
+    <description>在移动执行阶段判断车辆能否进入目标边：检查边状态为 OPEN、进入后占用不超过 LaneCount×CapacityPerLane、且下游节点信号/交叉口规则允许；用于逐 tick 的车辆移动执行。</description>
+    <location>/harbor/skills/2f3c4ace-1ca8-53a7-8b8b-3cd72ddc0fee/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>装载作业完成判定</name>
+    <description>对 START_LOADING 发起的装载作业，按 WorkUnits=SizeUnits 与 HandlingRate 计算完成所需 tick 数，并据此更新车辆与货物状态。适用于车辆在节点开始装载货物、需要判断何时装载完成时。</description>
+    <location>/harbor/skills/31180147-95d5-579b-bbdb-e12964b710ae/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>每Tick合法动作选择与校验</name>
+    <description>为每个非离线车辆在每个tick生成唯一合法动作请求（WAIT/ENTER_EDGE/CONTINUE_TRAVEL/START_LOADING/START_UNLOADING/GO_OFFLINE/GO_ONLINE），并将动作视为请求交由容量与冲突校验阶段裁决。</description>
+    <location>/harbor/skills/37d5e779-abfa-5504-bc05-f91c8c869f35/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>车辆类型行驶时间乘数计算</name>
+    <description>依据车辆类型对应的行驶时间乘数与边基础时间，计算车辆在该边上的行驶时间，用于推进MOVING状态的剩余行驶时间。</description>
+    <location>/harbor/skills/388f332f-588f-55a1-871d-61edd45ed0ce/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>AFN 单 tick 合法动作执行</name>
+    <description>在 AFN 离散时间仿真中推进单个 tick：依据时间与更新顺序规则，对车辆执行合法动作（移动、装卸、等待等），并处理边容量、队列与冲突，产出更新后的状态快照与动作执行记录。</description>
+    <location>/harbor/skills/39e7d25f-9e64-51ec-825a-7c8a0f328095/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>货物交付判定与延迟计算</name>
+    <description>判定货物在目的节点卸载即视为交付，并按交付时间与截止时间计算延迟tick数；用于评估配送结果与服务水平。</description>
+    <location>/harbor/skills/3d6e58bf-08cd-5887-aebd-a1013e9ac2cf/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>信号交叉口到达边识别</name>
+    <description>根据信号设置说明，识别被信号控制的交叉口节点及其受控到达边集合，用于确定信号化节点范围。适用于需要明确哪些到达边受信号控制时。</description>
+    <location>/harbor/skills/3f0c5da5-3ebb-5a0d-8836-04f56b0c04af/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>Tick 阶段顺序执行协议</name>
+    <description>按固定六阶段顺序处理每个仿真 tick（事件解析、移动承诺、容量与冲突检查、移动执行、装卸、指标更新），确保状态更新顺序一致。</description>
+    <location>/harbor/skills/446d6f51-4270-501e-af47-cef2dfa14001/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>交付状态判定与延误tick计算规则</name>
+    <description>用于交通仿真结果评估：判定consignment是否已在DestinationNode卸载完成交付，并按规则计算延误tick值（按时或提前为0，否则为DeliveredTime减DueTime）。</description>
+    <location>/harbor/skills/45604ce9-4ef0-5a7e-a285-7fb55f63928b/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>货物装载容量校验</name>
+    <description>在将货物装载到车辆前，校验货物 SizeUnits 与车辆当前载重之和不超过车辆 CapacityUnits；用于离散时间步交通仿真中的装载决策，返回装载许可或拒绝判定。</description>
+    <location>/harbor/skills/48d90833-a43e-5b3d-993f-6ae2c2015282/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>Tick 更新顺序执行协议</name>
+    <description>按固定六阶段顺序处理每个仿真 tick：事故解析、移动承诺、容量与冲突检查、移动执行、装卸、指标更新。用于需要确定性地推进交通仿真时间步时。</description>
+    <location>/harbor/skills/494b96ff-2a1a-55ce-a8dd-7cfd17507adb/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>边最大容量计算</name>
+    <description>依据车道数与每车道容量计算边的最大车辆数上限，供准入校验引用。用于需要确定边容量阈值的仿真配置或校验环节。</description>
+    <location>/harbor/skills/517e7d17-b12f-59d1-8578-64cf81e2202f/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>AFN 状态快照结构化表示</name>
+    <description>提供 AFN 仿真状态快照的统一分区与字段约定（GLOBAL/NODES/EDGES/VEHICLES/CONSIGNMENTS/INCIDENTS_ACTIVE），用于在任意 tick 生成或解析可复用的状态表示。当需要定义或解析仿真状态快照格式、或需要跨 tick 传递一致的仿真状态时使用。</description>
+    <location>/harbor/skills/53a03e0c-8321-5a5d-be09-8665642e8b76/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>Incident Effect Application During Resolution Phase</name>
+    <description>Applies active incident effects to edges during the Incident Resolution Phase of each tick, honoring StartTick/EndTick windows and reverting to baseline when expired. Use when advancing simulation ticks with active or scheduled incidents.</description>
+    <location>/harbor/skills/578dde0f-98ed-55c6-a95a-07eb359fcd7a/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>边容量与队列冲突裁决</name>
+    <description>在交通仿真每个 tick 的移动执行阶段，依据目标边的容量、当前占用/排队状态与冲突规则，裁决试图进入该边的车辆是允许进入还是排队等待，并在裁决前纳入容量削减事件的影响。</description>
+    <location>/harbor/skills/5f55b184-1a2e-5197-aa2f-6d52517d705f/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>事件生命周期与容量影响应用</name>
+    <description>在每 tick 的事件解析阶段，依据 StartTick/EndTick 判断事件是否生效，并对受影响边应用 CLOSE_EDGE 或 REDUCE_CAPACITY 效果；事件结束后恢复基线属性。用于需要判断某 tick 是否有事件生效或需要应用/撤销边容量与关闭效果时。</description>
+    <location>/harbor/skills/6dc410d7-38f2-5336-b043-b10575df5d21/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>Tick 处理与快照生成流程</name>
+    <description>按固定阶段顺序处理一个仿真 tick（事件→移动承诺→容量与冲突→移动执行→装卸→指标），并输出该 tick 的状态快照。适用于需要推进离散时间步并记录全局与实体状态时。</description>
+    <location>/harbor/skills/730695a2-c80a-54b5-aadf-c616118dd310/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>车辆状态快照解析</name>
+    <description>从仿真状态快照的 VEHICLES 段读取并结构化每辆车的状态字段（车辆ID、类型、位置类型与位置ID、状态、载重占用、在车货物列表），用于构建或核对仿真状态快照。</description>
+    <location>/harbor/skills/7a90ecb6-a5c8-5129-ab01-9f8db8b78041/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>动作前置条件守卫</name>
+    <description>在生成车辆每tick动作请求时，对有条件动作（ENTER_EDGE、START_LOADING、START_UNLOADING、GO_OFFLINE、GO_ONLINE）校验其位置与状态前置条件；不满足则拒绝或修正该动作，仅保留合法动作请求。</description>
+    <location>/harbor/skills/7b118a07-ff9b-54a5-b3a9-11d2e137c158/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>信号交叉口相位-绿灯边映射查询</name>
+    <description>根据信号节点的周期长度与当前 tick 计算所处相位，并返回该相位允许通行的 GreenEdges 集合；用于仿真推进或状态快照时判定某条入边是否获得绿灯。</description>
+    <location>/harbor/skills/7ba74262-2445-50bc-9936-6b2950cefcaf/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>信号相位激活判定</name>
+    <description>根据固定信号周期（CycleLength）与有序相位列表（各相位含 Duration 与 GreenEdges），计算给定 tick t 的激活相位及其允许放行的入边集合，用于信号化节点的放行判定。</description>
+    <location>/harbor/skills/7c827cd0-f8c6-5eed-8530-349ad41c6fc5/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>到达先于离开的节点事件排序规则</name>
+    <description>在离散时间步交通仿真推进 tick 时，若同一节点在同一 tick 内同时存在车辆到达事件与车辆离开事件，规定先处理到达、再处理离开，以保证节点更新顺序的一致性。</description>
+    <location>/harbor/skills/80d4597c-cdeb-5438-af5c-2a26945edf6b/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>容量折减事故处理</name>
+    <description>当边存在激活事故且给出 CapacityMultiplier 时，按折减系数计算该边的有效容量，并据此更新排队与通行状态。</description>
+    <location>/harbor/skills/8dc3c6d0-79a0-5680-b080-b5f2c64deb11/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>动作请求待校验约束</name>
+    <description>将所有车辆动作视为请求，必须经容量与冲突校验阶段验证后才生效，防止未校验动作直接改变仿真状态。适用于任何动作执行前的合规检查。</description>
+    <location>/harbor/skills/96e8024d-c0e3-5f59-821b-3f494881f3c3/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>运输中车辆动作合法性约束</name>
+    <description>当车辆Status=MOVING（位于边上）时，禁止其开始装载或卸载，唯一合法动作为CONTINUE_TRAVEL；用于在动作生成阶段校验车辆动作合法性。</description>
+    <location>/harbor/skills/97f20bbe-5aa8-572f-b302-f2fc3a33db6f/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>文档权威规则仿真状态追踪</name>
+    <description>以文档规则为唯一权威，持续维护并更新仿真世界状态，按用户请求推进时间步并给出逻辑一致的答案。适用于需要基于规则文档回答仿真世界状态问题的场景。</description>
+    <location>/harbor/skills/9c640bd9-176a-5de7-834e-879a1aee1f2b/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>节点到达先于离开处理</name>
+    <description>在同一tick内车辆到达与离开同一节点发生冲突时，规定先处理到达、再处理离开，以保证离散时间步内事件处理顺序一致。适用于每tick状态更新时存在到达/离开冲突的节点事件排序。</description>
+    <location>/harbor/skills/9cdfb7b3-4b4f-5977-ad7c-600102ad33ad/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>仿真对象类型定义</name>
+    <description>定义交通仿真追踪的四类主要对象（节点、边、车辆、货物/consignments）及其角色，用于搭建仿真数据模型或状态快照时明确对象类别。</description>
+    <location>/harbor/skills/a847f222-5974-5ee3-9d58-065cd50e90ba/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>CLOSE_EDGE Entry Restriction Rule</name>
+    <description>Enforces that while a CLOSE_EDGE incident is active on an edge, vehicles already on the edge continue to travel normally but no new vehicles may enter. Use when routing or admitting vehicles onto an edge under an active closure.</description>
+    <location>/harbor/skills/abcdd505-af46-547b-ab28-ef5fd68f2e3a/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>AFN 控制器目标与优先级评估</name>
+    <description>依据优先级、服务水平和控制器目标评估当前仿真状态或候选调度/信号方案，用于在给定状态下判断决策优劣并给出带评分与优先级判断的评估结论。</description>
+    <location>/harbor/skills/b1cbd14c-b4fe-50c9-bec5-022f912cc86e/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>阶段内实体规范排序规则</name>
+    <description>当某一仿真阶段内需要确定多个实体的处理先后顺序时，按 VehicleID 升序、再按 NodeID 升序生成确定性处理序列，除非规则已明确指定其他优先级。用于消除阶段内处理顺序歧义。</description>
+    <location>/harbor/skills/b6e41188-61e5-5ffb-a538-7007fe703ade/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>信号相位通行判定</name>
+    <description>根据当前 tick 与信号周期相位判断指定边是否处于绿灯，从而决定车辆能否进入下游节点；用于逐 tick 推进仿真时校验车辆进入合法性，并给出可进入的最早 tick。</description>
+    <location>/harbor/skills/b7089cf9-b792-5e78-a8ee-b26cf9646ced/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>信号相位通行门控校验</name>
+    <description>在离散时间步交通仿真中，当车辆剩余行程时间归零并尝试进入受信号控制的节点时，依据当前 tick 对应相位的 GreenEdges 集合判定是否允许完成进入；若车辆所在边不在绿灯集合内，则推迟到达至后续 tick。</description>
+    <location>/harbor/skills/bf353d26-6bae-5420-af2e-9952d66eb683/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>装卸作业工作量推进规则</name>
+    <description>按车辆 HandlingRate 在每个 tick 递减装卸作业的 WorkUnits，并在 WorkUnits 归零或小于零时于该 tick 末完成作业并更新货物状态。用于模拟 START_LOADING/START_UNLOADING 之后的多 tick 装卸过程。</description>
+    <location>/harbor/skills/c653b7cb-d435-5b30-b610-bd68969d5727/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>容量与冲突检查裁决</name>
+    <description>在移动承诺阶段之后，依据边容量、信号与优先级逐条裁决每个移动承诺是否被批准或拒绝，并输出逐条裁决结果。</description>
+    <location>/harbor/skills/cd5627d8-c0f5-5868-9922-a1d3cd86e988/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>离线车辆激活前置检查</name>
+    <description>在执行移动或货物处理前，检查目标车辆是否处于 OFFLINE 状态；离线车辆须先被场景或控制器显式激活才可参与运行。用于每步更新前对目标车辆做状态守卫。</description>
+    <location>/harbor/skills/cd7b1dd8-3432-5442-a015-5feff7370c87/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>无信号节点优先级冲突裁决</name>
+    <description>在无信号下游节点，按入边优先级排序处理车辆队列；同优先级跨入边冲突时以较小 VehicleID 先行。用于无信号交叉口的通行顺序裁决。</description>
+    <location>/harbor/skills/ce42f188-5a29-5be4-8bcc-43617ba9a0f2/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>边最大车辆数计算</name>
+    <description>按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算指定边的最大允许占用车辆数，作为准入校验的容量基准。</description>
+    <location>/harbor/skills/cf805263-8bb0-5ad8-b191-a11b32305e52/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>按优先级计算托运单迟到惩罚</name>
+    <description>在评分/结算阶段，对单张已完成且迟到的托运单，按优先级映射每 tick 迟到惩罚权重并计算该托运单的迟到惩罚值。</description>
+    <location>/harbor/skills/d097f190-6b6f-5b0e-b989-589cb4cac21f/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>边容量准入校验</name>
+    <description>在离散 tick 仿真的容量与冲突检查阶段，对车辆 ENTER_EDGE 请求做准入判定：若目标边当前车辆数已达 MaxVehicles，则拒绝请求并让车辆在该节点执行 WAIT。</description>
+    <location>/harbor/skills/d3e1cf4c-29a0-51ad-a791-f42d7e30c644/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>装卸作业逐tick推进与完成判定</name>
+    <description>当车辆已进入 LOADING 或 UNLOADING 状态后，按车辆 HandlingRate 在每个 Loading/Unloading Phase 逐 tick 递减作业 WorkUnits，并在 WorkUnits 小于等于 0 时于该 tick 末完成作业并更新货物状态。</description>
+    <location>/harbor/skills/d70469bf-afbd-5d16-bab8-ae21ab8e9de5/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>超容量进入请求的拒绝与等待回退</name>
+    <description>在容量与冲突检查阶段，当批准 ENTER_EDGE 请求会使目标边车辆数超过有效 MaxVehicles 时，拒绝该请求并令车辆在源节点执行 WAIT 一个 tick，从而守住边容量上限并给出确定的回退行为。</description>
+    <location>/harbor/skills/d954539f-c4e1-500a-b366-90101b10e80b/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>进入边失败回退WAIT规则</name>
+    <description>当车辆请求ENTER_EDGE但未满足进入条件时，将其状态回退为在当前节点执行WAIT；用于处理进入边被拒绝后的状态回退判定。</description>
+    <location>/harbor/skills/d9f5202a-1d1b-5545-a2d2-49b57c524a65/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>三段式规则响应结构</name>
+    <description>将任何仿真世界查询的回复组织为固定三段结构：相关规则、状态更新与推理（编号步骤加状态快照）、最终答案并引用规则编号，使规则推理可核查、逻辑一致。</description>
+    <location>/harbor/skills/e3c1f9a0-a9e1-5ec5-9512-3514ef39c934/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>多步仿真推进范围确认</name>
+    <description>当用户请求涉及多个时间步的仿真推演时，先向用户确认明确的时间范围或步数，避免开放式无限推进，再按顺序应用规则逐步更新状态。</description>
+    <location>/harbor/skills/e5242160-1b78-5359-82d7-24dc1f0e681a/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>优先级加权迟到惩罚计算</name>
+    <description>按货物优先级（LOW/STANDARD/HIGH/CRITICAL）映射每 tick 迟到惩罚权重（0.5/1.0/2.0/4.0），用于计算单件或汇总的迟到惩罚值或纳入服务评分。</description>
+    <location>/harbor/skills/e598b080-e247-5c98-86b7-2bd83234735c/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>车辆状态快照字段规范校验</name>
+    <description>定义并校验 VEHICLES 状态快照中每辆车的必填字段集合，用于生成或解析仿真状态快照中的车辆条目。</description>
+    <location>/harbor/skills/e6fa8c9e-42b0-5f33-aa08-11f1c16a7bf8/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>货物属性与状态模型参考</name>
+    <description>提供货物（Consignment）实体的标准字段集合与状态枚举定义，供仿真初始化、状态快照 CONSIGNMENTS 段及装载逻辑引用。</description>
+    <location>/harbor/skills/eabb39c2-523c-51b8-91f7-69616e60a20d/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>有向路网静态对象建模规范</name>
+    <description>按规范定义或校验交通仿真中的静态路网对象（节点、边、车辆、货物）的必填字段与取值约束，用于构建或检查仿真初始数据结构。</description>
+    <location>/harbor/skills/ebbc3a65-a1e0-5ce8-8232-82a9945bd90c/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>事件时间窗效果应用与恢复规则</name>
+    <description>在 Incident Resolution Phase 按 StartTick/EndTick 半开区间应用 CLOSE_EDGE 或 REDUCE_CAPACITY 效果，并在事件结束后恢复边基线属性；用于处理带时间窗的道路事件对边容量或通行状态的影响。</description>
+    <location>/harbor/skills/ee0a65e4-e71e-5cc4-8a43-6869f37e5d3f/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>装卸与任务分配流程</name>
+    <description>依据车辆容量、当前位置与货物起点终点，将 PENDING_AT_ORIGIN 货物分配给合适车辆，并执行装卸与状态更新。适用于存在待分配货物且有空闲车辆位于货物起点的仿真装卸阶段。</description>
+    <location>/harbor/skills/f2918fa1-b55b-5c3a-b164-564a5eb75670/SKILL.md</location>
+  </skill>
+  <skill>
+    <name>行驶中车辆动作合法性约束</name>
+    <description>当车辆状态为 MOVING（位于某条边上）时，校验其唯一合法动作为 CONTINUE_TRAVEL，禁止开始装卸；用于每 tick 车辆动作合法性判定。</description>
+    <location>/harbor/skills/fb8197f0-8b04-5737-97fc-0668903cd571/SKILL.md</location>
+  </skill>
+</available_skills>

@@ -1,0 +1,160 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "离散时间步推进",
+  "run_id": "20261027T222252_c16d8086",
+  "skills": [
+    {
+      "skill_id": "730695a2-c80a-54b5-aadf-c616118dd310",
+      "name": "Tick 处理与快照生成流程",
+      "description": "按固定阶段顺序处理一个仿真 tick（事件→移动承诺→容量与冲突→移动执行→装卸→指标），并输出该 tick 的状态快照。适用于需要推进离散时间步并记录全局与实体状态时。",
+      "skill_body": "从当前状态出发，按固定阶段顺序推进一个 tick：1) 处理事件/事故；2) 收集移动承诺；3) 解决容量与冲突；4) 执行移动；5) 执行装卸阶段；6) 计算指标。随后输出该 tick 的状态快照，包含 GLOBAL（TimeTick、ScoreSoFar）及各实体（NODES/EDGES/VEHICLES/CONSIGNMENTS/INCIDENTS_ACTIVE）状态。严格按阶段顺序执行，不跳步、不合并阶段。\n\n## Objective\n\n按规定的阶段顺序推进一个 tick 并产出可核对的状态快照\n## Applicable Signals\n\n- 需要从当前状态推进到下一 tick\n- 需要生成 GLOBAL/NODES/EDGES/VEHICLES 等快照\n\n## Contraindications\n\n- 需要跨多 tick 的完整场景规划\n- 仅需查询静态规则说明\n\n## Intervention Moves\n\n- 按事件→移动承诺→容量与冲突→移动执行→装卸→指标的顺序逐阶段处理\n- 在装卸阶段依据 SizeUnits 与 HandlingRate 判定作业是否在单 tick 内完成\n- 生成包含 TimeTick、ScoreSoFar 及各实体状态的快照\n\n## Workflow Steps\n\n- 阶段1：处理事件/事故（无事故则跳过）\n- 阶段2：收集移动承诺（未请求移动的车辆无承诺）\n- 阶段3：解决容量与冲突（无冲突则跳过）\n- 阶段4：执行移动（无承诺则无车辆移动）\n- 阶段5：执行装卸阶段，按 SizeUnits 与 HandlingRate 判定作业完成情况\n- 阶段6：计算指标\n- 输出该 tick 的状态快照（GLOBAL 及各实体状态）\n\n## Constraints\n\n- 必须严格按固定阶段顺序执行，不跳步、不合并阶段\n- 快照须包含 TimeTick 与 ScoreSoFar\n\n## Cautions\n\n- 装卸作业是否在单 tick 内完成取决于 SizeUnits 与 HandlingRate 的比较\n\n## Output Contract\n\n- 包含 TimeTick、ScoreSoFar 及各实体状态的 tick 快照\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: tick 0，控制器选择 V1: START_LOADING([C1])，C1 SizeUnits=3，TRUCK HandlingRate=4\n- Therapist/Output: tick 1 快照：V1 已完成装载 C1 并在 N1 空闲，C1 在车上；GLOBAL TimeTick: 1, ScoreSoFar: 0\n- Notes: WorkUnits=3 小于 HandlingRate=4，作业在单 tick 内完成",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "21a93e15-34ac-5aa9-84f9-e281d0a7f541",
+        "31180147-95d5-579b-bbdb-e12964b710ae"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "按规定的阶段顺序推进一个 tick 并产出可核对的状态快照",
+      "domain": "交通仿真规则",
+      "task_family": "离散时间步推进",
+      "method_family": "分阶段 tick 处理",
+      "stage": "单 tick 执行",
+      "applicable_signals": [
+        "需要从当前状态推进到下一 tick",
+        "需要生成 GLOBAL/NODES/EDGES/VEHICLES 等快照"
+      ],
+      "contraindications": [
+        "需要跨多 tick 的完整场景规划",
+        "仅需查询静态规则说明"
+      ],
+      "intervention_moves": [
+        "按事件→移动承诺→容量与冲突→移动执行→装卸→指标的顺序逐阶段处理",
+        "在装卸阶段依据 SizeUnits 与 HandlingRate 判定作业是否在单 tick 内完成",
+        "生成包含 TimeTick、ScoreSoFar 及各实体状态的快照"
+      ],
+      "triggers": [
+        "需要从当前状态推进到下一 tick",
+        "需要生成 GLOBAL/NODES/EDGES/VEHICLES 等快照"
+      ],
+      "workflow_steps": [
+        "阶段1：处理事件/事故（无事故则跳过）",
+        "阶段2：收集移动承诺（未请求移动的车辆无承诺）",
+        "阶段3：解决容量与冲突（无冲突则跳过）",
+        "阶段4：执行移动（无承诺则无车辆移动）",
+        "阶段5：执行装卸阶段，按 SizeUnits 与 HandlingRate 判定作业完成情况",
+        "阶段6：计算指标",
+        "输出该 tick 的状态快照（GLOBAL 及各实体状态）"
+      ],
+      "constraints": [
+        "必须严格按固定阶段顺序执行，不跳步、不合并阶段",
+        "快照须包含 TimeTick 与 ScoreSoFar"
+      ],
+      "cautions": [
+        "装卸作业是否在单 tick 内完成取决于 SizeUnits 与 HandlingRate 的比较"
+      ],
+      "output_contract": [
+        "包含 TimeTick、ScoreSoFar 及各实体状态的 tick 快照"
+      ],
+      "examples": [
+        {
+          "input": "tick 0，控制器选择 V1: START_LOADING([C1])，C1 SizeUnits=3，TRUCK HandlingRate=4",
+          "output": "tick 1 快照：V1 已完成装载 C1 并在 N1 空闲，C1 在车上；GLOBAL TimeTick: 1, ScoreSoFar: 0",
+          "notes": "WorkUnits=3 小于 HandlingRate=4，作业在单 tick 内完成"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "离散时间步",
+        "tick处理",
+        "状态快照"
+      ],
+      "support_ids": [
+        "a73154fd-53ca-5991-9388-99846403f6a0"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "4def7c8f-9f6d-5367-9ce2-bc253a02237b"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|按规定的阶段顺序推进一个 tick 并产出可核对的状态快照|交通仿真规则|离散时间步推进|分阶段 tick 处理|单 tick 执行|tick 处理与快照生成流程",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "21a93e15-34ac-5aa9-84f9-e281d0a7f541",
+          "31180147-95d5-579b-bbdb-e12964b710ae"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "15075ee3-f79a-46d5-8f98-62baf306ee65",
+      "entity_type": "skill",
+      "entity_id": "730695a2-c80a-54b5-aadf-c616118dd310",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "730695a2-c80a-54b5-aadf-c616118dd310",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "a73154fd-53ca-5991-9388-99846403f6a0"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

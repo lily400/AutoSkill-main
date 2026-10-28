@@ -1,0 +1,369 @@
+{
+  "schema_version": 1,
+  "task_id": "pydantic-task-004",
+  "task_key": "t-746d87e2a75a",
+  "case_id": "case004_pyd",
+  "adapter": "downstream_eval.sgb.task_adapters.audited.code_task",
+  "task_path": "downstream_eval/tasks/sgb/audited/pydantic-task-004",
+  "runtime_lock": "downstream_eval/tasks/sgb/audited/pydantic-task-004/runtime.lock.json",
+  "profile_template": "downstream_eval/configs/p1_smoke.json",
+  "approval_environment_variable": "SGB_AUDIT_ALLOW_PAID",
+  "conditions": {
+    "NoSkill1": "NoSkill",
+    "CleanSkill1": "CleanSkill"
+  },
+  "fixtures": "tests/fixtures/sgb/audited/pydantic-task-004/candidates.json",
+  "probes": {
+    "NoSkill1": "correct",
+    "CleanSkill1": "rule_mutant"
+  },
+  "expected_oracle_tests": 20,
+  "code_observation": {
+    "family": "pydantic004",
+    "operations": [
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "pet_type": "cat",
+          "meow_volume": 5
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "pet_type": "cat",
+          "meow_volume": 3
+        }
+      },
+      {
+        "op": "model_validate",
+        "symbol": "PetEnvelope",
+        "value": {
+          "pet": {
+            "pet_type": "cat",
+            "meow_volume": 3
+          }
+        }
+      },
+      {
+        "op": "model_validate",
+        "symbol": "PetEnvelope",
+        "value": {
+          "pet": {
+            "pet_type": "cat",
+            "meow_volume": 2
+          }
+        }
+      },
+      {
+        "op": "call",
+        "symbol": "pet_discriminator",
+        "value": {
+          "pet_type": "cat",
+          "meow_volume": 1
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Cat",
+        "value": {
+          "pet_type": "cat",
+          "meow_volume": 4
+        }
+      },
+      {
+        "op": "call",
+        "symbol": "pet_discriminator",
+        "value": {
+          "object": "Cat",
+          "kwargs": {
+            "pet_type": "cat",
+            "meow_volume": 4
+          }
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Cat",
+        "value": {
+          "pet_type": "cat",
+          "meow_volume": 9
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "object": "Cat",
+          "kwargs": {
+            "pet_type": "cat",
+            "meow_volume": 9
+          }
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Cat",
+        "value": {
+          "pet_type": "dog",
+          "meow_volume": 1
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "pet_kind": "dog",
+          "bark_level": 8
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "pet_kind": "dog",
+          "bark_level": 7
+        }
+      },
+      {
+        "op": "model_validate",
+        "symbol": "PetEnvelope",
+        "value": {
+          "pet": {
+            "pet_kind": "dog",
+            "bark_level": 7
+          }
+        }
+      },
+      {
+        "op": "model_validate",
+        "symbol": "PetEnvelope",
+        "value": {
+          "pet": {
+            "pet_kind": "dog",
+            "bark_level": 4
+          }
+        }
+      },
+      {
+        "op": "call",
+        "symbol": "pet_discriminator",
+        "value": {
+          "pet_kind": "dog",
+          "bark_level": 2
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Dog",
+        "value": {
+          "pet_kind": "dog",
+          "bark_level": 5
+        }
+      },
+      {
+        "op": "call",
+        "symbol": "pet_discriminator",
+        "value": {
+          "object": "Dog",
+          "kwargs": {
+            "pet_kind": "dog",
+            "bark_level": 5
+          }
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Dog",
+        "value": {
+          "pet_kind": "dog",
+          "bark_level": 10
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "object": "Dog",
+          "kwargs": {
+            "pet_kind": "dog",
+            "bark_level": 10
+          }
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Dog",
+        "value": {
+          "pet_kind": "cat",
+          "bark_level": 1
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "animal_type": "bird",
+          "wing_span": 12
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "animal_type": "bird",
+          "wing_span": 10
+        }
+      },
+      {
+        "op": "model_validate",
+        "symbol": "PetEnvelope",
+        "value": {
+          "pet": {
+            "animal_type": "bird",
+            "wing_span": 10
+          }
+        }
+      },
+      {
+        "op": "model_validate",
+        "symbol": "PetEnvelope",
+        "value": {
+          "pet": {
+            "animal_type": "bird",
+            "wing_span": 8
+          }
+        }
+      },
+      {
+        "op": "call",
+        "symbol": "pet_discriminator",
+        "value": {
+          "animal_type": "bird",
+          "wing_span": 3
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Bird",
+        "value": {
+          "animal_type": "bird",
+          "wing_span": 6
+        }
+      },
+      {
+        "op": "call",
+        "symbol": "pet_discriminator",
+        "value": {
+          "object": "Bird",
+          "kwargs": {
+            "animal_type": "bird",
+            "wing_span": 6
+          }
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Bird",
+        "value": {
+          "animal_type": "bird",
+          "wing_span": 11
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "object": "Bird",
+          "kwargs": {
+            "animal_type": "bird",
+            "wing_span": 11
+          }
+        }
+      },
+      {
+        "op": "construct",
+        "symbol": "Bird",
+        "value": {
+          "animal_type": "dog",
+          "wing_span": 1
+        }
+      },
+      {
+        "op": "call",
+        "symbol": "pet_discriminator",
+        "value": {
+          "unknown": "value"
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "some_field": "value"
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "pet_type": "lizard",
+          "scale_count": 10
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "pet_type": "dog",
+          "bark_level": 8
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "pet_kind": "bird",
+          "wing_span": 9
+        }
+      },
+      {
+        "op": "validate_python",
+        "symbol": "Pet",
+        "value": {
+          "animal_type": "cat",
+          "meow_volume": 5
+        }
+      }
+    ],
+    "test_names": [
+      "test_required_exports_exist",
+      "test_models_are_pydantic_models",
+      "test_source_mentions_annotated_discriminator_and_tag",
+      "test_source_defines_named_discriminator_function",
+      "test_dict_input_cat_validates_correctly_direct_union",
+      "test_dict_input_dog_validates_correctly_direct_union",
+      "test_dict_input_bird_validates_correctly_direct_union",
+      "test_nested_container_validation_cat",
+      "test_nested_container_validation_dog",
+      "test_nested_container_validation_bird",
+      "test_discriminator_handles_dict_inputs",
+      "test_discriminator_handles_model_instances",
+      "test_union_accepts_model_instances",
+      "test_serialization_preserves_original_field_names",
+      "test_nested_serialization_preserves_original_field_names",
+      "test_missing_discriminator_field_raises_validation_error",
+      "test_unknown_discriminator_value_raises_validation_error",
+      "test_wrong_field_name_for_variant_does_not_validate",
+      "test_each_model_uses_expected_discriminator_field_name",
+      "test_literal_values_are_correct"
+    ]
+  },
+  "freeze_files": [
+    "tests/fixtures/sgb/audited/pydantic-task-004/candidates.json",
+    "configs/tasks/sgb/pydantic-task-004.json",
+    "data/manifests/sgb/gates/t-746d87e2a75a-clean-v1.json"
+  ]
+}

@@ -1,0 +1,354 @@
+[?2004hroot@ecfc6746dbbe:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ sed -n '1,240p' /harbor/skills/b509a4af-9652-5849-a3d7-68054c38b3c1/SKILL.md
+[?2004l---
+id: "b509a4af-9652-5849-a3d7-68054c38b3c1"
+name: "评论分类CSV输出校验"
+description: "在评论分类结果交付给编排器或下游分析前，对CSV产出执行格式、列完整性、分类取值合法性与最小行数校验；校验通过则放行，不合格则向编排器返回明确错误说明。"
+version: "0.1.0"
+tags:
+  - "CSV校验"
+  - "输出合规"
+  - "交付前检查"
+  - "数据质量"
+triggers:
+  - "分类结果即将交付给编排器或下游分析"
+  - "需要确认CSV可解析且列与取值合法"
+  - "需要确认样本量是否满足下游分析最低要求"
+examples:
+  - input: "分类结果CSV，含全部必需列，分类取值合法，共25行"
+    output: "校验通过，放行交付"
+    notes: "格式、列、取值、行数四项均满足"
+  - input: "分类结果CSV，is_sportswear列出现\"unknown\"取值"
+    output: "校验失败，向编排器返回错误：is_sportswear取值非法"
+    notes: "取值不在允许集合内即判不合格"
+---
+
+# 评论分类CSV输出校验
+
+在评论分类结果交付给编排器或下游分析前，对CSV产出执行格式、列完整性、分类取值合法性与最小行数校验；校验通过则放行，不合格则向编排器返回明确错误说明。
+
+## Prompt
+
+在评论分类结果即将交付时执行本校验：先确认CSV可被解析，再核对必需列是否齐全，然后逐列检查分类取值是否落在允许集合内，最后确认行数达到最小样本量要求。任一检查失败即判定为不合格，并向编排器返回具体失败原因，不得放行。
+
+## Objective
+
+保证下游分析收到的评论分类CSV结构合法、取值合规、样本量充足
+## Applicable Signals
+
+- 分类结果已生成并准备交付
+- 产出为CSV格式且含分类字段
+- 下游分析依赖分类字段取值
+
+## Contraindications
+
+- 输入尚未完成分类
+- 仅需生成原始评论列表且无需分类字段
+
+## Intervention Moves
+
+- 解析CSV确认格式有效
+- 核对必需列是否全部存在
+- 逐列校验分类取值是否在允许集合内
+- 统计行数并确认达到最小样本量
+- 不合格时向编排器返回明确错误说明
+
+## Workflow Steps
+
+- 尝试解析CSV，确认格式有效可解析
+- 核对必需列齐全：review_id、review、is_sportswear、is_apparel_product、brand、competitor_or_nike
+- 校验is_sportswear取值仅为yes或no
+- 校验is_apparel_product取值仅为yes或no
+- 校验competitor_or_nike取值仅为nike、competitor或n/a
+- 统计行数，确认至少20行
+- 全部通过则放行交付；任一失败则向编排器返回具体错误说明
+
+## Constraints
+
+- 分类列取值必须严格落在允许集合内，不接受近似或空值
+- 行数下限为20行，低于下限视为不合格
+- 校验不通过时不得将结果交付下游
+
+## Cautions
+
+- 校验失败时应指明具体失败项（格式、缺列、非法取值或行数不足），便于上游修正
+- 不得为通过校验而擅自修改或补造分类数据
+
+## Output Contract
+
+- 通过校验的CSV，或向编排器返回的明确错误说明（指明失败的具体校验项）
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 分类结果CSV，含全部必需列，分类取值合法，共25行
+- Therapist/Output: 校验通过，放行交付
+- Notes: 格式、列、取值、行数四项均满足
+
+### Example 2
+
+- Client/Input: 分类结果CSV，is_sportswear列出现"unknown"取值
+- Therapist/Output: 校验失败，向编排器返回错误：is_sportswear取值非法
+- Notes: 取值不在允许集合内即判不合格
+
+## Triggers
+
+- 分类结果即将交付给编排器或下游分析
+- 需要确认CSV可解析且列与取值合法
+- 需要确认样本量是否满足下游分析最低要求
+
+## Examples
+
+### Example 1
+
+Input:
+
+  分类结果CSV，含全部必需列，分类取值合法，共25行
+
+Output:
+
+  校验通过，放行交付
+
+Notes:
+
+  格式、列、取值、行数四项均满足
+
+### Example 2
+
+Input:
+
+  分类结果CSV，is_sportswear列出现"unknown"取值
+
+Output:
+
+  校验失败，向编排器返回错误：is_sportswear取值非法
+
+Notes:
+
+  取值不在允许集合内即判不合格
+[?2004hp1$ sed -n '1,240p' /harbor/skills/51077256-f595-5125-92d2-5f20ba22370a/SKILL.md
+[?2004l---
+id: "51077256-f595-5125-92d2-5f20ba22370a"
+name: "输入数据校验与阻断上报"
+description: "在分析或转换前校验输入数据的必填字段与取值有效性；发现缺失或非法值时阻断后续处理，并按约定的程序化错误格式上报，供上游快速修正。"
+version: "0.1.0"
+tags:
+  - "数据质量"
+  - "前置校验"
+  - "质量门禁"
+  - "阻断上报"
+  - "运营流程"
+triggers:
+  - "准备对输入数据执行分析或转换"
+  - "输入字段可能缺失或含非法值"
+  - "上游交付的数据需要进入下游建模或计数流程"
+examples:
+  - input: "上游交付的输入数据存在必填字段缺失或取值非法。"
+    output: "阻断：停止后续转换，按约定程序化错误格式上报缺失/非法字段清单，供上游修正。"
+    notes: "阻断优先于进度压力。"
+  - input: "输入数据必填字段齐全且取值有效。"
+    output: "通过：放行至下游分析或转换流程。"
+    notes: "仅在无变更时可直接复用既有校验结论。"
+---
+
+# 输入数据校验与阻断上报
+
+在分析或转换前校验输入数据的必填字段与取值有效性；发现缺失或非法值时阻断后续处理，并按约定的程序化错误格式上报，供上游快速修正。
+
+## Prompt
+
+在执行任何分析或数据转换之前，先对输入数据做前置校验：逐项检查必填字段是否存在、取值是否有效。若发现字段缺失或取值非法，立即停止后续处理，不要继续转换或产出下游结果；按约定的程序化错误格式整理阻断问题清单并上报，使上游能够快速定位并修正。若校验全部通过，则明确给出通过结论并放行。
+
+## Objective
+
+在数据处理前拦截不完整或非法输入，避免污染下游分析
+## Applicable Signals
+
+- 即将对输入数据执行分析或转换
+- 输入字段可能缺失或含非法值
+- 下游流程依赖该输入产出结果
+
+## Contraindications
+
+- 输入已通过校验且无变更
+- 仅做只读展示且不产生下游结果
+
+## Intervention Moves
+
+- 逐项核对必填字段是否存在
+- 检查字段取值是否有效
+- 发现缺失或非法值时阻断后续处理
+- 按约定的程序化错误格式整理并上报阻断问题
+
+## Workflow Steps
+
+- 确认即将执行的输入数据范围与所需必填字段
+- 逐项校验必填字段是否存在、取值是否有效
+- 若存在缺失或非法值，停止后续转换与分析，整理阻断问题清单
+- 按约定的程序化错误格式上报阻断问题，供上游修正
+- 若校验全部通过，给出通过结论并放行至下游
+
+## Constraints
+
+- 校验必须在分析或转换之前完成
+- 存在缺失或非法值时不得继续执行转换
+- 阻断问题须使用约定的程序化错误格式上报
+
+## Cautions
+
+- 不要因时间压力或口头要求而跳过校验直接产出结果
+- 阻断上报应聚焦可修正的问题，便于上游快速处理
+
+## Output Contract
+
+- 校验结论（通过/阻断）及按约定格式输出的阻断问题清单
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 上游交付的输入数据存在必填字段缺失或取值非法。
+- Therapist/Output: 阻断：停止后续转换，按约定程序化错误格式上报缺失/非法字段清单，供上游修正。
+- Notes: 阻断优先于进度压力。
+
+### Example 2
+
+- Client/Input: 输入数据必填字段齐全且取值有效。
+- Therapist/Output: 通过：放行至下游分析或转换流程。
+- Notes: 仅在无变更时可直接复用既有校验结论。
+
+## Triggers
+
+- 准备对输入数据执行分析或转换
+- 输入字段可能缺失或含非法值
+- 上游交付的数据需要进入下游建模或计数流程
+
+## Examples
+
+### Example 1
+
+Input:
+
+  上游交付的输入数据存在必填字段缺失或取值非法。
+
+Output:
+
+  阻断：停止后续转换，按约定程序化错误格式上报缺失/非法字段清单，供上游修正。
+
+Notes:
+
+  阻断优先于进度压力。
+
+### Example 2
+
+Input:
+
+  输入数据必填字段齐全且取值有效。
+
+Output:
+
+  通过：放行至下游分析或转换流程。
+
+Notes:
+
+  仅在无变更时可直接复用既有校验结论。
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> import csv
+[?2004l[?2004h> import io
+[?2004l[?2004h> from typing import Any, Dict, List
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> REQUIRED_COLUMNS = [
+[?2004l[?2004h>     "review_id",
+[?2004l[?2004h>     "review",
+[?2004l[?2004h>     "is_sportswear",
+[?2004l[?2004h>     "is_apparel_product",
+[?2004l[?2004h>     "brand",
+[?2004l[?2004h>     "competitor_or_nike",
+[?2004l[?2004h> ]
+[?2004l[?2004h> 
+[?2004l[?2004h> ALLOWED_VALUES = {
+[?2004l[?2004h>     "is_sportswear": {"yes", "no"},
+[?2004l[?2004h>     "is_apparel_product": {"yes", "no"},
+[?2004l[?2004h>     "competitor_or_nike": {"nike", "competitor", "n/a"},
+[?2004l[?2004h> }
+[?2004l[?2004h> 
+[?2004l[?2004h> MIN_ROWS = 20
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _error(issue: str, row_count: int, missing_columns: List[str], invalid_values: List[Dict[str, Any]]) -> Dict[str, Any]:
+[?2004l[?2004h>     return {
+[?2004l[?2004h>         "ok": False,
+[?2004l[?2004h>         "message": f"ERROR: Processed reviews CSV validation failed. Issue: {issue}",
+[?2004l[?2004h>         "details": {
+[?2004l[?2004h>             "row_count": row_count,
+[?2004l[?2004h>             "missing_columns": missing_columns,
+[?2004l[?2004h>             "invalid_values": invalid_values,
+[?2004l[?2004h>         },
+[?2004l[?2004h>     }
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data: Dict[str, Any]) -> Dict[str, Any]:
+[?2004l[?2004h>     csv_text = input_data.get("csv_text", "") if isinstance(input_data, dict) else ""
+[?2004l[?2004h>     if not isinstance(csv_text, str):
+[?2004l[?2004h>         csv_text = str(csv_text)
+[?2004l[?2004h> 
+[?2004l[?2004h>     try:
+[?2004l[?2004h>         reader = csv.DictReader(io.StringIO(csv_text))
+[?2004l[?2004h>         if reader.fieldnames is None:
+[?2004l[?2004h>             return _error("CSV could not be parsed or is missing a header row", 0, REQUIRED_COLUMNS[:], [])
+[?2004l[?2004h>         rows = list(reader)
+[?2004l[?2004h>     except Exception:
+[?2004l[?2004h>         return _error("CSV could not be parsed", 0, REQUIRED_COLUMNS[:], [])
+[?2004l[?2004h> 
+[?2004l[?2004h>     row_count = len(rows)
+[?2004l[?2004h>     header = reader.fieldnames or []
+[?2004l[?2004h> 
+[?2004l[?2004h>     missing_columns = [c for c in REQUIRED_COLUMNS if c not in header]
+[?2004l[?2004h>     if missing_columns:
+[?2004l[?2004h>         return _error(
+[?2004l[?2004h>             f"Missing required column(s): {', '.join(missing_columns)}",
+[?2004l[?2004h>             row_count,
+[?2004l[?2004h>             missing_columns,
+[?2004l[?2004h>             [],
+[?2004l[?2004h>         )
+[?2004l[?2004h> 
+[?2004l[?2004h>     first_invalid = None
+[?2004l[?2004h>     for idx, row in enumerate(rows, start=1):
+[?2004l[?2004h>         for col in ["is_sportswear", "is_apparel_product", "competitor_or_nike"]:
+[?2004l[?2004h>             value = (row.get(col) or "")
+[?2004l[?2004h>             if value not in ALLOWED_VALUES[col]:
+[?2004l[?2004h>                 first_invalid = {"row": idx, "column": col, "value": value}
+[?2004l[?2004h>                 break
+[?2004l[?2004h>         if first_invalid:
+[?2004l[?2004h>             break
+[?2004l[?2004h> 
+[?2004l[?2004h>     if first_invalid:
+[?2004l[?2004h>         return _error(
+[?2004l[?2004h>             f"Invalid value in row {first_invalid['row']} column {first_invalid['column']}: {first_invalid['value']!r}; values must be lowercase and within thee allowed set",
+[?2004l[?2004h>             row_count,
+[?2004l[?2004h>             [],
+[?2004l[?2004h>             [first_invalid],
+[?2004l[?2004h>         )
+[?2004l[?2004h> 
+[?2004l[?2004h>     if row_count < MIN_ROWS:
+[?2004l[?2004h>         return _error(
+[?2004l[?2004h>             f"Only {row_count} rows found, expected at least {MIN_ROWS}",
+[?2004l[?2004h>             row_count,
+[?2004l[?2004h>             [],
+[?2004l[?2004h>             [],
+[?2004l[?2004h>         )
+[?2004l[?2004h> 
+[?2004l[?2004h>     return {
+[?2004l[?2004h>         "ok": True,
+[?2004l[?2004h>         "message": f"SUCCESS: Processed reviews CSV validated ({row_count} rows).",
+[?2004l[?2004h>         "details": {
+[?2004l[?2004h>             "row_count": row_count,
+[?2004l[?2004h>             "missing_columns": [],
+[?2004l[?2004h>             "invalid_values": [],
+[?2004l[?2004h>         },
+[?2004l[?2004h>     }
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

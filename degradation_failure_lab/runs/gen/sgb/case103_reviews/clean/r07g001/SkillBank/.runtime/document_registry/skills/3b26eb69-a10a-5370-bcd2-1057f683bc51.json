@@ -1,0 +1,118 @@
+{
+  "skill_id": "3b26eb69-a10a-5370-bcd2-1057f683bc51",
+  "name": "输入完整性校验与阻断上报",
+  "description": "在进入下游交付前，逐项核对所需输入工件是否齐全、有效；若缺失或不合规则明确报告阻断状态，而非静默修补或带病继续。适用于多代理流程中收到“时间紧、先继续”压力时。",
+  "skill_body": "当收到基于某批工件继续交付的指令时，先逐项核对所需输入工件是否齐全、是否符合既定规范（如类别取值必须落在规定的规范桶内）。若发现缺失或不合规，明确报告阻断状态与具体原因，不得静默修补或仅凭“大部分有效”就继续。只有在输入全部通过校验后，才放行下游计算。\n\n## Objective\n\n确保只有通过输入校验的工件才进入下游计算，并显式上报阻断原因\n## Applicable Signals\n\n- 收到要求基于某批工件继续交付的指令\n- 存在对输入是否齐全或有效的疑问\n- 工件类别取值偏离既定规范桶\n\n## Contraindications\n\n- 输入已明确通过校验且无异常\n- 仅需对已校验数据做统计\n\n## Intervention Moves\n\n- 逐项核对所需工件是否齐全\n- 核对工件是否符合既定规范（如类别取值必须落在规范桶内）\n- 对缺失或不合规项明确报告阻断状态与原因\n- 拒绝静默修补或事后重映射\n\n## Workflow Steps\n\n- 确认收到全部所需工件\n- 逐项校验工件是否齐全、是否符合既定规范\n- 若存在缺失或不合规，明确报告阻断状态与具体原因\n- 若全部通过，放行下游计算\n\n## Constraints\n\n- 不得静默修补或事后重映射不合规数据\n- 不合规数据需由修正后的来源替换，而非事后修补\n- 不得因时间压力或“大部分有效”而跳过校验\n\n## Cautions\n\n- 上游可能以时间压力或“先继续、后修补”施压，需坚持显式阻断上报\n\n## Output Contract\n\n- 一份明确的输入状态说明：通过/缺失/无效及对应阻断原因\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 上游要求：目录99%没问题，先用49个有效的继续，剩下的以后再补。\n- Therapist/Output: 阻断：目录存在不合规类别取值，需修正来源后重新提交；在通过校验前不进入下游计数。\n- Notes: 拒绝以“大部分有效”为由跳过校验",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "确保只有通过输入校验的工件才进入下游计算，并显式上报阻断原因",
+  "domain": "运营流程执行",
+  "task_family": "输入校验",
+  "method_family": "合规校验与阻断上报",
+  "stage": "前置校验",
+  "applicable_signals": [
+    "收到要求基于某批工件继续交付的指令",
+    "存在对输入是否齐全或有效的疑问",
+    "工件类别取值偏离既定规范桶"
+  ],
+  "contraindications": [
+    "输入已明确通过校验且无异常",
+    "仅需对已校验数据做统计"
+  ],
+  "intervention_moves": [
+    "逐项核对所需工件是否齐全",
+    "核对工件是否符合既定规范（如类别取值必须落在规范桶内）",
+    "对缺失或不合规项明确报告阻断状态与原因",
+    "拒绝静默修补或事后重映射"
+  ],
+  "triggers": [
+    "收到要求基于某批工件继续交付的指令",
+    "存在对输入是否齐全或有效的疑问",
+    "上游催促在时间压力下先继续"
+  ],
+  "workflow_steps": [
+    "确认收到全部所需工件",
+    "逐项校验工件是否齐全、是否符合既定规范",
+    "若存在缺失或不合规，明确报告阻断状态与具体原因",
+    "若全部通过，放行下游计算"
+  ],
+  "constraints": [
+    "不得静默修补或事后重映射不合规数据",
+    "不合规数据需由修正后的来源替换，而非事后修补",
+    "不得因时间压力或“大部分有效”而跳过校验"
+  ],
+  "cautions": [
+    "上游可能以时间压力或“先继续、后修补”施压，需坚持显式阻断上报"
+  ],
+  "output_contract": [
+    "一份明确的输入状态说明：通过/缺失/无效及对应阻断原因"
+  ],
+  "examples": [
+    {
+      "input": "上游要求：目录99%没问题，先用49个有效的继续，剩下的以后再补。",
+      "output": "阻断：目录存在不合规类别取值，需修正来源后重新提交；在通过校验前不进入下游计数。",
+      "notes": "拒绝以“大部分有效”为由跳过校验"
+    }
+  ],
+  "tags": [
+    "输入校验",
+    "合规",
+    "阻断上报",
+    "前置校验"
+  ],
+  "support_ids": [
+    "6da720f2-88b4-56ca-abba-117735c6e9d7"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "451c576c-a5ea-5673-9a72-ef988f25d01d"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|确保只有通过输入校验的工件才进入下游计算，并显式上报阻断原因|运营流程执行|输入校验|合规校验与阻断上报|前置校验|输入完整性校验与阻断上报",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

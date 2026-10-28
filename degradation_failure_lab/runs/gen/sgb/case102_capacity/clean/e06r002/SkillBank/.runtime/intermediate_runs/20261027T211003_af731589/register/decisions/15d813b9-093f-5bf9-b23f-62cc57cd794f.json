@@ -1,0 +1,117 @@
+{
+  "skill_id": "15d813b9-093f-5bf9-b23f-62cc57cd794f",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 739692d9、c044aa87 高度重叠，均为单 tick 移动执行与到达判定流程，且本候选缺少容量/队列约束，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "15d813b9-093f-5bf9-b23f-62cc57cd794f",
+    "name": "离散时间步移动执行流程",
+    "description": "在单个仿真 tick 的 Movement Execution Phase 中，按顺序推进车辆剩余行程时间、尝试到达目标节点，并在信号或冲突限制下记录到达或推迟结果。适用于每个 tick 的移动执行阶段。",
+    "skill_body": "执行单个 tick 的移动执行阶段：\n1. 读取当前 tick 的车辆状态快照（位置、所在边、RemainingTravelTime、目标节点）。\n2. 对每辆在途车辆将 RemainingTravelTime 递减 1。\n3. 对递减后 RemainingTravelTime 变为 0 的车辆，尝试完成到达目标节点的移动。\n4. 检查目标节点在该 tick 的信号相位：若车辆所在边不在该相位的 GreenEdges 中，则不得完成进入节点的移动，到达推迟到后续 tick，车辆保持在所在边下游边界。\n5. 检查边是否开放、是否拥堵及冲突规则；不满足条件的到达同样推迟。\n6. 记录本 tick 内成功到达与推迟的车辆清单，输出更新后的车辆状态。\n\n## Objective\n\n在单个 tick 内正确推进车辆移动并处理到达与冲突\n## Applicable Signals\n\n- 进入新的仿真 tick\n- 车辆 RemainingTravelTime 即将归零\n- 车辆尝试进入目标节点\n\n## Contraindications\n\n- 非移动执行阶段（如信号配置、事件注入阶段）\n- 缺少车辆状态快照或边/信号数据\n\n## Intervention Moves\n\n- 递减 RemainingTravelTime\n- 尝试到达目标节点\n- 按信号相位 GreenEdges 判定是否放行\n- 将受阻到达推迟到后续 tick 并保持车辆在边下游边界\n- 记录到达与推迟结果\n\n## Workflow Steps\n\n- 读取当前 tick 车辆状态快照\n- 对在途车辆递减 RemainingTravelTime\n- 对归零车辆尝试到达目标节点\n- 依据目标节点当前相位 GreenEdges 判定是否允许进入\n- 对不允许的到达推迟并保持车辆在边下游边界\n- 输出更新后的车辆状态与到达/推迟记录\n\n## Constraints\n\n- 必须按 tick 顺序处理，不得跨 tick 合并\n- 到达判定须同时满足信号相位、边开放与无冲突条件\n- 被推迟车辆不得提前进入节点\n\n## Cautions\n\n- 同一相位在连续 tick 内可能持续限制同一车辆，需逐 tick 重新判定\n- 不得因推迟而丢失车辆状态\n\n## Output Contract\n\n- 更新后的车辆状态（位置、所在边、RemainingTravelTime）以及本 tick 的成功到达与推迟记录清单。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: tick 4：V2 在 E2、V3 在 E5，RemainingTravelTime 均为 1；N3 相位 C 的 GreenEdges = {E18, E19, E7}\n- Therapist/Output: V2、V3 剩余时间递减至 0，但因 E2、E5 不在 GreenEdges 中，到达推迟至 tick 5，车辆保持在各自边下游边界\n- Notes: tick 5 仍为相位 C，限制继续适用",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "在单个 tick 内正确推进车辆移动并处理到达与冲突",
+    "domain": "交通仿真规则",
+    "task_family": "tick 推进",
+    "method_family": "离散事件步进",
+    "stage": "Movement Execution Phase",
+    "applicable_signals": [
+      "进入新的仿真 tick",
+      "车辆 RemainingTravelTime 即将归零",
+      "车辆尝试进入目标节点"
+    ],
+    "contraindications": [
+      "非移动执行阶段（如信号配置、事件注入阶段）",
+      "缺少车辆状态快照或边/信号数据"
+    ],
+    "intervention_moves": [
+      "递减 RemainingTravelTime",
+      "尝试到达目标节点",
+      "按信号相位 GreenEdges 判定是否放行",
+      "将受阻到达推迟到后续 tick 并保持车辆在边下游边界",
+      "记录到达与推迟结果"
+    ],
+    "triggers": [
+      "进入新的仿真 tick",
+      "需要推进车辆位置与剩余行程时间",
+      "需要判定车辆能否在本 tick 完成到达"
+    ],
+    "workflow_steps": [
+      "读取当前 tick 车辆状态快照",
+      "对在途车辆递减 RemainingTravelTime",
+      "对归零车辆尝试到达目标节点",
+      "依据目标节点当前相位 GreenEdges 判定是否允许进入",
+      "对不允许的到达推迟并保持车辆在边下游边界",
+      "输出更新后的车辆状态与到达/推迟记录"
+    ],
+    "constraints": [
+      "必须按 tick 顺序处理，不得跨 tick 合并",
+      "到达判定须同时满足信号相位、边开放与无冲突条件",
+      "被推迟车辆不得提前进入节点"
+    ],
+    "cautions": [
+      "同一相位在连续 tick 内可能持续限制同一车辆，需逐 tick 重新判定",
+      "不得因推迟而丢失车辆状态"
+    ],
+    "output_contract": [
+      "更新后的车辆状态（位置、所在边、RemainingTravelTime）以及本 tick 的成功到达与推迟记录清单。"
+    ],
+    "examples": [
+      {
+        "input": "tick 4：V2 在 E2、V3 在 E5，RemainingTravelTime 均为 1；N3 相位 C 的 GreenEdges = {E18, E19, E7}",
+        "output": "V2、V3 剩余时间递减至 0，但因 E2、E5 不在 GreenEdges 中，到达推迟至 tick 5，车辆保持在各自边下游边界",
+        "notes": "tick 5 仍为相位 C，限制继续适用"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "离散时间步",
+      "移动执行",
+      "信号相位",
+      "到达判定"
+    ],
+    "support_ids": [
+      "fd00b980-d7df-561e-babd-48c377331127"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "5bb7a78f-bc88-5e37-a77b-a8556d42d910"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|在单个 tick 内正确推进车辆移动并处理到达与冲突|交通仿真规则|tick 推进|离散事件步进|movement execution phase|离散时间步移动执行流程"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

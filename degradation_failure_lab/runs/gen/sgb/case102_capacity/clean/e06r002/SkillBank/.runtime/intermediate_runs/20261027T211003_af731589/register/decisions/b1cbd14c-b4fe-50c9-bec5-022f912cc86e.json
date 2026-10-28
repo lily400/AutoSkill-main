@@ -1,0 +1,109 @@
+{
+  "skill_id": "b1cbd14c-b4fe-50c9-bec5-022f912cc86e",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "b1cbd14c-b4fe-50c9-bec5-022f912cc86e",
+    "name": "AFN 控制器目标与优先级评估",
+    "description": "依据优先级、服务水平和控制器目标评估当前仿真状态或候选调度/信号方案，用于在给定状态下判断决策优劣并给出带评分与优先级判断的评估结论。",
+    "skill_body": "在已获得 AFN 状态快照（GLOBAL/NODES/EDGES/VEHICLES/CONSIGNMENTS/INCIDENTS_ACTIVE）且优先级与服务目标规则已定义的前提下，按优先级与服务水平对当前状态或候选方案进行评分比较，输出评估结论。若仅需读取状态或规则未定义，则不执行本评估。\n\n## Objective\n\n按优先级与服务目标评估仿真状态并支持决策\n## Applicable Signals\n\n- 存在多个候选调度或信号方案待比较\n- 已有可读的状态快照与累计服务评分\n- 优先级与服务水平规则已明确\n\n## Contraindications\n\n- 仅需读取状态而不做评估\n- 目标或优先级规则未定义\n\n## Intervention Moves\n\n- 读取状态快照各分区\n- 按优先级对任务/包裹排序\n- 对照服务水平与控制器目标逐项评分\n- 比较候选方案并给出优先级判断\n\n## Workflow Steps\n\n- 确认状态快照完整（GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）\n- 提取当前累计服务评分与时间刻度作为评估基线\n- 依据优先级规则对相关包裹/车辆排序\n- 对照服务水平与控制器目标对当前状态或候选方案逐项评分\n- 比较候选方案，形成带评分与优先级判断的评估结论\n\n## Constraints\n\n- 评估须基于已定义的目标与优先级规则\n- 评估结论须引用状态快照中的可观测数据\n- 不负责状态解析或单步执行，仅做评估与决策支持\n\n## Cautions\n\n- 累计服务评分可能为暂定值，评估时需注明\n- 规则冲突或未定义行为下不应强行评分\n\n## Output Contract\n\n- 一份带评分与优先级判断的评估结论，说明各候选方案或当前状态相对控制器目标与服务水平的优劣。",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "按优先级与服务目标评估仿真状态并支持决策",
+    "domain": "交通仿真",
+    "task_family": "决策评估",
+    "method_family": "目标与优先级评分",
+    "stage": "评估",
+    "applicable_signals": [
+      "存在多个候选调度或信号方案待比较",
+      "已有可读的状态快照与累计服务评分",
+      "优先级与服务水平规则已明确"
+    ],
+    "contraindications": [
+      "仅需读取状态而不做评估",
+      "目标或优先级规则未定义"
+    ],
+    "intervention_moves": [
+      "读取状态快照各分区",
+      "按优先级对任务/包裹排序",
+      "对照服务水平与控制器目标逐项评分",
+      "比较候选方案并给出优先级判断"
+    ],
+    "triggers": [
+      "需要在多个调度或信号方案间比较优劣",
+      "需要依据服务水平评估当前仿真状态",
+      "需要判断某决策对控制器目标的贡献"
+    ],
+    "workflow_steps": [
+      "确认状态快照完整（GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）",
+      "提取当前累计服务评分与时间刻度作为评估基线",
+      "依据优先级规则对相关包裹/车辆排序",
+      "对照服务水平与控制器目标对当前状态或候选方案逐项评分",
+      "比较候选方案，形成带评分与优先级判断的评估结论"
+    ],
+    "constraints": [
+      "评估须基于已定义的目标与优先级规则",
+      "评估结论须引用状态快照中的可观测数据",
+      "不负责状态解析或单步执行，仅做评估与决策支持"
+    ],
+    "cautions": [
+      "累计服务评分可能为暂定值，评估时需注明",
+      "规则冲突或未定义行为下不应强行评分"
+    ],
+    "output_contract": [
+      "一份带评分与优先级判断的评估结论，说明各候选方案或当前状态相对控制器目标与服务水平的优劣。"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "决策评估",
+      "优先级",
+      "服务水平",
+      "控制器目标"
+    ],
+    "support_ids": [
+      "f6353d5f-e884-5450-88f9-3f69282615e7"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "e726e156-27fd-51ed-a234-6a36a56af954"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|按优先级与服务目标评估仿真状态并支持决策|交通仿真|决策评估|目标与优先级评分|评估|afn 控制器目标与优先级评估"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

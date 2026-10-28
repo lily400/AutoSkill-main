@@ -1,0 +1,105 @@
+{
+  "skill_id": "18ad472f-a0de-55ea-8a44-49939eef9eae",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 788ca4da-7333-579d-a963-1793d669b3ee 高度重复（同一 WorkUnits 计算与跨 tick 进度推进能力），后者描述更完整且含边界注意，保留其一即可，本候选冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "18ad472f-a0de-55ea-8a44-49939eef9eae",
+    "name": "装卸作业工作量计算与跨tick进度跟踪",
+    "description": "对每个装卸作业，按所处理货物 SizeUnits 之和计算整数 WorkUnits，并据此逐 tick 推进可能跨多个 tick 的装卸进度，直至作业完成。",
+    "skill_body": "当车辆到达装卸点并开始处理货物时，先识别该装卸作业所处理的货物集合，累加各货物 SizeUnits 得到该作业的整数 WorkUnits；随后按 tick 推进装卸进度，扣减已消耗工作量，更新剩余工作量与完成状态，直至作业完成。装卸可能跨多个 tick，需在每 tick 更新剩余工作量与完成状态。不得将装卸工作量计算与信号通行判定混淆。\n\n## Objective\n\n正确计算装卸作业的WorkUnits并跟踪跨tick完成进度\n## Applicable Signals\n\n- 车辆到达装卸点并开始处理货物\n- 需要确定装卸作业耗时\n- 需要跟踪跨 tick 的装卸进度\n\n## Contraindications\n\n- 无货物装卸需求\n- 仅进行车辆行驶更新\n\n## Intervention Moves\n\n- 汇总作业内各货物的 SizeUnits 得到整数 WorkUnits\n- 按 tick 推进装卸进度并更新剩余工作量\n- 在作业完成时标记完成状态\n\n## Workflow Steps\n\n- 识别当前装卸作业所处理的货物集合\n- 累加各货物 SizeUnits 得到该作业的整数 WorkUnits\n- 按 tick 推进装卸进度，扣减已消耗工作量\n- 更新剩余工作量与完成状态，直至作业完成\n\n## Constraints\n\n- WorkUnits 必须为整数且等于所处理货物 SizeUnits 之和\n- 装卸可能跨多个 tick，需逐 tick 跟踪进度\n\n## Cautions\n\n- 不得将装卸工作量计算与信号通行判定混淆\n\n## Output Contract\n\n- 输出该作业的WorkUnits及剩余工作量/完成状态",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "正确计算装卸作业的WorkUnits并跟踪跨tick完成进度",
+    "domain": "交通仿真规则",
+    "task_family": "装卸作业处理",
+    "method_family": "工作量累加与进度推进",
+    "stage": "装卸阶段",
+    "applicable_signals": [
+      "车辆到达装卸点并开始处理货物",
+      "需要确定装卸作业耗时",
+      "需要跟踪跨 tick 的装卸进度"
+    ],
+    "contraindications": [
+      "无货物装卸需求",
+      "仅进行车辆行驶更新"
+    ],
+    "intervention_moves": [
+      "汇总作业内各货物的 SizeUnits 得到整数 WorkUnits",
+      "按 tick 推进装卸进度并更新剩余工作量",
+      "在作业完成时标记完成状态"
+    ],
+    "triggers": [
+      "车辆到达装卸点并开始处理货物",
+      "需要确定装卸作业耗时",
+      "需要跟踪跨 tick 的装卸进度"
+    ],
+    "workflow_steps": [
+      "识别当前装卸作业所处理的货物集合",
+      "累加各货物 SizeUnits 得到该作业的整数 WorkUnits",
+      "按 tick 推进装卸进度，扣减已消耗工作量",
+      "更新剩余工作量与完成状态，直至作业完成"
+    ],
+    "constraints": [
+      "WorkUnits 必须为整数且等于所处理货物 SizeUnits 之和",
+      "装卸可能跨多个 tick，需逐 tick 跟踪进度"
+    ],
+    "cautions": [
+      "不得将装卸工作量计算与信号通行判定混淆"
+    ],
+    "output_contract": [
+      "输出该作业的WorkUnits及剩余工作量/完成状态"
+    ],
+    "examples": [],
+    "tags": [
+      "装卸作业",
+      "WorkUnits",
+      "SizeUnits",
+      "跨tick进度",
+      "交通仿真"
+    ],
+    "support_ids": [
+      "7c9e790d-30e1-57a0-aa29-f34bdb68f873"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "f1ba275f-4056-5df4-a8c0-e66b0cf96b9d"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|正确计算装卸作业的workunits并跟踪跨tick完成进度|交通仿真规则|装卸作业处理|工作量累加与进度推进|装卸阶段|装卸作业工作量计算与跨tick进度跟踪"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

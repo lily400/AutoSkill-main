@@ -1,0 +1,159 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "评论适用性筛选",
+  "run_id": "20261028T135030_cbf2416b",
+  "skills": [
+    {
+      "skill_id": "0c11a16d-ceca-5199-9f17-bac3d1ced3c2",
+      "name": "评论与SKU品类匹配筛选",
+      "description": "在进入属性语义分析之前，判断一条评论所讨论的产品类型是否与目标SKU的品类一致；若不一致，则判定该评论不适用于该SKU并停止后续分析。",
+      "skill_body": "对每条评论执行品类门控判断：先识别评论讨论的产品类型，再与目标SKU的品类比较。若品类不匹配，直接判定该评论不适用于该SKU，不再进行属性语义分析；若品类匹配，则放行至后续语义分析步骤。\n\n## Objective\n\n在语义分析前过滤掉品类不匹配的评论\n## Applicable Signals\n\n- 评论内容指向的产品类型需要被识别\n- 目标SKU具有明确品类\n- 评论是否进入后续语义分析尚待决定\n\n## Contraindications\n\n- 评论品类已确认匹配且只需进行属性语义分析\n- 缺少目标SKU品类信息，无法进行品类比较\n\n## Intervention Moves\n\n- 识别评论所讨论的产品类型\n- 将评论产品类型与SKU品类进行比较\n- 品类不匹配时判定评论不适用于该SKU并终止后续分析\n- 品类匹配时放行至语义分析\n\n## Workflow Steps\n\n- 确定评论所讨论的产品类型\n- 判断该产品类型是否与目标SKU的品类一致\n- 若不一致，输出“不匹配”，判定评论不适用于该SKU，不再进入语义分析\n- 若一致，输出“匹配”，将评论交由后续语义分析步骤处理\n\n## Constraints\n\n- 品类匹配是进入语义分析的硬性前置条件\n- 品类不匹配的评论不得继续进入属性语义分析\n\n## Cautions\n\n- 需区分评论中显式提及的产品类型与隐含指向\n- 品类信息缺失时应先补齐SKU品类再判断\n\n## Output Contract\n\n- 输出该评论是否适用于该SKU的判定（匹配/不匹配）；不匹配时明确终止后续语义分析。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论讨论的是鞋类产品，目标SKU为男士上衣\n- Therapist/Output: 不匹配：评论不适用于该SKU，不进入语义分析\n- Notes: 品类不一致即门控拦截\n\n### Example 2\n\n- Client/Input: 评论讨论的是男士外套，目标SKU为男士外套\n- Therapist/Output: 匹配：放行至属性语义分析\n- Notes: 品类一致方可继续",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在语义分析前过滤掉品类不匹配的评论",
+      "domain": "商品评论分析",
+      "task_family": "评论适用性筛选",
+      "method_family": "品类匹配判断",
+      "stage": "前置过滤",
+      "applicable_signals": [
+        "评论内容指向的产品类型需要被识别",
+        "目标SKU具有明确品类",
+        "评论是否进入后续语义分析尚待决定"
+      ],
+      "contraindications": [
+        "评论品类已确认匹配且只需进行属性语义分析",
+        "缺少目标SKU品类信息，无法进行品类比较"
+      ],
+      "intervention_moves": [
+        "识别评论所讨论的产品类型",
+        "将评论产品类型与SKU品类进行比较",
+        "品类不匹配时判定评论不适用于该SKU并终止后续分析",
+        "品类匹配时放行至语义分析"
+      ],
+      "triggers": [
+        "需要判断一条评论是否适用于某个SKU",
+        "评论涉及的产品类型可能与目标SKU品类不同",
+        "在属性语义匹配之前需要做适用性门控"
+      ],
+      "workflow_steps": [
+        "确定评论所讨论的产品类型",
+        "判断该产品类型是否与目标SKU的品类一致",
+        "若不一致，输出“不匹配”，判定评论不适用于该SKU，不再进入语义分析",
+        "若一致，输出“匹配”，将评论交由后续语义分析步骤处理"
+      ],
+      "constraints": [
+        "品类匹配是进入语义分析的硬性前置条件",
+        "品类不匹配的评论不得继续进入属性语义分析"
+      ],
+      "cautions": [
+        "需区分评论中显式提及的产品类型与隐含指向",
+        "品类信息缺失时应先补齐SKU品类再判断"
+      ],
+      "output_contract": [
+        "输出该评论是否适用于该SKU的判定（匹配/不匹配）；不匹配时明确终止后续语义分析。"
+      ],
+      "examples": [
+        {
+          "input": "评论讨论的是鞋类产品，目标SKU为男士上衣",
+          "output": "不匹配：评论不适用于该SKU，不进入语义分析",
+          "notes": "品类不一致即门控拦截"
+        },
+        {
+          "input": "评论讨论的是男士外套，目标SKU为男士外套",
+          "output": "匹配：放行至属性语义分析",
+          "notes": "品类一致方可继续"
+        }
+      ],
+      "tags": [
+        "评论筛选",
+        "品类匹配",
+        "前置过滤",
+        "SKU适用性"
+      ],
+      "support_ids": [
+        "05c4a419-7121-50dc-8185-672901c986dd"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "a09c5993-fdec-5d3a-82cf-5006d19ef718"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|在语义分析前过滤掉品类不匹配的评论|商品评论分析|评论适用性筛选|品类匹配判断|前置过滤|评论与sku品类匹配筛选",
+        "change_action": "create",
+        "llm_reason": "该候选是一个独立的前置品类过滤微技能，与同批的“评论与SKU适用性判定”存在部分重叠，但后者是包含语义匹配的完整适用性判定，本候选聚焦于进入语义分析前的品类一致性硬性门控，粒度更细且可单独复用，故保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "11e1ce40-3a0b-4588-bb46-102f2702a8d4",
+      "entity_type": "skill",
+      "entity_id": "0c11a16d-ceca-5199-9f17-bac3d1ced3c2",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选是一个独立的前置品类过滤微技能，与同批的“评论与SKU适用性判定”存在部分重叠，但后者是包含语义匹配的完整适用性判定，本候选聚焦于进入语义分析前的品类一致性硬性门控，粒度更细且可单独复用，故保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "0c11a16d-ceca-5199-9f17-bac3d1ced3c2",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "05c4a419-7121-50dc-8185-672901c986dd"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

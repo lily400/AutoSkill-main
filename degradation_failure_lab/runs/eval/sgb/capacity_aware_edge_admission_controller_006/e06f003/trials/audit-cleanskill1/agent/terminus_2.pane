@@ -1,0 +1,410 @@
+[?2004hroot@d7ae104fe762:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cat /harbor/skills/15dc5310-2210-53f1-a5fe-b75dd3ad5173/SKILL.md
+[?2004l---
+id: "15dc5310-2210-53f1-a5fe-b75dd3ad5173"
+name: "容量削减事件下的边容量与准入判定"
+description: "在容量削减事件生效期间，按基线车道容量乘以事件容量系数并向下取整计算边的有效最大车辆数，并在容量与冲突检查阶段据此批准或拒绝 ENTER_EDGE 请求。"
+version: "0.1.0"
+tags:
+  - "交通仿真"
+  - "容量裁决"
+  - "容量乘子"
+  - "准入控制"
+triggers:
+  - "某条边存在生效中的容量削减事件"
+  - "车辆请求 ENTER_EDGE 且需判断是否超出有效容量"
+examples:
+  - input: "事件 I1 覆盖 E9（N4 到 N9），CapacityMultiplier = 0.5；E9 基线 LaneCount = 2，CapacityPerLane = 2；tick 5 时 E9 已有 2 辆车，N4 处第三辆车请求 ENTER_EDGE(E9)"
+    output: "基线 MaxVehicles = 4，有效 MaxVehicles = floor(4 × 0.5) = 2；批准将超出 2，故拒绝请求，该车在 N4 执行 WAIT"
+    notes: "事件区间为 ticks 4-15 含首尾"
+---
+
+# 容量削减事件下的边容量与准入判定
+
+在容量削减事件生效期间，按基线车道容量乘以事件容量系数并向下取整计算边的有效最大车辆数，并在容量与冲突检查阶段据此批准或拒绝 ENTER_EDGE 请求。
+
+## Prompt
+
+当某条边存在生效中的容量削减事件且车辆请求 ENTER_EDGE 时：1) 确认事件覆盖当前 tick；2) 计算基线 MaxVehicles = LaneCount × CapacityPerLane；3) 有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)；4) 在容量与冲突检查阶段比较当前边内车辆数与有效 MaxVehicles，若批准将超出则拒绝请求，车辆在该 tick 执行 WAIT；5) 输出有效 MaxVehicles 数值与批准/拒绝结论。
+
+## Objective
+
+在容量削减事件生效期间正确计算边有效容量并据此裁决车辆进入请求
+## Applicable Signals
+
+- 边存在生效中的容量削减事件
+- 事件覆盖当前 tick
+- 车辆在相邻节点请求 ENTER_EDGE
+
+## Contraindications
+
+- 无生效事件时不应套用容量乘子
+- 事件未覆盖当前 tick 时按基线容量处理
+
+## Intervention Moves
+
+- 确认事件生效区间覆盖当前 tick
+- 计算基线 MaxVehicles = LaneCount × CapacityPerLane
+- 有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)
+- 在容量与冲突检查阶段比较当前车辆数与有效 MaxVehicles
+- 超出则拒绝请求并令车辆该 tick 执行 WAIT
+
+## Workflow Steps
+
+- 确认目标边存在生效中的容量削减事件且覆盖当前 tick
+- 计算基线 MaxVehicles = LaneCount × CapacityPerLane
+- 计算有效 MaxVehicles = floor(基线 MaxVehicles × CapacityMultiplier)
+- 在容量与冲突检查阶段比较当前边内车辆数与有效 MaxVehicles
+- 若批准将超出有效 MaxVehicles 则拒绝 ENTER_EDGE 请求
+- 被拒车辆在该 tick 执行 WAIT
+
+## Constraints
+
+- 有效容量必须向下取整
+- 仅在事件覆盖的 tick 内应用容量乘子
+- 准入裁决须在容量与冲突检查阶段进行
+
+## Cautions
+
+- 事件区间边界（含首尾 tick）需确认是否包含当前 tick
+- 无事件时不得套用容量乘子
+
+## Output Contract
+
+- 给出有效 MaxVehicles 数值及批准/拒绝结论，被拒车辆在该 tick 执行 WAIT
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 事件 I1 覆盖 E9（N4 到 N9），CapacityMultiplier = 0.5；E9 基线 LaneCount = 2，CapacityPerLane = 2；tick 5 时 E9 已有 2 辆车，N4 处第三辆车请求 ENTER_EDGE(E9)
+- Therapist/Output: 基线 MaxVehicles = 4，有效 MaxVehicles = floor(4 × 0.5) = 2；批准将超出 2，故拒绝请求，该车在 N4 执行 WAIT
+- Notes: 事件区间为 ticks 4-15 含首尾
+
+## Triggers
+
+- 某条边存在生效中的容量削减事件
+- 车辆请求 ENTER_EDGE 且需判断是否超出有效容量
+
+## Examples
+
+### Example 1
+
+Input:
+
+  事件 I1 覆盖 E9（N4 到 N9），CapacityMultiplier = 0.5；E9 基线 LaneCount = 2，CapacityPerLane = 2；tick 5 时 E9 已有 2 辆车，N4 处第三辆车请求 ENTER_EDGE(E9)
+
+Output:
+
+  基线 MaxVehicles = 4，有效 MaxVehicles = floor(4 × 0.5) = 2；批准将超出 2，故拒绝请求，该车在 N4 执行 WAIT
+
+Notes:
+
+  事件区间为 ticks 4-15 含首尾
+[?2004hp1$ cat /harbor/skills/17677650-7bed-5e92-9636-10946f5ad5ba/SKILL.md
+[?2004l---
+id: "17677650-7bed-5e92-9636-10946f5ad5ba"
+name: "信号相位通行准入校验"
+description: "在离散时间步交通仿真中，依据当前激活相位的 GreenEdges 集合，判定某车辆能否从其所在边进入交叉口；用于每 tick 的车辆移动合法性检查。"
+version: "0.1.0"
+tags:
+  - "交通仿真"
+  - "信号相位"
+  - "通行准入"
+  - "规则校验"
+  - "离散时间步"
+triggers:
+  - "需要判定车辆能否进入交叉口"
+  - "已确定当前激活相位及其GreenEdges"
+  - "每tick车辆移动合法性检查"
+examples:
+  - input: "当前激活相位的GreenEdges包含边E1，车辆位于边E1并拟进入交叉口。"
+    output: "允许进入交叉口；依据：边E1属于当前相位GreenEdges。"
+  - input: "当前激活相位的GreenEdges不包含边E2，车辆位于边E2并拟进入交叉口。"
+    output: "不允许进入交叉口；依据：边E2不在当前相位GreenEdges中。"
+---
+
+# 信号相位通行准入校验
+
+在离散时间步交通仿真中，依据当前激活相位的 GreenEdges 集合，判定某车辆能否从其所在边进入交叉口；用于每 tick 的车辆移动合法性检查。
+
+## Prompt
+
+给定当前 tick 的激活相位及其 GreenEdges 集合，以及待判定车辆所在的边，执行单一准入判定：仅当该边属于当前相位的 GreenEdges 时，允许车辆进入交叉口；否则不允许。输出布尔判定结果及依据（所依据的相位与边是否在 GreenEdges 中）。不要扩展到装卸、容量或非交叉口路段行驶判定。
+
+## Objective
+
+确保车辆仅在所属边处于当前相位绿灯集合时才进入交叉口
+## Applicable Signals
+
+- 存在当前激活相位
+- 已提供该相位的GreenEdges集合
+- 待判定车辆位于某条边上并拟进入交叉口
+
+## Contraindications
+
+- 未提供当前相位或GreenEdges信息
+- 非交叉口路段的普通行驶判定
+- 涉及装卸作业或边容量/队列冲突的判定
+
+## Intervention Moves
+
+- 读取当前tick的激活相位
+- 获取该相位的GreenEdges集合
+- 检查车辆所在边是否属于GreenEdges
+- 返回允许/不允许进入交叉口的判定及依据
+
+## Workflow Steps
+
+- 确认当前tick的激活相位。
+- 获取该相位的GreenEdges集合。
+- 确定待判定车辆所在的边。
+- 判断该边是否在GreenEdges中。
+- 输出布尔判定及依据。
+
+## Constraints
+
+- 判定仅依据当前激活相位的GreenEdges集合
+- 仅适用于交叉口进入判定，不覆盖其他通行规则
+
+## Cautions
+
+- 若缺少相位或GreenEdges信息，应拒绝判定而非默认放行
+- 不得将本判定与装卸、容量规则混用
+
+## Output Contract
+
+- 返回该车辆本tick是否允许进入交叉口的布尔判定及依据（所依据的相位与边是否在GreenEdges中）。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 当前激活相位的GreenEdges包含边E1，车辆位于边E1并拟进入交叉口。
+- Therapist/Output: 允许进入交叉口；依据：边E1属于当前相位GreenEdges。
+
+### Example 2
+
+- Client/Input: 当前激活相位的GreenEdges不包含边E2，车辆位于边E2并拟进入交叉口。
+- Therapist/Output: 不允许进入交叉口；依据：边E2不在当前相位GreenEdges中。
+
+## Triggers
+
+- 需要判定车辆能否进入交叉口
+- 已确定当前激活相位及其GreenEdges
+- 每tick车辆移动合法性检查
+
+## Examples
+
+### Example 1
+
+Input:
+
+  当前激活相位的GreenEdges包含边E1，车辆位于边E1并拟进入交叉口。
+
+Output:
+
+  允许进入交叉口；依据：边E1属于当前相位GreenEdges。
+
+### Example 2
+
+Input:
+
+  当前激活相位的GreenEdges不包含边E2，车辆位于边E2并拟进入交叉口。
+
+Output:
+
+  不允许进入交叉口；依据：边E2不在当前相位GreenEdges中。
+[?2004hp1$ cat /harbor/skills/7c827cd0-f8c6-5eed-8530-349ad41c6fc5/SKILL.md
+[?2004l---
+id: "7c827cd0-f8c6-5eed-8530-349ad41c6fc5"
+name: "信号相位激活判定"
+description: "根据固定信号周期（CycleLength）与有序相位列表（各相位含 Duration 与 GreenEdges），计算给定 tick t 的激活相位及其允许放行的入边集合，用于信号化节点的放行判定。"
+version: "0.1.0"
+tags:
+  - "交通仿真"
+  - "信号控制"
+  - "固定周期相位轮转"
+  - "相位激活"
+triggers:
+  - "节点为信号化节点"
+  - "需要判定当前 tick 哪些入边可放行"
+  - "需要计算给定 tick 的激活相位"
+---
+
+# 信号相位激活判定
+
+根据固定信号周期（CycleLength）与有序相位列表（各相位含 Duration 与 GreenEdges），计算给定 tick t 的激活相位及其允许放行的入边集合，用于信号化节点的放行判定。
+
+## Prompt
+
+当节点为信号化节点且需要判定当前 tick 哪些入边可放行时使用本技能。
+步骤：
+1. 确认该节点为信号化节点，且已定义 CycleLength 与有序相位列表（每相位含 Duration 与 GreenEdges）。
+2. 计算 tick t 在周期内的位置：pos = t mod CycleLength。
+3. 按相位顺序累加各相位 Duration，找到使累加和首次大于 pos 的相位，即为 tick t 的激活相位。
+4. 输出该激活相位及其 GreenEdges 集合，作为本 tick 允许放行的入边。
+若节点无信号控制，或信号周期/相位列表未定义，则不适用本技能。
+
+## Objective
+
+确定 tick t 的激活信号相位及其允许放行的入边集合
+## Applicable Signals
+
+- 节点为信号化节点
+- 需要判定当前 tick 哪些入边可放行
+
+## Contraindications
+
+- 节点无信号控制
+- 信号周期或相位列表未定义
+
+## Intervention Moves
+
+- 计算 tick t 在周期内的位置 pos = t mod CycleLength
+- 按相位顺序累加 Duration，定位覆盖 pos 的相位
+- 返回激活相位及其 GreenEdges 集合
+
+## Workflow Steps
+
+- 确认节点为信号化节点且已定义 CycleLength 与有序相位列表
+- 计算 pos = t mod CycleLength
+- 按相位顺序累加 Duration，找到使累加和首次大于 pos 的相位
+- 输出该激活相位及其 GreenEdges 集合
+
+## Constraints
+
+- 相位按有序列表顺序轮转
+- 每相位含 Duration 与 GreenEdges
+- 周期长度为 CycleLength 个 tick
+
+## Cautions
+
+- 信号周期或相位列表缺失时不应推断相位
+
+## Output Contract
+
+- 返回 tick t 的激活相位及其 GreenEdges 集合（允许放行的入边集合）。
+
+## Triggers
+
+- 节点为信号化节点
+- 需要判定当前 tick 哪些入边可放行
+- 需要计算给定 tick 的激活相位
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from math import floor
+[?2004lIT[?2004h> 
+[?2004l[?2004h> 
+[?2004l,[?2004h> def solve(input_data):
+[?2004l[?2004h>     tick = input_data.get('tick', 0)
+[?2004l[?2004h>     edge_occupancy = input_data.get('edge_occupancy', {}) or {}
+[?2004l[?2004h>     enter_requests = input_data.get('enter_requests', []) or []
+[?2004l[?2004h>     active_incidents = input_data.get('active_incidents', []) or []
+[?2004l[?2004h> 
+[?2004l[?2004h>     # Morning Rush map / signal programs are not provided in the task input.
+[?2004l[?2004h>     # Implement robustly: if signal data exists in input_data, use it; otherwise
+[?2004l[?2004h>     # only edges explicitly marked as signal-controlled in provided structures will be gated.
+[?2004l[?2004h>     signal_nodes = input_data.get('signal_nodes', {}) or {}
+[?2004l[?2004h>     edge_to_downstream = input_data.get('edge_to_downstream', {}) or {}
+[?2004l[?2004h>     edge_defs = input_data.get('edge_definitions', {}) or {}
+[?2004l[?2004h> 
+[?2004l[?2004h>     def get_baseline_capacity(edge_id):
+[?2004l[?2004h>         # Prefer explicit edge definition if present.
+[?2004l[?2004h>         ed = edge_defs.get(edge_id, {}) if isinstance(edge_defs, dict) else {}
+[?2004l[?2004h>         lane_count = ed.get('lane_count', ed.get('LaneCount'))
+[?2004l[?2004h>         cap_per_lane = ed.get('capacity_per_lane', ed.get('CapacityPerLane'))
+[?2004l[?2004h>         if lane_count is not None and cap_per_lane is not None:
+[?2004l[?2004h>             try:
+[?2004l[?2004h>                 return int(lane_count) * int(cap_per_lane)
+[?2004l[?2004h>             except Exception:
+[?2004l[?2004h>                 pass
+[?2004l[?2004h>         # Fallback: if no definitions are given, infer no change from current occupancy.
+[?2004l[?2004h>         return len(edge_occupancy.get(edge_id, [])) if edge_id in edge_occupancy else 0
+[?2004l[?2004h> 
+[?2004l[?2004h>     def incident_effect(edge_id):
+[?2004l[?2004h>         close = False
+[?2004l[?2004h>         multipliers = []
+[?2004l[?2004h>         for inc in active_incidents:
+[?2004l[?2004h>             if inc.get('edge_id') != edge_id:
+[?2004l[?2004h>                 continue
+[?2004l[?2004h>             s = inc.get('start_tick')
+[?2004l[?2004h>             e = inc.get('end_tick')
+[?2004l[?2004h>             if s is None or e is None:
+[?2004l[?2004h>                 continue
+[?2004l[?2004h>             if not (s <= tick < e):
+[?2004l[?2004h>                 continue
+[?2004l[?2004h>             eff = inc.get('effect_type')
+[?2004l[?2004h>             if eff == 'CLOSE_EDGE':
+[?2004l[?2004h>                 close = True
+[?2004l[?2004h>             elif eff == 'REDUCE_CAPACITY':
+[?2004l[?2004h>                 try:
+[?2004l[?2004h>                     multipliers.append(float(inc.get('capacity_multiplier', 1.0)))
+[?2004l[?2004h>                 except Exception:
+[?2004l[?2004h>                     pass
+[?2004l[?2004h>         return close, (min(multipliers) if multipliers else None)
+[?2004l[?2004h> 
+[?2004l[?2004h>     def signal_allows(edge_id):
+[?2004l[?2004h>         downstream = edge_to_downstream.get(edge_id)
+[?2004l[?2004h>         if not downstream:
+[?2004l[?2004h>             return True
+[?2004l[?2004h>         sig = signal_nodes.get(downstream)
+[?2004l[?2004h>         if not sig:
+[?2004l[?2004h>             return True
+[?2004l[?2004h>         cycle = sig.get('CycleLength', sig.get('cycle_length'))
+[?2004l[?2004h>         phases = sig.get('phases', sig.get('Phases'))
+[?2004l[?2004h>         if not cycle or not phases:
+[?2004l[?2004h>             return False
+[?2004l[?2004h>         try:
+[?2004l[?2004h>             pos = tick % int(cycle)
+[?2004l[?2004h>         except Exception:
+[?2004l[?2004h>             return False
+[?2004l[?2004h>         acc = 0
+[?2004l[?2004h>         for ph in phases:
+[?2004l[?2004h>             dur = ph.get('Duration', ph.get('duration'))
+[?2004l[?2004h>             greens = ph.get('GreenEdges', ph.get('green_edges', []))
+[?2004l[?2004h>             if dur is None:
+[?2004l[?2004h>                 continue
+[?2004l[?2004h>             acc += int(dur)
+[?2004l[?2004h>             if pos < acc:
+[?2004l[?2004h>                 return edge_id in set(greens or [])
+[?2004l[?2004h>         return False
+[?2004l[?2004h> 
+[?2004l[?2004h>     decisions = []
+[?2004l[?2004h>     for req in enter_requests:
+[?2004l[?2004h>         vehicle_id = req.get('vehicle_id')
+[?2004l[?2004h>         edge_id = req.get('edge_id')
+[?2004l[?2004h>         occupancy_before = len(edge_occupancy.get(edge_id, []))
+[?2004l[?2004h>         baseline = get_baseline_capacity(edge_id)
+[?2004l[?2004h>         close, multiplier = incident_effect(edge_id)
+[?2004l[?2004h>         if close:
+[?2004l[?2004h>             effective = baseline
+[?2004l[?2004h>             approved = False
+[?2004l[?2004h>             reason = 'CLOSURE'
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             effective = baseline
+[?2004l[?2004h>             if multiplier is not None:
+[?2004l[?2004h>                 effective = floor(baseline * multiplier)
+[?2004l[?2004h>             signal_ok = signal_allows(edge_id)
+[?2004l[?2004h>             if not signal_ok:
+[?2004l[?2004h>                 approved = False
+[?2004l[?2004h>                 reason = 'SIGNAL'
+[?2004l[?2004h>             elif occupancy_before + 1 > effective:
+[?2004l[?2004h>                 approved = False
+[?2004l[?2004h>                 reason = 'CAPACITY'
+[?2004l[?2004h>             else:
+[?2004l[?2004h>                 approved = True
+[?2004l[?2004h>                 reason = 'APPROVED'
+[?2004l[?2004h>         decisions.append({
+[?2004l[?2004h>             'vehicle_id': vehicle_id,
+[?2004l[?2004h>             'edge_id': edge_id,
+[?2004l[?2004h>             'approved': approved,
+[?2004l[?2004h>             'action': 'ENTER_EDGE' if approved else 'WAIT',
+[?2004l[?2004h>             'reason': reason,
+[?2004l[?2004h>             'effective_max_vehicles': int(effective),
+[?2004l[?2004h>             'occupancy_before': int(occupancy_before),
+[?2004l[?2004h>         })
+[?2004l[?2004h> 
+[?2004l[?2004h>     return {'decisions': decisions}
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

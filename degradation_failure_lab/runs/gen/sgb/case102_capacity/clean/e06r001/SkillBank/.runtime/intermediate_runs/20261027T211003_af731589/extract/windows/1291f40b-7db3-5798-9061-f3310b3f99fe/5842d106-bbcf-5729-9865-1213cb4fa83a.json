@@ -1,0 +1,920 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "1bc8021f-62da-5b9f-9289-3a9e0b5f253b",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 60747,
+        "end": 61798
+      },
+      "excerpt": "AFN State Representation & Worked Examples\n\n1. State Snapshot Format\n\nT1. The simulation state at tick t is represented by a structured snapshot with the following sections:\n1. GLOBAL\n2. NODES\n3. EDGES\n4. VEHICLES\n5. CONSIGNMENTS\n6. INCIDENTS_ACTIVE\n\n1.1 GLOBAL Section\n\nT2. The GLOBAL section has:\n- TimeTick:current tick index.\n- ScenarioName:e.g., \"Morning Rush\".\n- ScoreSoFar:current cumulative service score (may be provisional).\n\nExample:\n\nGLOBAL\nTimeTick: 0\nScenarioName: Morning Rush\nScoreSoFar: 0\n\n1.2 NODES Section\n\nT3. Each node entry includes:\n- NodeID\n- NodeType\n- PackagesAtNode:list of ConsignmentIDs currently waiting here.\n- ParkingVehicles:list of VehicleIDs currently parked here.\n\nExample excerpt:\n\nNODES\nN1 DEPOT PackagesAtNode: [C1, C2] ParkingVehicles: [V1, V2]\nN2 HUB PackagesAtNode: [] ParkingVehicles: []\nN6 CUSTOMER PackagesAtNode: [] ParkingVehicles: []\n\n1.3 EDGES Section\n\nT4. Each edge entry includes:\n- EdgeID\n- Status (OPEN or CLOSED)\n- Occupancy:list of items of the form (VehicleID, RemainingTravelTime)\n\nExample:",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "AFN 状态快照解析",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "从结构化快照中正确重建当前 tick 的仿真状态",
+        "task_family": "状态表示",
+        "method_family": "结构化快照解析",
+        "stage": "状态读取",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:45:37+00:00"
+    },
+    {
+      "support_id": "d9d06686-630d-518b-800a-557c9a7980d6",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 60747,
+        "end": 61798
+      },
+      "excerpt": "AFN State Representation & Worked Examples\n\n1. State Snapshot Format\n\nT1. The simulation state at tick t is represented by a structured snapshot with the following sections:\n1. GLOBAL\n2. NODES\n3. EDGES\n4. VEHICLES\n5. CONSIGNMENTS\n6. INCIDENTS_ACTIVE\n\n1.1 GLOBAL Section\n\nT2. The GLOBAL section has:\n- TimeTick:current tick index.\n- ScenarioName:e.g., \"Morning Rush\".\n- ScoreSoFar:current cumulative service score (may be provisional).\n\nExample:\n\nGLOBAL\nTimeTick: 0\nScenarioName: Morning Rush\nScoreSoFar: 0\n\n1.2 NODES Section\n\nT3. Each node entry includes:\n- NodeID\n- NodeType\n- PackagesAtNode:list of ConsignmentIDs currently waiting here.\n- ParkingVehicles:list of VehicleIDs currently parked here.\n\nExample excerpt:\n\nNODES\nN1 DEPOT PackagesAtNode: [C1, C2] ParkingVehicles: [V1, V2]\nN2 HUB PackagesAtNode: [] ParkingVehicles: []\nN6 CUSTOMER PackagesAtNode: [] ParkingVehicles: []\n\n1.3 EDGES Section\n\nT4. Each edge entry includes:\n- EdgeID\n- Status (OPEN or CLOSED)\n- Occupancy:list of items of the form (VehicleID, RemainingTravelTime)\n\nExample:",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "AFN 单 tick 合法动作执行",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "在单个 tick 内正确执行合法动作并更新状态",
+        "task_family": "仿真推进",
+        "method_family": "离散时间步更新",
+        "stage": "单步执行",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 2,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:45:37+00:00"
+    },
+    {
+      "support_id": "f6353d5f-e884-5450-88f9-3f69282615e7",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 60747,
+        "end": 61798
+      },
+      "excerpt": "AFN State Representation & Worked Examples\n\n1. State Snapshot Format\n\nT1. The simulation state at tick t is represented by a structured snapshot with the following sections:\n1. GLOBAL\n2. NODES\n3. EDGES\n4. VEHICLES\n5. CONSIGNMENTS\n6. INCIDENTS_ACTIVE\n\n1.1 GLOBAL Section\n\nT2. The GLOBAL section has:\n- TimeTick:current tick index.\n- ScenarioName:e.g., \"Morning Rush\".\n- ScoreSoFar:current cumulative service score (may be provisional).\n\nExample:\n\nGLOBAL\nTimeTick: 0\nScenarioName: Morning Rush\nScoreSoFar: 0\n\n1.2 NODES Section\n\nT3. Each node entry includes:\n- NodeID\n- NodeType\n- PackagesAtNode:list of ConsignmentIDs currently waiting here.\n- ParkingVehicles:list of VehicleIDs currently parked here.\n\nExample excerpt:\n\nNODES\nN1 DEPOT PackagesAtNode: [C1, C2] ParkingVehicles: [V1, V2]\nN2 HUB PackagesAtNode: [] ParkingVehicles: []\nN6 CUSTOMER PackagesAtNode: [] ParkingVehicles: []\n\n1.3 EDGES Section\n\nT4. Each edge entry includes:\n- EdgeID\n- Status (OPEN or CLOSED)\n- Occupancy:list of items of the form (VehicleID, RemainingTravelTime)\n\nExample:",
+      "relation_type": "support",
+      "confidence": 0.6,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "AFN 控制器目标与优先级评估",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "按优先级与服务目标评估仿真状态并支持决策",
+        "task_family": "决策评估",
+        "method_family": "目标与优先级评分",
+        "stage": "评估",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 3,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:45:37+00:00"
+    },
+    {
+      "support_id": "7765d0d8-80f3-5127-babc-ef3f22bef6e8",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 60747,
+        "end": 61798
+      },
+      "excerpt": "AFN State Representation & Worked Examples\n\n1. State Snapshot Format\n\nT1. The simulation state at tick t is represented by a structured snapshot with the following sections:\n1. GLOBAL\n2. NODES\n3. EDGES\n4. VEHICLES\n5. CONSIGNMENTS\n6. INCIDENTS_ACTIVE\n\n1.1 GLOBAL Section\n\nT2. The GLOBAL section has:\n- TimeTick:current tick index.\n- ScenarioName:e.g., \"Morning Rush\".\n- ScoreSoFar:current cumulative service score (may be provisional).\n\nExample:\n\nGLOBAL\nTimeTick: 0\nScenarioName: Morning Rush\nScoreSoFar: 0\n\n1.2 NODES Section\n\nT3. Each node entry includes:\n- NodeID\n- NodeType\n- PackagesAtNode:list of ConsignmentIDs currently waiting here.\n- ParkingVehicles:list of VehicleIDs currently parked here.\n\nExample excerpt:\n\nNODES\nN1 DEPOT PackagesAtNode: [C1, C2] ParkingVehicles: [V1, V2]\nN2 HUB PackagesAtNode: [] ParkingVehicles: []\nN6 CUSTOMER PackagesAtNode: [] ParkingVehicles: []\n\n1.3 EDGES Section\n\nT4. Each edge entry includes:\n- EdgeID\n- Status (OPEN or CLOSED)\n- Occupancy:list of items of the form (VehicleID, RemainingTravelTime)\n\nExample:",
+      "relation_type": "constraint",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "AFN 规则冲突与未定义行为处理",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "在规则冲突或未定义情形下保证仿真行为一致且可追溯",
+        "task_family": "规则一致性",
+        "method_family": "冲突检测与保守裁决",
+        "stage": "异常处理",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 4,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:45:37+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "3e131908-e0ea-5b43-b61a-d2a166577cff",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "AFN 状态快照解析",
+      "description": "按 GLOBAL/NODES/EDGES/VEHICLES/CONSIGNMENTS/INCIDENTS_ACTIVE 六段结构读取并解析仿真状态快照，用于在任意 tick 上重建当前仿真世界状态。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "从结构化快照中正确重建当前 tick 的仿真状态",
+      "domain": "交通仿真",
+      "task_family": "状态表示",
+      "method_family": "结构化快照解析",
+      "stage": "状态读取",
+      "applicable_signals": [
+        "提供了某一 tick 的状态快照文本",
+        "需要读取或校验某一 tick 的仿真状态",
+        "需要从快照中提取节点、边、车辆、货物或事故信息"
+      ],
+      "contraindications": [
+        "需要推进仿真或计算下一步动作",
+        "快照缺少必需段落且无法重建状态"
+      ],
+      "intervention_moves": [
+        "按六段结构逐段解析快照",
+        "提取 GLOBAL 段的 TimeTick、ScenarioName、ScoreSoFar",
+        "提取 NODES 段的 NodeID、NodeType、PackagesAtNode、ParkingVehicles",
+        "提取 EDGES 段的 EdgeID、Status、Occupancy 条目",
+        "组装字段可追溯的状态对象"
+      ],
+      "workflow_steps": [
+        "解析 GLOBAL 段：TimeTick、ScenarioName、ScoreSoFar",
+        "解析 NODES 段：NodeID、NodeType、PackagesAtNode、ParkingVehicles",
+        "解析 EDGES 段：EdgeID、Status（OPEN/CLOSED）、Occupancy（VehicleID, RemainingTravelTime）",
+        "解析 VEHICLES 段",
+        "解析 CONSIGNMENTS 段",
+        "解析 INCIDENTS_ACTIVE 段",
+        "组装六段状态对象并标注字段来源"
+      ],
+      "triggers": [
+        "需要读取或校验某一 tick 的仿真状态",
+        "需要从快照中提取节点、边、车辆、货物或事故信息",
+        "需要重建当前仿真世界状态以支持后续分析"
+      ],
+      "constraints": [
+        "仅做状态读取与重建，不推进仿真、不计算动作、不做决策",
+        "快照缺少必需段落或字段无法解析时，报告缺失项而非臆造",
+        "保留每个字段的来源段落以便追溯"
+      ],
+      "cautions": [
+        "ScoreSoFar 可能为暂定值，需按快照原样保留",
+        "EDGES 的 Occupancy 条目需按 (VehicleID, RemainingTravelTime) 形式解析"
+      ],
+      "output_contract": [
+        "一份按六段结构解析完成、字段可追溯的状态对象"
+      ],
+      "examples": [
+        {
+          "input": "GLOBAL\nTimeTick: 0\nScenarioName: Morning Rush\nScoreSoFar: 0",
+          "output": "GLOBAL 段：TimeTick=0，ScenarioName=Morning Rush，ScoreSoFar=0",
+          "notes": "GLOBAL 段解析示例"
+        },
+        {
+          "input": "NODES\nN1 DEPOT PackagesAtNode: [C1, C2] ParkingVehicles: [V1, V2]\nN2 HUB PackagesAtNode: [] ParkingVehicles: []",
+          "output": "NODES 段：N1（DEPOT，PackagesAtNode=[C1,C2]，ParkingVehicles=[V1,V2]）；N2（HUB，PackagesAtNode=[]，ParkingVehicles=[]）",
+          "notes": "NODES 段解析示例"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "1bc8021f-62da-5b9f-9289-3a9e0b5f253b"
+      ],
+      "metadata": {
+        "prompt": "读取给定 tick 的仿真状态快照，按六个段落（GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）逐段解析，重建当前仿真世界状态。\n\n执行要点：\n1. 先解析 GLOBAL 段，提取 TimeTick、ScenarioName、ScoreSoFar。\n2. 解析 NODES 段，每个节点提取 NodeID、NodeType、PackagesAtNode（ConsignmentID 列表）、ParkingVehicles（VehicleID 列表）。\n3. 解析 EDGES 段，每条边提取 EdgeID、Status（OPEN 或 CLOSED）、Occupancy（形如 (VehicleID, RemainingTravelTime) 的条目列表）。\n4. 继续解析 VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE 段，按快照中给出的字段逐项提取。\n5. 将各段结果组装为一份字段可追溯的状态对象，保留每个字段的来源段落。\n6. 若快照缺少必需段落或字段无法解析，明确报告缺失项，不要臆造状态。\n\n本技能只负责状态读取与重建，不推进仿真、不计算下一步动作、不做决策。",
+        "tags": [
+          "交通仿真",
+          "状态表示",
+          "快照解析",
+          "结构化读取"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "c3fd8ccd-e1ed-5c52-bff1-92526bfc6ed1",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "AFN 单 tick 合法动作执行",
+      "description": "在 AFN 离散时间仿真中推进单个 tick：依据时间与更新顺序规则，对车辆执行合法动作（移动、装卸、等待等），并处理边容量、队列与冲突，产出更新后的状态快照与动作执行记录。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "在单个 tick 内正确执行合法动作并更新状态",
+      "domain": "交通仿真",
+      "task_family": "仿真推进",
+      "method_family": "离散时间步更新",
+      "stage": "单步执行",
+      "applicable_signals": [
+        "存在当前 tick 的状态快照",
+        "有车辆待处理动作",
+        "边存在占用或容量约束",
+        "存在活跃事件或道路关闭"
+      ],
+      "contraindications": [
+        "需要跨多阶段规划整体控制策略",
+        "缺少合法动作定义或更新顺序规则"
+      ],
+      "intervention_moves": [
+        "读取并校验状态快照各分区",
+        "按更新顺序确定处理次序",
+        "枚举并筛选合法动作",
+        "按容量/队列/冲突规则裁决",
+        "更新状态并推进 TimeTick"
+      ],
+      "workflow_steps": [
+        "读取当前状态快照并确认 TimeTick 与 ScenarioName",
+        "依据时间与更新顺序规则确定本 tick 处理次序",
+        "对每辆车枚举合法动作并排除不合法动作",
+        "应用边容量、队列与冲突规则裁决竞争性动作，处理 CLOSED 边与占用",
+        "更新节点、边、车辆与货物状态并推进 TimeTick",
+        "输出更新后的状态快照与动作执行记录"
+      ],
+      "triggers": [
+        "需要推进一个 tick 并更新车辆与边状态",
+        "需要处理边容量、队列或冲突",
+        "需要按合法动作定义裁决本 tick 的车辆行为"
+      ],
+      "constraints": [
+        "必须遵循时间与更新顺序规则",
+        "动作必须属于合法动作集合",
+        "边容量、队列与冲突须按规则裁决",
+        "CLOSED 边不可通行"
+      ],
+      "cautions": [
+        "ScoreSoFar 可能为暂定值，不应视为最终得分",
+        "规则冲突或未定义行为需按规则冲突处理约定处理"
+      ],
+      "output_contract": [
+        "更新后的 tick 状态快照（含 GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）与动作执行记录"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.75,
+      "support_ids": [
+        "d9d06686-630d-518b-800a-557c9a7980d6"
+      ],
+      "metadata": {
+        "prompt": "按以下步骤推进一个 tick：\n1. 读取当前状态快照（GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE），确认 TimeTick 与 ScenarioName。\n2. 依据时间与更新顺序规则确定本 tick 的处理次序。\n3. 对每辆车枚举合法动作（移动、装卸、等待等），排除不合法动作。\n4. 应用边容量、队列与冲突规则裁决竞争性动作，处理 CLOSED 边与占用（Occupancy 中的 RemainingTravelTime）。\n5. 更新节点 PackagesAtNode/ParkingVehicles、边 Occupancy、车辆与货物状态，推进 TimeTick。\n6. 输出更新后的状态快照与动作执行记录。",
+        "tags": [
+          "交通仿真",
+          "离散时间步",
+          "单步执行",
+          "状态更新",
+          "边容量"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 2,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "e726e156-27fd-51ed-a234-6a36a56af954",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "AFN 控制器目标与优先级评估",
+      "description": "依据优先级、服务水平和控制器目标评估当前仿真状态或候选调度/信号方案，用于在给定状态下判断决策优劣并给出带评分与优先级判断的评估结论。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "按优先级与服务目标评估仿真状态并支持决策",
+      "domain": "交通仿真",
+      "task_family": "决策评估",
+      "method_family": "目标与优先级评分",
+      "stage": "评估",
+      "applicable_signals": [
+        "存在多个候选调度或信号方案待比较",
+        "已有可读的状态快照与累计服务评分",
+        "优先级与服务水平规则已明确"
+      ],
+      "contraindications": [
+        "仅需读取状态而不做评估",
+        "目标或优先级规则未定义"
+      ],
+      "intervention_moves": [
+        "读取状态快照各分区",
+        "按优先级对任务/包裹排序",
+        "对照服务水平与控制器目标逐项评分",
+        "比较候选方案并给出优先级判断"
+      ],
+      "workflow_steps": [
+        "确认状态快照完整（GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）",
+        "提取当前累计服务评分与时间刻度作为评估基线",
+        "依据优先级规则对相关包裹/车辆排序",
+        "对照服务水平与控制器目标对当前状态或候选方案逐项评分",
+        "比较候选方案，形成带评分与优先级判断的评估结论"
+      ],
+      "triggers": [
+        "需要在多个调度或信号方案间比较优劣",
+        "需要依据服务水平评估当前仿真状态",
+        "需要判断某决策对控制器目标的贡献"
+      ],
+      "constraints": [
+        "评估须基于已定义的目标与优先级规则",
+        "评估结论须引用状态快照中的可观测数据",
+        "不负责状态解析或单步执行，仅做评估与决策支持"
+      ],
+      "cautions": [
+        "累计服务评分可能为暂定值，评估时需注明",
+        "规则冲突或未定义行为下不应强行评分"
+      ],
+      "output_contract": [
+        "一份带评分与优先级判断的评估结论，说明各候选方案或当前状态相对控制器目标与服务水平的优劣。"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.6,
+      "support_ids": [
+        "f6353d5f-e884-5450-88f9-3f69282615e7"
+      ],
+      "metadata": {
+        "prompt": "在已获得 AFN 状态快照（GLOBAL/NODES/EDGES/VEHICLES/CONSIGNMENTS/INCIDENTS_ACTIVE）且优先级与服务目标规则已定义的前提下，按优先级与服务水平对当前状态或候选方案进行评分比较，输出评估结论。若仅需读取状态或规则未定义，则不执行本评估。",
+        "tags": [
+          "交通仿真",
+          "决策评估",
+          "优先级",
+          "服务水平",
+          "控制器目标"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 3,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    },
+    {
+      "draft_id": "f71038bc-dd98-5863-a716-5df59dcf2675",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "AFN 规则冲突与未定义行为处理",
+      "description": "当 AFN 交通仿真中多条规则对同一动作给出矛盾要求，或出现规范未覆盖的未定义行为时，识别冲突并给出保守、可追溯的处理决定，保证仿真行为一致。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在规则冲突或未定义情形下保证仿真行为一致且可追溯",
+      "domain": "交通仿真",
+      "task_family": "规则一致性",
+      "method_family": "冲突检测与保守裁决",
+      "stage": "异常处理",
+      "applicable_signals": [
+        "同一动作被多条规则赋予矛盾要求",
+        "当前状态或动作在规范中无明确定义",
+        "按现有规则无法唯一确定下一步行为"
+      ],
+      "contraindications": [
+        "规则明确且无冲突",
+        "需要正常推进仿真而非处理异常"
+      ],
+      "intervention_moves": [
+        "暂停正常仿真推进",
+        "定位并记录冲突或未定义的具体规则与状态",
+        "依据保守原则选择不破坏一致性的处理决定",
+        "记录处理决定以便追溯"
+      ],
+      "workflow_steps": [
+        "检测：判断当前情形是否属于规则冲突或未定义行为",
+        "定位：指出涉及的具体规则、动作与状态快照",
+        "裁决：按保守原则给出处理决定，避免引入不一致",
+        "记录：形成冲突识别记录与处理决定，保证可追溯",
+        "恢复：在记录完成后继续仿真推进"
+      ],
+      "triggers": [
+        "多条规则对同一动作给出矛盾要求",
+        "出现规范未覆盖的未定义行为",
+        "仿真推进中出现无法按现有规则唯一确定的行为"
+      ],
+      "constraints": [
+        "仅在规则冲突或未定义情形下触发，不替代正常执行流程",
+        "处理决定必须保守且可追溯",
+        "不得在未记录的情况下静默改变仿真行为"
+      ],
+      "cautions": [
+        "避免将正常但复杂的规则误判为冲突",
+        "保守裁决可能牺牲部分最优性以换取一致性"
+      ],
+      "output_contract": [
+        "冲突识别记录与保守处理决定：包含冲突/未定义点描述、涉及规则与状态、所选保守处理决定及追溯信息。"
+      ],
+      "examples": [],
+      "risk_class": "medium",
+      "confidence": 0.7,
+      "support_ids": [
+        "7765d0d8-80f3-5127-babc-ef3f22bef6e8"
+      ],
+      "metadata": {
+        "prompt": "在推进 AFN 仿真时，若发现多条规则对同一动作给出矛盾要求，或遇到规范未覆盖的未定义行为，先暂停正常推进，明确记录冲突/未定义点，再依据保守原则给出可追溯的处理决定，最后恢复仿真。",
+        "tags": [
+          "交通仿真",
+          "规则一致性",
+          "冲突检测",
+          "异常处理",
+          "护栏规则"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 4,
+        "window_id": "5842d106-bbcf-5729-9865-1213cb4fa83a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 57,
+        "paragraph_end": 70,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

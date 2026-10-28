@@ -1,0 +1,114 @@
+{
+  "skill_id": "05006ada-1d31-5804-a934-35033693109c",
+  "name": "评论分类字段判定",
+  "description": "对每条评论文本逐条判定是否为运动服饰、是否为服装产品以及品牌归属（nike/competitor/n/a），产出符合取值约束的结构化分类字段。适用于已有可解析评论文本、需要为每条评论打上分类标签的场景。",
+  "skill_body": "逐条读取评论文本，对每条评论分别判定三个分类字段：is_sportswear（仅 yes/no）、is_apparel_product（仅 yes/no）、competitor_or_nike（仅 nike/competitor/n/a）。严格使用允许取值，不臆造标签；对无法判定的品牌归属使用 n/a。输出为逐条对应的分类字段，供后续 CSV 组装与校验使用。\n\n## Objective\n\n为每条评论生成合规的分类标签\n## Applicable Signals\n\n- 评论文本已提供且可解析\n- 需要逐条输出 is_sportswear、is_apparel_product、competitor_or_nike 字段\n\n## Contraindications\n\n- 评论缺失或无法解析\n- 仅需计数统计无需逐条分类\n\n## Intervention Moves\n\n- 逐条读取评论文本\n- 判定是否为运动服饰并赋 yes/no\n- 判定是否为服装产品并赋 yes/no\n- 判定品牌归属并赋 nike/competitor/n/a\n- 对无法判定品牌归属的评论赋 n/a\n\n## Workflow Steps\n\n- 确认评论文本可解析且逐条可读\n- 对每条评论判定 is_sportswear，取值仅限 yes 或 no\n- 对每条评论判定 is_apparel_product，取值仅限 yes 或 no\n- 对每条评论判定 competitor_or_nike，取值仅限 nike、competitor 或 n/a\n- 输出每条评论对应的三个分类字段\n\n## Constraints\n\n- is_sportswear 仅允许 yes 或 no\n- is_apparel_product 仅允许 yes 或 no\n- competitor_or_nike 仅允许 nike、competitor 或 n/a\n- 不得输出允许取值之外的标签\n\n## Cautions\n\n- 品牌归属无法判定时使用 n/a，不得强行归类\n- 分类结果需与评论逐条对应，避免错位\n\n## Output Contract\n\n- 每条评论对应的 is_sportswear、is_apparel_product、competitor_or_nike 字段值，取值符合允许集合，可供后续 CSV 组装与校验使用。",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "为每条评论生成合规的分类标签",
+  "domain": "运营流程",
+  "task_family": "评论语义分类",
+  "method_family": "规则化语义判定",
+  "stage": "分类执行",
+  "applicable_signals": [
+    "评论文本已提供且可解析",
+    "需要逐条输出 is_sportswear、is_apparel_product、competitor_or_nike 字段"
+  ],
+  "contraindications": [
+    "评论缺失或无法解析",
+    "仅需计数统计无需逐条分类"
+  ],
+  "intervention_moves": [
+    "逐条读取评论文本",
+    "判定是否为运动服饰并赋 yes/no",
+    "判定是否为服装产品并赋 yes/no",
+    "判定品牌归属并赋 nike/competitor/n/a",
+    "对无法判定品牌归属的评论赋 n/a"
+  ],
+  "triggers": [
+    "已有评论文本需要打上运动服饰/服装/品牌标签",
+    "需要为每条评论生成结构化分类字段"
+  ],
+  "workflow_steps": [
+    "确认评论文本可解析且逐条可读",
+    "对每条评论判定 is_sportswear，取值仅限 yes 或 no",
+    "对每条评论判定 is_apparel_product，取值仅限 yes 或 no",
+    "对每条评论判定 competitor_or_nike，取值仅限 nike、competitor 或 n/a",
+    "输出每条评论对应的三个分类字段"
+  ],
+  "constraints": [
+    "is_sportswear 仅允许 yes 或 no",
+    "is_apparel_product 仅允许 yes 或 no",
+    "competitor_or_nike 仅允许 nike、competitor 或 n/a",
+    "不得输出允许取值之外的标签"
+  ],
+  "cautions": [
+    "品牌归属无法判定时使用 n/a，不得强行归类",
+    "分类结果需与评论逐条对应，避免错位"
+  ],
+  "output_contract": [
+    "每条评论对应的 is_sportswear、is_apparel_product、competitor_or_nike 字段值，取值符合允许集合，可供后续 CSV 组装与校验使用。"
+  ],
+  "examples": [],
+  "tags": [
+    "评论分类",
+    "语义判定",
+    "结构化输出",
+    "运营流程"
+  ],
+  "support_ids": [
+    "7d8f3745-5faa-5612-9dc9-e22799e6c858"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "5063682f-37d9-5f29-97a5-b5ec11194c72"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|为每条评论生成合规的分类标签|运营流程|评论语义分类|规则化语义判定|分类执行|评论分类字段判定",
+    "change_action": "create",
+    "llm_reason": "Distinct micro-skill for per-review classification into sportswear/apparel/brand fields with strict value constraints; no overlap with peer candidates (SKU applicability, sentiment, counting) and no conflict evidence.",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

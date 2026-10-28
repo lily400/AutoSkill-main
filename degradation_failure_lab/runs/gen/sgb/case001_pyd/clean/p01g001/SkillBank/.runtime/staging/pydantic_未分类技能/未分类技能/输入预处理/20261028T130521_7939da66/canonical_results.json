@@ -1,0 +1,162 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "输入预处理",
+  "run_id": "20261028T130521_7939da66",
+  "skills": [
+    {
+      "skill_id": "50016175-02e2-59a2-b10a-9128ffd4676a",
+      "name": "Before 校验器预处理原始输入",
+      "description": "使用 before 校验器在 Pydantic 内部类型校验前对任意原始输入做规范化处理（如将标量包装为列表），并覆盖所有可能的输入类型；处理后的值仍会继续进入 Pydantic 的字段类型校验。",
+      "skill_body": "在字段上声明 before 校验器，接收原始输入（类型提示用 Any，因为校验前输入可以是任何类型）。在校验器内对原始输入做规范化处理（例如把标量包装为列表），并显式覆盖所有可能的输入类型（包括 tuple 等通常能通过 list 校验的序列类型）。处理完成后返回结果，交由 Pydantic 继续按字段类型执行内部校验；不要假设校验器已替代类型校验。\n\n## Objective\n\n在类型校验前对原始输入做规范化处理\n## Applicable Signals\n\n- 字段可能收到标量而非列表等非预期形态\n- 需要在类型转换前统一输入形态\n- 原始输入类型无法预先确定\n\n## Contraindications\n\n- 无需在类型校验前干预输入\n- 无法枚举所有可能的输入类型\n- 希望跳过 Pydantic 内部类型校验（应改用 plain 校验器）\n\n## Intervention Moves\n\n- 用 Any 作为 value 的类型提示以接收任意原始输入\n- 在校验器内将标量包装为列表等规范化处理\n- 显式处理 tuple 等其它可能通过 list 校验的序列类型\n- 返回处理后结果，交由 Pydantic 继续类型校验\n\n## Workflow Steps\n\n- 确认该字段需要在类型校验前干预原始输入\n- 声明 before 校验器，value 使用 Any 类型提示\n- 在校验器内枚举并处理所有可能的输入类型（含标量、tuple 等序列）\n- 返回规范化后的值\n- 依赖 Pydantic 继续对返回值执行字段类型校验\n\n## Constraints\n\n- before 校验器接收的是原始输入，类型提示应为 Any\n- 必须覆盖所有可能的输入类型，包括 tuple 等通常能通过 list 校验的序列\n- before 校验器不会跳过 Pydantic 对字段类型的内部校验\n\n## Cautions\n\n- 若只处理部分输入类型，未覆盖的形态可能在后续类型校验中报错\n- 若需要在校验器返回后立即终止校验，应使用 plain 校验器而非 before 校验器\n\n## Output Contract\n\n- 经预处理的输入继续进入 Pydantic 类型校验；校验器返回规范化后的值，由 Pydantic 按字段类型完成后续校验。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 字段为 list[int]，传入标量 2\n- Therapist/Output: before 校验器将 2 包装为 [2]，随后 Pydantic 校验通过，numbers=[2]\n- Notes: value 使用 Any 类型提示以接收原始输入\n\n### Example 2\n\n- Client/Input: 字段为 list[int]，传入 'str'\n- Therapist/Output: 校验器处理后仍由 Pydantic 执行 int 校验，产生 int_parsing 校验错误\n- Notes: 说明 before 校验器不替代内部类型校验",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在类型校验前对原始输入做规范化处理",
+      "domain": "pydantic",
+      "task_family": "输入预处理",
+      "method_family": "before 校验器",
+      "stage": "校验执行",
+      "applicable_signals": [
+        "字段可能收到标量而非列表等非预期形态",
+        "需要在类型转换前统一输入形态",
+        "原始输入类型无法预先确定"
+      ],
+      "contraindications": [
+        "无需在类型校验前干预输入",
+        "无法枚举所有可能的输入类型",
+        "希望跳过 Pydantic 内部类型校验（应改用 plain 校验器）"
+      ],
+      "intervention_moves": [
+        "用 Any 作为 value 的类型提示以接收任意原始输入",
+        "在校验器内将标量包装为列表等规范化处理",
+        "显式处理 tuple 等其它可能通过 list 校验的序列类型",
+        "返回处理后结果，交由 Pydantic 继续类型校验"
+      ],
+      "triggers": [
+        "输入类型不确定，需要在校验前先规范化",
+        "需要把标量包装为列表等预处理动作",
+        "需要在 Pydantic 内部类型校验前干预原始输入"
+      ],
+      "workflow_steps": [
+        "确认该字段需要在类型校验前干预原始输入",
+        "声明 before 校验器，value 使用 Any 类型提示",
+        "在校验器内枚举并处理所有可能的输入类型（含标量、tuple 等序列）",
+        "返回规范化后的值",
+        "依赖 Pydantic 继续对返回值执行字段类型校验"
+      ],
+      "constraints": [
+        "before 校验器接收的是原始输入，类型提示应为 Any",
+        "必须覆盖所有可能的输入类型，包括 tuple 等通常能通过 list 校验的序列",
+        "before 校验器不会跳过 Pydantic 对字段类型的内部校验"
+      ],
+      "cautions": [
+        "若只处理部分输入类型，未覆盖的形态可能在后续类型校验中报错",
+        "若需要在校验器返回后立即终止校验，应使用 plain 校验器而非 before 校验器"
+      ],
+      "output_contract": [
+        "经预处理的输入继续进入 Pydantic 类型校验；校验器返回规范化后的值，由 Pydantic 按字段类型完成后续校验。"
+      ],
+      "examples": [
+        {
+          "input": "字段为 list[int]，传入标量 2",
+          "output": "before 校验器将 2 包装为 [2]，随后 Pydantic 校验通过，numbers=[2]",
+          "notes": "value 使用 Any 类型提示以接收原始输入"
+        },
+        {
+          "input": "字段为 list[int]，传入 'str'",
+          "output": "校验器处理后仍由 Pydantic 执行 int 校验，产生 int_parsing 校验错误",
+          "notes": "说明 before 校验器不替代内部类型校验"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "validator",
+        "before-validator",
+        "input-normalization"
+      ],
+      "support_ids": [
+        "6f1f002c-bad4-5256-a210-1af0185ced20"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "cfa61adc-c2b9-5590-8dff-4fee7a041243"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在类型校验前对原始输入做规范化处理|pydantic|输入预处理|before 校验器|校验执行|before 校验器预处理原始输入",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "160331bb-efe1-4920-abc8-e46e927efd8e",
+      "entity_type": "skill",
+      "entity_id": "50016175-02e2-59a2-b10a-9128ffd4676a",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "50016175-02e2-59a2-b10a-9128ffd4676a",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "6f1f002c-bad4-5256-a210-1af0185ced20"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

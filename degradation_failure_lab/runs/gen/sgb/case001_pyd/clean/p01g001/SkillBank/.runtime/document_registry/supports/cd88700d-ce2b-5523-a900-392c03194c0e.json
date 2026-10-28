@@ -1,0 +1,64 @@
+{
+  "support_id": "cd88700d-ce2b-5523-a900-392c03194c0e",
+  "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+  "skill_id": "688b17b0-4bcf-5eb2-879a-50609da68fe0",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+  "section": "# Validators",
+  "span": {
+    "start": 14817,
+    "end": 15985
+  },
+  "excerpt": "class UserModel(BaseModel):\n    username: str\n\n@model_validator(mode='before')\n    @classmethod\n    def check_card_number_not_present(cls, data: Any) -> Any:  # (1)!\n        if isinstance(data, dict):  # (2)!\n            if 'card_number' in data:\n                raise ValueError(\"'card_number' should not be included\")\n        return data\n```\n  1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `data`. *Before* validators take the raw input, which\n can be anything.\n  2. Most of the time, the input data will be a dictionary (e.g. when calling `UserModel(username='...')`). However,\n this is not always the case. For instance, if the [`from_attributes`](../../api/config/#pydantic.config.ConfigDict.from_attributes)\n configuration value is set, you might receive an arbitrary class instance for the `data` argument.\n- ***Wrap* validators**: are the most flexible of all. You can run code before or after Pydantic and\n other validators process the input data, or you can terminate validation immediately, either by returning\n the data early or by raising an error.\n\n```\nimport logging\nfrom typing import Any",
+  "relation_type": "support",
+  "confidence": 0.8,
+  "metadata": {
+    "document_title": "input001\\validators.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "Pydantic 模型校验器实现",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "visible_role": "leaf",
+    "objective": "实现模型级 before/after 校验并正确处理原始输入",
+    "task_family": "模型校验",
+    "method_family": "model_validator",
+    "stage": "模型级校验实现",
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "candidate_slot": 2,
+    "window_id": "e232d2f6-73d9-52e7-85de-50cddaa5f7bf",
+    "window_strategy": "strict",
+    "anchor_hits": [],
+    "paragraph_start": 37,
+    "paragraph_end": 39,
+    "heading_path": [
+      "# Validators"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input001\\validators.md"
+    ],
+    "subsection_headings": [
+      "## Field validators",
+      "Example mutating the value",
+      "Which validator pattern to use",
+      "Using the annotated pattern",
+      "Using the decorator pattern",
+      "Model validators",
+      "Raising validation errors",
+      "Validation info",
+      "Validation data",
+      "Validation context",
+      "Ordering of validators",
+      "Special types"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+  },
+  "created_at": "2026-10-28T04:56:16+00:00"
+}

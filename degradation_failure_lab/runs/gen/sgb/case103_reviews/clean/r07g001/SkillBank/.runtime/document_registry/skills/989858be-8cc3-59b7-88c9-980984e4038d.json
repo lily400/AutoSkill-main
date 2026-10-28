@@ -1,0 +1,140 @@
+{
+  "skill_id": "989858be-8cc3-59b7-88c9-980984e4038d",
+  "name": "无效或不完整输入处理",
+  "description": "在批处理前对结构化输入（如 JSON 产品目录）执行有效性校验，识别缺失字段、格式异常或目录无效的情况，并给出可追溯的降级处理动作，避免产出错误的结构化结果。",
+  "skill_body": "在开始批处理或结构化产出前，先校验输入是否为有效 JSON 且结构完整。检查必需字段是否存在、字段类型是否符合要求、标识是否与目录一致。若输入缺失、格式错误或目录无效，判定为无效输入并记录处理动作（如拒绝处理、请求补充或降级），不要继续产出结构化结果。\n\n## Objective\n\n识别并处理无效或不完整输入\n## Applicable Signals\n\n- 输入为 JSON 目录或结构化数据\n- 存在缺失字段或格式异常风险\n- 批处理即将开始\n- 输入缺失\n- 输入格式不符合预期\n- 产品目录JSON校验失败\n\n## Contraindications\n\n- 输入已确认完整且格式合规\n- 输入完整且通过校验时无需触发本规则\n\n## Intervention Moves\n\n- 校验输入是否为有效 JSON\n- 检查必需字段是否齐全\n- 检查字段类型与取值是否合规\n- 判定输入有效性并记录处理动作\n- 校验输入完整性与格式\n- 校验产品目录JSON\n- 对无效输入按规则给出明确处理结果或错误提示\n\n## Workflow Steps\n\n- 确认输入为 JSON 目录或结构化数据\n- 校验 JSON 可解析且结构完整\n- 检查必需字段是否存在、类型是否合规\n- 判定输入有效性\n- 对无效或不完整输入执行降级处理并记录动作\n- 检查输入是否存在且格式符合预期\n- 校验产品目录JSON是否有效\n- 若发现无效或不完整输入，停止后续分析并按既定规则输出明确的处理结果或错误提示\n\n## Constraints\n\n- 仅在批处理前的输入把关阶段使用\n- 输入已确认完整且格式合规时不再执行\n- 无效输入不得继续进入结构化产出\n- 不得静默失败\n- 不得在输入无效时继续执行后续分析步骤\n\n## Cautions\n\n- 避免在输入未校验时直接产出结构化结果\n- 降级处理动作需可追溯\n- 错误提示需明确指向无效或不完整的输入部分\n\n## Output Contract\n\n- 输入有效性判定及处理动作记录\n- 明确的无效输入处理结果或错误提示",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "识别并处理无效或不完整输入",
+  "domain": "运营流程",
+  "task_family": "输入校验",
+  "method_family": "输入合规检查",
+  "stage": "输入验证",
+  "applicable_signals": [
+    "输入为 JSON 目录或结构化数据",
+    "存在缺失字段或格式异常风险",
+    "批处理即将开始",
+    "输入缺失",
+    "输入格式不符合预期",
+    "产品目录JSON校验失败"
+  ],
+  "contraindications": [
+    "输入已确认完整且格式合规",
+    "输入完整且通过校验时无需触发本规则"
+  ],
+  "intervention_moves": [
+    "校验输入是否为有效 JSON",
+    "检查必需字段是否齐全",
+    "检查字段类型与取值是否合规",
+    "判定输入有效性并记录处理动作",
+    "校验输入完整性与格式",
+    "校验产品目录JSON",
+    "对无效输入按规则给出明确处理结果或错误提示"
+  ],
+  "triggers": [
+    "输入为 JSON 目录或结构化数据",
+    "存在缺失字段或格式异常风险",
+    "批处理开始前的输入把关",
+    "输入缺失或格式不符合预期",
+    "产品目录JSON校验失败"
+  ],
+  "workflow_steps": [
+    "确认输入为 JSON 目录或结构化数据",
+    "校验 JSON 可解析且结构完整",
+    "检查必需字段是否存在、类型是否合规",
+    "判定输入有效性",
+    "对无效或不完整输入执行降级处理并记录动作",
+    "检查输入是否存在且格式符合预期",
+    "校验产品目录JSON是否有效",
+    "若发现无效或不完整输入，停止后续分析并按既定规则输出明确的处理结果或错误提示"
+  ],
+  "constraints": [
+    "仅在批处理前的输入把关阶段使用",
+    "输入已确认完整且格式合规时不再执行",
+    "无效输入不得继续进入结构化产出",
+    "不得静默失败",
+    "不得在输入无效时继续执行后续分析步骤"
+  ],
+  "cautions": [
+    "避免在输入未校验时直接产出结构化结果",
+    "降级处理动作需可追溯",
+    "错误提示需明确指向无效或不完整的输入部分"
+  ],
+  "output_contract": [
+    "输入有效性判定及处理动作记录",
+    "明确的无效输入处理结果或错误提示"
+  ],
+  "examples": [],
+  "tags": [
+    "输入校验",
+    "输入守卫",
+    "降级处理",
+    "结构化数据",
+    "异常处理",
+    "护栏规则",
+    "JSON校验"
+  ],
+  "support_ids": [
+    "2fbe5791-8d08-5d1b-9ad2-c8c3480bce0d",
+    "ea714532-58aa-5385-8620-25d11de0bfba"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "d9a8c963-583e-555f-b899-fdfed320998d",
+      "4ffccae2-d469-5792-b720-78f61990edef"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 2,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|识别并处理无效或不完整输入|运营流程|输入校验|输入合规检查|输入验证|无效或不完整输入处理",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "merged_from_skill_ids": [
+      "c7f3c46b-fe7b-520b-8fce-ead78aa544db"
+    ],
+    "duplicate_consolidation_ids": [
+      "c7f3c46b-fe7b-520b-8fce-ead78aa544db"
+    ]
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

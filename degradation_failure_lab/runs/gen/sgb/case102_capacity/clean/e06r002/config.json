@@ -1,0 +1,41 @@
+{
+  "provider_service": "DeepSeek",
+  "credential_env": "DEEPSEEK_API_KEY",
+  "llm": {
+    "provider": "openai",
+    "base_url": "https://api.deepseek.com",
+    "model": "deepseek-flash",
+    "timeout_s": 180,
+    "max_tokens": 16384,
+    "max_input_chars": 100000,
+    "connector_factory": "degradation_lab.provider_adapter:build",
+    "thinking_mode": "disabled",
+    "proxy_mode": "direct",
+    "transport_retries": 1,
+    "transport_retry_backoff_s": 1.0
+  },
+  "embeddings": {
+    "provider": "hashing",
+    "dims": 256
+  },
+  "max_http_calls": 796,
+  "max_observed_total_tokens": 2484932,
+  "pipeline": {
+    "extract_strategy": "recommended",
+    "section_outline_mode": "llm",
+    "max_candidates_per_unit": 4,
+    "max_units_per_document": 0,
+    "extract_workers": 1,
+    "extract_retries": 1,
+    "extract_retry_backoff_s": 1.0,
+    "max_chars_per_chunk": 6000,
+    "overlap_chars": 300,
+    "max_section_chars": 10000,
+    "retrieval_score_threshold": 0.3,
+    "llm_rate_limit_requests": 10,
+    "llm_rate_limit_window_s": 60.0,
+    "domain_type": "traffic simulation rules",
+    "max_documents": 1
+  },
+  "configuration_note": "Capacity006 infrastructure recovery e06g002: public input/model/pipeline unchanged; direct TLS with one budgeted transport retry. Remaining ceilings subtract e06g001 actual attempts and observed tokens; unknown failed-request billing retained."
+}

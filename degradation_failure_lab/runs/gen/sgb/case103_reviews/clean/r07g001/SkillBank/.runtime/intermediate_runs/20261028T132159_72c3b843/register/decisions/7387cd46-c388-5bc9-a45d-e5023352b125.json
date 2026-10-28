@@ -1,0 +1,116 @@
+{
+  "skill_id": "7387cd46-c388-5bc9-a45d-e5023352b125",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选仅描述逐SKU循环遍历与计数递增的通用流程，与同批候选“评论适用性判定与情感计数流程”和“评论与SKU语义匹配及情感量化流程”高度重叠，缺乏独立可执行价值，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "7387cd46-c388-5bc9-a45d-e5023352b125",
+    "name": "逐SKU循环处理流程",
+    "description": "对已加载且校验通过的产品目录，逐个SKU重复执行语义匹配、情感分类与计数递增，直至全部SKU处理完毕并产出完整计数结果。",
+    "skill_body": "在已加载有效产品目录JSON的前提下，按目录顺序逐个SKU执行：先做语义匹配（含类别匹配与相似度判断），再做情感分类，然后根据 competitor_or_nike 字段与情感结果将对应计数加1；当前SKU处理完成后进入下一个SKU，重复直至全部SKU处理完毕。若目录为空或校验失败，不要启动本流程。\n\n## Objective\n\n遍历全部SKU完成分类与计数\n## Applicable Signals\n\n- 产品目录JSON已通过校验\n- 存在多个待处理SKU\n- 需要输出完整计数结果\n\n## Contraindications\n\n- 目录为空\n- 目录校验失败\n- 仅需处理单个SKU而非全目录\n\n## Intervention Moves\n\n- 按目录顺序取下一个SKU\n- 对当前SKU执行语义匹配\n- 对当前SKU执行情感分类\n- 依据 competitor_or_nike 与情感结果递增对应计数\n- 处理完成后进入下一SKU\n\n## Workflow Steps\n\n- 确认产品目录已加载且校验通过\n- 取当前SKU\n- 执行语义匹配（类别匹配与相似度判断）\n- 执行情感分类\n- 根据 competitor_or_nike 字段判断 Nike 或竞品\n- 根据情感结果判断正面或负面\n- 为该SKU对应计数加1\n- 重复上述步骤直至全部SKU处理完毕\n- 输出完整计数结果\n\n## Constraints\n\n- 必须先完成目录校验再启动循环\n- 每个SKU须同时完成语义匹配与情感分类后才可递增计数\n- 计数递增须同时依据 competitor_or_nike 与情感结果两个维度\n\n## Cautions\n\n- 目录为空或校验失败时不得启动本流程\n- 避免遗漏或重复处理同一SKU\n\n## Output Contract\n\n- 所有SKU处理完毕并得到完整计数结果",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "遍历全部SKU完成分类与计数",
+    "domain": "商品目录语义匹配与统计",
+    "task_family": "批量处理流程",
+    "method_family": "循环遍历",
+    "stage": "全目录处理",
+    "applicable_signals": [
+      "产品目录JSON已通过校验",
+      "存在多个待处理SKU",
+      "需要输出完整计数结果"
+    ],
+    "contraindications": [
+      "目录为空",
+      "目录校验失败",
+      "仅需处理单个SKU而非全目录"
+    ],
+    "intervention_moves": [
+      "按目录顺序取下一个SKU",
+      "对当前SKU执行语义匹配",
+      "对当前SKU执行情感分类",
+      "依据 competitor_or_nike 与情感结果递增对应计数",
+      "处理完成后进入下一SKU"
+    ],
+    "triggers": [
+      "已加载有效产品目录JSON",
+      "需对全部SKU产出统计结果",
+      "需要遍历目录并累计分类计数"
+    ],
+    "workflow_steps": [
+      "确认产品目录已加载且校验通过",
+      "取当前SKU",
+      "执行语义匹配（类别匹配与相似度判断）",
+      "执行情感分类",
+      "根据 competitor_or_nike 字段判断 Nike 或竞品",
+      "根据情感结果判断正面或负面",
+      "为该SKU对应计数加1",
+      "重复上述步骤直至全部SKU处理完毕",
+      "输出完整计数结果"
+    ],
+    "constraints": [
+      "必须先完成目录校验再启动循环",
+      "每个SKU须同时完成语义匹配与情感分类后才可递增计数",
+      "计数递增须同时依据 competitor_or_nike 与情感结果两个维度"
+    ],
+    "cautions": [
+      "目录为空或校验失败时不得启动本流程",
+      "避免遗漏或重复处理同一SKU"
+    ],
+    "output_contract": [
+      "所有SKU处理完毕并得到完整计数结果"
+    ],
+    "examples": [],
+    "tags": [
+      "批量处理",
+      "循环遍历",
+      "SKU",
+      "计数统计",
+      "语义匹配",
+      "情感分类"
+    ],
+    "support_ids": [
+      "af6c1a9d-4b20-522b-aac6-6a39ceb33376"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "954136b7-61dc-5f37-9d98-518c2e12caa5"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|遍历全部sku完成分类与计数|商品目录语义匹配与统计|批量处理流程|循环遍历|全目录处理|逐sku循环处理流程"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

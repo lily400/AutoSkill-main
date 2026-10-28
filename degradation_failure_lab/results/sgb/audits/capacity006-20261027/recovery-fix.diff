@@ -1,0 +1,222 @@
+--- before/src/degradation_lab/runner.py
++++ src/degradation_lab/runner.py
+@@ -127,6 +127,10 @@
+                 raise ValueError('Resume case/condition mismatch')
+             bundle, config = {'case':read(parent/'case.json')}, read(parent/'config.json')
+             validate_config(config)
++            for key, value in (resume_budget or {}).items():
++                if key not in ('max_http_calls', 'max_observed_total_tokens') or type(value) is not int or value < config[key]:
++                    raise ValueError('Resume budget must be an explicit nondecreasing integer limit')
++                config[key] = value
+         else:
+             bundle, _, _, config = self.resolve(case_id, condition_id)
+         gate_path = bundle['case'].get('execution_gate')
+@@ -143,7 +147,8 @@
+                         or request.get('configuration') != configuration
+                         or request.get('configuration_sha256') != sha256(inside(self.root, configuration))
+                         or any(request.get(k) != config[k] for k in ('max_http_calls','max_observed_total_tokens'))
+-                        or resume_from is not None):
++                        or request.get('resume_from') != resume_from
++                        or request.get('parent_manifest_sha256') != (sha256(parent/'artifact_manifest.json') if resume_from else None)):
+                     raise RuntimeError('BLOCKED: exact generation identity/configuration/budget is not authorized')
+         if not os.environ.get(config['credential_env']):
+             raise RuntimeError('BLOCKED: set environment variable ' + config['credential_env'])
+
+--- before/src/degradation_lab/resume.py
++++ src/degradation_lab/resume.py
+@@ -126,6 +126,62 @@
+             'cached_registration_decision_ids':sorted(decisions)}
+ 
+ 
++def _budget_extraction_calls(parent, checkpoint, windows, completed, inherited):
++    """Account for known work replayed in the sole incomplete window after a budget stop."""
++    errors = read(parent/'official_result.json').get('errors', [])
++    if not errors or any(e.get('error') != 'P0 external observation budget exhausted' for e in errors):
++        raise ValueError('Only a recorded observation-budget stop permits window replay')
++    eligible = windows[len(inherited):len(completed)+1]
++    keys = {window_key({'excerpt':w['text'], 'section':{'span':w['span']}}): w['window_id'] for w in eligible}
++    groups = {}
++    for call in read(parent/'model_calls.json'):
++        groups.setdefault(call.get('logical_call_id', call['number']), []).append(call)
++    work = {w['window_id']: {'plans': [], 'expands': []} for w in eligible}
++    replayed = []
++    for logical, calls in groups.items():
++        last = calls[-1]
++        if (not last.get('success') or any(c.get('success') or not c.get('transport_retry_eligible')
++                                         or calls[i+1].get('retry_of') != logical for i,c in enumerate(calls[:-1]))):
++            raise ValueError('Unresolved HTTP delivery cannot be replayed as a budget stop')
++        for call in calls:
++            if call.get('success') and sha256(parent/'http'/f"{call['number']:03d}"/'response.json') != call['response_sha256']:
++                raise ValueError('Saved response hash mismatch')
++        functions = {f['function'] for f in last.get('stack', [])}
++        if '_outline_matches_from_llm' in functions:
++            continue
++        kind = 'plans' if '_plan_unit_skills' in functions else 'expands' if '_expand_planned_skill' in functions else None
++        if kind is None:
++            raise ValueError('Budget recovery supports extraction-only HTTP work')
++        payloads = [read(parent/'http'/f"{c['number']:03d}"/'request.json') for c in calls]
++        if any(p != payloads[0] for p in payloads):
++            raise ValueError('Transport retry payload changed')
++        user = json.loads(next(m['content'] for m in payloads[0]['messages'] if m['role']=='user'))
++        wid = keys.get(window_key(user))
++        if wid is None:
++            raise ValueError('Request does not match a checkpoint window')
++        work[wid][kind].append(last)
++        if wid == windows[len(completed)]['window_id']:
++            replayed.extend(c['number'] for c in calls)
++    for w in eligible:
++        values = work[w['window_id']]
++        if w['window_id'] in completed:
++            record = read(checkpoint/'extract/windows'/w['doc_id']/(w['window_id']+'.json'))
++            if len(values['plans']) != 1 or len(values['expands']) != len(record['skill_drafts']):
++                raise ValueError('Completed window calls disagree with checkpoint drafts')
++        elif len(values['plans']) > 1 or (values['expands'] and not values['plans']):
++            raise ValueError('Ambiguous incomplete-window work')
++    excluded = {}
++    for stage in ('compile', 'register', 'final'):
++        for p in (checkpoint/stage).rglob('*'):
++            if not p.is_file():
++                continue
++            if p.suffix == '.json' and any(read(p).get(k) for k in (
++                    'skill_specs', 'upserted_store_skills', 'lifecycles', 'change_logs', 'version_history', 'staging_runs')):
++                raise ValueError('Successful downstream artifacts cannot be discarded')
++            excluded[p.relative_to(parent/'SkillBank').as_posix()] = sha256(p)
++    return sorted(replayed), excluded
++
++
+ def prepare_resume(root, run_id, new_run_id, budget_overrides=None):
+     identity, parent = resolve_run(root, run_id)
+     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', new_run_id):
+@@ -156,6 +212,7 @@
+     ingest = read(checkpoint/'ingest/result.json')
+     windows = ingest['windows']
+     excluded = {}
++    budget_replayed = []
+     registration = {}
+     if registration_resume:
+         registration = _registration_checkpoint(parent, checkpoint, ingest)
+@@ -177,20 +234,25 @@
+         k = len(previous.get('completed_window_ids', []))
+         if completed[:k] != previous.get('completed_window_ids', []) or k > n:
+             raise ValueError('Inherited completed windows changed')
+-        calls = read(parent/'model_calls.json')
+-        plans = [c for c in calls if any(f['function'] == '_plan_unit_skills' for f in c.get('stack', []))]
+-        expands = [c for c in calls if any(f['function'] == '_expand_planned_skill' for f in c.get('stack', []))]
+-        # A successful but uncheckpointed Plan/Expand must never be silently resent.
+-        if len(plans) != n-k+1 or not all(c.get('success') for c in plans[:-1]) or plans[-1].get('success') or calls[-1] != plans[-1]:
+-            raise ValueError('Pending window has uncheckpointed calls; automatic recovery refused')
+-        for call,w in zip(plans, windows[k:]):
+-            payload = read(parent/'http'/f"{call['number']:03d}"/'request.json')
+-            user = json.loads(next(m['content'] for m in payload['messages'] if m['role'] == 'user'))
+-            if window_key(user) != window_key({'excerpt':w['text'], 'section':{'span':w['span']}}):
+-                raise ValueError('Plan request does not match checkpoint window')
+-        drafts = [d for w in windows[k:n] for d in read(checkpoint/'extract/windows'/doc_id/(w['window_id']+'.json'))['skill_drafts']]
+-        if len(expands) != len(drafts) or not all(c.get('success') for c in expands):
+-            raise ValueError('Uncheckpointed Expand calls; automatic recovery refused')
++        budget_errors = result.get('errors', [])
++        if budget_errors and all(e.get('error') == 'P0 external observation budget exhausted' for e in budget_errors):
++            budget_replayed, excluded = _budget_extraction_calls(parent, checkpoint, windows, completed,
++                                                                 previous.get('completed_window_ids', []))
++        else:
++            calls = read(parent/'model_calls.json')
++            plans = [c for c in calls if any(f['function'] == '_plan_unit_skills' for f in c.get('stack', []))]
++            expands = [c for c in calls if any(f['function'] == '_expand_planned_skill' for f in c.get('stack', []))]
++            # A successful but uncheckpointed Plan/Expand must never be silently resent.
++            if len(plans) != n-k+1 or not all(c.get('success') for c in plans[:-1]) or plans[-1].get('success') or calls[-1] != plans[-1]:
++                raise ValueError('Pending window has uncheckpointed calls; automatic recovery refused')
++            for call,w in zip(plans, windows[k:]):
++                payload = read(parent/'http'/f"{call['number']:03d}"/'request.json')
++                user = json.loads(next(m['content'] for m in payload['messages'] if m['role'] == 'user'))
++                if window_key(user) != window_key({'excerpt':w['text'], 'section':{'span':w['span']}}):
++                    raise ValueError('Plan request does not match checkpoint window')
++            drafts = [d for w in windows[k:n] for d in read(checkpoint/'extract/windows'/doc_id/(w['window_id']+'.json'))['skill_drafts']]
++            if len(expands) != len(drafts) or not all(c.get('success') for c in expands):
++                raise ValueError('Uncheckpointed Expand calls; automatic recovery refused')
+     logical_inputs = Path(invocation.get('store_path', str(parent/'SkillBank'))).parent/'inputs'
+     source = Path(previous.get('source_path', str(logical_inputs)))
+     input_manifest = read(parent/'input_manifest.json')
+@@ -210,6 +272,7 @@
+         'note':'Failed POST delivery/billing is unknown; recovering the failed Plan can repeat remote work.'
+     }
+     resume.update(registration)
++    resume['budget_replayed_call_numbers'] = budget_replayed
+     config = read(parent/'config.json')
+     budget_before = {k:config[k] for k in ('max_http_calls','max_observed_total_tokens')}
+     for key,value in (budget_overrides or {}).items():
+
+--- before/scripts/sgb/authorize_generation.py
++++ scripts/sgb/authorize_generation.py
+@@ -77,6 +77,9 @@
+     parser.add_argument("--case", required=True)
+     parser.add_argument("--run-id", required=True)
+     parser.add_argument("--approve", action="store_true")
++    parser.add_argument("--resume-from")
++    parser.add_argument("--max-http-calls", type=int)
++    parser.add_argument("--max-observed-total-tokens", type=int)
+     args = parser.parse_args()
+ 
+     case_id = args.case
+@@ -135,6 +138,33 @@
+         fail("Missing generation model")
+     if not config.get("credential_env"):
+         fail("Missing credential configuration")
++
++    parent = None
++    if args.resume_from:
++        if not IDENTIFIER.fullmatch(args.resume_from):
++            fail("Invalid parent run ID")
++        parent = ROOT / "runs/gen/sgb" / case_id / "clean" / args.resume_from
++        invocation = load(parent / "invocation.json")
++        if (invocation.get("run_id") != args.resume_from
++                or invocation.get("case_id") != case_id
++                or invocation.get("condition_id") != "clean"
++                or invocation.get("execution_kind") != "official"
++                or load(parent / "status.json").get("state") != "FAILED"
++                or load(parent / "case.json") != case):
++            fail("Matching failed official parent required")
++        manifest = load(parent / "artifact_manifest.json")
++        if not manifest or any(not (parent / n).resolve().is_relative_to(parent.resolve())
++                               or sha256((parent / n).resolve()) != h
++                               for n, h in manifest.items()):
++            fail("Parent artifact hash mismatch")
++        prior = load(parent / "config.json")
++        limits = {"max_http_calls": args.max_http_calls,
++                  "max_observed_total_tokens": args.max_observed_total_tokens}
++        if any(type(v) is not int or v < prior[k] for k, v in limits.items()):
++            fail("Explicit nondecreasing cumulative limits required")
++        http, tokens = limits["max_http_calls"], limits["max_observed_total_tokens"]
++    elif args.max_http_calls is not None or args.max_observed_total_tokens is not None:
++        fail("Budget overrides require --resume-from")
+ 
+     gate_path = inside(case["execution_gate"])
+     original = gate_path.read_bytes()
+@@ -158,6 +188,10 @@
+         "max_observed_total_tokens": tokens,
+     }
+ 
++    if parent is not None:
++        approval.update(resume_from=args.resume_from,
++                        parent_manifest_sha256=sha256(parent / "artifact_manifest.json"))
++
+     print(json.dumps({
+         "case_id": case_id,
+         "run_id": run_id,
+@@ -221,12 +255,12 @@
+ 
+     print("AUTHORIZED_GENERATION:", run_id)
+     print("BACKUP:", backup)
+-    print(
+-        "NEXT: python scripts/lab.py run"
+-        f" --case {case_id}"
+-        " --condition clean --repeat 1"
+-        f" --run-id {run_id}"
+-    )
++    if parent is not None:
++        print(f"NEXT: python scripts/lab.py resume --run {args.resume_from} --run-id {run_id}"
++              f" --max-http-calls {http} --max-observed-total-tokens {tokens}")
++    else:
++        print("NEXT: python scripts/lab.py run"
++              f" --case {case_id} --condition clean --repeat 1 --run-id {run_id}")
+ 
+ 
+ if __name__ == "__main__":

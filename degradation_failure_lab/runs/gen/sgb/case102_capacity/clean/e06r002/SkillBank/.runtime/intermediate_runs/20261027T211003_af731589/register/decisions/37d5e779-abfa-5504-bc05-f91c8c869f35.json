@@ -1,0 +1,124 @@
+{
+  "skill_id": "37d5e779-abfa-5504-bc05-f91c8c869f35",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "37d5e779-abfa-5504-bc05-f91c8c869f35",
+    "name": "每Tick合法动作选择与校验",
+    "description": "为每个非离线车辆在每个tick生成唯一合法动作请求（WAIT/ENTER_EDGE/CONTINUE_TRAVEL/START_LOADING/START_UNLOADING/GO_OFFLINE/GO_ONLINE），并将动作视为请求交由容量与冲突校验阶段裁决。",
+    "skill_body": "对每个非离线车辆，在每个tick只选择一个合法动作，并明确该动作是待校验的请求而非已生效结果。\n\n执行要点：\n1. 确认车辆状态：若 Status = MOVING（在边上），唯一合法动作为 CONTINUE_TRAVEL，不得装卸。\n2. 若车辆在节点上，从合法动作集中选择一个：WAIT、ENTER_EDGE(edgeID)、START_LOADING(consignmentIDs)、START_UNLOADING(consignmentIDs)、GO_OFFLINE、GO_ONLINE。\n3. 约束校验：GO_OFFLINE 仅在 HomeDepot 且当前非离线时合法；GO_ONLINE 仅在 HomeDepot 且当前为 OFFLINE 时合法；START_UNLOADING 仅对在车上且目的地或允许换装节点匹配当前节点的货物合法。\n4. 每车每tick恰好一个动作，不得多选或省略。\n5. 将动作标记为请求，交由容量与冲突校验阶段确认，不在此阶段判定生效。\n\n## Objective\n\n为每个车辆在每个tick生成唯一合法动作请求并交由校验阶段裁决\n## Applicable Signals\n\n- 需要为车辆生成下一tick动作\n- 需要判断某动作是否合法\n- 车辆状态为 IDLE_AT_NODE 或 MOVING 需确定动作\n\n## Contraindications\n\n- 车辆处于MOVING状态却请求装卸\n- 需要跨多阶段整体调度协议\n- 需要在此阶段直接裁决容量或冲突\n\n## Intervention Moves\n\n- 读取车辆当前状态与位置\n- 按状态筛选合法动作集\n- 为每车选择恰好一个动作\n- 标注为待校验请求并移交容量与冲突校验\n\n## Workflow Steps\n\n- 确认车辆是否非离线；离线车辆不参与本tick动作选择\n- 若 Status = MOVING，仅输出 CONTINUE_TRAVEL\n- 若在节点上，依据状态与位置从合法动作集中选择一个动作\n- 校验动作前置条件（HomeDepot、货物匹配等）\n- 将动作标记为请求，移交容量与冲突校验阶段\n\n## Constraints\n\n- 每个非离线车辆每tick恰好选择一个动作\n- MOVING 状态车辆唯一合法动作为 CONTINUE_TRAVEL\n- GO_OFFLINE 仅在 HomeDepot 且非离线时合法\n- GO_ONLINE 仅在 HomeDepot 且为 OFFLINE 时合法\n- 动作在容量与冲突校验前仅为请求\n\n## Cautions\n\n- 不得将动作请求视为已生效结果\n- 不得为同一车辆在同一tick生成多个动作\n- 装卸动作需确认货物在车上且目的地或允许换装节点匹配当前节点\n\n## Output Contract\n\n- 每车辆每tick一个合法动作请求，标注为待校验，进入容量与冲突校验阶段\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆在节点上，Status = IDLE_AT_NODE，位于 HomeDepot\n- Therapist/Output: GO_OFFLINE（请求，待校验）\n- Notes: 仅在 HomeDepot 且非离线时合法\n\n### Example 2\n\n- Client/Input: 车辆 Status = MOVING，位于某边上\n- Therapist/Output: CONTINUE_TRAVEL（请求，待校验）\n- Notes: MOVING 状态唯一合法动作",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为每个车辆在每个tick生成唯一合法动作请求并交由校验阶段裁决",
+    "domain": "交通仿真",
+    "task_family": "车辆动作调度",
+    "method_family": "离散时间步动作选择",
+    "stage": "每tick动作生成",
+    "applicable_signals": [
+      "需要为车辆生成下一tick动作",
+      "需要判断某动作是否合法",
+      "车辆状态为 IDLE_AT_NODE 或 MOVING 需确定动作"
+    ],
+    "contraindications": [
+      "车辆处于MOVING状态却请求装卸",
+      "需要跨多阶段整体调度协议",
+      "需要在此阶段直接裁决容量或冲突"
+    ],
+    "intervention_moves": [
+      "读取车辆当前状态与位置",
+      "按状态筛选合法动作集",
+      "为每车选择恰好一个动作",
+      "标注为待校验请求并移交容量与冲突校验"
+    ],
+    "triggers": [
+      "需要为车辆生成下一tick动作",
+      "需要判断某动作是否合法",
+      "需要枚举某车辆在当前状态下的可选动作"
+    ],
+    "workflow_steps": [
+      "确认车辆是否非离线；离线车辆不参与本tick动作选择",
+      "若 Status = MOVING，仅输出 CONTINUE_TRAVEL",
+      "若在节点上，依据状态与位置从合法动作集中选择一个动作",
+      "校验动作前置条件（HomeDepot、货物匹配等）",
+      "将动作标记为请求，移交容量与冲突校验阶段"
+    ],
+    "constraints": [
+      "每个非离线车辆每tick恰好选择一个动作",
+      "MOVING 状态车辆唯一合法动作为 CONTINUE_TRAVEL",
+      "GO_OFFLINE 仅在 HomeDepot 且非离线时合法",
+      "GO_ONLINE 仅在 HomeDepot 且为 OFFLINE 时合法",
+      "动作在容量与冲突校验前仅为请求"
+    ],
+    "cautions": [
+      "不得将动作请求视为已生效结果",
+      "不得为同一车辆在同一tick生成多个动作",
+      "装卸动作需确认货物在车上且目的地或允许换装节点匹配当前节点"
+    ],
+    "output_contract": [
+      "每车辆每tick一个合法动作请求，标注为待校验，进入容量与冲突校验阶段"
+    ],
+    "examples": [
+      {
+        "input": "车辆在节点上，Status = IDLE_AT_NODE，位于 HomeDepot",
+        "output": "GO_OFFLINE（请求，待校验）",
+        "notes": "仅在 HomeDepot 且非离线时合法"
+      },
+      {
+        "input": "车辆 Status = MOVING，位于某边上",
+        "output": "CONTINUE_TRAVEL（请求，待校验）",
+        "notes": "MOVING 状态唯一合法动作"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "离散时间步",
+      "动作选择",
+      "合法性校验",
+      "车辆调度"
+    ],
+    "support_ids": [
+      "f45626aa-845c-53a4-8314-0c5b28f81d1e"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "c0e64103-cb1a-5a8d-8078-4325786414e3"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|为每个车辆在每个tick生成唯一合法动作请求并交由校验阶段裁决|交通仿真|车辆动作调度|离散时间步动作选择|每tick动作生成|每tick合法动作选择与校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

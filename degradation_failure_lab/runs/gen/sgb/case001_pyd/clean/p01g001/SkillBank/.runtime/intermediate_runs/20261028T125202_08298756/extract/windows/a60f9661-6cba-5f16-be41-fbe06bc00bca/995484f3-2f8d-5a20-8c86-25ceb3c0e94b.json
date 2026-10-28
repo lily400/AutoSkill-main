@@ -1,0 +1,747 @@
+{
+  "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+  "title": "input001\\validators.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+  "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+  "section_heading": "# Validators",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "ca741c62-bcc4-5be8-83e5-98c0ff938320",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 23781,
+        "end": 24361
+      },
+      "excerpt": "class Basket(BaseModel):\n    fruits: list[InstanceOf[Fruit]]\n\nprint(Basket(fruits=[Banana(), Apple()]))\n#> fruits=[Banana, Apple]\ntry:\n    Basket(fruits=[Banana(), 'Apple'])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Basket\n    fruits.1\n      Input should be an instance of Fruit [type=is_instance_of, input_value='Apple', input_type=str]\n    \"\"\"\n```\n- [`SkipValidation`](../../api/functional_validators/#pydantic.functional_validators.SkipValidation) can be used to skip validation on a field.\n\n```\nfrom pydantic import BaseModel, SkipValidation",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 字段校验器选择与实现",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "为 Pydantic 模型字段选择并实现合适的自定义校验器模式",
+        "task_family": "模型校验",
+        "method_family": "字段校验器",
+        "stage": "字段校验实现",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:57:23+00:00"
+    },
+    {
+      "support_id": "c0482437-45c1-56f1-a73c-a15764b64f88",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 23781,
+        "end": 24361
+      },
+      "excerpt": "class Basket(BaseModel):\n    fruits: list[InstanceOf[Fruit]]\n\nprint(Basket(fruits=[Banana(), Apple()]))\n#> fruits=[Banana, Apple]\ntry:\n    Basket(fruits=[Banana(), 'Apple'])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Basket\n    fruits.1\n      Input should be an instance of Fruit [type=is_instance_of, input_value='Apple', input_type=str]\n    \"\"\"\n```\n- [`SkipValidation`](../../api/functional_validators/#pydantic.functional_validators.SkipValidation) can be used to skip validation on a field.\n\n```\nfrom pydantic import BaseModel, SkipValidation",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 模型校验器与校验信息使用",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "实现模型级校验并正确读取校验信息与上下文",
+        "task_family": "模型校验",
+        "method_family": "模型校验器",
+        "stage": "模型级校验实现",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:57:23+00:00"
+    },
+    {
+      "support_id": "d5ee8998-95c2-5be0-990d-a3a218461c30",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 23781,
+        "end": 24361
+      },
+      "excerpt": "class Basket(BaseModel):\n    fruits: list[InstanceOf[Fruit]]\n\nprint(Basket(fruits=[Banana(), Apple()]))\n#> fruits=[Banana, Apple]\ntry:\n    Basket(fruits=[Banana(), 'Apple'])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Basket\n    fruits.1\n      Input should be an instance of Fruit [type=is_instance_of, input_value='Apple', input_type=str]\n    \"\"\"\n```\n- [`SkipValidation`](../../api/functional_validators/#pydantic.functional_validators.SkipValidation) can be used to skip validation on a field.\n\n```\nfrom pydantic import BaseModel, SkipValidation",
+      "relation_type": "support",
+      "confidence": 0.65,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 校验错误抛出与校验器顺序控制",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "正确抛出校验错误并控制校验器执行顺序",
+        "task_family": "校验错误处理",
+        "method_family": "错误抛出与顺序控制",
+        "stage": "校验执行",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 3,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:57:23+00:00"
+    },
+    {
+      "support_id": "77c14e6e-dd36-58da-8ee6-ddabd63ab096",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 23781,
+        "end": 24361
+      },
+      "excerpt": "class Basket(BaseModel):\n    fruits: list[InstanceOf[Fruit]]\n\nprint(Basket(fruits=[Banana(), Apple()]))\n#> fruits=[Banana, Apple]\ntry:\n    Basket(fruits=[Banana(), 'Apple'])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Basket\n    fruits.1\n      Input should be an instance of Fruit [type=is_instance_of, input_value='Apple', input_type=str]\n    \"\"\"\n```\n- [`SkipValidation`](../../api/functional_validators/#pydantic.functional_validators.SkipValidation) can be used to skip validation on a field.\n\n```\nfrom pydantic import BaseModel, SkipValidation",
+      "relation_type": "support",
+      "confidence": 0.6,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 特殊类型与校验跳过参考",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "提供特殊类型与跳过校验的用法参考",
+        "task_family": "类型校验",
+        "method_family": "特殊类型参考",
+        "stage": "参考查阅",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 4,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:57:23+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "3afa0b33-b04a-5edb-87ef-5f0bf866def2",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic 字段校验器选择与实现",
+      "description": "为 Pydantic 模型字段选择并实现自定义校验器：在 annotated 模式与 decorator 模式之间做选择，并处理值变更与校验跳过。用于需要为单个字段添加自定义校验逻辑时。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为 Pydantic 模型字段选择并实现合适的自定义校验器模式",
+      "domain": "pydantic",
+      "task_family": "模型校验",
+      "method_family": "字段校验器",
+      "stage": "字段校验实现",
+      "applicable_signals": [
+        "需要为单个字段添加自定义校验逻辑",
+        "需要在 annotated 与 decorator 两种校验器模式间做选择",
+        "需要跳过某字段校验（SkipValidation）"
+      ],
+      "contraindications": [
+        "需要跨字段或模型级校验时（应使用模型校验器）"
+      ],
+      "intervention_moves": [
+        "判断校验需求是否属于单字段级",
+        "在 annotated 模式与 decorator 模式之间选择",
+        "按所选模式实现校验函数",
+        "必要时使用 SkipValidation 跳过字段校验"
+      ],
+      "workflow_steps": [
+        "确认校验目标为单个字段而非跨字段或模型级",
+        "评估校验逻辑：简单可复用选 annotated 模式；需访问值或变更选 decorator 模式",
+        "按所选模式实现校验函数并接入模型字段",
+        "如需跳过某字段校验，使用 SkipValidation",
+        "验证实现可运行且校验行为符合预期"
+      ],
+      "triggers": [
+        "需要为单个字段添加自定义校验逻辑",
+        "需要在 annotated 与 decorator 两种校验器模式间做选择",
+        "需要处理字段值变更或跳过字段校验"
+      ],
+      "constraints": [
+        "仅处理字段级校验，不扩展到模型级校验",
+        "明确标注采用的 annotated 或 decorator 模式"
+      ],
+      "cautions": [
+        "跨字段或模型级校验不属于本技能范围，应改用模型校验器"
+      ],
+      "output_contract": [
+        "可运行的字段校验器实现，明确采用 annotated 或 decorator 模式"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.75,
+      "support_ids": [
+        "ca741c62-bcc4-5be8-83e5-98c0ff938320"
+      ],
+      "metadata": {
+        "prompt": "当需要为 Pydantic 模型的单个字段添加自定义校验逻辑时，先判断校验需求：若校验逻辑简单、可复用、以类型注解方式表达，优先使用 annotated 模式（Annotated + 校验函数）；若需要访问字段值、进行变更或依赖装饰器上下文，使用 decorator 模式（field_validator）。实现时明确所选模式，确保校验函数签名与模式匹配，必要时使用 SkipValidation 跳过某字段校验。不要用于跨字段或模型级校验。",
+        "tags": [
+          "pydantic",
+          "字段校验",
+          "validator",
+          "annotated",
+          "decorator"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 1,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    },
+    {
+      "draft_id": "8c594988-6766-5192-8a85-c1c09284a655",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic 模型校验器与校验信息使用",
+      "description": "实现 Pydantic 模型级校验器，并在校验中通过 ValidationInfo 读取字段数据、已校验数据与校验上下文，用于跨字段依赖或需要访问上下文的校验场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "实现模型级校验并正确读取校验信息与上下文",
+      "domain": "pydantic",
+      "task_family": "模型校验",
+      "method_family": "模型校验器",
+      "stage": "模型级校验实现",
+      "applicable_signals": [
+        "校验规则涉及两个及以上字段的相互依赖",
+        "校验需要读取已校验字段数据（data）",
+        "校验需要读取外部传入的校验上下文（context）"
+      ],
+      "contraindications": [
+        "仅涉及单字段简单约束时，应使用字段级校验器而非模型级校验器"
+      ],
+      "intervention_moves": [
+        "选择模型级校验器模式（annotated 或 decorator）",
+        "在校验器中通过 ValidationInfo 读取 data 与 context",
+        "在条件不满足时抛出校验错误",
+        "运行模型验证校验器行为"
+      ],
+      "workflow_steps": [
+        "判断校验是否确需跨字段依赖或访问校验上下文",
+        "在模型中定义模型级校验器（annotated 或 decorator 模式）",
+        "在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）",
+        "当校验条件不满足时抛出校验错误",
+        "构造模型实例验证校验器按预期工作"
+      ],
+      "triggers": [
+        "校验逻辑依赖多个字段",
+        "需要访问 ValidationInfo 的 data",
+        "需要访问 ValidationInfo 的 context",
+        "需要实现模型级而非字段级校验"
+      ],
+      "constraints": [
+        "仅在跨字段依赖或需要访问 ValidationInfo 数据/上下文时使用模型级校验器",
+        "单字段简单约束应使用字段级校验器"
+      ],
+      "cautions": [
+        "校验器执行顺序会影响可读取的字段数据，需注意依赖字段的校验先后"
+      ],
+      "output_contract": [
+        "可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "c0482437-45c1-56f1-a73c-a15764b64f88"
+      ],
+      "metadata": {
+        "prompt": "当校验逻辑依赖多个字段，或需要访问 ValidationInfo 的 data 或 context 时，使用本技能：在模型中定义模型级校验器，按需读取 info.data（已校验字段值）与 info.context（校验上下文），在条件不满足时抛出校验错误，并验证模型可正常运行。",
+        "tags": [
+          "pydantic",
+          "模型校验",
+          "ValidationInfo",
+          "跨字段校验",
+          "校验上下文"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 2,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    },
+    {
+      "draft_id": "0c0800b3-f149-55b7-9355-4d24b9a74270",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic 校验错误抛出与校验器顺序控制",
+      "description": "在 Pydantic 自定义校验器中按规范抛出结构化校验错误，并依据校验器执行顺序安排依赖关系，确保多校验器编排与失败处理正确。适用于需要自定义校验失败路径或存在校验器顺序依赖的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "正确抛出校验错误并控制校验器执行顺序",
+      "domain": "pydantic",
+      "task_family": "校验错误处理",
+      "method_family": "错误抛出与顺序控制",
+      "stage": "校验执行",
+      "applicable_signals": [
+        "校验失败需返回结构化错误",
+        "多个校验器存在执行顺序依赖"
+      ],
+      "contraindications": [
+        "无自定义校验失败路径时"
+      ],
+      "intervention_moves": [
+        "在校验器中以规范方式抛出校验错误",
+        "明确并安排多校验器的执行顺序以满足依赖",
+        "确认失败输出包含字段路径、错误类型与输入值"
+      ],
+      "workflow_steps": [
+        "确认校验器应抛出错误而非静默返回",
+        "使用规范方式抛出结构化校验错误",
+        "梳理字段校验器与模型校验器的执行顺序",
+        "按依赖关系安排多校验器顺序",
+        "验证失败输出为结构化错误"
+      ],
+      "triggers": [
+        "校验失败需返回结构化错误",
+        "多个校验器存在执行顺序依赖",
+        "需要自定义校验失败处理"
+      ],
+      "constraints": [
+        "仅在存在自定义校验失败路径或顺序依赖时使用",
+        "错误信息需结构化并包含字段路径与错误类型"
+      ],
+      "cautions": [
+        "忽略校验器执行顺序可能导致依赖失效或错误信息不准确"
+      ],
+      "output_contract": [
+        "符合规范的校验错误输出（含字段路径、错误类型、输入值）与明确的校验器执行顺序"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.65,
+      "support_ids": [
+        "d5ee8998-95c2-5be0-990d-a3a218461c30"
+      ],
+      "metadata": {
+        "prompt": "当自定义校验失败需要返回结构化错误，或多个校验器之间存在执行顺序依赖时使用本技能。步骤：1) 确认当前校验器是否应抛出错误而非静默返回；2) 使用 Pydantic 规范方式抛出校验错误（如 ValueError/AssertionError 或 PydanticCustomError），确保错误类型与信息结构化；3) 若存在多校验器依赖，明确各校验器的执行顺序（字段校验器与模型校验器的先后、同字段多校验器的顺序），据此安排依赖；4) 验证失败时输出包含字段路径、错误类型与输入值的结构化错误。不要用于没有自定义校验失败路径的场景。",
+        "tags": [
+          "pydantic",
+          "validation",
+          "error-handling",
+          "validator-ordering"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    },
+    {
+      "draft_id": "dcf9abce-70bc-5744-9cc4-ef2a870a4a9f",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "name": "Pydantic 特殊类型与校验跳过参考",
+      "description": "提供 Pydantic 中特殊类型（如 InstanceOf）与跳过校验（SkipValidation）的用法参考，用于需要校验字段为某类实例或临时跳过某字段校验时查阅。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "提供特殊类型与跳过校验的用法参考",
+      "domain": "pydantic",
+      "task_family": "类型校验",
+      "method_family": "特殊类型参考",
+      "stage": "参考查阅",
+      "applicable_signals": [
+        "字段需限定为某类实例",
+        "字段需临时跳过校验",
+        "常规字段约束不足以表达需求"
+      ],
+      "contraindications": [
+        "常规字段约束即可满足需求时",
+        "需要完整校验器实现工作流时"
+      ],
+      "intervention_moves": [
+        "使用 InstanceOf[类型] 注解字段以校验实例类型",
+        "使用 SkipValidation 注解字段以跳过校验",
+        "校验失败时读取 ValidationError 中的字段路径与类型信息"
+      ],
+      "workflow_steps": [
+        "判断需求属于实例类型校验还是跳过校验",
+        "选择 InstanceOf 或 SkipValidation 注解",
+        "应用注解并验证行为，必要时读取 ValidationError 信息"
+      ],
+      "triggers": [
+        "需要校验字段为某类实例",
+        "需要跳过某字段校验",
+        "查阅 InstanceOf 或 SkipValidation 用法"
+      ],
+      "constraints": [
+        "仅作为用法参考，不替代完整校验器实现",
+        "优先使用常规字段约束，特殊类型仅在必要时引入"
+      ],
+      "cautions": [
+        "跳过校验会放弃该字段的校验保护，应谨慎使用",
+        "InstanceOf 校验失败会抛出 ValidationError，需妥善处理"
+      ],
+      "output_contract": [
+        "选用正确的特殊类型或跳过校验方式，并说明其适用场景与行为。"
+      ],
+      "examples": [
+        {
+          "input": "需要校验列表元素均为某类实例",
+          "output": "使用 InstanceOf[类型] 注解字段，如 fruits: list[InstanceOf[Fruit]]；传入非实例时抛出 ValidationError 并指明字段路径与类型。",
+          "notes": "校验失败信息包含字段路径与 is_instance_of 类型"
+        },
+        {
+          "input": "需要跳过某字段校验",
+          "output": "使用 SkipValidation 注解该字段。",
+          "notes": "跳过校验会放弃该字段的校验保护"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.6,
+      "support_ids": [
+        "77c14e6e-dd36-58da-8ee6-ddabd63ab096"
+      ],
+      "metadata": {
+        "prompt": "当需要判断字段值是否为某类的实例，或需要临时跳过某字段的校验时，查阅本参考：\n1. 若需校验字段为某类实例，使用 InstanceOf[类型] 作为字段注解，校验失败会抛出 ValidationError 并指明字段路径与类型。\n2. 若需跳过某字段校验，使用 SkipValidation 注解该字段。\n3. 若常规字段约束已能满足需求，则不要引入特殊类型或跳过校验。\n仅提供用法参考，不执行完整校验器实现流程。",
+        "tags": [
+          "pydantic",
+          "特殊类型",
+          "SkipValidation",
+          "InstanceOf",
+          "参考"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Validators"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 4,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

@@ -1,0 +1,164 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "数据产出校验",
+  "run_id": "20261028T135030_a5322dc1",
+  "skills": [
+    {
+      "skill_id": "b509a4af-9652-5849-a3d7-68054c38b3c1",
+      "name": "评论分类CSV输出校验",
+      "description": "在评论分类结果交付给编排器或下游分析前，对CSV产出执行格式、列完整性、分类取值合法性与最小行数校验；校验通过则放行，不合格则向编排器返回明确错误说明。",
+      "skill_body": "在评论分类结果即将交付时执行本校验：先确认CSV可被解析，再核对必需列是否齐全，然后逐列检查分类取值是否落在允许集合内，最后确认行数达到最小样本量要求。任一检查失败即判定为不合格，并向编排器返回具体失败原因，不得放行。\n\n## Objective\n\n保证下游分析收到的评论分类CSV结构合法、取值合规、样本量充足\n## Applicable Signals\n\n- 分类结果已生成并准备交付\n- 产出为CSV格式且含分类字段\n- 下游分析依赖分类字段取值\n\n## Contraindications\n\n- 输入尚未完成分类\n- 仅需生成原始评论列表且无需分类字段\n\n## Intervention Moves\n\n- 解析CSV确认格式有效\n- 核对必需列是否全部存在\n- 逐列校验分类取值是否在允许集合内\n- 统计行数并确认达到最小样本量\n- 不合格时向编排器返回明确错误说明\n\n## Workflow Steps\n\n- 尝试解析CSV，确认格式有效可解析\n- 核对必需列齐全：review_id、review、is_sportswear、is_apparel_product、brand、competitor_or_nike\n- 校验is_sportswear取值仅为yes或no\n- 校验is_apparel_product取值仅为yes或no\n- 校验competitor_or_nike取值仅为nike、competitor或n/a\n- 统计行数，确认至少20行\n- 全部通过则放行交付；任一失败则向编排器返回具体错误说明\n\n## Constraints\n\n- 分类列取值必须严格落在允许集合内，不接受近似或空值\n- 行数下限为20行，低于下限视为不合格\n- 校验不通过时不得将结果交付下游\n\n## Cautions\n\n- 校验失败时应指明具体失败项（格式、缺列、非法取值或行数不足），便于上游修正\n- 不得为通过校验而擅自修改或补造分类数据\n\n## Output Contract\n\n- 通过校验的CSV，或向编排器返回的明确错误说明（指明失败的具体校验项）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 分类结果CSV，含全部必需列，分类取值合法，共25行\n- Therapist/Output: 校验通过，放行交付\n- Notes: 格式、列、取值、行数四项均满足\n\n### Example 2\n\n- Client/Input: 分类结果CSV，is_sportswear列出现\"unknown\"取值\n- Therapist/Output: 校验失败，向编排器返回错误：is_sportswear取值非法\n- Notes: 取值不在允许集合内即判不合格",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "保证下游分析收到的评论分类CSV结构合法、取值合规、样本量充足",
+      "domain": "运营流程",
+      "task_family": "数据产出校验",
+      "method_family": "格式与取值校验",
+      "stage": "输出交付前",
+      "applicable_signals": [
+        "分类结果已生成并准备交付",
+        "产出为CSV格式且含分类字段",
+        "下游分析依赖分类字段取值"
+      ],
+      "contraindications": [
+        "输入尚未完成分类",
+        "仅需生成原始评论列表且无需分类字段"
+      ],
+      "intervention_moves": [
+        "解析CSV确认格式有效",
+        "核对必需列是否全部存在",
+        "逐列校验分类取值是否在允许集合内",
+        "统计行数并确认达到最小样本量",
+        "不合格时向编排器返回明确错误说明"
+      ],
+      "triggers": [
+        "分类结果即将交付给编排器或下游分析",
+        "需要确认CSV可解析且列与取值合法",
+        "需要确认样本量是否满足下游分析最低要求"
+      ],
+      "workflow_steps": [
+        "尝试解析CSV，确认格式有效可解析",
+        "核对必需列齐全：review_id、review、is_sportswear、is_apparel_product、brand、competitor_or_nike",
+        "校验is_sportswear取值仅为yes或no",
+        "校验is_apparel_product取值仅为yes或no",
+        "校验competitor_or_nike取值仅为nike、competitor或n/a",
+        "统计行数，确认至少20行",
+        "全部通过则放行交付；任一失败则向编排器返回具体错误说明"
+      ],
+      "constraints": [
+        "分类列取值必须严格落在允许集合内，不接受近似或空值",
+        "行数下限为20行，低于下限视为不合格",
+        "校验不通过时不得将结果交付下游"
+      ],
+      "cautions": [
+        "校验失败时应指明具体失败项（格式、缺列、非法取值或行数不足），便于上游修正",
+        "不得为通过校验而擅自修改或补造分类数据"
+      ],
+      "output_contract": [
+        "通过校验的CSV，或向编排器返回的明确错误说明（指明失败的具体校验项）"
+      ],
+      "examples": [
+        {
+          "input": "分类结果CSV，含全部必需列，分类取值合法，共25行",
+          "output": "校验通过，放行交付",
+          "notes": "格式、列、取值、行数四项均满足"
+        },
+        {
+          "input": "分类结果CSV，is_sportswear列出现\"unknown\"取值",
+          "output": "校验失败，向编排器返回错误：is_sportswear取值非法",
+          "notes": "取值不在允许集合内即判不合格"
+        }
+      ],
+      "tags": [
+        "CSV校验",
+        "输出合规",
+        "交付前检查",
+        "数据质量"
+      ],
+      "support_ids": [
+        "10720079-3530-56ff-bfb3-8cbcb25c7aa1"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "812cb9f9-f439-5cbc-b509-ae9f890acccb"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|保证下游分析收到的评论分类csv结构合法、取值合规、样本量充足|运营流程|数据产出校验|格式与取值校验|输出交付前|评论分类csv输出校验",
+        "change_action": "create",
+        "llm_reason": "该候选为评论分类CSV输出交付前的格式、列完整性、取值合法性与最小行数校验规则，与同批候选（策展方案约束校验、输入校验）在阶段、对象和校验内容上均不同，无冗余；支持证据明确，无冲突，保留为独立安全规则。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "0116dbf7-d6ce-4c36-8841-cb811507ebe9",
+      "entity_type": "skill",
+      "entity_id": "b509a4af-9652-5849-a3d7-68054c38b3c1",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选为评论分类CSV输出交付前的格式、列完整性、取值合法性与最小行数校验规则，与同批候选（策展方案约束校验、输入校验）在阶段、对象和校验内容上均不同，无冗余；支持证据明确，无冲突，保留为独立安全规则。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "b509a4af-9652-5849-a3d7-68054c38b3c1",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "10720079-3530-56ff-bfb3-8cbcb25c7aa1"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

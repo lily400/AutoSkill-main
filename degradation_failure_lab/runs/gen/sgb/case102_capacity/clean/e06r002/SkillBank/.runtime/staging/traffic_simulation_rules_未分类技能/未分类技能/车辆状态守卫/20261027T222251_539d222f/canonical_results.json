@@ -1,0 +1,151 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "车辆状态守卫",
+  "run_id": "20261027T222251_539d222f",
+  "skills": [
+    {
+      "skill_id": "cd7b1dd8-3432-5442-a015-5feff7370c87",
+      "name": "离线车辆激活前置检查",
+      "description": "在执行移动或货物处理前，检查目标车辆是否处于 OFFLINE 状态；离线车辆须先被场景或控制器显式激活才可参与运行。用于每步更新前对目标车辆做状态守卫。",
+      "skill_body": "在准备对某车辆执行移动或装卸动作前，先读取该车辆当前状态。若状态为 OFFLINE，则不得执行移动或货物处理，须先由场景或控制器显式激活该车辆；若车辆已处于激活运行状态，则按正常流程继续。\n\n## Objective\n\n避免对未激活车辆执行移动或装卸操作\n## Applicable Signals\n\n- 目标车辆即将被调度或执行动作\n- 车辆状态字段待确认\n\n## Contraindications\n\n- 车辆已处于激活运行状态\n\n## Intervention Moves\n\n- 读取车辆当前状态\n- 若为 OFFLINE 则阻止移动与装卸\n- 触发显式激活流程后再放行\n\n## Workflow Steps\n\n- 识别即将被操作的目标车辆\n- 读取该车辆当前状态\n- 若状态为 OFFLINE，则阻止移动与货物处理，并触发显式激活流程\n- 确认车辆已激活后，再执行原定移动或装卸动作\n\n## Constraints\n\n- OFFLINE 车辆不得移动\n- OFFLINE 车辆不得处理货物\n- 仅场景或控制器的显式激活可使车辆恢复运行\n\n## Cautions\n\n- 不得将未激活车辆视为可调度资源\n- 激活须为显式决策，不可隐式假定\n\n## Output Contract\n\n- 确认车辆可操作或触发显式激活流程\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 控制器计划调度某车辆执行移动\n- Therapist/Output: 检测到该车辆为 OFFLINE，阻止移动并触发显式激活流程\n- Notes: 激活后方可继续原定动作",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "避免对未激活车辆执行移动或装卸操作",
+      "domain": "交通仿真规则",
+      "task_family": "车辆状态守卫",
+      "method_family": "状态前置校验",
+      "stage": "每步更新前",
+      "applicable_signals": [
+        "目标车辆即将被调度或执行动作",
+        "车辆状态字段待确认"
+      ],
+      "contraindications": [
+        "车辆已处于激活运行状态"
+      ],
+      "intervention_moves": [
+        "读取车辆当前状态",
+        "若为 OFFLINE 则阻止移动与装卸",
+        "触发显式激活流程后再放行"
+      ],
+      "triggers": [
+        "准备对某车辆执行移动或装卸动作",
+        "控制器考虑调度某车辆"
+      ],
+      "workflow_steps": [
+        "识别即将被操作的目标车辆",
+        "读取该车辆当前状态",
+        "若状态为 OFFLINE，则阻止移动与货物处理，并触发显式激活流程",
+        "确认车辆已激活后，再执行原定移动或装卸动作"
+      ],
+      "constraints": [
+        "OFFLINE 车辆不得移动",
+        "OFFLINE 车辆不得处理货物",
+        "仅场景或控制器的显式激活可使车辆恢复运行"
+      ],
+      "cautions": [
+        "不得将未激活车辆视为可调度资源",
+        "激活须为显式决策，不可隐式假定"
+      ],
+      "output_contract": [
+        "确认车辆可操作或触发显式激活流程"
+      ],
+      "examples": [
+        {
+          "input": "控制器计划调度某车辆执行移动",
+          "output": "检测到该车辆为 OFFLINE，阻止移动并触发显式激活流程",
+          "notes": "激活后方可继续原定动作"
+        }
+      ],
+      "tags": [
+        "车辆状态守卫",
+        "状态前置校验",
+        "交通仿真规则",
+        "OFFLINE"
+      ],
+      "support_ids": [
+        "65aeea43-c8e2-5621-bb85-f3be85e556ec"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "b096681a-0f5a-5ee0-a9a2-32f04d928160"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|避免对未激活车辆执行移动或装卸操作|交通仿真规则|车辆状态守卫|状态前置校验|每步更新前|离线车辆激活前置检查",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "05401496-28a5-4f3a-916d-b12cbd2d1e86",
+      "entity_type": "skill",
+      "entity_id": "cd7b1dd8-3432-5442-a015-5feff7370c87",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "cd7b1dd8-3432-5442-a015-5feff7370c87",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "65aeea43-c8e2-5621-bb85-f3be85e556ec"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

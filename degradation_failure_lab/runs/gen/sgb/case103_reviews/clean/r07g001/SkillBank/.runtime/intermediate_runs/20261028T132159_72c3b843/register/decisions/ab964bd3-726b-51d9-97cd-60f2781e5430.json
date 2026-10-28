@@ -1,0 +1,105 @@
+{
+  "skill_id": "ab964bd3-726b-51d9-97cd-60f2781e5430",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次多个候选（c7f3c46b、3a5a6ffa、4e47719c）高度重复，均为输入校验阶段的无效输入处理安全规则，缺乏独立区分度，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "ab964bd3-726b-51d9-97cd-60f2781e5430",
+    "name": "无效或不完整输入处理规则",
+    "description": "在商品策展流程的输入校验阶段，当输入字段缺失、格式异常或产品目录JSON校验失败时，按既定规则标记并跳过或报错，避免无效输入污染后续语义匹配与情感分类结果。",
+    "skill_body": "在执行语义匹配或情感分类之前，先校验输入完整性与格式。若发现字段缺失、格式异常或产品目录JSON无效，按规则标记该输入并跳过或报错，不得继续产出匹配或情感结果；记录标记与处理动作，供下游调用方核查。\n\n## Objective\n\n防止无效输入污染匹配与情感输出\n## Applicable Signals\n\n- 输入字段缺失\n- 输入格式异常\n- 产品目录JSON校验失败\n\n## Contraindications\n\n- 输入完整且格式合法时无需触发本规则\n\n## Intervention Moves\n\n- 校验输入字段完整性与格式\n- 校验产品目录JSON有效性\n- 对无效输入进行标记\n- 跳过或报错并记录处理动作\n\n## Workflow Steps\n\n- 接收待处理输入与产品目录JSON\n- 校验字段完整性与格式合法性\n- 校验产品目录JSON结构有效性\n- 若校验失败，标记该输入并按规则跳过或报错\n- 记录标记与处理动作，阻止其进入匹配与情感判断\n\n## Constraints\n\n- 无效输入不得进入语义匹配或情感分类环节\n- 处理动作必须留下可追溯的标记记录\n\n## Cautions\n\n- 避免将格式异常输入误判为有效并继续下游处理\n\n## Output Contract\n\n- 无效输入的标记与处理记录，明确标识被跳过或报错的输入及其原因。",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止无效输入污染匹配与情感输出",
+    "domain": "商品策展运营",
+    "task_family": "输入校验",
+    "method_family": "输入验证与异常处理",
+    "stage": "输入校验",
+    "applicable_signals": [
+      "输入字段缺失",
+      "输入格式异常",
+      "产品目录JSON校验失败"
+    ],
+    "contraindications": [
+      "输入完整且格式合法时无需触发本规则"
+    ],
+    "intervention_moves": [
+      "校验输入字段完整性与格式",
+      "校验产品目录JSON有效性",
+      "对无效输入进行标记",
+      "跳过或报错并记录处理动作"
+    ],
+    "triggers": [
+      "输入字段缺失或格式异常",
+      "产品目录JSON校验失败",
+      "进入语义匹配或情感分类前的输入校验阶段"
+    ],
+    "workflow_steps": [
+      "接收待处理输入与产品目录JSON",
+      "校验字段完整性与格式合法性",
+      "校验产品目录JSON结构有效性",
+      "若校验失败，标记该输入并按规则跳过或报错",
+      "记录标记与处理动作，阻止其进入匹配与情感判断"
+    ],
+    "constraints": [
+      "无效输入不得进入语义匹配或情感分类环节",
+      "处理动作必须留下可追溯的标记记录"
+    ],
+    "cautions": [
+      "避免将格式异常输入误判为有效并继续下游处理"
+    ],
+    "output_contract": [
+      "无效输入的标记与处理记录，明确标识被跳过或报错的输入及其原因。"
+    ],
+    "examples": [],
+    "tags": [
+      "输入校验",
+      "异常处理",
+      "流程稳健性",
+      "商品策展"
+    ],
+    "support_ids": [
+      "e7278ce3-e9ea-5f35-a0bb-5f3b3ff4a996"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "9ec7c956-e8ae-56e0-94ae-490f2ffd2bf3"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|防止无效输入污染匹配与情感输出|商品策展运营|输入校验|输入验证与异常处理|输入校验|无效或不完整输入处理规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

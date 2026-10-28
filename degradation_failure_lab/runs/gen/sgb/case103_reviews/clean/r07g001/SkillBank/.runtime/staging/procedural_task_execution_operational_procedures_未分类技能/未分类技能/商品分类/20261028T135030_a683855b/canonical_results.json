@@ -1,0 +1,156 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "商品分类",
+  "run_id": "20261028T135030_a683855b",
+  "skills": [
+    {
+      "skill_id": "44152c4c-bb81-5bb2-8e71-9f3365584237",
+      "name": "产品描述品类归类",
+      "description": "根据产品描述中的关键词，将商品归入上装、下装或外套等品类，用于SKU匹配前的品类判定。",
+      "skill_body": "读取产品描述文本，按关键词规则判定品类：上装（连帽衫、T恤、长袖、卫衣、套头衫、球衣）；下装（长裤、束脚裤、短裤、紧身裤、打底裤、运动裤）；外套（夹克、防风衣、派克大衣、马甲、教练夹克）。输出单一品类标签；若描述中无可识别品类关键词，标记为无法判定并说明原因，不臆测。\n\n## Objective\n\n从产品描述文本判定产品所属品类\n## Applicable Signals\n\n- 产品描述文本已提供\n- 流程处于SKU匹配前的分类步骤\n\n## Contraindications\n\n- 描述缺少可识别品类关键词\n- 需要主观审美判断而非品类归类\n\n## Intervention Moves\n\n- 扫描描述中的品类关键词\n- 按上装/下装/外套关键词表归类\n- 输出单一品类标签\n\n## Workflow Steps\n\n- 读取产品描述文本\n- 对照品类关键词表：上装=连帽衫、T恤、长袖、卫衣、套头衫、球衣；下装=长裤、束脚裤、短裤、紧身裤、打底裤、运动裤；外套=夹克、防风衣、派克大衣、马甲、教练夹克\n- 确定唯一品类标签\n- 若无可识别关键词，标记无法判定并说明原因\n\n## Constraints\n\n- 仅依据描述中的关键词判定，不引入外部信息\n- 输出单一品类标签，不输出多个并列品类\n\n## Cautions\n\n- 描述可能同时含多个品类词，需以主体商品为准\n- 关键词缺失时不得臆测品类\n\n## Output Contract\n\n- 输出产品品类标签（上装/下装/外套），或标记无法判定并附原因。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Men's fleece pullover hoodie\n- Therapist/Output: 上装\n- Notes: 命中连帽衫/套头衫关键词\n\n### Example 2\n\n- Client/Input: Men's windbreaker jacket\n- Therapist/Output: 外套\n- Notes: 命中防风衣/夹克关键词",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "从产品描述文本判定产品所属品类",
+      "domain": "商品目录运营",
+      "task_family": "商品分类",
+      "method_family": "关键词规则匹配",
+      "stage": "品类判定",
+      "applicable_signals": [
+        "产品描述文本已提供",
+        "流程处于SKU匹配前的分类步骤"
+      ],
+      "contraindications": [
+        "描述缺少可识别品类关键词",
+        "需要主观审美判断而非品类归类"
+      ],
+      "intervention_moves": [
+        "扫描描述中的品类关键词",
+        "按上装/下装/外套关键词表归类",
+        "输出单一品类标签"
+      ],
+      "triggers": [
+        "需要从产品描述确定品类",
+        "进入SKU匹配前的分类步骤"
+      ],
+      "workflow_steps": [
+        "读取产品描述文本",
+        "对照品类关键词表：上装=连帽衫、T恤、长袖、卫衣、套头衫、球衣；下装=长裤、束脚裤、短裤、紧身裤、打底裤、运动裤；外套=夹克、防风衣、派克大衣、马甲、教练夹克",
+        "确定唯一品类标签",
+        "若无可识别关键词，标记无法判定并说明原因"
+      ],
+      "constraints": [
+        "仅依据描述中的关键词判定，不引入外部信息",
+        "输出单一品类标签，不输出多个并列品类"
+      ],
+      "cautions": [
+        "描述可能同时含多个品类词，需以主体商品为准",
+        "关键词缺失时不得臆测品类"
+      ],
+      "output_contract": [
+        "输出产品品类标签（上装/下装/外套），或标记无法判定并附原因。"
+      ],
+      "examples": [
+        {
+          "input": "Men's fleece pullover hoodie",
+          "output": "上装",
+          "notes": "命中连帽衫/套头衫关键词"
+        },
+        {
+          "input": "Men's windbreaker jacket",
+          "output": "外套",
+          "notes": "命中防风衣/夹克关键词"
+        }
+      ],
+      "tags": [
+        "商品分类",
+        "关键词规则匹配",
+        "品类判定",
+        "SKU匹配前置"
+      ],
+      "support_ids": [
+        "c6472a6a-601e-5ef3-802f-78d10b2fdc47"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "a2dbfcee-272c-5f26-9f5d-303aad400c75"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.72,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|从产品描述文本判定产品所属品类|商品目录运营|商品分类|关键词规则匹配|品类判定|产品描述品类归类",
+        "change_action": "create",
+        "llm_reason": "该候选技能是一个独立且可复用的微技能，用于在SKU匹配前根据产品描述关键词判定品类；它与同批候选技能（评论-SKU适用性判定、情感分类、条件计数）不重叠，且有支持证据、无冲突。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "8bb05677-3e61-4e93-b236-90c4261c451d",
+      "entity_type": "skill",
+      "entity_id": "44152c4c-bb81-5bb2-8e71-9f3365584237",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选技能是一个独立且可复用的微技能，用于在SKU匹配前根据产品描述关键词判定品类；它与同批候选技能（评论-SKU适用性判定、情感分类、条件计数）不重叠，且有支持证据、无冲突。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "44152c4c-bb81-5bb2-8e71-9f3365584237",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "c6472a6a-601e-5ef3-802f-78d10b2fdc47"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

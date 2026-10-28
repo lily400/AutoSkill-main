@@ -1,0 +1,150 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "多步仿真推进",
+  "run_id": "20261027T222251_330bf5e3",
+  "skills": [
+    {
+      "skill_id": "e5242160-1b78-5359-82d7-24dc1f0e681a",
+      "name": "多步仿真推进范围确认",
+      "description": "当用户请求涉及多个时间步的仿真推演时，先向用户确认明确的时间范围或步数，避免开放式无限推进，再按顺序应用规则逐步更新状态。",
+      "skill_body": "在开始多步推演前，先确认推进范围：向用户询问时间范围或步数，得到明确答复后再按规则顺序逐步应用并更新状态；若用户未给出范围，不要自行开放式推进。\n\n## Objective\n\n限定多步推进的明确时间范围\n## Applicable Signals\n\n- 请求涉及多个时间步的推演\n- 用户描述随时间变化的事件但未指定时间范围或步数\n\n## Contraindications\n\n- 单步或即时状态查询\n- 用户已明确给出时间范围或步数\n\n## Intervention Moves\n\n- 向用户询问时间范围或步数\n- 在获得明确范围后按规则顺序逐步应用并更新状态\n\n## Workflow Steps\n\n- 判断请求是否跨越多个时间步\n- 若未指定范围，向用户询问时间范围或步数\n- 获得明确范围后，按规则顺序逐步应用并更新状态\n- 输出逐步更新的状态序列\n\n## Constraints\n\n- 避免开放式无限推进\n- 不得自行假设时间范围\n- 规则应用须按顺序进行\n\n## Cautions\n\n- 若用户拒绝提供范围，应说明需要明确范围才能推进\n\n## Output Contract\n\n- 确认的步数/时间范围及逐步更新的状态序列\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请模拟接下来一段时间内该路口的车流变化。\n- Therapist/Output: 请确认需要推进的时间范围或步数（例如推进多少步），我将按规则逐步更新状态。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "限定多步推进的明确时间范围",
+      "domain": "traffic simulation rules",
+      "task_family": "多步仿真推进",
+      "method_family": "范围确认与顺序应用",
+      "stage": "推进前确认",
+      "applicable_signals": [
+        "请求涉及多个时间步的推演",
+        "用户描述随时间变化的事件但未指定时间范围或步数"
+      ],
+      "contraindications": [
+        "单步或即时状态查询",
+        "用户已明确给出时间范围或步数"
+      ],
+      "intervention_moves": [
+        "向用户询问时间范围或步数",
+        "在获得明确范围后按规则顺序逐步应用并更新状态"
+      ],
+      "triggers": [
+        "用户请求跨越多个时间步的推演",
+        "用户要求模拟随时间变化的过程但未说明步数或时间范围"
+      ],
+      "workflow_steps": [
+        "判断请求是否跨越多个时间步",
+        "若未指定范围，向用户询问时间范围或步数",
+        "获得明确范围后，按规则顺序逐步应用并更新状态",
+        "输出逐步更新的状态序列"
+      ],
+      "constraints": [
+        "避免开放式无限推进",
+        "不得自行假设时间范围",
+        "规则应用须按顺序进行"
+      ],
+      "cautions": [
+        "若用户拒绝提供范围，应说明需要明确范围才能推进"
+      ],
+      "output_contract": [
+        "确认的步数/时间范围及逐步更新的状态序列"
+      ],
+      "examples": [
+        {
+          "input": "请模拟接下来一段时间内该路口的车流变化。",
+          "output": "请确认需要推进的时间范围或步数（例如推进多少步），我将按规则逐步更新状态。",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "多步推进",
+        "范围确认",
+        "状态更新",
+        "仿真控制"
+      ],
+      "support_ids": [
+        "07a65a40-a8a8-500f-abe2-bdc1bb280364"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "7a334181-9bf5-5091-a19a-bea8081f2634"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|限定多步推进的明确时间范围|traffic simulation rules|多步仿真推进|范围确认与顺序应用|推进前确认|多步仿真推进范围确认",
+        "change_action": "create",
+        "llm_reason": "该候选技能聚焦于多步仿真推进前的时间范围确认，与同批其他技能（实体排序、行驶时间计算、货运交付判定）无重叠，且支持证据无冲突，具备独立可执行价值，应保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "dc846f55-198b-4b03-b693-32e9a271be9d",
+      "entity_type": "skill",
+      "entity_id": "e5242160-1b78-5359-82d7-24dc1f0e681a",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选技能聚焦于多步仿真推进前的时间范围确认，与同批其他技能（实体排序、行驶时间计算、货运交付判定）无重叠，且支持证据无冲突，具备独立可执行价值，应保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "e5242160-1b78-5359-82d7-24dc1f0e681a",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "07a65a40-a8a8-500f-abe2-bdc1bb280364"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

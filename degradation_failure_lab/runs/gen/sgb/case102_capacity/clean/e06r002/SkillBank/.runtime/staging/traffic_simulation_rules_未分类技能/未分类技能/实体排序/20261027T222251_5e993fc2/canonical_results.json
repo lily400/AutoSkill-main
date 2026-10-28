@@ -1,0 +1,149 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "实体排序",
+  "run_id": "20261027T222251_5e993fc2",
+  "skills": [
+    {
+      "skill_id": "b6e41188-61e5-5ffb-a538-7007fe703ade",
+      "name": "阶段内实体规范排序规则",
+      "description": "当某一仿真阶段内需要确定多个实体的处理先后顺序时，按 VehicleID 升序、再按 NodeID 升序生成确定性处理序列，除非规则已明确指定其他优先级。用于消除阶段内处理顺序歧义。",
+      "skill_body": "在单个仿真阶段内需要确定实体处理顺序时，先检查该阶段规则是否已明确指定优先级；若未指定，则按 VehicleID 升序排序，VehicleID 相同时再按 NodeID 升序排序，输出确定性的实体处理序列。不要用本规则编排跨阶段流程。\n\n## Objective\n\n在单个阶段内以确定性顺序处理实体，避免顺序歧义\n## Applicable Signals\n\n- 同一阶段内多个实体需确定处理先后\n- 规则未指定其他优先级\n\n## Contraindications\n\n- 规则已明确指定不同优先级\n- 跨阶段流程编排\n\n## Intervention Moves\n\n- 检查该阶段是否已有明确优先级规则\n- 若无，则按 VehicleID 升序排序\n- VehicleID 相同时按 NodeID 升序排序\n- 输出确定性处理序列\n\n## Workflow Steps\n\n- 确认当前处于单个阶段内且存在多实体处理顺序需求\n- 检查该阶段规则是否已指定优先级；若已指定则遵循该优先级\n- 若未指定，按 VehicleID 升序排序\n- VehicleID 相同时按 NodeID 升序排序\n- 输出最终确定性处理序列\n\n## Constraints\n\n- 仅在单个阶段内应用\n- 不得覆盖规则已明确指定的优先级\n\n## Cautions\n\n- 若规则另有优先级，本规范排序不适用\n- 不要将本规则用于跨阶段流程编排\n\n## Output Contract\n\n- 按 VehicleID 再 NodeID 升序排列的实体处理序列",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在单个阶段内以确定性顺序处理实体，避免顺序歧义",
+      "domain": "交通仿真",
+      "task_family": "实体排序",
+      "method_family": "规范键排序",
+      "stage": "阶段内处理",
+      "applicable_signals": [
+        "同一阶段内多个实体需确定处理先后",
+        "规则未指定其他优先级"
+      ],
+      "contraindications": [
+        "规则已明确指定不同优先级",
+        "跨阶段流程编排"
+      ],
+      "intervention_moves": [
+        "检查该阶段是否已有明确优先级规则",
+        "若无，则按 VehicleID 升序排序",
+        "VehicleID 相同时按 NodeID 升序排序",
+        "输出确定性处理序列"
+      ],
+      "triggers": [
+        "同一阶段内多个实体需确定处理先后",
+        "规则未指定其他优先级",
+        "需要消除阶段内处理顺序歧义"
+      ],
+      "workflow_steps": [
+        "确认当前处于单个阶段内且存在多实体处理顺序需求",
+        "检查该阶段规则是否已指定优先级；若已指定则遵循该优先级",
+        "若未指定，按 VehicleID 升序排序",
+        "VehicleID 相同时按 NodeID 升序排序",
+        "输出最终确定性处理序列"
+      ],
+      "constraints": [
+        "仅在单个阶段内应用",
+        "不得覆盖规则已明确指定的优先级"
+      ],
+      "cautions": [
+        "若规则另有优先级，本规范排序不适用",
+        "不要将本规则用于跨阶段流程编排"
+      ],
+      "output_contract": [
+        "按 VehicleID 再 NodeID 升序排列的实体处理序列"
+      ],
+      "examples": [],
+      "tags": [
+        "交通仿真",
+        "实体排序",
+        "规范键排序",
+        "阶段内处理",
+        "确定性"
+      ],
+      "support_ids": [
+        "8b4125a2-e2d2-5eae-b470-dbe504eb8de5"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "69947e18-6388-5109-9f2f-8e3c41fd0a54"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|在单个阶段内以确定性顺序处理实体，避免顺序歧义|交通仿真|实体排序|规范键排序|阶段内处理|阶段内实体规范排序规则",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "1a29f16f-5d82-4df0-a527-73aa058d8281",
+      "entity_type": "skill",
+      "entity_id": "b6e41188-61e5-5ffb-a538-7007fe703ade",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "b6e41188-61e5-5ffb-a538-7007fe703ade",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "8b4125a2-e2d2-5eae-b470-dbe504eb8de5"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -14,7 +14,9 @@ class AuditedTerminus2(Scrapy041Terminus2):
             binding = Path(self.options.p1_profile).parent / 'task_config.json'
             if (profile.get('protocol_id') != 'clean-pair-v1' or not binding.is_file()
                     or sha256(binding) != profile.get('task_config_sha256')
-                    or read(binding).get('adapter') != 'downstream_eval.sgb.task_adapters.audited.json_task'
+                    or read(binding).get('adapter') not in (
+                        'downstream_eval.sgb.task_adapters.audited.json_task',
+                        'downstream_eval.sgb.task_adapters.audited.code_task')
                     or read(binding).get('task_id') != profile['task_id']):
                 raise BudgetStop('Task is outside the audited pilot')
         scope = '/'.join((profile['task_id'], profile['generator_run_id'], profile['experiment_id']))

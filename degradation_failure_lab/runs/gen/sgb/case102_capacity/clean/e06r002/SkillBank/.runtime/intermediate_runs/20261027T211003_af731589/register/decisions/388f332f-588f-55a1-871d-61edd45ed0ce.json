@@ -1,0 +1,118 @@
+{
+  "skill_id": "388f332f-588f-55a1-871d-61edd45ed0ce",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "388f332f-588f-55a1-871d-61edd45ed0ce",
+    "name": "车辆类型行驶时间乘数计算",
+    "description": "依据车辆类型对应的行驶时间乘数与边基础时间，计算车辆在该边上的行驶时间，用于推进MOVING状态的剩余行驶时间。",
+    "skill_body": "当需要计算某车辆在某条边上的行驶时间时：1) 确认车辆当前位于边上且需要计算行驶时间；2) 读取车辆类型（BIKE/VAN/TRUCK/MINI_TRUCK）；3) 取该类型对应的行驶时间乘数（BIKE 1.5，VAN 1.0，MINI_TRUCK 1.0，TRUCK 0.8）；4) 用边的基础时间乘以该乘数得到行驶时间；5) 输出该车辆在该边上的行驶时间数值，供MOVING状态推进使用。若车辆类型无乘数定义，停止计算并报告缺失；车辆处于节点静止状态时不适用本计算。\n\n## Objective\n\n按车辆类型乘数正确计算边行驶时间\n## Applicable Signals\n\n- 车辆进入或位于边上需计算剩余行驶时间\n- 需要按类型调整速度\n\n## Contraindications\n\n- 车辆处于节点静止状态\n- 无类型乘数定义时\n\n## Intervention Moves\n\n- 读取车辆类型\n- 查表取该类型行驶时间乘数\n- 以边基础时间乘以乘数得到行驶时间\n- 输出行驶时间数值\n\n## Workflow Steps\n\n- 确认车辆当前位于边上且需要计算行驶时间\n- 读取车辆类型（BIKE/VAN/TRUCK/MINI_TRUCK）\n- 取对应乘数：BIKE 1.5，VAN 1.0，MINI_TRUCK 1.0，TRUCK 0.8\n- 用边基础时间乘以乘数得到行驶时间\n- 返回该车辆在该边上的行驶时间数值\n\n## Constraints\n\n- 仅使用已定义的四种车辆类型及其乘数\n- 乘数取值固定：BIKE 1.5，VAN 1.0，MINI_TRUCK 1.0，TRUCK 0.8\n- 仅在车辆位于边上时计算\n\n## Cautions\n\n- 若车辆类型无乘数定义，不得臆造乘数，应报告缺失\n- 车辆处于节点静止状态时不适用本计算\n\n## Output Contract\n\n- 该车辆在该边上的行驶时间数值\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆类型为TRUCK，边基础时间为10\n- Therapist/Output: 行驶时间 = 10 × 0.8 = 8\n- Notes: TRUCK乘数为0.8\n\n### Example 2\n\n- Client/Input: 车辆类型为BIKE，边基础时间为10\n- Therapist/Output: 行驶时间 = 10 × 1.5 = 15\n- Notes: BIKE乘数为1.5",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按车辆类型乘数正确计算边行驶时间",
+    "domain": "交通仿真规则",
+    "task_family": "时间推进计算",
+    "method_family": "乘数修正计算",
+    "stage": "每tick更新",
+    "applicable_signals": [
+      "车辆进入或位于边上需计算剩余行驶时间",
+      "需要按类型调整速度"
+    ],
+    "contraindications": [
+      "车辆处于节点静止状态",
+      "无类型乘数定义时"
+    ],
+    "intervention_moves": [
+      "读取车辆类型",
+      "查表取该类型行驶时间乘数",
+      "以边基础时间乘以乘数得到行驶时间",
+      "输出行驶时间数值"
+    ],
+    "triggers": [
+      "车辆进入或位于边上需计算剩余行驶时间",
+      "需要按车辆类型调整速度"
+    ],
+    "workflow_steps": [
+      "确认车辆当前位于边上且需要计算行驶时间",
+      "读取车辆类型（BIKE/VAN/TRUCK/MINI_TRUCK）",
+      "取对应乘数：BIKE 1.5，VAN 1.0，MINI_TRUCK 1.0，TRUCK 0.8",
+      "用边基础时间乘以乘数得到行驶时间",
+      "返回该车辆在该边上的行驶时间数值"
+    ],
+    "constraints": [
+      "仅使用已定义的四种车辆类型及其乘数",
+      "乘数取值固定：BIKE 1.5，VAN 1.0，MINI_TRUCK 1.0，TRUCK 0.8",
+      "仅在车辆位于边上时计算"
+    ],
+    "cautions": [
+      "若车辆类型无乘数定义，不得臆造乘数，应报告缺失",
+      "车辆处于节点静止状态时不适用本计算"
+    ],
+    "output_contract": [
+      "该车辆在该边上的行驶时间数值"
+    ],
+    "examples": [
+      {
+        "input": "车辆类型为TRUCK，边基础时间为10",
+        "output": "行驶时间 = 10 × 0.8 = 8",
+        "notes": "TRUCK乘数为0.8"
+      },
+      {
+        "input": "车辆类型为BIKE，边基础时间为10",
+        "output": "行驶时间 = 10 × 1.5 = 15",
+        "notes": "BIKE乘数为1.5"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "行驶时间",
+      "车辆类型",
+      "乘数计算",
+      "时间推进"
+    ],
+    "support_ids": [
+      "386bac6c-7e98-5605-90c7-02d32d702d83"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "94375ee9-595e-576d-955c-e67db06fd981"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|按车辆类型乘数正确计算边行驶时间|交通仿真规则|时间推进计算|乘数修正计算|每tick更新|车辆类型行驶时间乘数计算"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

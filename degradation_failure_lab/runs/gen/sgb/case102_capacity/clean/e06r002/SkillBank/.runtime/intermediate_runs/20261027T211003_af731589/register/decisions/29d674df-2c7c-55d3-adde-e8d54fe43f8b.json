@@ -1,0 +1,113 @@
+{
+  "skill_id": "29d674df-2c7c-55d3-adde-e8d54fe43f8b",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "29d674df-2c7c-55d3-adde-e8d54fe43f8b",
+    "name": "装卸期间车辆锁定约束",
+    "description": "当车辆处于 LOADING 或 UNLOADING 状态且装卸作业未完成时，校验并强制该车辆本 tick 不得移动或启动新作业；用于每 tick 合法动作生成与状态一致性检查。",
+    "skill_body": "在生成或校验某车辆本 tick 动作前，先检查其 Status。若为 LOADING 或 UNLOADING 且作业 WorkUnits 尚未降至 0 或以下，则该车辆本 tick 的合法动作集合仅允许无操作；拒绝任何移动或启动新作业的请求，并保持状态与作业不变。\n\n## Objective\n\n防止装卸中车辆执行非法移动或重复作业\n## Applicable Signals\n\n- 车辆 Status 为 LOADING\n- 车辆 Status 为 UNLOADING\n- 存在未完成的装卸作业（WorkUnits > 0）\n\n## Contraindications\n\n- 车辆处于空闲或移动状态\n- 装卸作业已在本 tick 结束时完成（WorkUnits 降至 0 或以下）\n\n## Intervention Moves\n\n- 读取车辆当前 Status\n- 若处于装卸中，将本 tick 合法动作限制为无操作\n- 拒绝移动或启动新作业的请求\n- 保持作业与状态不变直至作业完成\n\n## Workflow Steps\n\n- 读取目标车辆当前 Status。\n- 若 Status 不是 LOADING 或 UNLOADING，则不适用本约束。\n- 若 Status 为 LOADING 或 UNLOADING 且作业未完成，则将该车辆本 tick 合法动作集合限定为无操作。\n- 拒绝任何移动或启动新作业的动作请求。\n- 保持车辆状态与作业 WorkUnits 不变，等待后续 Loading/Unloading Phase 继续扣减。\n\n## Constraints\n\n- 仅在车辆处于装卸作业进行中时生效。\n- 不得在锁定期间修改车辆位置或创建新作业。\n\n## Cautions\n\n- 作业完成判定发生在该 tick 结束时，完成当 tick 仍受锁定约束。\n- 需与装卸 WorkUnits 扣减逻辑配合，避免提前解锁。\n\n## Output Contract\n\n- 被锁定车辆的动作集合仅含无操作，非法动作被拒绝，且车辆状态与作业保持不变。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆 Status=LOADING，作业 WorkUnits=3，本 tick 请求 MOVE。\n- Therapist/Output: 拒绝 MOVE，本 tick 合法动作仅为无操作，状态保持 LOADING。\n- Notes: 作业未完成期间持续锁定。",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止装卸中车辆执行非法移动或重复作业",
+    "domain": "交通仿真规则",
+    "task_family": "动作合法性校验",
+    "method_family": "状态锁定约束",
+    "stage": "Legal Actions Per Tick",
+    "applicable_signals": [
+      "车辆 Status 为 LOADING",
+      "车辆 Status 为 UNLOADING",
+      "存在未完成的装卸作业（WorkUnits > 0）"
+    ],
+    "contraindications": [
+      "车辆处于空闲或移动状态",
+      "装卸作业已在本 tick 结束时完成（WorkUnits 降至 0 或以下）"
+    ],
+    "intervention_moves": [
+      "读取车辆当前 Status",
+      "若处于装卸中，将本 tick 合法动作限制为无操作",
+      "拒绝移动或启动新作业的请求",
+      "保持作业与状态不变直至作业完成"
+    ],
+    "triggers": [
+      "车辆状态为 LOADING 或 UNLOADING",
+      "生成或校验该车辆本 tick 动作",
+      "检查装卸作业进行中的状态一致性"
+    ],
+    "workflow_steps": [
+      "读取目标车辆当前 Status。",
+      "若 Status 不是 LOADING 或 UNLOADING，则不适用本约束。",
+      "若 Status 为 LOADING 或 UNLOADING 且作业未完成，则将该车辆本 tick 合法动作集合限定为无操作。",
+      "拒绝任何移动或启动新作业的动作请求。",
+      "保持车辆状态与作业 WorkUnits 不变，等待后续 Loading/Unloading Phase 继续扣减。"
+    ],
+    "constraints": [
+      "仅在车辆处于装卸作业进行中时生效。",
+      "不得在锁定期间修改车辆位置或创建新作业。"
+    ],
+    "cautions": [
+      "作业完成判定发生在该 tick 结束时，完成当 tick 仍受锁定约束。",
+      "需与装卸 WorkUnits 扣减逻辑配合，避免提前解锁。"
+    ],
+    "output_contract": [
+      "被锁定车辆的动作集合仅含无操作，非法动作被拒绝，且车辆状态与作业保持不变。"
+    ],
+    "examples": [
+      {
+        "input": "车辆 Status=LOADING，作业 WorkUnits=3，本 tick 请求 MOVE。",
+        "output": "拒绝 MOVE，本 tick 合法动作仅为无操作，状态保持 LOADING。",
+        "notes": "作业未完成期间持续锁定。"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "动作合法性",
+      "状态锁定",
+      "装卸作业"
+    ],
+    "support_ids": [
+      "236ee33f-5333-5b59-8904-0261a75398d0"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "d8671562-d431-5eee-bc60-6c9e19003e6f"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|防止装卸中车辆执行非法移动或重复作业|交通仿真规则|动作合法性校验|状态锁定约束|legal actions per tick|装卸期间车辆锁定约束"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

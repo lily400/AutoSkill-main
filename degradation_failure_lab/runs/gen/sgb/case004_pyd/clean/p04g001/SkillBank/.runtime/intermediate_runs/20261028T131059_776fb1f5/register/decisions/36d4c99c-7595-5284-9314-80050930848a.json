@@ -1,0 +1,111 @@
+{
+  "skill_id": "36d4c99c-7595-5284-9314-80050930848a",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“判别联合类型设计”高度重叠，后者已覆盖 str 判别器与可调用 Discriminator 的确定性路由，本候选仅为其子集，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "36d4c99c-7595-5284-9314-80050930848a",
+    "name": "Pydantic 判别式联合类型建模",
+    "description": "使用带 Literal 判别字段的成员模型和 Field(discriminator=...) 构建可区分的联合类型，使 Pydantic 按判别值选择正确成员模型。适用于多个候选模型共享一个标签字段、需要精确路由校验的场景。",
+    "skill_body": "为联合类型建立基于判别字段的确定性校验路由：先确认各候选模型存在共享的判别字段，再在每个成员模型中用 Literal 声明该字段的取值，最后在联合字段上用 Field(discriminator='<字段名>') 指定判别字段。确保判别值在各成员间不冲突，从而让校验按标签精确匹配唯一成员模型。\n\n## Objective\n\n为多模型联合类型建立基于判别字段的确定性校验路由\n## Applicable Signals\n\n- 候选模型之间存在一个可共享的标签字段\n- 标签字段可用 Literal 枚举取值\n- 需要联合校验按标签精确匹配而非逐个尝试\n\n## Contraindications\n\n- 候选模型之间没有可共享的判别字段\n- 仅需简单标量联合而非模型联合\n\n## Intervention Moves\n\n- 在每个成员模型中声明 Literal 判别字段\n- 在联合字段上设置 Field(discriminator='<字段名>')\n- 核对各成员判别取值互不冲突\n\n## Workflow Steps\n\n- 确认各候选模型存在可共享的判别字段\n- 在每个成员模型中用 Literal 声明该判别字段的取值\n- 在联合字段上使用 Field(discriminator='<字段名>') 指定判别字段\n- 检查各成员判别取值互不冲突，确保按判别值选中唯一成员模型\n\n## Constraints\n\n- 判别字段必须在每个成员模型中存在且为 Literal 取值\n- 各成员的判别取值不应重叠，否则无法唯一路由\n\n## Cautions\n\n- 若成员间无统一判别字段，应改用可调用 Discriminator 而非强行套用本流程\n\n## Output Contract\n\n- 一个带 discriminator 配置的 Union 字段模型定义，能按判别值选中唯一成员模型\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 多个宠物模型各自带有 pet_type 标签字段，需要联合校验\n- Therapist/Output: pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')\n- Notes: 各成员用 Literal 声明 pet_type 取值",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为多模型联合类型建立基于判别字段的确定性校验路由",
+    "domain": "pydantic",
+    "task_family": "联合类型校验",
+    "method_family": "判别式联合建模",
+    "stage": "模型定义",
+    "applicable_signals": [
+      "候选模型之间存在一个可共享的标签字段",
+      "标签字段可用 Literal 枚举取值",
+      "需要联合校验按标签精确匹配而非逐个尝试"
+    ],
+    "contraindications": [
+      "候选模型之间没有可共享的判别字段",
+      "仅需简单标量联合而非模型联合"
+    ],
+    "intervention_moves": [
+      "在每个成员模型中声明 Literal 判别字段",
+      "在联合字段上设置 Field(discriminator='<字段名>')",
+      "核对各成员判别取值互不冲突"
+    ],
+    "triggers": [
+      "多个候选模型各自带有区分用的 Literal 标签字段",
+      "希望联合校验按标签精确匹配而非逐个尝试",
+      "需要为多模型联合类型建立确定性校验路由"
+    ],
+    "workflow_steps": [
+      "确认各候选模型存在可共享的判别字段",
+      "在每个成员模型中用 Literal 声明该判别字段的取值",
+      "在联合字段上使用 Field(discriminator='<字段名>') 指定判别字段",
+      "检查各成员判别取值互不冲突，确保按判别值选中唯一成员模型"
+    ],
+    "constraints": [
+      "判别字段必须在每个成员模型中存在且为 Literal 取值",
+      "各成员的判别取值不应重叠，否则无法唯一路由"
+    ],
+    "cautions": [
+      "若成员间无统一判别字段，应改用可调用 Discriminator 而非强行套用本流程"
+    ],
+    "output_contract": [
+      "一个带 discriminator 配置的 Union 字段模型定义，能按判别值选中唯一成员模型"
+    ],
+    "examples": [
+      {
+        "input": "多个宠物模型各自带有 pet_type 标签字段，需要联合校验",
+        "output": "pet: Union[Cat, Dog, Lizard] = Field(discriminator='pet_type')",
+        "notes": "各成员用 Literal 声明 pet_type 取值"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "union",
+      "discriminated-union",
+      "literal",
+      "validation"
+    ],
+    "support_ids": [
+      "709c0694-5714-5e23-a79c-b3edd9d5e1dd"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "080c82b6-7859-535f-aeff-5779b38350f5"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.9,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|为多模型联合类型建立基于判别字段的确定性校验路由|pydantic|联合类型校验|判别式联合建模|模型定义|pydantic 判别式联合类型建模"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

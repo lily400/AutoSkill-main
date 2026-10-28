@@ -192,7 +192,8 @@ def execute_batch(root, output, config, *, run_trial, grade, exposure, task_succ
             usage_report = save_skill_usage(output, label, trial.paths.trial_dir,
                 output / 'outcomes' / label / 'skill_usage.json')
             attempts = [a for a in ledger.snapshot()['attempts'] if a['arm'] == label]
-            kind = failure_kind(dict(score, task_success=task_success(score)), native.get('exception_info'), attempts=attempts)
+            kind = failure_kind(dict(score, task_success=task_success(score)), native.get('exception_info'), attempts=attempts,
+                                native_result=native, max_turns=profile['budget']['max_requests'])
             infra = kind != 'infrastructure_failure'
             success = bool(task_success(score)) if infra and kind != 'budget_exhausted' else False
             tools = trial.paths.trial_dir / 'p1-observer/p1-tool-actions.jsonl'

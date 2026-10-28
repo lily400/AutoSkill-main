@@ -1,0 +1,117 @@
+{
+  "skill_id": "051b46c6-eb00-5693-995a-de8aaefaff4d",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "051b46c6-eb00-5693-995a-de8aaefaff4d",
+    "name": "Consignment Lateness Penalty Weighting",
+    "description": "Computes lateness penalties per tick for a late consignment based on its priority tier (LOW 0.5, STANDARD 1.0, HIGH 2.0, CRITICAL 4.0). Use when tallying penalties for late consignments during objective evaluation or Network Service Score computation.",
+    "skill_body": "When a consignment is late and penalties are being tallied, look up its priority tier and apply the corresponding per-tick penalty weight: LOW=0.5, STANDARD=1.0, HIGH=2.0, CRITICAL=4.0. Multiply the weight by the number of late ticks to obtain the penalty contribution. Do not apply this move to on-time consignments or when priority is undefined.\n\n## Objective\n\nApply correct priority-based penalty weight per late tick.\n## Applicable Signals\n\n- Consignment status is late\n- Penalty tallying is in progress\n- Network Service Score is being computed\n\n## Contraindications\n\n- Consignment is on time\n- Priority is undefined\n\n## Intervention Moves\n\n- Identify the consignment priority tier\n- Select the matching per-tick penalty weight (LOW 0.5, STANDARD 1.0, HIGH 2.0, CRITICAL 4.0)\n- Multiply weight by number of late ticks to get the penalty contribution\n\n## Workflow Steps\n\n- Confirm the consignment is late and penalties are being tallied.\n- Read the consignment priority tier.\n- Map priority to penalty weight: LOW=0.5, STANDARD=1.0, HIGH=2.0, CRITICAL=4.0.\n- Multiply the weight by the count of late ticks to produce the penalty value.\n\n## Constraints\n\n- Use only the four defined priority tiers and their fixed weights.\n- Do not assign a penalty to on-time consignments.\n- Do not proceed when priority is undefined.\n\n## Cautions\n\n- Weights are fixed per tier; do not interpolate or invent intermediate values.\n\n## Output Contract\n\n- Penalty value per late tick assigned by priority tier, with the total penalty contribution for the late consignment.\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: A HIGH priority consignment is 3 ticks late.\n- Therapist/Output: Penalty weight 2.0 per tick; total penalty = 2.0 × 3 = 6.0.\n- Notes: Weight selected from the HIGH tier.\n\n### Example 2\n\n- Client/Input: A LOW priority consignment is 4 ticks late.\n- Therapist/Output: Penalty weight 0.5 per tick; total penalty = 0.5 × 4 = 2.0.\n- Notes: Weight selected from the LOW tier.",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "Apply correct priority-based penalty weight per late tick.",
+    "domain": "traffic simulation",
+    "task_family": "scoring",
+    "method_family": "weighted_penalty_calculation",
+    "stage": "objective_evaluation",
+    "applicable_signals": [
+      "Consignment status is late",
+      "Penalty tallying is in progress",
+      "Network Service Score is being computed"
+    ],
+    "contraindications": [
+      "Consignment is on time",
+      "Priority is undefined"
+    ],
+    "intervention_moves": [
+      "Identify the consignment priority tier",
+      "Select the matching per-tick penalty weight (LOW 0.5, STANDARD 1.0, HIGH 2.0, CRITICAL 4.0)",
+      "Multiply weight by number of late ticks to get the penalty contribution"
+    ],
+    "triggers": [
+      "A consignment is late and penalties are being tallied",
+      "Computing Network Service Score",
+      "Objective evaluation requires per-consignment lateness penalty"
+    ],
+    "workflow_steps": [
+      "Confirm the consignment is late and penalties are being tallied.",
+      "Read the consignment priority tier.",
+      "Map priority to penalty weight: LOW=0.5, STANDARD=1.0, HIGH=2.0, CRITICAL=4.0.",
+      "Multiply the weight by the count of late ticks to produce the penalty value."
+    ],
+    "constraints": [
+      "Use only the four defined priority tiers and their fixed weights.",
+      "Do not assign a penalty to on-time consignments.",
+      "Do not proceed when priority is undefined."
+    ],
+    "cautions": [
+      "Weights are fixed per tier; do not interpolate or invent intermediate values."
+    ],
+    "output_contract": [
+      "Penalty value per late tick assigned by priority tier, with the total penalty contribution for the late consignment."
+    ],
+    "examples": [
+      {
+        "input": "A HIGH priority consignment is 3 ticks late.",
+        "output": "Penalty weight 2.0 per tick; total penalty = 2.0 × 3 = 6.0.",
+        "notes": "Weight selected from the HIGH tier."
+      },
+      {
+        "input": "A LOW priority consignment is 4 ticks late.",
+        "output": "Penalty weight 0.5 per tick; total penalty = 0.5 × 4 = 2.0.",
+        "notes": "Weight selected from the LOW tier."
+      }
+    ],
+    "tags": [
+      "scoring",
+      "penalty",
+      "priority",
+      "lateness",
+      "objective_evaluation"
+    ],
+    "support_ids": [
+      "d94fd363-1136-513b-9c87-7aac5e84749b"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "fe8bd4dc-2315-55fa-aa23-176b784cbf3a"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|apply correct priority-based penalty weight per late tick.|traffic simulation|scoring|weighted_penalty_calculation|objective_evaluation|consignment lateness penalty weighting"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,64 @@
+{
+  "support_id": "f7fca6c2-0c39-5b21-9a0a-5ad91201fdeb",
+  "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+  "skill_id": "4045e587-c93f-5cf1-96d8-34f912827e83",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+  "section": "# Validators",
+  "span": {
+    "start": 14017,
+    "end": 14766
+  },
+  "excerpt": "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n\n@model_validator(mode='after')\n    def check_passwords_match(self) -> Self:\n        if self.password != self.password_repeat:\n            raise ValueError('Passwords do not match')\n        return self\n```\n- ***Before* validators**: are run before the model is instantiated. These are more flexible than *after* validators,\n but they also have to deal with the raw input, which in theory could be any arbitrary object. You should also avoid\n mutating the value directly if you are raising a validation error later in your validator\n function, as the mutated value may be passed to other validators if using [unions](../unions/).\n\n```\nfrom typing import Any",
+  "relation_type": "support",
+  "confidence": 0.85,
+  "metadata": {
+    "document_title": "input001\\validators.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "Pydantic 模型级跨字段校验器",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "visible_role": "leaf",
+    "objective": "在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误",
+    "task_family": "数据校验",
+    "method_family": "模型校验器",
+    "stage": "模型定义",
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "candidate_slot": 1,
+    "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+    "window_strategy": "strict",
+    "anchor_hits": [],
+    "paragraph_start": 33,
+    "paragraph_end": 35,
+    "heading_path": [
+      "# Validators"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input001\\validators.md"
+    ],
+    "subsection_headings": [
+      "## Field validators",
+      "Example mutating the value",
+      "Which validator pattern to use",
+      "Using the annotated pattern",
+      "Using the decorator pattern",
+      "Model validators",
+      "Raising validation errors",
+      "Validation info",
+      "Validation data",
+      "Validation context",
+      "Ordering of validators",
+      "Special types"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+  },
+  "created_at": "2026-10-28T04:55:36+00:00"
+}

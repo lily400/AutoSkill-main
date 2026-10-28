@@ -1,0 +1,166 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "通行裁决",
+  "run_id": "20261027T222251_31e5e2d0",
+  "skills": [
+    {
+      "skill_id": "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+      "name": "边容量与队列冲突裁决",
+      "description": "在交通仿真每个 tick 的移动执行阶段，依据目标边的容量、当前占用/排队状态与冲突规则，裁决试图进入该边的车辆是允许进入还是排队等待，并在裁决前纳入容量削减事件的影响。",
+      "skill_body": "在每个 tick 的移动执行阶段，对每辆试图进入某条边的车辆，按以下顺序裁决：1) 读取目标边的容量与当前占用/排队状态；2) 检查是否存在容量削减事件或冲突；3) 若容量允许且无冲突，则允许车辆进入并更新占用；4) 否则令车辆排队等待，记录排队决策。输出每 tick 的进入/排队决策结果。\n\n## Objective\n\n按容量与冲突规则裁决边上的车辆通行\n## Applicable Signals\n\n- 多车竞争同一入边\n- 发生容量削减事件\n- 目标边存在容量或排队约束\n\n## Contraindications\n\n- 边无容量限制且无冲突时无需使用本技能\n\n## Intervention Moves\n\n- 读取目标边容量与当前占用/排队状态\n- 检查容量削减事件与冲突\n- 容量允许且无冲突时允许进入并更新占用\n- 否则令车辆排队等待并记录决策\n\n## Workflow Steps\n\n- 对每辆试图进入目标边的车辆读取该边容量与当前占用/排队状态\n- 检查是否存在容量削减事件或冲突\n- 若容量允许且无冲突，允许车辆进入并更新占用\n- 否则令车辆排队等待并记录排队决策\n- 汇总每 tick 的进入/排队决策结果\n\n## Constraints\n\n- 裁决须在每个 tick 的移动执行阶段进行\n- 须以边容量与冲突规则为依据，不得绕过容量限制\n\n## Cautions\n\n- 容量削减事件会改变可用容量，需在裁决前纳入考虑\n\n## Output Contract\n\n- 每 tick 的车辆进入/排队决策结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 多辆车在同一 tick 试图进入同一条容量受限的边\n- Therapist/Output: 容量允许的车辆进入并更新占用，其余车辆排队等待，输出该 tick 的进入/排队决策\n- Notes: 体现容量与冲突裁决\n\n### Example 2\n\n- Client/Input: 某边发生容量削减事件，车辆试图进入\n- Therapist/Output: 按削减后的容量裁决，超出容量的车辆排队等待\n- Notes: 体现容量削减处理",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "15dc5310-2210-53f1-a5fe-b75dd3ad5173",
+        "d3e1cf4c-29a0-51ad-a791-f42d7e30c644"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "按容量与冲突规则裁决边上的车辆通行",
+      "domain": "交通仿真规则",
+      "task_family": "通行裁决",
+      "method_family": "容量队列冲突规则",
+      "stage": "每tick移动执行",
+      "applicable_signals": [
+        "多车竞争同一入边",
+        "发生容量削减事件",
+        "目标边存在容量或排队约束"
+      ],
+      "contraindications": [
+        "边无容量限制且无冲突时无需使用本技能"
+      ],
+      "intervention_moves": [
+        "读取目标边容量与当前占用/排队状态",
+        "检查容量削减事件与冲突",
+        "容量允许且无冲突时允许进入并更新占用",
+        "否则令车辆排队等待并记录决策"
+      ],
+      "triggers": [
+        "多车竞争同一入边",
+        "发生容量削减事件",
+        "需要判定车辆能否进入目标边"
+      ],
+      "workflow_steps": [
+        "对每辆试图进入目标边的车辆读取该边容量与当前占用/排队状态",
+        "检查是否存在容量削减事件或冲突",
+        "若容量允许且无冲突，允许车辆进入并更新占用",
+        "否则令车辆排队等待并记录排队决策",
+        "汇总每 tick 的进入/排队决策结果"
+      ],
+      "constraints": [
+        "裁决须在每个 tick 的移动执行阶段进行",
+        "须以边容量与冲突规则为依据，不得绕过容量限制"
+      ],
+      "cautions": [
+        "容量削减事件会改变可用容量，需在裁决前纳入考虑"
+      ],
+      "output_contract": [
+        "每 tick 的车辆进入/排队决策结果"
+      ],
+      "examples": [
+        {
+          "input": "多辆车在同一 tick 试图进入同一条容量受限的边",
+          "output": "容量允许的车辆进入并更新占用，其余车辆排队等待，输出该 tick 的进入/排队决策",
+          "notes": "体现容量与冲突裁决"
+        },
+        {
+          "input": "某边发生容量削减事件，车辆试图进入",
+          "output": "按削减后的容量裁决，超出容量的车辆排队等待",
+          "notes": "体现容量削减处理"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "容量",
+        "队列",
+        "冲突裁决",
+        "每tick移动"
+      ],
+      "support_ids": [
+        "081f0a1e-51d0-54c8-82b4-c7c26ac990fd"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "52c6ab30-a500-53a8-bed7-d7204fe64dd2"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|按容量与冲突规则裁决边上的车辆通行|交通仿真规则|通行裁决|容量队列冲突规则|每tick移动执行|边容量与队列冲突裁决",
+        "change_action": "create",
+        "llm_reason": "该候选技能描述了每tick移动执行阶段中一个独立且可执行的通行裁决能力（容量、占用/排队状态、冲突规则及容量削减事件），与同批候选（动作选择、装卸分配、响应格式化）无重叠，且无冲突证据，应保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "15dc5310-2210-53f1-a5fe-b75dd3ad5173",
+          "d3e1cf4c-29a0-51ad-a791-f42d7e30c644"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "d777cec6-fdfe-4755-b3a7-51ccdea2f042",
+      "entity_type": "skill",
+      "entity_id": "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "该候选技能描述了每tick移动执行阶段中一个独立且可执行的通行裁决能力（容量、占用/排队状态、冲突规则及容量削减事件），与同批候选（动作选择、装卸分配、响应格式化）无重叠，且无冲突证据，应保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "081f0a1e-51d0-54c8-82b4-c7c26ac990fd"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

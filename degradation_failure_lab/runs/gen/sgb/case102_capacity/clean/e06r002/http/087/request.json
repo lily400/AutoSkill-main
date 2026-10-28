@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"21a93e15-34ac-5aa9-84f9-e281d0a7f541\", \"name\": \"装卸作业工作量推进结算\", \"asset_type\": \"session_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"正确推进装卸作业工作量并在完成时更新货物状态\", \"applicable_signals\": [\"车辆状态为 LOADING\", \"车辆状态为 UNLOADING\", \"存在进行中的装卸作业且 WorkUnits 大于 0\"], \"contraindications\": [\"车辆处于移动或其他非装卸状态\", \"作业尚未创建\"], \"workflow_steps\": [\"确认车辆状态为 LOADING 或 UNLOADING 且作业已创建\", \"确定车辆类型对应的 HandlingRate\", \"在当前 Loading/Unloading Phase 将作业 WorkUnits 减去 HandlingRate\", \"判断 WorkUnits 是否降至 0 或以下\", \"若未归零，保持作业进行中，车辆不得移动或开始新作业\", \"若归零，在该 tick 结束时完成作业并按装载/卸载规则更新货物状态\"], \"constraints\": [\"作业 WorkUnits 等于该作业所处理货物 SizeUnits 之和\", \"HandlingRate 按车辆类型固定：BIKE=1, VAN=2, MINI_TRUCK=3, TRUCK=4\", \"作业进行期间车辆不能移动或开始另一作业\", \"作业完成发生在 WorkUnits 归零的那个 tick 结束时\"], \"triggers\": [\"车辆已进入 LOADING 或 UNLOADING 状态\", \"需要计算作业剩余 WorkUnits 或判定完成\"], \"output_contract\": [\"作业 WorkUnits 归零且相关货物状态已按装载/卸载规则更新\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"730695a2-c80a-54b5-aadf-c616118dd310\", \"name\": \"Tick 处理与快照生成流程\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"按规定的阶段顺序推进一个 tick 并产出可核对的状态快照\", \"applicable_signals\": [\"需要从当前状态推进到下一 tick\", \"需要生成 GLOBAL/NODES/EDGES/VEHICLES 等快照\"], \"workflow_steps\": [\"阶段1：处理事件/事故（无事故则跳过）\", \"阶段2：收集移动承诺（未请求移动的车辆无承诺）\", \"阶段3：解决容量与冲突（无冲突则跳过）\", \"阶段4：执行移动（无承诺则无车辆移动）\", \"阶段5：执行装卸阶段，按 SizeUnits 与 HandlingRate 判定作业完成情况\", \"阶段6：计算指标\"], \"output_contract\": [\"包含 TimeTick、ScoreSoFar 及各实体状态的 tick 快照\"], \"score\": 0.47971413789907624}, {\"skill_id\": \"5f55b184-1a2e-5197-aa2f-6d52517d705f\", \"name\": \"边容量与队列冲突裁决\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"按容量与冲突规则裁决边上的车辆通行\", \"applicable_signals\": [\"多车竞争同一入边\", \"发生容量削减事件\", \"目标边存在容量或排队约束\"], \"workflow_steps\": [\"对每辆试图进入目标边的车辆读取该边容量与当前占用/排队状态\", \"检查是否存在容量削减事件或冲突\", \"若容量允许且无冲突，允许车辆进入并更新占用\", \"否则令车辆排队等待并记录排队决策\", \"汇总每 tick 的进入/排队决策结果\"], \"output_contract\": [\"每 tick 的车辆进入/排队决策结果\"], \"score\": 0.39451085660661733}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "skill_id": "804e6c16-0d08-580a-8296-107356ad6978",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“边容量与队列冲突裁决”高度重叠，后者更完整地覆盖容量、排队与冲突裁决，本候选冗余且无独立价值。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "804e6c16-0d08-580a-8296-107356ad6978",
+    "name": "边容量与冲突校验",
+    "description": "在动作请求生成之后执行容量与冲突检查阶段，依据每条边的总车辆容量裁决 ENTER_EDGE 等动作请求是否被接受，并处理排队与冲突。适用于动作请求已生成、需要裁决且边容量可能超限的场景。",
+    "skill_body": "在动作请求生成后进入容量与冲突检查阶段：将每个动作视为待校验请求，依据目标边的总车辆容量判断是否接受；对超限请求按排队与冲突规则处理，输出被接受或被拒绝的动作结果及相应排队状态。\n\n## Objective\n\n依据边容量裁决动作请求，处理排队与冲突\n## Applicable Signals\n\n- 动作请求已生成需裁决\n- 边容量可能超限\n\n## Contraindications\n\n- 尚未生成动作请求\n- 仅需判定交付状态\n\n## Intervention Moves\n\n- 将动作视为待校验请求而非已生效动作\n- 依据目标边总车辆容量判断是否接受请求\n- 对超限请求按排队与冲突规则处理\n\n## Workflow Steps\n\n- 接收本 tick 内各车辆提交的动作请求\n- 对每个请求识别目标边及其总车辆容量\n- 依据容量与冲突规则裁决请求是否被接受\n- 对未被接受的请求按排队与冲突规则处理\n- 输出被接受或被拒绝的动作结果及排队状态\n\n## Constraints\n\n- 动作在被校验前仅为请求，不得视为已生效\n- 裁决须依据每条边的总车辆容量\n\n## Cautions\n\n- 裁决阶段与动作生成阶段分离，不应在此阶段重新生成动作\n\n## Output Contract\n\n- 被接受或被拒绝的动作结果及排队状态",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "依据边容量裁决动作请求，处理排队与冲突",
+    "domain": "交通仿真",
+    "task_family": "容量与冲突裁决",
+    "method_family": "容量约束校验",
+    "stage": "动作校验阶段",
+    "applicable_signals": [
+      "动作请求已生成需裁决",
+      "边容量可能超限"
+    ],
+    "contraindications": [
+      "尚未生成动作请求",
+      "仅需判定交付状态"
+    ],
+    "intervention_moves": [
+      "将动作视为待校验请求而非已生效动作",
+      "依据目标边总车辆容量判断是否接受请求",
+      "对超限请求按排队与冲突规则处理"
+    ],
+    "triggers": [
+      "动作请求已生成需裁决",
+      "边容量可能超限",
+      "需要判定 ENTER_EDGE 等请求是否被接受"
+    ],
+    "workflow_steps": [
+      "接收本 tick 内各车辆提交的动作请求",
+      "对每个请求识别目标边及其总车辆容量",
+      "依据容量与冲突规则裁决请求是否被接受",
+      "对未被接受的请求按排队与冲突规则处理",
+      "输出被接受或被拒绝的动作结果及排队状态"
+    ],
+    "constraints": [
+      "动作在被校验前仅为请求，不得视为已生效",
+      "裁决须依据每条边的总车辆容量"
+    ],
+    "cautions": [
+      "裁决阶段与动作生成阶段分离，不应在此阶段重新生成动作"
+    ],
+    "output_contract": [
+      "被接受或被拒绝的动作结果及排队状态"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "容量校验",
+      "冲突裁决",
+      "动作校验"
+    ],
+    "support_ids": [
+      "93e500f6-dac7-5621-a6fa-24131567719c"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "b0e0c4b6-b857-5cf7-ba82-bcf317c626ea"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|依据边容量裁决动作请求，处理排队与冲突|交通仿真|容量与冲突裁决|容量约束校验|动作校验阶段|边容量与冲突校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

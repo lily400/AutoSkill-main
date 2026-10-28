@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"96b5149a-e7c7-5b07-b072-a7cdb27acf04\", \"name\": \"Spider 内动态设置覆盖\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在 Spider 初始化时按参数覆盖指定设置\", \"applicable_signals\": [\"Spider 需根据传入参数调整设置\", \"需要在 from_crawler 中按参数定制单个 Spider 行为\"], \"contraindications\": [\"配置对所有 Spider 通用，应放入项目 settings.py\", \"无需按参数定制的静态配置\"], \"workflow_steps\": [\"定义或重写 Spider 的 from_crawler 类方法\", \"调用父类 from_crawler 获得 spider 实例\", \"判断目标参数是否在 kwargs 中\", \"若存在，则 spider.settings.set(\\\"SETTING_NAME\\\", kwargs[\\\"param\\\"], priority=\\\"spider\\\")\", \"返回 spider 实例\"], \"constraints\": [\"必须通过父类 from_crawler 获取 spider 实例后再写入设置\", \"写入时须显式指定 priority=\\\"spider\\\"\", \"仅用于单个 Spider 的参数化配置\"], \"triggers\": [\"Spider 需根据传入参数调整设置\", \"需要在 Spider 初始化阶段覆盖某个设置值\", \"配置仅适用于单个 Spider 而非全部 Spider\"], \"output_contract\": [\"Spider 实例上已按 spider 优先级写入的设置值\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"753efc90-ea75-5d01-a982-81f189f64bc9\", \"name\": \"Scrapy 设置分层配置\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"按优先级层级正确放置并覆盖 Scrapy 设置项\", \"applicable_signals\": [\"需要为所有 Spider 设置通用配置\", \"需要按优先级覆盖某个设置项\"], \"workflow_steps\": [\"识别需要配置的设置项及其作用范围（全局或单个 Spider）\", \"将适用于所有 Spider 的通用设置放入项目 settings.py\", \"如需按 Spider 覆盖，在 Spider 的 from_crawler 中调用 settings.set 并指定 priority=\\\"spider\\\"\", \"如需临时覆盖，使用命令行设置\", \"确认各设置项落在正确层级并说明生效优先级\"], \"output_contract\": [\"一份按正确优先级生效的 settings 配置\"], \"score\": 0.8054011222959437}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

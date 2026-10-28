@@ -1,0 +1,15 @@
+{
+  "correct": {
+    "source": "from typing import Annotated, Union, Literal, Any\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meow_volume: int\n\nclass Dog(BaseModel):\n    pet_kind: Literal['dog']\n    bark_level: int\n\nclass Bird(BaseModel):\n    animal_type: Literal['bird']\n    wing_span: int\n\ndef pet_discriminator(value: Any):\n    for key in ('pet_type', 'pet_kind', 'animal_type'):\n        result = value.get(key) if isinstance(value, dict) else getattr(value, key, None)\n        if result is not None:\n            return result\n    return None\n\nPet = Annotated[Union[Annotated[Cat, Tag('cat')], Annotated[Dog, Tag('dog')], Annotated[Bird, Tag('bird')]], Discriminator(pet_discriminator)]\n\nclass PetEnvelope(BaseModel):\n    pet: Pet\n",
+    "passed": 20,
+    "failed": []
+  },
+  "rule_mutant": {
+    "source": "from typing import Annotated, Union, Literal, Any\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Cat(BaseModel):\n    pet_type: Literal['cat']\n    meow_volume: int\n\nclass Dog(BaseModel):\n    pet_kind: Literal['dog']\n    bark_level: int\n\nclass Bird(BaseModel):\n    animal_type: Literal['bird']\n    wing_span: int\n\ndef pet_discriminator(value: Any):\n    for key in ('pet_type', 'pet_kind', 'animal_type'):\n        result = value.get(key) if isinstance(value, dict) else None\n        if result is not None:\n            return result\n    return None\n\nPet = Annotated[Union[Annotated[Cat, Tag('cat')], Annotated[Dog, Tag('dog')], Annotated[Bird, Tag('bird')]], Discriminator(pet_discriminator)]\n\nclass PetEnvelope(BaseModel):\n    pet: Pet\n",
+    "passed": 18,
+    "failed": [
+      "test_discriminator_handles_model_instances",
+      "test_union_accepts_model_instances"
+    ]
+  }
+}

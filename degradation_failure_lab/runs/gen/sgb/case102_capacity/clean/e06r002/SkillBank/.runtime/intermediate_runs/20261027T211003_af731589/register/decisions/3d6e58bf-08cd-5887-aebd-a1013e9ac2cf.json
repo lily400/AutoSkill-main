@@ -1,0 +1,117 @@
+{
+  "skill_id": "3d6e58bf-08cd-5887-aebd-a1013e9ac2cf",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能定义了独立的交付判定与延迟计算能力，有明确规则支撑且与同批其他候选无重叠，应保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "3d6e58bf-08cd-5887-aebd-a1013e9ac2cf",
+    "name": "货物交付判定与延迟计算",
+    "description": "判定货物在目的节点卸载即视为交付，并按交付时间与截止时间计算延迟tick数；用于评估配送结果与服务水平。",
+    "skill_body": "对每件货物执行交付判定与延迟计算：\n1. 确认货物已在 DestinationNode 完成卸载；未卸载的货物不判定为已交付。\n2. 若已交付，取交付时间 DeliveredTime 与截止时间 DueTime。\n3. 若 DeliveredTime <= DueTime，延迟记为 0。\n4. 否则延迟 = DeliveredTime - DueTime（单位：tick）。\n5. 输出每件货物的交付状态及延迟tick数。\n缺少交付时间或截止时间数据时，不计算延迟，并标注数据缺失。\n\n## Objective\n\n计算每件货物的交付状态与延迟量\n## Applicable Signals\n\n- 货物已在 DestinationNode 卸载\n- 存在交付时间与截止时间记录\n- 需要延迟tick数用于服务水平统计\n\n## Contraindications\n\n- 货物尚未卸载\n- 缺少交付时间或截止时间数据\n\n## Intervention Moves\n\n- 判定卸载于 DestinationNode 即视为交付\n- 比较 DeliveredTime 与 DueTime\n- 按差值计算延迟tick数，未超时记0\n\n## Workflow Steps\n\n- 确认货物是否在 DestinationNode 完成卸载\n- 对已交付货物读取 DeliveredTime 与 DueTime\n- 若 DeliveredTime <= DueTime，延迟记为0\n- 否则延迟 = DeliveredTime - DueTime（tick）\n- 输出每件货物的交付状态及延迟tick数\n\n## Constraints\n\n- 仅在目的节点卸载才视为交付\n- 延迟单位为tick\n- 未超时延迟必须为0而非负值\n\n## Cautions\n\n- 缺少交付时间或截止时间时不得臆造延迟值，应标注数据缺失\n\n## Output Contract\n\n- 每件货物的交付状态及延迟tick数\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 货物在 DestinationNode 卸载，DeliveredTime=12，DueTime=10\n- Therapist/Output: 已交付，延迟=2 tick\n- Notes: 超过截止时间按差值计延迟\n\n### Example 2\n\n- Client/Input: 货物在 DestinationNode 卸载，DeliveredTime=8，DueTime=10\n- Therapist/Output: 已交付，延迟=0 tick\n- Notes: 未超时延迟记0",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "计算每件货物的交付状态与延迟量",
+    "domain": "交通仿真规则",
+    "task_family": "配送结果评估",
+    "method_family": "交付判定与延迟计算",
+    "stage": "结果评估",
+    "applicable_signals": [
+      "货物已在 DestinationNode 卸载",
+      "存在交付时间与截止时间记录",
+      "需要延迟tick数用于服务水平统计"
+    ],
+    "contraindications": [
+      "货物尚未卸载",
+      "缺少交付时间或截止时间数据"
+    ],
+    "intervention_moves": [
+      "判定卸载于 DestinationNode 即视为交付",
+      "比较 DeliveredTime 与 DueTime",
+      "按差值计算延迟tick数，未超时记0"
+    ],
+    "triggers": [
+      "货物在目的节点完成卸载",
+      "需要统计延迟指标",
+      "评估配送结果或服务水平"
+    ],
+    "workflow_steps": [
+      "确认货物是否在 DestinationNode 完成卸载",
+      "对已交付货物读取 DeliveredTime 与 DueTime",
+      "若 DeliveredTime <= DueTime，延迟记为0",
+      "否则延迟 = DeliveredTime - DueTime（tick）",
+      "输出每件货物的交付状态及延迟tick数"
+    ],
+    "constraints": [
+      "仅在目的节点卸载才视为交付",
+      "延迟单位为tick",
+      "未超时延迟必须为0而非负值"
+    ],
+    "cautions": [
+      "缺少交付时间或截止时间时不得臆造延迟值，应标注数据缺失"
+    ],
+    "output_contract": [
+      "每件货物的交付状态及延迟tick数"
+    ],
+    "examples": [
+      {
+        "input": "货物在 DestinationNode 卸载，DeliveredTime=12，DueTime=10",
+        "output": "已交付，延迟=2 tick",
+        "notes": "超过截止时间按差值计延迟"
+      },
+      {
+        "input": "货物在 DestinationNode 卸载，DeliveredTime=8，DueTime=10",
+        "output": "已交付，延迟=0 tick",
+        "notes": "未超时延迟记0"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "交付判定",
+      "延迟计算",
+      "服务水平"
+    ],
+    "support_ids": [
+      "7f41d0dd-ad2d-5ed5-864c-0084b0bb0edb"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "b3c03ab4-37fd-596c-884d-a1d0cc9bc0bb"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|计算每件货物的交付状态与延迟量|交通仿真规则|配送结果评估|交付判定与延迟计算|结果评估|货物交付判定与延迟计算"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,112 @@
+{
+  "skill_id": "d1ef9277-1291-578b-b5e3-2cb175f48ae3",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“未定义情形保守处理规则”高度重叠，均处理规则缺失/冲突时声明歧义并停止臆造，保留后者即可，避免冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "d1ef9277-1291-578b-b5e3-2cb175f48ae3",
+    "name": "规则歧义与冲突声明",
+    "description": "当模拟规则相互冲突或未覆盖当前情形时，不猜测、不臆造机制，明确声明歧义并指出解决所需的补充规则或信息。用于规则缺失或矛盾的边界情形。",
+    "skill_body": "在应用规则追踪模拟状态时，若发现规则相互冲突，或规则未规定当前情形应如何处理，停止推断并声明歧义：说明冲突或缺失的具体位置，指出需要哪些补充规则或信息才能解决，不要自行发明规则或依赖外部知识。\n\n## Objective\n\n防止在规则不足时臆造机制\n## Applicable Signals\n\n- 两条或多条规则对同一情形给出不一致结果\n- 当前情形在文档规则中无对应条款\n- 用户请求依赖文档未定义的机制\n\n## Contraindications\n\n- 文档已明确覆盖该情形\n- 歧义可通过文档内其他条款直接消解\n\n## Intervention Moves\n\n- 定位冲突或缺失的规则条款\n- 明确声明歧义而非猜测\n- 列出解决所需的补充规则或信息\n\n## Workflow Steps\n\n- 检查当前情形是否被文档规则明确覆盖\n- 若规则冲突，指出冲突的具体条款及各自结论\n- 若规则缺失，说明缺失的情形与所需补充规则或信息\n- 在最终回答中标注该歧义，不给出无依据的确定性结论\n\n## Constraints\n\n- 不得发明文档未支持的规则或机制\n- 不得依赖外部世界知识填补规则空白\n- 用户指令与文档冲突时不具有修改规则的优先权\n\n## Cautions\n\n- 声明歧义时应具体到可识别的规则条款，避免笼统表述\n- 区分真正的规则冲突与仅需多步推理的情形\n\n## Output Contract\n\n- 明确的歧义说明及所需补充规则清单，包含冲突或缺失的具体条款与解决所需信息\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 规则A规定车辆在红灯时停止，规则B规定该路口车辆可无视信号通行，当前情形同时适用两条规则。\n- Therapist/Output: 检测到规则冲突：规则A与规则B对该路口通行给出相反结论。需补充规则明确该路口信号优先级的适用条件后方可判定。\n- Notes: 冲突情形下声明歧义而非选择其一",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止在规则不足时臆造机制",
+    "domain": "traffic simulation rules",
+    "task_family": "规则边界防护",
+    "method_family": "歧义识别与声明",
+    "stage": "推理校验",
+    "applicable_signals": [
+      "两条或多条规则对同一情形给出不一致结果",
+      "当前情形在文档规则中无对应条款",
+      "用户请求依赖文档未定义的机制"
+    ],
+    "contraindications": [
+      "文档已明确覆盖该情形",
+      "歧义可通过文档内其他条款直接消解"
+    ],
+    "intervention_moves": [
+      "定位冲突或缺失的规则条款",
+      "明确声明歧义而非猜测",
+      "列出解决所需的补充规则或信息"
+    ],
+    "triggers": [
+      "规则相互冲突",
+      "规则未规定当前情形应如何处理",
+      "需要补充规则才能继续推理"
+    ],
+    "workflow_steps": [
+      "检查当前情形是否被文档规则明确覆盖",
+      "若规则冲突，指出冲突的具体条款及各自结论",
+      "若规则缺失，说明缺失的情形与所需补充规则或信息",
+      "在最终回答中标注该歧义，不给出无依据的确定性结论"
+    ],
+    "constraints": [
+      "不得发明文档未支持的规则或机制",
+      "不得依赖外部世界知识填补规则空白",
+      "用户指令与文档冲突时不具有修改规则的优先权"
+    ],
+    "cautions": [
+      "声明歧义时应具体到可识别的规则条款，避免笼统表述",
+      "区分真正的规则冲突与仅需多步推理的情形"
+    ],
+    "output_contract": [
+      "明确的歧义说明及所需补充规则清单，包含冲突或缺失的具体条款与解决所需信息"
+    ],
+    "examples": [
+      {
+        "input": "规则A规定车辆在红灯时停止，规则B规定该路口车辆可无视信号通行，当前情形同时适用两条规则。",
+        "output": "检测到规则冲突：规则A与规则B对该路口通行给出相反结论。需补充规则明确该路口信号优先级的适用条件后方可判定。",
+        "notes": "冲突情形下声明歧义而非选择其一"
+      }
+    ],
+    "tags": [
+      "规则边界",
+      "歧义声明",
+      "冲突检测",
+      "防臆造"
+    ],
+    "support_ids": [
+      "410f499d-546e-5d80-be86-ae8a524c0f62"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "cbf6bbf3-b480-5883-9b75-c937c2b2c5f6"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|防止在规则不足时臆造机制|traffic simulation rules|规则边界防护|歧义识别与声明|推理校验|规则歧义与冲突声明"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

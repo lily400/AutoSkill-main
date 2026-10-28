@@ -1,0 +1,113 @@
+{
+  "skill_id": "640822ef-e871-5fb8-8c7c-7e73290e410f",
+  "name": "SKU竞品与情感计数更新",
+  "description": "对单个已通过校验的SKU，依据其competitor_or_nike归属与情感极性，将对应的竞品/情感组合计数器加一；用于多SKU循环统计中的原子计数步骤。",
+  "skill_body": "在逐SKU循环处理中，当已获得该SKU的competitor_or_nike字段与情感分类结果时，执行本微技能：先判定竞品归属（Nike或Competitor），再判定情感极性（Positive或Negative），然后对应当前SKU的该组合计数加一。仅执行单SKU的原子计数动作，不负责整体循环或目录校验。\n\n## Objective\n\n按竞品归属与情感极性正确递增对应SKU计数\n## Applicable Signals\n\n- competitor_or_nike字段已就绪\n- 情感分析结果已就绪\n- 该SKU已通过目录校验\n\n## Contraindications\n\n- 缺少竞品归属或情感判定结果\n- SKU未通过目录校验\n\n## Intervention Moves\n\n- 从competitor_or_nike字段判定为Nike或Competitor\n- 从情感分析结果判定为Positive或Negative\n- 对应该SKU的竞品/情感组合计数加一\n\n## Workflow Steps\n\n- 读取该SKU的competitor_or_nike字段，判定为Nike或Competitor\n- 读取该SKU的情感分析结果，判定为Positive或Negative\n- 定位该SKU对应的竞品/情感组合计数器\n- 将该计数器加一\n\n## Constraints\n\n- 仅处理单个SKU，不承担整体循环控制\n- 计数前必须同时具备竞品归属与情感极性两项判定\n- 仅对已通过目录校验的SKU执行\n\n## Cautions\n\n- 竞品归属与情感极性任一缺失时不得计数\n- 避免将同一SKU重复计数\n\n## Output Contract\n\n- 该SKU对应竞品/情感组合的计数加一，并返回更新后的计数归属（竞品归属+情感极性）。",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "按竞品归属与情感极性正确递增对应SKU计数",
+  "domain": "商品目录语义匹配与统计",
+  "task_family": "计数统计",
+  "method_family": "字段判定加计数",
+  "stage": "逐SKU循环处理",
+  "applicable_signals": [
+    "competitor_or_nike字段已就绪",
+    "情感分析结果已就绪",
+    "该SKU已通过目录校验"
+  ],
+  "contraindications": [
+    "缺少竞品归属或情感判定结果",
+    "SKU未通过目录校验"
+  ],
+  "intervention_moves": [
+    "从competitor_or_nike字段判定为Nike或Competitor",
+    "从情感分析结果判定为Positive或Negative",
+    "对应该SKU的竞品/情感组合计数加一"
+  ],
+  "triggers": [
+    "已获得单个SKU的competitor_or_nike字段",
+    "已完成该SKU的情感分类",
+    "处于逐SKU循环处理的计数阶段"
+  ],
+  "workflow_steps": [
+    "读取该SKU的competitor_or_nike字段，判定为Nike或Competitor",
+    "读取该SKU的情感分析结果，判定为Positive或Negative",
+    "定位该SKU对应的竞品/情感组合计数器",
+    "将该计数器加一"
+  ],
+  "constraints": [
+    "仅处理单个SKU，不承担整体循环控制",
+    "计数前必须同时具备竞品归属与情感极性两项判定",
+    "仅对已通过目录校验的SKU执行"
+  ],
+  "cautions": [
+    "竞品归属与情感极性任一缺失时不得计数",
+    "避免将同一SKU重复计数"
+  ],
+  "output_contract": [
+    "该SKU对应竞品/情感组合的计数加一，并返回更新后的计数归属（竞品归属+情感极性）。"
+  ],
+  "examples": [],
+  "tags": [
+    "计数统计",
+    "SKU",
+    "情感分类",
+    "竞品归属",
+    "微技能"
+  ],
+  "support_ids": [
+    "569e7cd0-9371-538c-932b-612d852a2537"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "6ac7f904-f318-5eeb-99c7-ccb4e6364497"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|按竞品归属与情感极性正确递增对应sku计数|商品目录语义匹配与统计|计数统计|字段判定加计数|逐sku循环处理|sku竞品与情感计数更新",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

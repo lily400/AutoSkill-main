@@ -1,0 +1,59 @@
+{
+  "support_id": "10a2a4ca-e66f-5c69-b297-d93f5cca7421",
+  "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+  "skill_id": "3062a472-2dcc-54ef-b18a-b64a5b592a3d",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+  "section": "# Unions",
+  "span": {
+    "start": 19227,
+    "end": 19690
+  },
+  "excerpt": "For callable `Discriminator`s:\n\n```\nsome_field: Union[...] = Field(discriminator=Discriminator(...))\nsome_field: Annotated[Union[...], Discriminator(...)]\nsome_field: Annotated[Union[...], Field(discriminator=Discriminator(...))]\n```\n\nDiscriminated unions cannot be used with only a single variant, such as `Union[Cat]`.\n\nPython changes `Union[T]` into `T` at interpretation time, so it is not possible for `pydantic` to\ndistinguish fields of `Union[T]` from `T`.",
+  "relation_type": "constraint",
+  "confidence": 0.85,
+  "metadata": {
+    "document_title": "input002\\unions.md",
+    "domain": "",
+    "extraction_unit": "window",
+    "skill_name": "单变体联合禁用校验",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "visible_role": "leaf",
+    "objective": "阻止对单变体联合使用判别器",
+    "task_family": "联合类型约束",
+    "method_family": "前置校验",
+    "stage": "字段定义前检查",
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "candidate_slot": 2,
+    "window_id": "d37a8c2c-fa2b-54d9-b7a6-e89c97c846c9",
+    "window_strategy": "strict",
+    "anchor_hits": [],
+    "paragraph_start": 67,
+    "paragraph_end": 70,
+    "heading_path": [
+      "# Unions"
+    ],
+    "parent_heading": "",
+    "sibling_headings": [
+      "input002\\unions.md"
+    ],
+    "subsection_headings": [
+      "### Left to Right Mode",
+      "Smart Mode",
+      "Discriminated Unions",
+      "Discriminated Unions with `str` discriminators",
+      "Discriminated Unions with callable `Discriminator`",
+      "Nested Discriminated Unions",
+      "Union Validation Errors"
+    ],
+    "context_snippets": [],
+    "heading_number": "",
+    "heading_kind": "outline_llm",
+    "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+  },
+  "created_at": "2026-10-28T05:15:12+00:00"
+}

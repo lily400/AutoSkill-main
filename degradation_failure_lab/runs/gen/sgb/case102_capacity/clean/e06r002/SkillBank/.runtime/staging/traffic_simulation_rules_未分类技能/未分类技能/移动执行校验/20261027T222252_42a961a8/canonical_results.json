@@ -1,0 +1,156 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "移动执行校验",
+  "run_id": "20261027T222252_42a961a8",
+  "skills": [
+    {
+      "skill_id": "bf353d26-6bae-5420-af2e-9952d66eb683",
+      "name": "信号相位通行门控校验",
+      "description": "在离散时间步交通仿真中，当车辆剩余行程时间归零并尝试进入受信号控制的节点时，依据当前 tick 对应相位的 GreenEdges 集合判定是否允许完成进入；若车辆所在边不在绿灯集合内，则推迟到达至后续 tick。",
+      "skill_body": "当车辆在 Movement Execution Phase 中剩余行程时间减至 0 并尝试到达节点时，执行本校验：\n1. 确认目标节点存在信号相位定义（含 GreenEdges）。\n2. 计算当前 tick 对应的相位（如 t mod 周期）。\n3. 检查车辆所在边是否属于该相位的 GreenEdges。\n4. 若属于，允许完成进入节点的移动。\n5. 若不属于，禁止完成进入，将到达推迟到后续 tick，车辆保持在所在边下游边界。\n6. 输出明确的允许/推迟判定结果。\n\n## Objective\n\n确保车辆仅在所属边处于当前相位绿灯集合时才完成节点进入\n## Applicable Signals\n\n- 车辆剩余行程时间归零并尝试到达节点\n- 节点存在信号相位与 GreenEdges 定义\n\n## Contraindications\n\n- 节点无信号控制\n- 车辆尚未到达节点边界\n\n## Intervention Moves\n\n- 计算当前 tick 对应相位\n- 检查车辆所在边是否在 GreenEdges 集合内\n- 允许进入或推迟到达至后续 tick\n\n## Workflow Steps\n\n- 确认目标节点存在信号相位定义（含 GreenEdges）\n- 计算当前 tick 对应的相位\n- 检查车辆所在边是否属于该相位的 GreenEdges\n- 若属于则允许完成进入节点的移动\n- 若不属于则禁止进入并将到达推迟到后续 tick，车辆保持在所在边下游边界\n- 输出允许或推迟的判定结果\n\n## Constraints\n\n- 仅在车辆剩余行程时间归零并尝试到达节点时执行\n- 必须依据当前 tick 对应相位的 GreenEdges 判定\n- 非绿灯边不得完成进入节点的移动\n\n## Cautions\n\n- 相位随时间循环，需正确计算 tick 对应相位\n- 推迟到达的车辆在后续 tick 需重新校验\n\n## Output Contract\n\n- 车辆到达被允许或明确推迟到后续 tick 的判定结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: tick 4，V2 在 E2 上剩余行程时间由 1 减至 0，尝试到达 N3；tick 4 对应 Phase C，GreenEdges = {E18, E19, E7}\n- Therapist/Output: E2 不在 GreenEdges 内，V2 不得在 tick 4 完成进入 N3，到达推迟至 tick 5，V2 保持在 E2 下游边界\n- Notes: tick 5 仍为 Phase C，限制继续适用",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "确保车辆仅在所属边处于当前相位绿灯集合时才完成节点进入",
+      "domain": "交通仿真规则",
+      "task_family": "移动执行校验",
+      "method_family": "规则门控",
+      "stage": "Movement Execution Phase",
+      "applicable_signals": [
+        "车辆剩余行程时间归零并尝试到达节点",
+        "节点存在信号相位与 GreenEdges 定义"
+      ],
+      "contraindications": [
+        "节点无信号控制",
+        "车辆尚未到达节点边界"
+      ],
+      "intervention_moves": [
+        "计算当前 tick 对应相位",
+        "检查车辆所在边是否在 GreenEdges 集合内",
+        "允许进入或推迟到达至后续 tick"
+      ],
+      "triggers": [
+        "车辆剩余行程时间归零并尝试到达节点",
+        "节点存在信号相位与 GreenEdges 定义",
+        "Movement Execution Phase 中处理节点进入"
+      ],
+      "workflow_steps": [
+        "确认目标节点存在信号相位定义（含 GreenEdges）",
+        "计算当前 tick 对应的相位",
+        "检查车辆所在边是否属于该相位的 GreenEdges",
+        "若属于则允许完成进入节点的移动",
+        "若不属于则禁止进入并将到达推迟到后续 tick，车辆保持在所在边下游边界",
+        "输出允许或推迟的判定结果"
+      ],
+      "constraints": [
+        "仅在车辆剩余行程时间归零并尝试到达节点时执行",
+        "必须依据当前 tick 对应相位的 GreenEdges 判定",
+        "非绿灯边不得完成进入节点的移动"
+      ],
+      "cautions": [
+        "相位随时间循环，需正确计算 tick 对应相位",
+        "推迟到达的车辆在后续 tick 需重新校验"
+      ],
+      "output_contract": [
+        "车辆到达被允许或明确推迟到后续 tick 的判定结果"
+      ],
+      "examples": [
+        {
+          "input": "tick 4，V2 在 E2 上剩余行程时间由 1 减至 0，尝试到达 N3；tick 4 对应 Phase C，GreenEdges = {E18, E19, E7}",
+          "output": "E2 不在 GreenEdges 内，V2 不得在 tick 4 完成进入 N3，到达推迟至 tick 5，V2 保持在 E2 下游边界",
+          "notes": "tick 5 仍为 Phase C，限制继续适用"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "信号相位",
+        "门控校验",
+        "离散时间步",
+        "移动执行"
+      ],
+      "support_ids": [
+        "c4ca79bc-b5d5-56d7-be04-2dc4b91092cb"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "b6640923-426d-5c72-b581-25a9dcb6602f"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|确保车辆仅在所属边处于当前相位绿灯集合时才完成节点进入|交通仿真规则|移动执行校验|规则门控|movement execution phase|信号相位通行门控校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "49ee264b-fc46-4325-81e3-62655afc62d0",
+      "entity_type": "skill",
+      "entity_id": "bf353d26-6bae-5420-af2e-9952d66eb683",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "bf353d26-6bae-5420-af2e-9952d66eb683",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "c4ca79bc-b5d5-56d7-be04-2dc4b91092cb"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

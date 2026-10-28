@@ -1,0 +1,110 @@
+{
+  "skill_id": "334eddd6-ee35-5f1b-a28c-31fc3a8c49ec",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批 peer 候选“可调用判别器设计”（f2ee54d4）高度重叠：后者已完整覆盖“判别函数必须同时处理 dict 与模型实例输入、避免序列化警告或运行时错误”的核心约束与验证步骤，本候选仅为该规则的重复表述，无独立新增能力，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "334eddd6-ee35-5f1b-a28c-31fc3a8c49ec",
+    "name": "判别器输入形态兼容检查",
+    "description": "在部署可调用判别器（callable Discriminator）前，检查其是否同时覆盖 dict 与模型实例输入，避免序列化阶段出现警告或校验阶段出现运行时错误。适用于使用 callable Discriminator 且涉及序列化的场景。",
+    "skill_body": "在部署 callable Discriminator 前执行本检查：确认判别函数对 dict 输入与模型实例输入均能正确返回判别值。若判别函数仅按 dict 设计，需补充对模型实例输入的处理分支，因为 Pydantic 在序列化时也会调用判别器，此时输入很可能是模型实例。检查通过后再投入使用。\n\n## Objective\n\n防止判别器因输入形态不全导致序列化警告或校验期运行时错误\n## Applicable Signals\n\n- 使用 callable Discriminator 且涉及序列化\n- 判别函数仅按 dict 输入设计\n- 联合类型含多个模型且无统一判别字段\n\n## Contraindications\n\n- 使用静态 Literal 判别字段无需 callable 判别器\n\n## Intervention Moves\n\n- 确认判别函数同时处理 dict 与模型实例输入\n- 对仅处理 dict 的判别函数补充模型实例分支\n- 在序列化与校验两条路径上验证无警告与运行时错误\n\n## Workflow Steps\n\n- 识别是否使用 callable Discriminator 且涉及序列化\n- 检查判别函数是否同时覆盖 dict 与模型实例输入\n- 若仅覆盖 dict，补充模型实例输入处理分支\n- 在序列化与校验路径上验证无警告与运行时错误\n\n## Constraints\n\n- 判别函数必须同时处理 dict 与模型实例输入\n- 序列化时判别器输入很可能是模型实例\n\n## Cautions\n\n- 仅按 dict 设计判别函数，最好情况序列化时出现警告，最坏情况校验时出现运行时错误\n\n## Output Contract\n\n- 确认判别器对 dict 与模型输入均无警告和运行时错误\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 判别函数仅按 dict 输入设计，用于含多个模型的 Union 且涉及序列化\n- Therapist/Output: 提示补充模型实例输入处理分支，并在序列化与校验路径验证无警告与运行时错误\n- Notes: 序列化时判别器输入很可能是模型实例",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止判别器因输入形态不全导致序列化警告或校验期运行时错误",
+    "domain": "pydantic",
+    "task_family": "联合类型校验",
+    "method_family": "输入兼容性校验",
+    "stage": "校验前检查",
+    "applicable_signals": [
+      "使用 callable Discriminator 且涉及序列化",
+      "判别函数仅按 dict 输入设计",
+      "联合类型含多个模型且无统一判别字段"
+    ],
+    "contraindications": [
+      "使用静态 Literal 判别字段无需 callable 判别器"
+    ],
+    "intervention_moves": [
+      "确认判别函数同时处理 dict 与模型实例输入",
+      "对仅处理 dict 的判别函数补充模型实例分支",
+      "在序列化与校验两条路径上验证无警告与运行时错误"
+    ],
+    "triggers": [
+      "使用 callable Discriminator 且涉及序列化",
+      "判别函数仅按 dict 输入设计",
+      "联合类型含多个模型且无统一判别字段"
+    ],
+    "workflow_steps": [
+      "识别是否使用 callable Discriminator 且涉及序列化",
+      "检查判别函数是否同时覆盖 dict 与模型实例输入",
+      "若仅覆盖 dict，补充模型实例输入处理分支",
+      "在序列化与校验路径上验证无警告与运行时错误"
+    ],
+    "constraints": [
+      "判别函数必须同时处理 dict 与模型实例输入",
+      "序列化时判别器输入很可能是模型实例"
+    ],
+    "cautions": [
+      "仅按 dict 设计判别函数，最好情况序列化时出现警告，最坏情况校验时出现运行时错误"
+    ],
+    "output_contract": [
+      "确认判别器对 dict 与模型输入均无警告和运行时错误"
+    ],
+    "examples": [
+      {
+        "input": "判别函数仅按 dict 输入设计，用于含多个模型的 Union 且涉及序列化",
+        "output": "提示补充模型实例输入处理分支，并在序列化与校验路径验证无警告与运行时错误",
+        "notes": "序列化时判别器输入很可能是模型实例"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "discriminated-union",
+      "callable-discriminator",
+      "serialization",
+      "input-compatibility"
+    ],
+    "support_ids": [
+      "0918dcea-fb13-56b0-a37b-2c6f2a0cf02c"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "c9daeffe-ba11-5476-bb2c-853dba75f2df"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||safety_rule|micro|safety_rule_node|防止判别器因输入形态不全导致序列化警告或校验期运行时错误|pydantic|联合类型校验|输入兼容性校验|校验前检查|判别器输入形态兼容检查"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

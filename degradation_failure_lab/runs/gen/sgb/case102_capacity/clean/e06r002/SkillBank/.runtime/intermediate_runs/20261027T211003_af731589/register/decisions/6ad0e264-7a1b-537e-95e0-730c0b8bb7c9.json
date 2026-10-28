@@ -1,0 +1,116 @@
+{
+  "skill_id": "6ad0e264-7a1b-537e-95e0-730c0b8bb7c9",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 b3620647 和 02d6a4e9 高度重复，均定义默认控制器目标为最大化网络服务评分；本候选仅额外提及次要目标，但缺乏独立证据支撑，属冗余，保留更聚焦的默认目标技能即可。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "6ad0e264-7a1b-537e-95e0-730c0b8bb7c9",
+    "name": "控制器目标优先级规则",
+    "description": "用于确定交通仿真控制器的主次优化目标：默认以最大化网络服务评分为主目标；仅当场景明确指定时，才启用最小化总行驶距离或最小化车辆数等次要目标。",
+    "skill_body": "在配置控制器优化方向时，先检查场景是否明确声明了目标。若未声明，则采用默认主目标：最大化网络服务评分（Network Service Score）。次要目标（如最小化总行驶距离、最小化车辆数）只有在场景明确指定时才启用，不得自行添加。输出明确的主目标及是否启用次要目标的判定。\n\n## Objective\n\n确定控制器的主次优化目标\n## Applicable Signals\n\n- 场景未声明控制器目标\n- 需要确认默认优化方向\n- 需要判定次要目标是否适用\n\n## Contraindications\n\n- 场景已明确覆盖默认目标设定\n\n## Intervention Moves\n\n- 检查场景是否明确声明目标\n- 未声明时采用默认主目标：最大化网络服务评分\n- 仅在场景明确指定时启用次要目标\n\n## Workflow Steps\n\n- 检查场景文本是否明确声明控制器目标。\n- 若未声明，设定主目标为最大化网络服务评分。\n- 检查场景是否明确指定次要目标（如最小化总行驶距离、最小化车辆数）。\n- 仅在明确指定时启用相应次要目标，否则不启用。\n- 输出主目标及次要目标启用判定。\n\n## Constraints\n\n- 默认主目标为最大化网络服务评分。\n- 次要目标仅在场景明确指定时适用，不得自行推断或添加。\n\n## Cautions\n\n- 不要将次要目标当作默认目标使用。\n- 场景明确覆盖默认目标时，以场景声明为准。\n\n## Output Contract\n\n- 明确的主目标及是否启用次要目标的判定。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 场景未声明控制器目标。\n- Therapist/Output: 主目标：最大化网络服务评分；次要目标：不启用。\n\n### Example 2\n\n- Client/Input: 场景明确指定最小化总行驶距离。\n- Therapist/Output: 主目标：最大化网络服务评分；次要目标：启用最小化总行驶距离。",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确定控制器的主次优化目标",
+    "domain": "交通仿真规则",
+    "task_family": "控制器目标设定",
+    "method_family": "目标优先级规则",
+    "stage": "控制器配置",
+    "applicable_signals": [
+      "场景未声明控制器目标",
+      "需要确认默认优化方向",
+      "需要判定次要目标是否适用"
+    ],
+    "contraindications": [
+      "场景已明确覆盖默认目标设定"
+    ],
+    "intervention_moves": [
+      "检查场景是否明确声明目标",
+      "未声明时采用默认主目标：最大化网络服务评分",
+      "仅在场景明确指定时启用次要目标"
+    ],
+    "triggers": [
+      "需要为控制器设定优化目标",
+      "场景未明确说明目标时确定默认目标",
+      "需要判断是否启用次要目标"
+    ],
+    "workflow_steps": [
+      "检查场景文本是否明确声明控制器目标。",
+      "若未声明，设定主目标为最大化网络服务评分。",
+      "检查场景是否明确指定次要目标（如最小化总行驶距离、最小化车辆数）。",
+      "仅在明确指定时启用相应次要目标，否则不启用。",
+      "输出主目标及次要目标启用判定。"
+    ],
+    "constraints": [
+      "默认主目标为最大化网络服务评分。",
+      "次要目标仅在场景明确指定时适用，不得自行推断或添加。"
+    ],
+    "cautions": [
+      "不要将次要目标当作默认目标使用。",
+      "场景明确覆盖默认目标时，以场景声明为准。"
+    ],
+    "output_contract": [
+      "明确的主目标及是否启用次要目标的判定。"
+    ],
+    "examples": [
+      {
+        "input": "场景未声明控制器目标。",
+        "output": "主目标：最大化网络服务评分；次要目标：不启用。",
+        "notes": null
+      },
+      {
+        "input": "场景明确指定最小化总行驶距离。",
+        "output": "主目标：最大化网络服务评分；次要目标：启用最小化总行驶距离。",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "控制器目标",
+      "目标优先级",
+      "网络服务评分"
+    ],
+    "support_ids": [
+      "dca59f01-85ba-56f4-bcf7-e2026c8600ac"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "98ace210-979e-50b6-bfc1-7f0efb28b0fc"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|确定控制器的主次优化目标|交通仿真规则|控制器目标设定|目标优先级规则|控制器配置|控制器目标优先级规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

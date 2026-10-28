@@ -1,0 +1,107 @@
+---
+id: "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a"
+name: "可调用判别器设计"
+description: "当联合成员之间没有统一判别字段时，编写可调用 Discriminator 函数，使其同时处理 dict 与模型实例输入，从而在验证与序列化阶段都能正确判别，避免序列化警告或运行时错误。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "union"
+  - "discriminator"
+  - "callable"
+  - "serialization"
+  - "未分类技能"
+  - "profile:pydantic::未分类技能"
+triggers:
+  - "联合成员之间没有单一统一判别字段"
+  - "需要在序列化阶段也能正确判别联合成员"
+  - "准备为 Union 配置 callable Discriminator"
+examples:
+  - input: "联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。"
+    output: "编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。"
+    notes: "参照 mode='before' 校验器的思路，预先考虑多种输入形态。"
+---
+
+# 可调用判别器设计
+
+当联合成员之间没有统一判别字段时，编写可调用 Discriminator 函数，使其同时处理 dict 与模型实例输入，从而在验证与序列化阶段都能正确判别，避免序列化警告或运行时错误。
+
+## Prompt
+
+编写一个可调用判别器函数，用于联合类型中成员缺少统一判别字段的场景。函数需同时兼容 dict 输入与模型实例输入：对 dict 读取键值，对模型实例读取属性，返回对应成员的标签。设计时参照 mode='before' 校验器的思路，预先考虑多种输入形态，因为 Pydantic 在序列化阶段也会调用该判别器，此时输入很可能是模型实例。完成后确认函数在验证与序列化两条路径上均返回正确标签。
+
+## Objective
+
+实现兼容 dict 与模型输入的 callable discriminator
+## Applicable Signals
+
+- 联合成员缺少单一统一判别字段
+- 需要在序列化阶段也能正确判别
+
+## Contraindications
+
+- 存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器
+- 判别逻辑仅需处理单一输入形态时，无需引入可调用判别器
+
+## Intervention Moves
+
+- 确认联合成员间不存在可直接使用的统一 Literal 判别字段
+- 编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值
+- 返回与目标成员对应的标签
+- 在验证与序列化两条路径上验证判别结果
+
+## Workflow Steps
+
+- 检查联合成员，确认没有单一统一字段可作为字符串判别器
+- 设计判别函数签名，使其接受 dict 或模型实例
+- 在函数内分支处理：dict 走键访问，模型实例走属性访问
+- 返回对应成员的标签值
+- 分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误
+
+## Constraints
+
+- 判别函数必须同时处理 dict 与模型实例输入
+- 不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误
+
+## Cautions
+
+- Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例
+- 若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误
+
+## Output Contract
+
+- 一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。
+- Therapist/Output: 编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。
+- Notes: 参照 mode='before' 校验器的思路，预先考虑多种输入形态。
+
+## Files
+
+- `references/evidence.md`
+- `references/evidence_manifest.json`
+
+## Triggers
+
+- 联合成员之间没有单一统一判别字段
+- 需要在序列化阶段也能正确判别联合成员
+- 准备为 Union 配置 callable Discriminator
+
+## Examples
+
+### Example 1
+
+Input:
+
+  联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。
+
+Output:
+
+  编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。
+
+Notes:
+
+  参照 mode='before' 校验器的思路，预先考虑多种输入形态。

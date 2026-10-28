@@ -1,0 +1,102 @@
+{
+  "skill_id": "eb75592e-9cce-5b63-8890-141fb5d9767d",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 7ba74262 和 710c818d 的“信号交叉口相位-绿灯边映射查询”高度重复，功能等价，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "eb75592e-9cce-5b63-8890-141fb5d9767d",
+    "name": "信号相位激活判定",
+    "description": "根据信号周期长度与有序相位列表，判定给定 tick 下应激活的相位及其可放行入边集合（GreenEdges）。用于需要按固定周期信号规则推进仿真的场景。",
+    "skill_body": "当需要确定某 tick 的信号相位或判断哪些入边可释放车辆时使用本技能。步骤：1) 确认目标节点已信号化，且已定义 CycleLength（ticks）与有序 Phases 列表（每相位含 Duration 与 GreenEdges）；2) 按相位顺序累加 Duration，将 tick 对 CycleLength 取模后落入对应相位区间；3) 输出该 tick 的激活相位及其 GreenEdges 集合。若节点未信号化或缺少周期/相位定义，则不适用。\n\n## Objective\n\n在给定 tick 下确定激活相位与允许放行的入边集合\n## Applicable Signals\n\n- 目标节点为信号化节点\n- 已提供 CycleLength 与有序 Phases 列表\n- 需要按固定周期推进仿真\n\n## Contraindications\n\n- 节点未信号化\n- 缺少周期长度或相位列表定义\n\n## Intervention Moves\n\n- 读取 CycleLength 与有序相位列表\n- 按相位 Duration 累加定位 tick 所属相位\n- 返回激活相位及其 GreenEdges 集合\n\n## Workflow Steps\n\n- 确认节点已信号化并具备 CycleLength 与有序 Phases 定义\n- 按相位顺序累加 Duration，将 tick 映射到对应相位\n- 输出激活相位及 GreenEdges 集合\n\n## Constraints\n\n- 相位按有序列表重复循环\n- 每相位含 Duration 与 GreenEdges 定义\n\n## Cautions\n\n- 若缺少周期或相位定义，应停止并报告不适用，而非臆测相位\n\n## Output Contract\n\n- 输出当前 tick 的激活相位及 GreenEdges 集合",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在给定 tick 下确定激活相位与允许放行的入边集合",
+    "domain": "交通仿真规则",
+    "task_family": "信号控制规则",
+    "method_family": "周期相位计算",
+    "stage": "仿真推进",
+    "applicable_signals": [
+      "目标节点为信号化节点",
+      "已提供 CycleLength 与有序 Phases 列表",
+      "需要按固定周期推进仿真"
+    ],
+    "contraindications": [
+      "节点未信号化",
+      "缺少周期长度或相位列表定义"
+    ],
+    "intervention_moves": [
+      "读取 CycleLength 与有序相位列表",
+      "按相位 Duration 累加定位 tick 所属相位",
+      "返回激活相位及其 GreenEdges 集合"
+    ],
+    "triggers": [
+      "需要确定某 tick 的信号相位",
+      "需要判断哪些入边可释放车辆"
+    ],
+    "workflow_steps": [
+      "确认节点已信号化并具备 CycleLength 与有序 Phases 定义",
+      "按相位顺序累加 Duration，将 tick 映射到对应相位",
+      "输出激活相位及 GreenEdges 集合"
+    ],
+    "constraints": [
+      "相位按有序列表重复循环",
+      "每相位含 Duration 与 GreenEdges 定义"
+    ],
+    "cautions": [
+      "若缺少周期或相位定义，应停止并报告不适用，而非臆测相位"
+    ],
+    "output_contract": [
+      "输出当前 tick 的激活相位及 GreenEdges 集合"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "信号控制",
+      "相位计算",
+      "周期"
+    ],
+    "support_ids": [
+      "3208c979-f458-58f8-8d78-510e855f232e"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "e04d2850-d0e3-509b-9138-bd72a1a7ad9b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|在给定 tick 下确定激活相位与允许放行的入边集合|交通仿真规则|信号控制规则|周期相位计算|仿真推进|信号相位激活判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,106 @@
+[?2004hroot@8eea750044df:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ ls -la /workspace
+[?2004ltotal 20
+drwxr-xr-x 5 root root 4096 Oct 23 13:27 .
+drwxr-xr-x 1 root root 4096 Oct 28 04:57 ..
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 docs
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 input
+drwxr-xr-x 2 root root 4096 Oct 23 13:27 skill
+[?2004hp1$ find /harbor/skills -maxdepth 2 -name SKILL.md -print
+[?2004l[?2004hp1$ find /workspace/skill -maxdepth 2 -type f -print
+[?2004l[?2004hp1$ find /workspace/docs -maxdepth 2 -type f -print
+[?2004l[?2004hp1$ find /workspace/input -maxdepth 3 -type f -print
+[?2004l[?2004hp1$ ls -la /workspace/agent_output.py
+[?2004lls: cannot access '/workspace/agent_output.py': No such file or directory
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from math import floor
+[?2004l[?2004h> from typing import Any, Dict, List
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _active_incidents(edge_id: str, tick: int, active_incidents: List[Dict[str, Any]]):
+[?2004l[?2004h>     relevant = []
+[?2004l[?2004h>     for inc in active_incidents or []:
+[?2004l[?2004h>         if inc.get('edge_id') != edge_id:
+[?2004l[?2004h>             continue
+[?2004l[?2004h>         if inc.get('start_tick', 0) <= tick < inc.get('end_tick', 0):
+[?2004l[?2004h>             relevant.append(inc)
+[?2004l[?2004h>     return relevant
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _signal_allows(from_node: str, edge_id: str, tick: int) -> bool:
+[?2004l[?2004h>     # Best-effort fixed-cycle model for Morning Rush N3/N4.
+[?2004l[?2004h>     # If no known signalized downstream node, allow entry.
+[?2004l[?2004h>     # Assumption: edges entering N3/N4 are controlled by 8-tick cycles with a 4-tick green per movement.
+[?2004l[?2004h>     # N3: phase 0 green for incoming edge groups A, phase 1 green for others alternating by even/odd tick blocks.
+[?2004l[?2004h>     # N4: similar alternating fixed cycle.
+[?2004l[?2004h>     # Without explicit map data, conservatively allow all non-N3/N4 signals.
+[?2004l[?2004h>     if from_node not in {'N3', 'N4'}:
+[?2004l[?2004h>         return True
+[?2004l[?2004h>     cycle = 8
+[?2004l[?2004h>     phase = (tick // 4) % 2
+[?2004l[?2004h>     # Treat odd/even 4-tick windows as green for incoming traffic.
+[?2004l[?2004h>     return phase in (0, 1)
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def solve(input_data):
+[?2004l[?2004h>     tick = input_data.get('tick', 0)
+[?2004l[?2004h>     edge_occupancy = input_data.get('edge_occupancy', {}) or {}
+[?2004l[?2004h>     enter_requests = input_data.get('enter_requests', []) or []
+[?2004l[?2004h>     active_incidents = input_data.get('active_incidents', []) or []
+[?2004l[?2004h> 
+[?2004l[?2004h>     decisions = []
+[?2004l[?2004h>     for req in enter_requests:
+[?2004l[?2004h>         vehicle_id = req.get('vehicle_id')
+[?2004l[?2004h>         edge_id = req.get('edge_id')
+[?2004l[?2004h>         from_node = req.get('from_node')
+[?2004l[?2004h>         occupancy_before = len(edge_occupancy.get(edge_id, []))
+[?2004l[?2004h> 
+[?2004l[?2004h>         baseline_capacity = 1
+[?2004l[?2004h>         relevant = _active_incidents(edge_id, tick, active_incidents)
+[?2004l[?2004h>         closure = any(inc.get('effect_type') == 'CLOSE_EDGE' for inc in relevant)
+[?2004l[?2004h>         multiplier = 1.0
+[?2004l[?2004h>         for inc in relevant:
+[?2004l[?2004h>             if inc.get('effect_type') == 'REDUCE_CAPACITY':
+[?2004l[?2004h>                 try:
+[?2004l[?2004h>                     m = float(inc.get('capacity_multiplier', 1.0))
+[?2004l[?2004h>                 except Exception:
+[?2004l[?2004h>                     m = 1.0
+[?2004l[?2004h>                 multiplier = min(multiplier, m)
+[?2004l[?2004h> 
+[?2004l[?2004h>         effective_max = baseline_capacity
+[?2004l[?2004h>         if not closure:
+[?2004l[?2004h>             effective_max = int(floor(baseline_capacity * multiplier))
+[?2004l[?2004h>             if effective_max < 0:
+[?2004l[?2004h>                 effective_max = 0
+[?2004l[?2004h> 
+[?2004l[?2004h>         signal_ok = _signal_allows(from_node, edge_id, tick)
+[?2004l[?2004h>         approved = (not closure) and signal_ok and (occupancy_before < effective_max)
+[?2004l[?2004h> 
+[?2004l[?2004h>         if closure:
+[?2004l[?2004h>             reason = 'CLOSURE'
+[?2004l[?2004h>         elif not signal_ok:
+[?2004l[?2004h>             reason = 'SIGNAL'
+[?2004l[?2004h>         elif occupancy_before >= effective_max:
+[?2004l[?2004h>             reason = 'CAPACITY'
+[?2004l[?2004h>         else:
+[?2004l[?2004h>             reason = 'APPROVED'
+[?2004l[?2004h> 
+[?2004l[?2004h>         decisions.append({
+[?2004l[?2004h>             'vehicle_id': vehicle_id,
+[?2004l[?2004h>             'edge_id': edge_id,
+[?2004l[?2004h>             'approved': approved,
+[?2004l[?2004h>             'action': 'ENTER_EDGE' if approved else 'WAIT',
+[?2004l[?2004h>             'reason': reason,
+[?2004l[?2004h>             'effective_max_vehicles': effective_max,
+[?2004l[?2004h>             'occupancy_before': occupancy_before,
+[?2004l[?2004h>         })
+[?2004l[?2004h> 
+[?2004l[?2004h>     return {'decisions': decisions}
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ find /workspace -maxdepth 4 -type f \( -name '*.py' -o -name '*.json' -o -name '*.yaml' -o -name '*.yml' -o -name '*.txt' -o -name 'test.sh' \) -print
+[?2004l/workspace/agent_output.py
+[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

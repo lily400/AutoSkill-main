@@ -1,0 +1,15 @@
+{
+  "correct": {
+    "source": "import scrapy\n\nclass DepthLimitZeroSpider(scrapy.Spider):\n    name = 'depth_zero'\n    custom_settings = {'DEPTH_LIMIT': 0}\n    def parse(self, response):\n        for href in response.css('a::attr(href)').getall():\n            yield response.follow(href, callback=self.parse)\n\ndef get_depth_limit_zero_finding():\n    return {'depth_limit': 0, 'effective_max_depth': None, 'follows_beyond_start_urls': True, 'summary': 'Zero disables the depth cap.'}\n",
+    "passed": 8,
+    "failed": []
+  },
+  "rule_mutant": {
+    "source": "import scrapy\n\nclass DepthLimitZeroSpider(scrapy.Spider):\n    name = 'depth_zero'\n    custom_settings = {'DEPTH_LIMIT': 1}\n    def parse(self, response):\n        for href in response.css('a::attr(href)').getall():\n            yield response.follow(href, callback=self.parse)\n\ndef get_depth_limit_zero_finding():\n    return {'depth_limit': 0, 'effective_max_depth': None, 'follows_beyond_start_urls': True, 'summary': 'Zero disables the depth cap.'}\n",
+    "passed": 6,
+    "failed": [
+      "test_depth_limit_setting_is_zero",
+      "test_runtime_behavior_crawls_beyond_depth_zero"
+    ]
+  }
+}

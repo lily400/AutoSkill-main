@@ -1,0 +1,104 @@
+{
+  "skill_id": "1f8ef860-b2e9-57a0-9f71-5caad12162f1",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 b549ec02（校验错误抛出与 ValidationInfo 使用）高度重复，目标、方法族与工作流基本一致，保留其一即可，避免冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "1f8ef860-b2e9-57a0-9f71-5caad12162f1",
+    "name": "Pydantic 校验错误抛出与 ValidationInfo 上下文访问",
+    "description": "在 Pydantic 校验器中通过抛出 ValueError 报告校验失败，并使用 ValidationInfo 访问校验数据与上下文；适用于需要自定义错误信息或校验逻辑依赖校验数据/上下文的场景。",
+    "skill_body": "在编写或修改 Pydantic 校验器时，若需要自定义校验失败信息，或校验逻辑依赖校验数据（validation data）或上下文（validation context），按以下方式实现：\n1. 在字段校验器或模型校验器内，当条件不满足时抛出 ValueError，并在消息中写明具体原因，使错误信息对调用方清晰可读。\n2. 需要访问其他字段值或上下文时，在校验器签名中接收 ValidationInfo 参数，通过其 data 与 context 属性读取所需信息，而不是依赖外部全局状态。\n3. 保持校验器职责单一：只做校验与错误报告，不在其中执行与校验无关的副作用。\n4. 完成后确认：错误路径会抛出带明确信息的 ValueError，上下文访问路径能正确取得 data/context。\n\n## Objective\n\n正确抛出校验错误并利用 ValidationInfo 获取数据与上下文\n## Applicable Signals\n\n- 需要自定义校验失败信息\n- 校验逻辑依赖 validation data 或 context\n\n## Contraindications\n\n- 无需自定义错误信息\n- 校验不依赖上下文数据\n\n## Intervention Moves\n\n- 在校验器中抛出 ValueError 并附明确错误信息\n- 在校验器签名中接收 ValidationInfo 以访问 data 与 context\n\n## Workflow Steps\n\n- 判断校验失败条件，确定需要报告的错误信息\n- 在条件不满足时抛出 ValueError，消息写明具体原因\n- 若校验依赖其他字段或上下文，在校验器签名中接收 ValidationInfo\n- 通过 ValidationInfo 的 data 与 context 读取所需信息\n- 确认错误路径与上下文访问路径均按预期工作\n\n## Constraints\n\n- 错误信息应明确说明失败原因\n- 上下文访问应通过 ValidationInfo 而非外部全局状态\n\n## Cautions\n\n- 校验器应保持职责单一，避免与校验无关的副作用\n\n## Output Contract\n\n- 含明确错误信息与上下文访问的校验器代码",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "正确抛出校验错误并利用 ValidationInfo 获取数据与上下文",
+    "domain": "pydantic",
+    "task_family": "校验错误处理",
+    "method_family": "错误抛出与上下文访问",
+    "stage": "校验错误与上下文处理",
+    "applicable_signals": [
+      "需要自定义校验失败信息",
+      "校验逻辑依赖 validation data 或 context"
+    ],
+    "contraindications": [
+      "无需自定义错误信息",
+      "校验不依赖上下文数据"
+    ],
+    "intervention_moves": [
+      "在校验器中抛出 ValueError 并附明确错误信息",
+      "在校验器签名中接收 ValidationInfo 以访问 data 与 context"
+    ],
+    "triggers": [
+      "需要自定义校验失败信息",
+      "校验逻辑依赖 validation data 或 context",
+      "编写或修改 Pydantic 校验器"
+    ],
+    "workflow_steps": [
+      "判断校验失败条件，确定需要报告的错误信息",
+      "在条件不满足时抛出 ValueError，消息写明具体原因",
+      "若校验依赖其他字段或上下文，在校验器签名中接收 ValidationInfo",
+      "通过 ValidationInfo 的 data 与 context 读取所需信息",
+      "确认错误路径与上下文访问路径均按预期工作"
+    ],
+    "constraints": [
+      "错误信息应明确说明失败原因",
+      "上下文访问应通过 ValidationInfo 而非外部全局状态"
+    ],
+    "cautions": [
+      "校验器应保持职责单一，避免与校验无关的副作用"
+    ],
+    "output_contract": [
+      "含明确错误信息与上下文访问的校验器代码"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "validator",
+      "validation-error",
+      "validation-info",
+      "micro_skill"
+    ],
+    "support_ids": [
+      "afac2944-dc4c-5f63-a677-3fe1d2a76fd9"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "439946d6-352a-5d98-864c-0273c2f07181"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|正确抛出校验错误并利用 validationinfo 获取数据与上下文|pydantic|校验错误处理|错误抛出与上下文访问|校验错误与上下文处理|pydantic 校验错误抛出与 validationinfo 上下文访问"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

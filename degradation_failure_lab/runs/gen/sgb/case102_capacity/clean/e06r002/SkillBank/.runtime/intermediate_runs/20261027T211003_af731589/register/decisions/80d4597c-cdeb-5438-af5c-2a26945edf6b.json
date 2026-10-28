@@ -1,0 +1,100 @@
+{
+  "skill_id": "80d4597c-cdeb-5438-af5c-2a26945edf6b",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "80d4597c-cdeb-5438-af5c-2a26945edf6b",
+    "name": "到达先于离开的节点事件排序规则",
+    "description": "在离散时间步交通仿真推进 tick 时，若同一节点在同一 tick 内同时存在车辆到达事件与车辆离开事件，规定先处理到达、再处理离开，以保证节点更新顺序的一致性。",
+    "skill_body": "在推进仿真 tick 时，检查各节点是否存在到达事件与离开事件。若某节点在同一 tick 内同时存在到达事件与离开事件，按以下顺序处理：先结算所有到达该节点的车辆，再处理从该节点离开的车辆。仅对同时存在到达与离开的节点应用此排序；无到达或无离开事件时无需特殊排序。该规则仅约束节点事件排序，不涉及信号相位计算等其他规则。\n\n## Objective\n\n在同一 tick 内按到达优先顺序处理节点事件\n## Applicable Signals\n\n- 同一 tick 同时存在到达与离开事件\n\n## Contraindications\n\n- 无节点到达或离开事件时无需应用此排序\n\n## Intervention Moves\n\n- 识别同一 tick 内同时存在到达与离开的节点\n- 先处理该节点的全部到达事件\n- 再处理该节点的离开事件\n\n## Workflow Steps\n\n- 在推进 tick 时检查各节点是否存在到达事件与离开事件\n- 对同时存在两类事件的节点，先结算到达车辆\n- 到达处理完成后，再处理该节点的离开车辆\n\n## Constraints\n\n- 到达处理必须先于离开处理完成\n- 仅对同一 tick 内同时存在到达与离开的节点应用\n\n## Cautions\n\n- 该规则仅约束节点事件排序，不涉及信号相位计算等其他规则\n\n## Output Contract\n\n- 按到达先于离开的顺序完成节点事件处理",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在同一 tick 内按到达优先顺序处理节点事件",
+    "domain": "交通仿真规则",
+    "task_family": "更新顺序规则",
+    "method_family": "事件排序",
+    "stage": "仿真推进",
+    "applicable_signals": [
+      "同一 tick 同时存在到达与离开事件"
+    ],
+    "contraindications": [
+      "无节点到达或离开事件时无需应用此排序"
+    ],
+    "intervention_moves": [
+      "识别同一 tick 内同时存在到达与离开的节点",
+      "先处理该节点的全部到达事件",
+      "再处理该节点的离开事件"
+    ],
+    "triggers": [
+      "同一 tick 内某节点同时存在车辆到达与车辆离开事件",
+      "需要确定节点事件的更新顺序以保证仿真一致性"
+    ],
+    "workflow_steps": [
+      "在推进 tick 时检查各节点是否存在到达事件与离开事件",
+      "对同时存在两类事件的节点，先结算到达车辆",
+      "到达处理完成后，再处理该节点的离开车辆"
+    ],
+    "constraints": [
+      "到达处理必须先于离开处理完成",
+      "仅对同一 tick 内同时存在到达与离开的节点应用"
+    ],
+    "cautions": [
+      "该规则仅约束节点事件排序，不涉及信号相位计算等其他规则"
+    ],
+    "output_contract": [
+      "按到达先于离开的顺序完成节点事件处理"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "更新顺序",
+      "事件排序",
+      "节点处理",
+      "离散时间步"
+    ],
+    "support_ids": [
+      "e1379368-bc49-5266-ad72-7afdce982260"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "c8c36ff1-fba6-5285-9add-69f193a11542"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.65,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|在同一 tick 内按到达优先顺序处理节点事件|交通仿真规则|更新顺序规则|事件排序|仿真推进|到达先于离开的节点事件排序规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

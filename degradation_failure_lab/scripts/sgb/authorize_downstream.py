@@ -22,7 +22,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT), str(ROOT / 'src')]
-from downstream_eval.sgb.downstream_authorization import authorization_path, authorize, load_authorization
+from downstream_eval.sgb.downstream_authorization import authorization_path, authorize, load_authorization, ADAPTERS
 IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z")
 
 
@@ -80,10 +80,8 @@ def main():
     if task.get("task_id") != task_id:
         fail("Task identity mismatch")
 
-    if task.get("adapter") != (
-        "downstream_eval.sgb.task_adapters.audited.json_task"
-    ):
-        fail("This script supports audited JSON tasks only")
+    if task.get("adapter") not in ADAPTERS:
+        fail("This script supports audited JSON/object tasks only")
 
     if task.get("conditions") != {
         "NoSkill1": "NoSkill",

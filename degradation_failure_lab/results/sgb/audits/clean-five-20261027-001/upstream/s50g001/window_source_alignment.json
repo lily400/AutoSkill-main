@@ -1,0 +1,605 @@
+[
+  {
+    "window_id": "fe92006b-b446-5b3a-9d47-686d6f89acf3",
+    "source_id": "sgb-6b74bf9a7222bcaa",
+    "input_sha256": "96e60bee5903c18a77068b2ea35a35b6d1c0edba6ec3fefcdabf10dd0c56941b",
+    "official_span": {
+      "start": 0,
+      "end": 135
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 1,
+        "text": "# scrapy.spidermiddlewares.depth — Scrapy 2.14.1 documentation"
+      },
+      {
+        "input_line": 3,
+        "text": "- [Module code](../../index.html)"
+      },
+      {
+        "input_line": 4,
+        "text": "- scrapy.spidermiddlewares.depth"
+      },
+      {
+        "input_line": 6,
+        "text": "---"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "f503f964-a49d-5f6a-998a-603538c5d44c",
+    "source_id": "sgb-6b74bf9a7222bcaa",
+    "input_sha256": "96e60bee5903c18a77068b2ea35a35b6d1c0edba6ec3fefcdabf10dd0c56941b",
+    "official_span": {
+      "start": 186,
+      "end": 2510
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 10,
+        "text": "```"
+      },
+      {
+        "input_line": 11,
+        "text": "\"\"\""
+      },
+      {
+        "input_line": 12,
+        "text": "Depth Spider Middleware"
+      },
+      {
+        "input_line": 14,
+        "text": "See documentation in docs/topics/spider-middleware.rst"
+      },
+      {
+        "input_line": 15,
+        "text": "\"\"\""
+      },
+      {
+        "input_line": 17,
+        "text": "from __future__ import annotations"
+      },
+      {
+        "input_line": 19,
+        "text": "import logging"
+      },
+      {
+        "input_line": 20,
+        "text": "from typing import TYPE_CHECKING, Any"
+      },
+      {
+        "input_line": 22,
+        "text": "from scrapy.spidermiddlewares.base import BaseSpiderMiddleware"
+      },
+      {
+        "input_line": 23,
+        "text": "from scrapy.utils.decorators import _warn_spider_arg"
+      },
+      {
+        "input_line": 25,
+        "text": "if TYPE_CHECKING:"
+      },
+      {
+        "input_line": 26,
+        "text": "    from collections.abc import AsyncIterator, Iterable"
+      },
+      {
+        "input_line": 28,
+        "text": "# typing.Self requires Python 3.11"
+      },
+      {
+        "input_line": 29,
+        "text": "    from typing_extensions import Self"
+      },
+      {
+        "input_line": 31,
+        "text": "from scrapy import Spider"
+      },
+      {
+        "input_line": 32,
+        "text": "    from scrapy.crawler import Crawler"
+      },
+      {
+        "input_line": 33,
+        "text": "    from scrapy.http import Request, Response"
+      },
+      {
+        "input_line": 34,
+        "text": "    from scrapy.statscollectors import StatsCollector"
+      },
+      {
+        "input_line": 36,
+        "text": "logger = logging.getLogger(__name__)"
+      },
+      {
+        "input_line": 38,
+        "text": "[docs]"
+      },
+      {
+        "input_line": 39,
+        "text": "class DepthMiddleware(BaseSpiderMiddleware):"
+      },
+      {
+        "input_line": 40,
+        "text": "    crawler: Crawler"
+      },
+      {
+        "input_line": 42,
+        "text": "def __init__(  # pylint: disable=super-init-not-called"
+      },
+      {
+        "input_line": 43,
+        "text": "        self,"
+      },
+      {
+        "input_line": 44,
+        "text": "        maxdepth: int,"
+      },
+      {
+        "input_line": 45,
+        "text": "        stats: StatsCollector,"
+      },
+      {
+        "input_line": 46,
+        "text": "        verbose_stats: bool = False,"
+      },
+      {
+        "input_line": 47,
+        "text": "        prio: int = 1,"
+      },
+      {
+        "input_line": 48,
+        "text": "    ):"
+      },
+      {
+        "input_line": 49,
+        "text": "        self.maxdepth = maxdepth"
+      },
+      {
+        "input_line": 50,
+        "text": "        self.stats = stats"
+      },
+      {
+        "input_line": 51,
+        "text": "        self.verbose_stats = verbose_stats"
+      },
+      {
+        "input_line": 52,
+        "text": "        self.prio = prio"
+      },
+      {
+        "input_line": 65,
+        "text": "@_warn_spider_arg"
+      },
+      {
+        "input_line": 66,
+        "text": "    def process_spider_output("
+      },
+      {
+        "input_line": 67,
+        "text": "        self, response: Response, result: Iterable[Any], spider: Spider | None = None"
+      },
+      {
+        "input_line": 68,
+        "text": "    ) -> Iterable[Any]:"
+      },
+      {
+        "input_line": 69,
+        "text": "        self._init_depth(response)"
+      },
+      {
+        "input_line": 70,
+        "text": "        yield from super().process_spider_output(response, result)"
+      },
+      {
+        "input_line": 83,
+        "text": "def _init_depth(self, response: Response) -> None:"
+      },
+      {
+        "input_line": 84,
+        "text": "        # base case (depth=0)"
+      },
+      {
+        "input_line": 85,
+        "text": "        if \"depth\" not in response.meta:"
+      },
+      {
+        "input_line": 86,
+        "text": "            response.meta[\"depth\"] = 0"
+      },
+      {
+        "input_line": 87,
+        "text": "            if self.verbose_stats:"
+      },
+      {
+        "input_line": 88,
+        "text": "                self.stats.inc_value(\"request_depth_count/0\")"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "6f2bb058-d2aa-57c3-8e60-1d572f5a5921",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 0,
+      "end": 147
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 1,
+        "text": "# Settings — Scrapy 2.14.1 documentation"
+      },
+      {
+        "input_line": 3,
+        "text": "- Settings"
+      },
+      {
+        "input_line": 4,
+        "text": "- [Edit on GitHub](https://github.com/scrapy/scrapy/blob/master/docs/topics/settings.rst)"
+      },
+      {
+        "input_line": 6,
+        "text": "---"
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "4a836d6d-8e74-59cd-8a68-ecc68b71fe59",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 1262,
+      "end": 1679
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 36,
+        "text": "> 1. Command-line settings (highest precedence)"
+      },
+      {
+        "input_line": 37,
+        "text": "> 2. Spider settings"
+      },
+      {
+        "input_line": 38,
+        "text": "> 3. Project settings"
+      },
+      {
+        "input_line": 39,
+        "text": "> 4. Add-on settings"
+      },
+      {
+        "input_line": 40,
+        "text": "> 5. Command-specific default settings"
+      },
+      {
+        "input_line": 41,
+        "text": "> 6. Global default settings (lowest precedence)"
+      },
+      {
+        "input_line": 45,
+        "text": "Settings set in the command line have the highest precedence, overriding any"
+      },
+      {
+        "input_line": 46,
+        "text": "other settings."
+      },
+      {
+        "input_line": 48,
+        "text": "You can explicitly override one or more settings using the `-s` (or"
+      },
+      {
+        "input_line": 49,
+        "text": "`--set`) command-line option."
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "1. Command-line settings"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "f55b6c07-99da-5f9f-880c-da1cabf3c1ad",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 1691,
+      "end": 2115
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 53,
+        "text": "```"
+      },
+      {
+        "input_line": 54,
+        "text": "scrapy crawl myspider -s LOG_LEVEL=INFO -s LOG_FILE=scrapy.log"
+      },
+      {
+        "input_line": 55,
+        "text": "```"
+      },
+      {
+        "input_line": 59,
+        "text": "[Spiders](spiders.html#topics-spiders) can define their own settings that will take"
+      },
+      {
+        "input_line": 60,
+        "text": "precedence and override the project ones."
+      },
+      {
+        "input_line": 62,
+        "text": "Pre-crawler settings cannot be defined"
+      },
+      {
+        "input_line": 63,
+        "text": "per spider, and reactor settings should not have"
+      },
+      {
+        "input_line": 64,
+        "text": "a different value per spider when [running multiple spiders in the"
+      },
+      {
+        "input_line": 65,
+        "text": "same process](practices.html#run-multiple-spiders)."
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "2. Spider settings"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "cd147aa9-5ee9-5f2e-bd16-419044d03b1d",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 3093,
+      "end": 3607
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 90,
+        "text": "@classmethod"
+      },
+      {
+        "input_line": 109,
+        "text": "    def from_crawler(cls, crawler, *args, **kwargs):"
+      },
+      {
+        "input_line": 110,
+        "text": "        spider = super().from_crawler(crawler, *args, **kwargs)"
+      },
+      {
+        "input_line": 111,
+        "text": "        if \"some_argument\" in kwargs:"
+      },
+      {
+        "input_line": 112,
+        "text": "            spider.settings.set("
+      },
+      {
+        "input_line": 113,
+        "text": "                \"SOME_SETTING\", kwargs[\"some_argument\"], priority=\"spider\""
+      },
+      {
+        "input_line": 114,
+        "text": "            )"
+      },
+      {
+        "input_line": 115,
+        "text": "        return spider"
+      },
+      {
+        "input_line": 116,
+        "text": "```"
+      },
+      {
+        "input_line": 120,
+        "text": "Scrapy projects include a settings module, usually a file called"
+      },
+      {
+        "input_line": 121,
+        "text": "`settings.py`, where you should populate most settings that apply to all your"
+      },
+      {
+        "input_line": 122,
+        "text": "spiders."
+      },
+      {
+        "input_line": 124,
+        "text": "Designating the settings"
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "3. Project settings"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "59f63200-4296-5b00-9ea6-c08362af027f",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 3583,
+      "end": 4029
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 124,
+        "text": "Designating the settings"
+      },
+      {
+        "input_line": 128,
+        "text": "[Add-ons](addons.html#topics-addons) can modify settings. They should do this with"
+      },
+      {
+        "input_line": 129,
+        "text": "`\"addon\"` priority where possible."
+      },
+      {
+        "input_line": 133,
+        "text": "Each [Scrapy command](commands.html#topics-commands) can have its own default settings,"
+      },
+      {
+        "input_line": 134,
+        "text": "which override the global default settings."
+      },
+      {
+        "input_line": 136,
+        "text": "Those command-specific default settings are specified in the"
+      },
+      {
+        "input_line": 137,
+        "text": "`default_settings` attribute of each command class."
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "4. Add-on settings",
+      "5. Command-specific default settings"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "3adcbee4-13b5-5537-af56-d8bf5cd1c466",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 3917,
+      "end": 4295
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 136,
+        "text": "Those command-specific default settings are specified in the"
+      },
+      {
+        "input_line": 137,
+        "text": "`default_settings` attribute of each command class."
+      },
+      {
+        "input_line": 141,
+        "text": "The `scrapy.settings.default_settings` module defines global default values"
+      },
+      {
+        "input_line": 142,
+        "text": "for some built-in settings."
+      },
+      {
+        "input_line": 144,
+        "text": "[`startproject`](commands.html#std-command-startproject) generates a `settings.py` file that sets"
+      },
+      {
+        "input_line": 145,
+        "text": "some settings to different values."
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "6. Default global settings"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "899bebcd-04a4-5384-96a3-e4395c075105",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 4702,
+      "end": 4979
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 158,
+        "text": "When a setting references a callable object to be imported by Scrapy, such as a"
+      },
+      {
+        "input_line": 159,
+        "text": "class or a function, there are two different ways you can specify that object:"
+      },
+      {
+        "input_line": 161,
+        "text": "- As a string containing the import path of that object"
+      },
+      {
+        "input_line": 162,
+        "text": "- As the object itself"
+      },
+      {
+        "input_line": 164,
+        "text": "For example:"
+      }
+    ],
+    "unmatched_normalized_lines": [
+      "Import paths and classes"
+    ],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  },
+  {
+    "window_id": "79dfca8a-4b20-5c6b-b849-aa2bcbc62e6e",
+    "source_id": "sgb-130f17a8b0fc43d9",
+    "input_sha256": "fae2beedb6998e960e0b2e1b59ffabfa9b7710bae11c2c952e442413b8adf455",
+    "official_span": {
+      "start": 9344,
+      "end": 9956
+    },
+    "exact_line_matches": [
+      {
+        "input_line": 278,
+        "text": "These settings are:"
+      },
+      {
+        "input_line": 280,
+        "text": "- `ASYNCIO_EVENT_LOOP` (not possible to set per-spider when using"
+      },
+      {
+        "input_line": 281,
+        "text": "[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)"
+      },
+      {
+        "input_line": 282,
+        "text": "- `DNS_RESOLVER` and settings used by the corresponding"
+      },
+      {
+        "input_line": 283,
+        "text": "component, e.g. `DNSCACHE_ENABLED`, `DNSCACHE_SIZE`"
+      },
+      {
+        "input_line": 284,
+        "text": "and `DNS_TIMEOUT` for the default one."
+      },
+      {
+        "input_line": 285,
+        "text": "- `REACTOR_THREADPOOL_MAXSIZE`"
+      },
+      {
+        "input_line": 286,
+        "text": "- `TWISTED_REACTOR` (ignored when using"
+      },
+      {
+        "input_line": 287,
+        "text": "[`AsyncCrawlerProcess`](api.html#scrapy.crawler.AsyncCrawlerProcess), see below)"
+      },
+      {
+        "input_line": 289,
+        "text": "`ASYNCIO_EVENT_LOOP` and `TWISTED_REACTOR` are used upon"
+      },
+      {
+        "input_line": 290,
+        "text": "installing the reactor. The rest of the settings are applied when starting"
+      },
+      {
+        "input_line": 291,
+        "text": "the reactor."
+      }
+    ],
+    "unmatched_normalized_lines": [],
+    "coordinate_note": "Input-file line matches; upstream spans address normalized text. Degraded positions are not original-source positions."
+  }
+]

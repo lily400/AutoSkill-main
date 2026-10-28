@@ -1,0 +1,148 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "动作合法性约束",
+  "run_id": "20261027T222252_351214ad",
+  "skills": [
+    {
+      "skill_id": "97f20bbe-5aa8-572f-b302-f2fc3a33db6f",
+      "name": "运输中车辆动作合法性约束",
+      "description": "当车辆Status=MOVING（位于边上）时，禁止其开始装载或卸载，唯一合法动作为CONTINUE_TRAVEL；用于在动作生成阶段校验车辆动作合法性。",
+      "skill_body": "在生成或校验车辆动作时，先检查车辆状态。若Status=MOVING（车辆位于边上），则不得生成START_LOADING或START_UNLOADING动作，唯一合法动作为CONTINUE_TRAVEL；若车辆位于节点上，则不适用本规则，按常规动作枚举处理。\n\n## Objective\n\n防止运输中车辆执行非法装卸动作\n## Applicable Signals\n\n- 车辆Status=MOVING\n- 车辆位于边上\n- 需要对车辆动作做合法性校验\n\n## Contraindications\n\n- 车辆位于节点上且可执行装卸\n- 车辆状态非MOVING\n\n## Intervention Moves\n\n- 检查车辆Status字段\n- 若为MOVING则拒绝START_LOADING/START_UNLOADING\n- 将唯一合法动作限定为CONTINUE_TRAVEL\n\n## Workflow Steps\n\n- 读取车辆当前Status\n- 若Status=MOVING，则屏蔽START_LOADING与START_UNLOADING动作\n- 仅允许CONTINUE_TRAVEL作为该车辆本tick动作\n- 输出校验后的合法动作\n\n## Constraints\n\n- MOVING车辆不得开始装载或卸载\n- MOVING车辆唯一合法动作为CONTINUE_TRAVEL\n\n## Cautions\n\n- 动作在容量与冲突检查阶段前仅为请求，本规则在动作生成阶段先行约束\n- 仅对Status=MOVING的车辆生效，勿误用于节点上的车辆\n\n## Output Contract\n\n- MOVING车辆仅产生CONTINUE_TRAVEL动作，非法装卸动作被拒绝。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止运输中车辆执行非法装卸动作",
+      "domain": "交通仿真",
+      "task_family": "动作合法性约束",
+      "method_family": "状态约束规则",
+      "stage": "动作生成",
+      "applicable_signals": [
+        "车辆Status=MOVING",
+        "车辆位于边上",
+        "需要对车辆动作做合法性校验"
+      ],
+      "contraindications": [
+        "车辆位于节点上且可执行装卸",
+        "车辆状态非MOVING"
+      ],
+      "intervention_moves": [
+        "检查车辆Status字段",
+        "若为MOVING则拒绝START_LOADING/START_UNLOADING",
+        "将唯一合法动作限定为CONTINUE_TRAVEL"
+      ],
+      "triggers": [
+        "车辆状态为MOVING",
+        "校验车辆动作合法性",
+        "生成车辆每tick动作"
+      ],
+      "workflow_steps": [
+        "读取车辆当前Status",
+        "若Status=MOVING，则屏蔽START_LOADING与START_UNLOADING动作",
+        "仅允许CONTINUE_TRAVEL作为该车辆本tick动作",
+        "输出校验后的合法动作"
+      ],
+      "constraints": [
+        "MOVING车辆不得开始装载或卸载",
+        "MOVING车辆唯一合法动作为CONTINUE_TRAVEL"
+      ],
+      "cautions": [
+        "动作在容量与冲突检查阶段前仅为请求，本规则在动作生成阶段先行约束",
+        "仅对Status=MOVING的车辆生效，勿误用于节点上的车辆"
+      ],
+      "output_contract": [
+        "MOVING车辆仅产生CONTINUE_TRAVEL动作，非法装卸动作被拒绝。"
+      ],
+      "examples": [],
+      "tags": [
+        "交通仿真",
+        "动作合法性",
+        "状态约束",
+        "MOVING",
+        "CONTINUE_TRAVEL"
+      ],
+      "support_ids": [
+        "bf652b72-d3c7-5c87-8b05-3ee6a1f7dbe0"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "495fcbf7-66b9-53f7-8690-72fcd8a92b95"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|防止运输中车辆执行非法装卸动作|交通仿真|动作合法性约束|状态约束规则|动作生成|运输中车辆动作合法性约束",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "408aa0dd-b107-4c1a-bdd1-c660b0c127a8",
+      "entity_type": "skill",
+      "entity_id": "97f20bbe-5aa8-572f-b302-f2fc3a33db6f",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "97f20bbe-5aa8-572f-b302-f2fc3a33db6f",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "bf652b72-d3c7-5c87-8b05-3ee6a1f7dbe0"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

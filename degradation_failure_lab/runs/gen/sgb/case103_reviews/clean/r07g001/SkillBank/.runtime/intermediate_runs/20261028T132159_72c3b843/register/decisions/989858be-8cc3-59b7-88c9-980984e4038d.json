@@ -1,0 +1,107 @@
+{
+  "skill_id": "989858be-8cc3-59b7-88c9-980984e4038d",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "989858be-8cc3-59b7-88c9-980984e4038d",
+    "name": "无效或不完整输入处理",
+    "description": "在批处理前对结构化输入（如 JSON 产品目录）执行有效性校验，识别缺失字段、格式异常或目录无效的情况，并给出可追溯的降级处理动作，避免产出错误的结构化结果。",
+    "skill_body": "在开始批处理或结构化产出前，先校验输入是否为有效 JSON 且结构完整。检查必需字段是否存在、字段类型是否符合要求、标识是否与目录一致。若输入缺失、格式错误或目录无效，判定为无效输入并记录处理动作（如拒绝处理、请求补充或降级），不要继续产出结构化结果。\n\n## Objective\n\n识别并处理无效或不完整输入\n## Applicable Signals\n\n- 输入为 JSON 目录或结构化数据\n- 存在缺失字段或格式异常风险\n- 批处理即将开始\n\n## Contraindications\n\n- 输入已确认完整且格式合规\n\n## Intervention Moves\n\n- 校验输入是否为有效 JSON\n- 检查必需字段是否齐全\n- 检查字段类型与取值是否合规\n- 判定输入有效性并记录处理动作\n\n## Workflow Steps\n\n- 确认输入为 JSON 目录或结构化数据\n- 校验 JSON 可解析且结构完整\n- 检查必需字段是否存在、类型是否合规\n- 判定输入有效性\n- 对无效或不完整输入执行降级处理并记录动作\n\n## Constraints\n\n- 仅在批处理前的输入把关阶段使用\n- 输入已确认完整且格式合规时不再执行\n- 无效输入不得继续进入结构化产出\n\n## Cautions\n\n- 避免在输入未校验时直接产出结构化结果\n- 降级处理动作需可追溯\n\n## Output Contract\n\n- 输入有效性判定及处理动作记录",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "识别并处理无效或不完整输入",
+    "domain": "运营流程",
+    "task_family": "输入校验",
+    "method_family": "输入合规检查",
+    "stage": "输入验证",
+    "applicable_signals": [
+      "输入为 JSON 目录或结构化数据",
+      "存在缺失字段或格式异常风险",
+      "批处理即将开始"
+    ],
+    "contraindications": [
+      "输入已确认完整且格式合规"
+    ],
+    "intervention_moves": [
+      "校验输入是否为有效 JSON",
+      "检查必需字段是否齐全",
+      "检查字段类型与取值是否合规",
+      "判定输入有效性并记录处理动作"
+    ],
+    "triggers": [
+      "输入为 JSON 目录或结构化数据",
+      "存在缺失字段或格式异常风险",
+      "批处理开始前的输入把关"
+    ],
+    "workflow_steps": [
+      "确认输入为 JSON 目录或结构化数据",
+      "校验 JSON 可解析且结构完整",
+      "检查必需字段是否存在、类型是否合规",
+      "判定输入有效性",
+      "对无效或不完整输入执行降级处理并记录动作"
+    ],
+    "constraints": [
+      "仅在批处理前的输入把关阶段使用",
+      "输入已确认完整且格式合规时不再执行",
+      "无效输入不得继续进入结构化产出"
+    ],
+    "cautions": [
+      "避免在输入未校验时直接产出结构化结果",
+      "降级处理动作需可追溯"
+    ],
+    "output_contract": [
+      "输入有效性判定及处理动作记录"
+    ],
+    "examples": [],
+    "tags": [
+      "输入校验",
+      "输入守卫",
+      "降级处理",
+      "结构化数据"
+    ],
+    "support_ids": [
+      "2fbe5791-8d08-5d1b-9ad2-c8c3480bce0d"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "d9a8c963-583e-555f-b899-fdfed320998d"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|识别并处理无效或不完整输入|运营流程|输入校验|输入合规检查|输入验证|无效或不完整输入处理"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

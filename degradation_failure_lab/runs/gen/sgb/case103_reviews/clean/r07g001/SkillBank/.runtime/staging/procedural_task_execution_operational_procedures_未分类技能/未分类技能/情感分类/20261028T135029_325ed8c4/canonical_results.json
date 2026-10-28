@@ -1,0 +1,438 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "情感分类",
+  "run_id": "20261028T135029_325ed8c4",
+  "skills": [
+    {
+      "skill_id": "e80fc558-4df8-58fd-8609-82690a6a38fe",
+      "name": "评论情感分类",
+      "description": "对单条有效评论文本进行情感倾向标注，输出情感标签。适用于需要从评论中提取正负情感倾向的场景。",
+      "skill_body": "接收一条有效评论文本，判断其整体情感倾向，并输出对应的情感标签。仅执行情感标注，不进行适用性匹配或计数。若评论为空或无法解析，则不执行分类并说明原因。\n\n## Objective\n\n为单条评论标注情感类别\n## Applicable Signals\n\n- 输入为可解析的评论文本\n- 任务目标为提取正负情感倾向\n\n## Contraindications\n\n- 评论为空或无法解析\n- 任务目标是匹配或计数而非情感\n\n## Intervention Moves\n\n- 读取评论文本\n- 判断整体情感倾向\n- 输出情感标签\n\n## Workflow Steps\n\n- 确认输入为有效评论文本\n- 判断评论整体情感倾向\n- 输出对应情感标签\n\n## Constraints\n\n- 仅处理单条评论\n- 不执行适用性判定或计数任务\n\n## Cautions\n\n- 评论为空或无法解析时不得强行分类\n\n## Output Contract\n\n- 输出该评论的情感标签",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为单条评论标注情感类别",
+      "domain": "商品评论分析",
+      "task_family": "情感分类",
+      "method_family": "文本情感分类",
+      "stage": "情感标注",
+      "applicable_signals": [
+        "输入为可解析的评论文本",
+        "任务目标为提取正负情感倾向"
+      ],
+      "contraindications": [
+        "评论为空或无法解析",
+        "任务目标是匹配或计数而非情感"
+      ],
+      "intervention_moves": [
+        "读取评论文本",
+        "判断整体情感倾向",
+        "输出情感标签"
+      ],
+      "triggers": [
+        "需要对评论做情感倾向标注",
+        "输入为有效评论文本"
+      ],
+      "workflow_steps": [
+        "确认输入为有效评论文本",
+        "判断评论整体情感倾向",
+        "输出对应情感标签"
+      ],
+      "constraints": [
+        "仅处理单条评论",
+        "不执行适用性判定或计数任务"
+      ],
+      "cautions": [
+        "评论为空或无法解析时不得强行分类"
+      ],
+      "output_contract": [
+        "输出该评论的情感标签"
+      ],
+      "examples": [],
+      "tags": [
+        "情感分类",
+        "评论分析",
+        "文本标注"
+      ],
+      "support_ids": [
+        "3c9a3dc4-9c53-5a8b-9f84-408600f414a5"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "817ec529-5207-5bd8-a99c-6c777aea31fc"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|为单条评论标注情感类别|商品评论分析|情感分类|文本情感分类|情感标注|评论情感分类",
+        "change_action": "create",
+        "llm_reason": "候选技能为单条评论情感标注的独立微技能，与同批次的混合情感极性规则、适用性判定、条件计数在职责上互补而非重复，且无冲突证据，应保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "7e9b6184-6ad1-511a-a756-2b9fff70151b",
+      "name": "混合情感评论极性判定规则",
+      "description": "对同时包含正面与负面内容的评论，按主导情感判定单一极性；均衡时默认判为负面以保守避免误判。用于情感分类计数前的极性裁决。",
+      "skill_body": "当一条评论同时包含正面与负面表述时，先判断哪一方为主导情感：若整体偏正面、仅有次要批评，判为 positive；若整体偏负面、仅有次要称赞，判为 negative；若正负大致均衡，默认判为 negative（保守策略，优先避免误判）。最终为每条混合评论输出唯一极性标签。\n\n## Objective\n\n为混合情感评论确定单一极性标签\n## Applicable Signals\n\n- 评论中同时出现正面与负面表述\n- 下游计数任务要求每条评论只有一个极性标签\n\n## Contraindications\n\n- 评论情感单一明确\n- 任务不涉及情感极性计数\n\n## Intervention Moves\n\n- 识别评论中的正面与负面成分\n- 判断主导情感方向\n- 正负均衡时按保守策略默认判为 negative\n- 输出唯一极性标签\n\n## Workflow Steps\n\n- 检查评论是否同时包含正面与负面表述；若情感单一，直接按单一极性处理，不适用本规则。\n- 若整体偏正面、仅有次要批评，判为 positive。\n- 若整体偏负面、仅有次要称赞，判为 negative。\n- 若正负大致均衡，默认判为 negative（保守策略）。\n- 输出该评论的唯一极性标签（positive/negative）。\n\n## Constraints\n\n- 每条混合评论只能输出一个极性标签\n- 均衡情形必须默认判为 negative\n- 判定需基于评论中正负成分的相对主导性\n\n## Cautions\n\n- 显著问题（如耐用性缺陷）应视为重要负面信号，可能使整体判为 negative\n- 保守默认负面可能低估正面倾向，需在均衡情形下才启用\n\n## Output Contract\n\n- 每条混合评论获得唯一极性标签（positive/negative）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 产品保暖又时尚，但洗几次后起球且价格过高\n- Therapist/Output: negative\n- Notes: 耐用性问题显著，整体判为负面",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为混合情感评论确定单一极性标签",
+      "domain": "运营流程",
+      "task_family": "情感分类",
+      "method_family": "规则判定",
+      "stage": "评论极性标注",
+      "applicable_signals": [
+        "评论中同时出现正面与负面表述",
+        "下游计数任务要求每条评论只有一个极性标签"
+      ],
+      "contraindications": [
+        "评论情感单一明确",
+        "任务不涉及情感极性计数"
+      ],
+      "intervention_moves": [
+        "识别评论中的正面与负面成分",
+        "判断主导情感方向",
+        "正负均衡时按保守策略默认判为 negative",
+        "输出唯一极性标签"
+      ],
+      "triggers": [
+        "评论同时含正面与负面表述",
+        "需要为计数任务输出单一极性标签"
+      ],
+      "workflow_steps": [
+        "检查评论是否同时包含正面与负面表述；若情感单一，直接按单一极性处理，不适用本规则。",
+        "若整体偏正面、仅有次要批评，判为 positive。",
+        "若整体偏负面、仅有次要称赞，判为 negative。",
+        "若正负大致均衡，默认判为 negative（保守策略）。",
+        "输出该评论的唯一极性标签（positive/negative）。"
+      ],
+      "constraints": [
+        "每条混合评论只能输出一个极性标签",
+        "均衡情形必须默认判为 negative",
+        "判定需基于评论中正负成分的相对主导性"
+      ],
+      "cautions": [
+        "显著问题（如耐用性缺陷）应视为重要负面信号，可能使整体判为 negative",
+        "保守默认负面可能低估正面倾向，需在均衡情形下才启用"
+      ],
+      "output_contract": [
+        "每条混合评论获得唯一极性标签（positive/negative）"
+      ],
+      "examples": [
+        {
+          "input": "产品保暖又时尚，但洗几次后起球且价格过高",
+          "output": "negative",
+          "notes": "耐用性问题显著，整体判为负面"
+        }
+      ],
+      "tags": [
+        "情感分类",
+        "极性判定",
+        "混合评论",
+        "规则判定",
+        "计数前置"
+      ],
+      "support_ids": [
+        "ef75e796-9f2b-564b-bc85-b383a5f7b519"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "230aedb4-184f-5750-97b5-f033de5099a6"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|为混合情感评论确定单一极性标签|运营流程|情感分类|规则判定|评论极性标注|混合情感评论极性判定规则",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "16ebdcd6-732e-5917-9192-2e417808dd99",
+      "name": "评论情感分类与计数",
+      "description": "对语义上可判定情感的评论文本判定主导情感（正面/负面/混合），并据此递增对应计数器；用于需要从评论中提取情感倾向并汇总统计的场景。",
+      "skill_body": "对每条语义上可判定情感的评论执行情感判定：分析语气与用词，识别正面/负面属性描述，结合整体评价（推荐还是批评）判断倾向；若为混合评论，判断哪种情感占主导；随后递增与该情感类别对应的计数器。若评论语义不适用或无法判定情感，或输入缺失/无效，则不进行分类与计数。\n\n## Objective\n\n判定单条评论的主导情感并更新对应计数\n## Applicable Signals\n\n- 评论文本包含可解读的语气与用词\n- 评论包含正面或负面属性描述\n- 评论含整体评价（推荐或批评）\n- 需要按情感类别汇总统计\n\n## Contraindications\n\n- 评论语义不适用或无法判定情感\n- 输入缺失或无效\n\n## Intervention Moves\n\n- 分析评论的语气与用词\n- 识别正面/负面属性描述\n- 结合整体评价判断推荐还是批评\n- 对混合评论判断主导情感\n- 递增对应情感类别的计数器\n\n## Workflow Steps\n\n- 确认评论语义上可判定情感，否则跳过分类与计数\n- 分析语气与用词\n- 识别正面/负面属性描述\n- 结合整体评价判断倾向\n- 若为混合评论，判断主导情感\n- 递增对应情感类别的计数器\n\n## Constraints\n\n- 仅在评论语义上可判定情感时执行分类\n- 混合评论必须确定主导情感后再计数\n- 每条评论只递增一个对应类别的计数器\n\n## Cautions\n\n- 语义不适用或无法判定情感时不应强行分类\n- 输入缺失或无效时不应计数\n\n## Output Contract\n\n- 每条评论的情感标签（正面/负面/混合）及更新后的分类计数器\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论语气积极、以推荐为主，含正面属性描述\n- Therapist/Output: 情感标签：正面；正面计数器递增\n- Notes: 整体评价为推荐时判定为正面\n\n### Example 2\n\n- Client/Input: 评论同时含正面与负面描述，但批评占主导\n- Therapist/Output: 情感标签：混合（负面主导）；负面计数器递增\n- Notes: 混合评论需判断主导情感",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "判定单条评论的主导情感并更新对应计数",
+      "domain": "评论分析",
+      "task_family": "情感分类",
+      "method_family": "规则化情感判定",
+      "stage": "分类与计数",
+      "applicable_signals": [
+        "评论文本包含可解读的语气与用词",
+        "评论包含正面或负面属性描述",
+        "评论含整体评价（推荐或批评）",
+        "需要按情感类别汇总统计"
+      ],
+      "contraindications": [
+        "评论语义不适用或无法判定情感",
+        "输入缺失或无效"
+      ],
+      "intervention_moves": [
+        "分析评论的语气与用词",
+        "识别正面/负面属性描述",
+        "结合整体评价判断推荐还是批评",
+        "对混合评论判断主导情感",
+        "递增对应情感类别的计数器"
+      ],
+      "triggers": [
+        "评论语义上可判定情感",
+        "需要按情感类别累计计数"
+      ],
+      "workflow_steps": [
+        "确认评论语义上可判定情感，否则跳过分类与计数",
+        "分析语气与用词",
+        "识别正面/负面属性描述",
+        "结合整体评价判断倾向",
+        "若为混合评论，判断主导情感",
+        "递增对应情感类别的计数器"
+      ],
+      "constraints": [
+        "仅在评论语义上可判定情感时执行分类",
+        "混合评论必须确定主导情感后再计数",
+        "每条评论只递增一个对应类别的计数器"
+      ],
+      "cautions": [
+        "语义不适用或无法判定情感时不应强行分类",
+        "输入缺失或无效时不应计数"
+      ],
+      "output_contract": [
+        "每条评论的情感标签（正面/负面/混合）及更新后的分类计数器"
+      ],
+      "examples": [
+        {
+          "input": "评论语气积极、以推荐为主，含正面属性描述",
+          "output": "情感标签：正面；正面计数器递增",
+          "notes": "整体评价为推荐时判定为正面"
+        },
+        {
+          "input": "评论同时含正面与负面描述，但批评占主导",
+          "output": "情感标签：混合（负面主导）；负面计数器递增",
+          "notes": "混合评论需判断主导情感"
+        }
+      ],
+      "tags": [
+        "情感分类",
+        "计数",
+        "评论分析",
+        "规则化判定"
+      ],
+      "support_ids": [
+        "48d1b682-6c0b-59c4-9133-ad42c6e0b22e"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "caee4562-2efb-5550-bdd7-087627ab54d8"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.6,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|micro_skill_node|判定单条评论的主导情感并更新对应计数|评论分析|情感分类|规则化情感判定|分类与计数|评论情感分类与计数",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "5480a4f1-46d8-473f-ba93-8fb1cd2c33ff",
+      "entity_type": "skill",
+      "entity_id": "e80fc558-4df8-58fd-8609-82690a6a38fe",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能为单条评论情感标注的独立微技能，与同批次的混合情感极性规则、适用性判定、条件计数在职责上互补而非重复，且无冲突证据，应保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "e80fc558-4df8-58fd-8609-82690a6a38fe",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "3c9a3dc4-9c53-5a8b-9f84-408600f414a5"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "1264ae14-d4ac-4627-bd84-47d1008cd59e",
+      "entity_type": "skill",
+      "entity_id": "7e9b6184-6ad1-511a-a756-2b9fff70151b",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "7e9b6184-6ad1-511a-a756-2b9fff70151b",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "ef75e796-9f2b-564b-bc85-b383a5f7b519"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "76b573c2-1143-4922-a710-593b3decb23f",
+      "entity_type": "skill",
+      "entity_id": "16ebdcd6-732e-5917-9192-2e417808dd99",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "16ebdcd6-732e-5917-9192-2e417808dd99",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "48d1b682-6c0b-59c4-9133-ad42c6e0b22e"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

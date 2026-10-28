@@ -1,0 +1,160 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "容量与冲突检查",
+  "run_id": "20261027T222251_1c68b126",
+  "skills": [
+    {
+      "skill_id": "d3e1cf4c-29a0-51ad-a791-f42d7e30c644",
+      "name": "边容量准入校验",
+      "description": "在离散 tick 仿真的容量与冲突检查阶段，对车辆 ENTER_EDGE 请求做准入判定：若目标边当前车辆数已达 MaxVehicles，则拒绝请求并让车辆在该节点执行 WAIT。",
+      "skill_body": "在容量与冲突检查阶段处理每个 ENTER_EDGE 请求：读取目标边当前车辆数与 MaxVehicles 上限；若批准后车辆数将超过上限，则拒绝该请求，并令该车辆在本 tick 于当前节点执行 WAIT；否则批准进入。逐请求给出批准或拒绝结果。\n\n## Objective\n\n在容量与冲突检查阶段正确批准或拒绝车辆进入边的请求，避免超出边容量上限\n## Applicable Signals\n\n- 车辆在节点请求 ENTER_EDGE 进入某条边\n- 目标边已有车辆数接近或达到 MaxVehicles\n\n## Contraindications\n\n- 请求不是进入边而是其他动作（如 WAIT、装卸）\n- 目标边不存在或未定义容量\n\n## Intervention Moves\n\n- 读取目标边当前车辆数与 MaxVehicles 上限\n- 比较批准后车辆数是否超过上限\n- 超限则拒绝请求并令车辆在本 tick 于当前节点执行 WAIT\n- 未超限则批准进入\n\n## Workflow Steps\n\n- 识别当前 tick 的 ENTER_EDGE 请求及其目标边\n- 读取目标边当前车辆数与 MaxVehicles 上限\n- 判断批准后车辆数是否超过 MaxVehicles\n- 若超过则拒绝请求，并令车辆在本 tick 于当前节点执行 WAIT\n- 若未超过则批准进入\n- 输出每个请求的批准或拒绝结果\n\n## Constraints\n\n- 判定须在容量与冲突检查阶段完成\n- 不得批准导致目标边车辆数超过 MaxVehicles 的请求\n\n## Cautions\n\n- 被拒绝的车辆须在本 tick 执行 WAIT，而非静默丢弃请求\n\n## Output Contract\n\n- 对每个 ENTER_EDGE 请求给出批准或拒绝结果；被拒绝车辆在该 tick 执行 WAIT。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: tick 5，E9 上已有 2 辆车，MaxVehicles = 2，N4 处第三辆车请求 ENTER_EDGE(E9)\n- Therapist/Output: 拒绝该请求；该车辆在本 tick 于 N4 执行 WAIT\n- Notes: 批准将超过 MaxVehicles = 2",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+      "parent_candidate_ids": [
+        "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+        "730695a2-c80a-54b5-aadf-c616118dd310"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.85,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在容量与冲突检查阶段正确批准或拒绝车辆进入边的请求，避免超出边容量上限",
+      "domain": "交通仿真规则",
+      "task_family": "容量与冲突检查",
+      "method_family": "准入判定",
+      "stage": "容量与冲突检查阶段",
+      "applicable_signals": [
+        "车辆在节点请求 ENTER_EDGE 进入某条边",
+        "目标边已有车辆数接近或达到 MaxVehicles"
+      ],
+      "contraindications": [
+        "请求不是进入边而是其他动作（如 WAIT、装卸）",
+        "目标边不存在或未定义容量"
+      ],
+      "intervention_moves": [
+        "读取目标边当前车辆数与 MaxVehicles 上限",
+        "比较批准后车辆数是否超过上限",
+        "超限则拒绝请求并令车辆在本 tick 于当前节点执行 WAIT",
+        "未超限则批准进入"
+      ],
+      "triggers": [
+        "车辆在节点请求 ENTER_EDGE 进入某条边",
+        "需要判断目标边是否已达 MaxVehicles 上限"
+      ],
+      "workflow_steps": [
+        "识别当前 tick 的 ENTER_EDGE 请求及其目标边",
+        "读取目标边当前车辆数与 MaxVehicles 上限",
+        "判断批准后车辆数是否超过 MaxVehicles",
+        "若超过则拒绝请求，并令车辆在本 tick 于当前节点执行 WAIT",
+        "若未超过则批准进入",
+        "输出每个请求的批准或拒绝结果"
+      ],
+      "constraints": [
+        "判定须在容量与冲突检查阶段完成",
+        "不得批准导致目标边车辆数超过 MaxVehicles 的请求"
+      ],
+      "cautions": [
+        "被拒绝的车辆须在本 tick 执行 WAIT，而非静默丢弃请求"
+      ],
+      "output_contract": [
+        "对每个 ENTER_EDGE 请求给出批准或拒绝结果；被拒绝车辆在该 tick 执行 WAIT。"
+      ],
+      "examples": [
+        {
+          "input": "tick 5，E9 上已有 2 辆车，MaxVehicles = 2，N4 处第三辆车请求 ENTER_EDGE(E9)",
+          "output": "拒绝该请求；该车辆在本 tick 于 N4 执行 WAIT",
+          "notes": "批准将超过 MaxVehicles = 2"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "容量检查",
+        "准入判定",
+        "ENTER_EDGE",
+        "离散tick"
+      ],
+      "support_ids": [
+        "b9239b4b-47d6-55c8-80bc-712dece934b0"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "ff0923ae-fdff-5a22-9187-48e9feadf3c3"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||session_skill|session|micro_skill_node|在容量与冲突检查阶段正确批准或拒绝车辆进入边的请求，避免超出边容量上限|交通仿真规则|容量与冲突检查|准入判定|容量与冲突检查阶段|边容量准入校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+        "parent_candidate_ids": [
+          "5f55b184-1a2e-5197-aa2f-6d52517d705f",
+          "730695a2-c80a-54b5-aadf-c616118dd310"
+        ],
+        "hierarchy_confidence": 0.85,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "6f368d8b-bca6-4ae3-94ae-942599f3a808",
+      "entity_type": "skill",
+      "entity_id": "d3e1cf4c-29a0-51ad-a791-f42d7e30c644",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d3e1cf4c-29a0-51ad-a791-f42d7e30c644",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "b9239b4b-47d6-55c8-80bc-712dece934b0"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

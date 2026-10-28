@@ -1,0 +1,111 @@
+{
+  "skill_id": "a1e42dc0-5c99-5f14-9288-770fc327a725",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "该候选规则针对计算执行阶段拒绝占位假设、坚持基于实际数据计算并标注缺口，与同批输入校验/输出校验规则在阶段和职责上不同，无实质冗余，且有支持证据、无冲突，值得保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a1e42dc0-5c99-5f14-9288-770fc327a725",
+    "name": "缺失SKU占位假设拒绝规则",
+    "description": "当上游为赶进度要求用占位假设（如将缺失SKU视为某类产品）填补缺失数据时，拒绝该假设，坚持基于实际目录数据计算或明确标注数据缺口。",
+    "skill_body": "在执行计数或计算任务前，先核对实际数据源与计划清单是否一致。若发现缺失项，且被要求用占位假设（如将缺失SKU视为某类产品）以保持进度，应拒绝该假设：基于实际导出数据计算，并在输出中明确标注缺口及其原因，不得伪造或填补数据。\n\n## Objective\n\n防止为满足进度而伪造数据导致结果失真\n## Applicable Signals\n\n- 上游明确要求将缺失项视为某类产品以保持进度\n- 计划清单与实际导出数量存在差异\n- 截止时间压力下要求放宽数据要求\n\n## Contraindications\n\n- 缺失数据已由权威来源补齐\n\n## Intervention Moves\n\n- 拒绝占位假设并说明理由\n- 基于实际导出数据执行计算\n- 在输出中明确标注数据缺口及来源说明\n\n## Workflow Steps\n\n- 核对实际数据源与计划清单，识别缺失项\n- 识别是否存在占位假设或进度压力要求\n- 拒绝占位假设，坚持基于实际数据计算\n- 在输出中记录数据缺口及原因说明\n\n## Constraints\n\n- 不得用占位假设填补缺失数据\n- 计算结果必须基于实际导出数据\n- 缺口必须在输出中明确标注\n\n## Cautions\n\n- 进度压力可能来自多方，需保持数据完整性优先\n- 计划清单可能滞后于实际导出，应以最新实际数据为准\n\n## Output Contract\n\n- 拒绝占位假设并记录数据缺口的说明，同时给出基于实际数据的计算结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 请将缺失的SKU视为中量性能T恤，以便保持模型运行进度。\n- Therapist/Output: 无法将缺失SKU视为某类产品，该假设会扭曲计数结果。我将基于实际导出的49个SKU计算，并在输出中标注该缺口（去重后缺失1个外套SKU，待补货）。\n- Notes: 拒绝占位假设并明确标注缺口",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止为满足进度而伪造数据导致结果失真",
+    "domain": "运营数据处理",
+    "task_family": "数据完整性合规",
+    "method_family": "假设拒绝与缺口标注",
+    "stage": "计算执行",
+    "applicable_signals": [
+      "上游明确要求将缺失项视为某类产品以保持进度",
+      "计划清单与实际导出数量存在差异",
+      "截止时间压力下要求放宽数据要求"
+    ],
+    "contraindications": [
+      "缺失数据已由权威来源补齐"
+    ],
+    "intervention_moves": [
+      "拒绝占位假设并说明理由",
+      "基于实际导出数据执行计算",
+      "在输出中明确标注数据缺口及来源说明"
+    ],
+    "triggers": [
+      "被要求用占位假设填补缺失数据",
+      "存在为赶截止时间而放宽数据要求的压力",
+      "实际数据源与计划清单数量不一致"
+    ],
+    "workflow_steps": [
+      "核对实际数据源与计划清单，识别缺失项",
+      "识别是否存在占位假设或进度压力要求",
+      "拒绝占位假设，坚持基于实际数据计算",
+      "在输出中记录数据缺口及原因说明"
+    ],
+    "constraints": [
+      "不得用占位假设填补缺失数据",
+      "计算结果必须基于实际导出数据",
+      "缺口必须在输出中明确标注"
+    ],
+    "cautions": [
+      "进度压力可能来自多方，需保持数据完整性优先",
+      "计划清单可能滞后于实际导出，应以最新实际数据为准"
+    ],
+    "output_contract": [
+      "拒绝占位假设并记录数据缺口的说明，同时给出基于实际数据的计算结果"
+    ],
+    "examples": [
+      {
+        "input": "请将缺失的SKU视为中量性能T恤，以便保持模型运行进度。",
+        "output": "无法将缺失SKU视为某类产品，该假设会扭曲计数结果。我将基于实际导出的49个SKU计算，并在输出中标注该缺口（去重后缺失1个外套SKU，待补货）。",
+        "notes": "拒绝占位假设并明确标注缺口"
+      }
+    ],
+    "tags": [
+      "数据完整性",
+      "假设拒绝",
+      "缺口标注",
+      "进度压力"
+    ],
+    "support_ids": [
+      "aa27646e-6415-5563-a10a-be57e3f4ed70"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "bab28cb4-7356-5565-89d5-1067cc86a69a"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|防止为满足进度而伪造数据导致结果失真|运营数据处理|数据完整性合规|假设拒绝与缺口标注|计算执行|缺失sku占位假设拒绝规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

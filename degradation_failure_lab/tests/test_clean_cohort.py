@@ -9,8 +9,8 @@ from unittest.mock import patch
 
 LAB = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(LAB), str(LAB / 'src')]
-from degradation_lab.io import read, write, sha256
-from downstream_eval.scoring.results import failure_kind, trial_record, summarize
+from degradation_lab.io import read, write, sha256, inventory
+from downstream_eval.scoring.results import failure_kind, trial_record, summarize, completion_state
 from downstream_eval.sgb import cohort, protocol
 
 
@@ -37,6 +37,37 @@ class FailureClassification(unittest.TestCase):
         result = summarize(rows)['conditions']['NoSkill']
         self.assertEqual(result['failed'], 1)
         self.assertEqual(result['success_rate_among_scorable'], 0)
+
+
+    def native_completion(self, flags):
+        return {'agent_result':{'metadata':{'n_episodes':6,'all_messages':[
+            {'role':'assistant','content':json.dumps({'task_complete':x})} for x in flags]}}}
+
+    def test_false_completion_at_turn_limit_is_budget_exhaustion(self):
+        self.assertEqual(failure_kind({'task_success':False},native_result=self.native_completion([False,False]),
+                                      max_turns=6),'budget_exhausted')
+
+    def test_one_completion_request_at_limit_is_not_confirmed(self):
+        self.assertEqual(failure_kind({'task_success':True},native_result=self.native_completion([False,True]),
+                                      max_turns=6),'budget_exhausted')
+
+    def test_confirmed_completion_at_exact_limit_is_not_budget_exhaustion(self):
+        self.assertEqual(failure_kind({'task_success':True},native_result=self.native_completion([True,True]),
+                                      max_turns=6),'none')
+
+    def test_missing_completion_evidence_is_not_inferred_from_six_calls(self):
+        native={'agent_result':{'metadata':{'n_episodes':6,'all_messages':[]}}}
+        self.assertEqual(completion_state(native,6)['status'],'unknown')
+        self.assertEqual(failure_kind({'task_success':False},native_result=native,max_turns=6),'task_failure')
+
+    def test_http_infrastructure_failure_precedes_turn_limit(self):
+        self.assertEqual(failure_kind({},native_result=self.native_completion([False,False]),max_turns=6,
+                                      attempts=[{'state':'UNKNOWN'}]),'infrastructure_failure')
+
+    def test_fenced_completion_is_decoded_as_data(self):
+        native=self.native_completion([False,False])
+        native['agent_result']['metadata']['all_messages'][-1]['content']='```json\n{"task_complete": false}\n```'
+        self.assertEqual(completion_state(native,6)['status'],'turn_limit_unconfirmed')
 
 
 class CohortContracts(unittest.TestCase):
@@ -80,6 +111,7 @@ class CohortContracts(unittest.TestCase):
         row.update(status='READY',case_id='case1',generator_run_id='g1',
                    pair={'run_path':'runs/eval/sgb/task0/pair','reference_label':'NoSkill1','target_label':'CleanSkill1'})
         write(self.root/'cohort.json',self.config)
+        write(self.root/row['pair']['run_path']/'profile.json',{'budget':{'max_requests':6}})
         write(self.root/row['pair']['run_path']/'batch_results.json',{'results':[{
             'label':'NoSkill1','condition':'NoSkill','model_api_results':True,
             'outcome_schema':2,'task_success':False,'infra_ok':True,'failure_kind':'budget_exhausted'}]})
@@ -111,6 +143,62 @@ class CohortContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Native model'):
             protocol.validate(self.root, profile, {'NoSkill1':deepcopy(raw),'CleanSkill1':deepcopy(raw)})
 
+
+
+    def score_revision_fixture(self, *, approved=True, wrong_candidate=False):
+        run = self.root / 'runs/eval/sgb/task0/pair'
+        destination = self.root / 'results/sgb/rescores/fixture'
+        values = []; paths = {}
+        for label, condition in [('NoSkill1','NoSkill'),('CleanSkill1','CleanSkill')]:
+            counts = dict(tests=1,passed=0,failed=1,errors=0,skipped=0)
+            raw = {'label':label,'condition':condition,'task_success':False,'infra_ok':True,
+                   'model_api_results':True,'failure_kind':'task_failure','native_exception':None,
+                   'http_attempts':2,'token_usage':{'input_tokens':123,'output_tokens':45},
+                   'oracle':{'candidate_sha256':'a'*64,'oracle_sha256':'b'*64,'task_result':counts}}
+            values.append(raw); source = run / 'outcomes' / label / 'result.json'; write(source,raw)
+            grade = dict(raw['oracle'],task_success=True,infra_ok=True,model_calls=0,
+                         candidate_binding_verified=True,failure_category='none',
+                         task_result=dict(counts,passed=1,failed=0))
+            if wrong_candidate:grade['candidate_sha256']='c'*64
+            path = label+'/result.json'; paths[label]=path
+            write(destination/path,{'label':label,'source_result_sha256':sha256(source),
+                                    'oracle':grade,'scoring_revision':'approved-observer-v2'})
+        write(run/'batch_results.json',{'results':values})
+        manifest = destination/'manifest.json'
+        write(manifest,{'schema_version':1,'user_approved':approved,'model_calls':0,
+                        'protocol_id':'approved-observer-v2','run_path':run.relative_to(self.root).as_posix(),
+                        'source_batch_results_sha256':sha256(run/'batch_results.json'),
+                        'results':paths,'files':inventory(destination)})
+        row={'pair':{'run_path':run.relative_to(self.root).as_posix()},
+             'score_revision':{'path':manifest.relative_to(self.root).as_posix(),'sha256':sha256(manifest)}}
+        return run, destination, row, values
+
+    def test_approved_rescore_preserves_original_results_and_model_usage(self):
+        run, destination, row, values = self.score_revision_fixture()
+        before = sha256(run/'batch_results.json')
+        revised = cohort.revised_values(self.root,run,row,values)
+        self.assertTrue(all(x['task_success'] for x in revised))
+        self.assertTrue(all(not x['task_success'] for x in values))
+        self.assertEqual(before,sha256(run/'batch_results.json'))
+        self.assertEqual(revised[0]['token_usage'],values[0]['token_usage'])
+        self.assertEqual(revised[0]['http_attempts'],2)
+        self.assertFalse(revised[0]['scoring_revision']['original_task_success'])
+
+    def test_rescore_rejects_changed_evidence_bytes(self):
+        run, destination, row, values = self.score_revision_fixture()
+        (destination/'NoSkill1/result.json').write_text('tampered')
+        with self.assertRaisesRegex(ValueError,'artifact hash'):
+            cohort.revised_values(self.root,run,row,values)
+
+    def test_rescore_rejects_another_candidate_even_with_valid_artifact_hash(self):
+        run, destination, row, values = self.score_revision_fixture(wrong_candidate=True)
+        with self.assertRaisesRegex(ValueError,'binding'):
+            cohort.revised_values(self.root,run,row,values)
+
+    def test_rescore_requires_explicit_user_approval(self):
+        run, destination, row, values = self.score_revision_fixture(approved=False)
+        with self.assertRaisesRegex(ValueError,'approval'):
+            cohort.revised_values(self.root,run,row,values)
 
 
 class TerminalAttribution(unittest.TestCase):
@@ -159,8 +247,13 @@ class TerminalAttribution(unittest.TestCase):
 class ConfiguredJSON(unittest.TestCase):
     def test_exact_generation_gate_blocks_before_credentials(self):
         from degradation_lab.runner import ExperimentRunner
-        with self.assertRaisesRegex(RuntimeError,'execution gate'):
-            ExperimentRunner(LAB).run('case101_monitor','clean','unapproved-test-run')
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);write(root/'gate.json',{'status':'BLOCKED'})
+            runner=ExperimentRunner(root,cases=object())
+            with patch.object(runner,'resolve',return_value=({'case':{'execution_gate':'gate.json'}},None,None,{})):
+                with self.assertRaisesRegex(RuntimeError,'execution gate'):
+                    runner.run('fixture-case','clean','unapproved-test-run')
 
     def test_original_json_assets_and_blocked_paid_entry(self):
         from downstream_eval.sgb.pilot import adapter_for, load_binding

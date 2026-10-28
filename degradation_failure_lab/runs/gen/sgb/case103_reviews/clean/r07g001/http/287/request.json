@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"4a671e17-b090-5612-9e22-01795b9e996e\", \"name\": \"不完整数据假设标注与继续执行\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在数据不完整时透明地继续并标注假设\", \"applicable_signals\": [\"数据集不完美但存在交付时限\", \"需要在不阻塞的情况下推进分析\", \"上游明确要求基于现有数据推进并标注假设\"], \"contraindications\": [\"输入校验规则要求必须阻断\", \"无法合理标注假设\"], \"workflow_steps\": [\"识别当前数据集的缺口与不完美之处\", \"判断缺口是否属于必须阻断的硬性校验问题\", \"在非阻断情况下基于现有数据执行分析\", \"在结果中显式标注所做假设、数据局限及影响\", \"交付带假设标注的分析结果并说明后续可补全项\"], \"constraints\": [\"不得静默外推未标注的假设\", \"不得在硬性校验要求阻断时强行继续\", \"假设标注须与结果一同交付\"], \"triggers\": [\"数据集不完美但存在交付时限\", \"需要在不阻塞的情况下推进分析\", \"上游要求先交付部分结果并标注假设\"], \"output_contract\": [\"带假设标注的分析结果，包含所做假设、数据局限及其对结论的影响说明。\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"9ccdd3de-95c4-539a-8b1a-1d6792e1b2f3\", \"name\": \"评审到SKU适用性分析流程\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"完成评审到SKU的适用性分析并输出每SKU计数与状态消息\", \"applicable_signals\": [\"提供了产品目录JSON与评审数据\", \"任务要求按SKU汇总评审计数\", \"下游需要每SKU计数JSON与状态消息\"], \"workflow_steps\": [\"读取并校验产品目录JSON，确认对象数量与类别取值（仅tops/bottoms/outerwear）\", \"读取并校验评审数据，确认所需列齐全\", \"对每条评审执行类别匹配与语义相似度判断，映射到对应SKU\", \"对映射结果进行情感分类\", \"按SKU汇总计数\", \"生成每SKU计数JSON与简洁状态消息，标注任何假设与阻塞项\"], \"output_contract\": [\"每SKU计数JSON及简洁状态消息，包含假设标注与阻塞说明（如有）\"], \"score\": 0.5865062298556019}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

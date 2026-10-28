@@ -1,0 +1,113 @@
+{
+  "skill_id": "96b5149a-e7c7-5b07-b072-a7cdb27acf04",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "96b5149a-e7c7-5b07-b072-a7cdb27acf04",
+    "name": "Spider 内动态设置覆盖",
+    "description": "在 Spider 的 from_crawler 中通过 settings.set 以 spider 优先级动态写入设置，用于按传入参数定制单个 Spider 的行为；当某个 Spider 需要根据参数调整设置时使用。",
+    "skill_body": "在 Spider 的 from_crawler 类方法中，先调用父类 from_crawler 获得 spider 实例，再检查传入的 kwargs 是否包含目标参数；若包含，则调用 spider.settings.set(\"SETTING_NAME\", value, priority=\"spider\") 以 spider 优先级写入设置，最后返回 spider 实例。仅对单个 Spider 特有的参数化配置使用此方式。\n\n## Objective\n\n在 Spider 初始化时按参数覆盖指定设置\n## Applicable Signals\n\n- Spider 需根据传入参数调整设置\n- 需要在 from_crawler 中按参数定制单个 Spider 行为\n\n## Contraindications\n\n- 配置对所有 Spider 通用，应放入项目 settings.py\n- 无需按参数定制的静态配置\n\n## Intervention Moves\n\n- 在 from_crawler 中调用 super().from_crawler(crawler, *args, **kwargs) 获取 spider 实例\n- 检查 kwargs 中是否存在目标参数\n- 调用 spider.settings.set 并指定 priority=\"spider\" 写入设置\n- 返回 spider 实例\n\n## Workflow Steps\n\n- 定义或重写 Spider 的 from_crawler 类方法\n- 调用父类 from_crawler 获得 spider 实例\n- 判断目标参数是否在 kwargs 中\n- 若存在，则 spider.settings.set(\"SETTING_NAME\", kwargs[\"param\"], priority=\"spider\")\n- 返回 spider 实例\n\n## Constraints\n\n- 必须通过父类 from_crawler 获取 spider 实例后再写入设置\n- 写入时须显式指定 priority=\"spider\"\n- 仅用于单个 Spider 的参数化配置\n\n## Cautions\n\n- 通用配置不应放在 Spider 内，应放入项目 settings.py 以保持集中管理\n\n## Output Contract\n\n- Spider 实例上已按 spider 优先级写入的设置值\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Spider 的 from_crawler 收到 kwargs 中包含 some_argument\n- Therapist/Output: spider.settings.set(\"SOME_SETTING\", kwargs[\"some_argument\"], priority=\"spider\") 后返回 spider\n- Notes: 以 spider 优先级覆盖设置",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在 Spider 初始化时按参数覆盖指定设置",
+    "domain": "scrapy",
+    "task_family": "配置管理",
+    "method_family": "运行时设置注入",
+    "stage": "Spider 初始化",
+    "applicable_signals": [
+      "Spider 需根据传入参数调整设置",
+      "需要在 from_crawler 中按参数定制单个 Spider 行为"
+    ],
+    "contraindications": [
+      "配置对所有 Spider 通用，应放入项目 settings.py",
+      "无需按参数定制的静态配置"
+    ],
+    "intervention_moves": [
+      "在 from_crawler 中调用 super().from_crawler(crawler, *args, **kwargs) 获取 spider 实例",
+      "检查 kwargs 中是否存在目标参数",
+      "调用 spider.settings.set 并指定 priority=\"spider\" 写入设置",
+      "返回 spider 实例"
+    ],
+    "triggers": [
+      "Spider 需根据传入参数调整设置",
+      "需要在 Spider 初始化阶段覆盖某个设置值",
+      "配置仅适用于单个 Spider 而非全部 Spider"
+    ],
+    "workflow_steps": [
+      "定义或重写 Spider 的 from_crawler 类方法",
+      "调用父类 from_crawler 获得 spider 实例",
+      "判断目标参数是否在 kwargs 中",
+      "若存在，则 spider.settings.set(\"SETTING_NAME\", kwargs[\"param\"], priority=\"spider\")",
+      "返回 spider 实例"
+    ],
+    "constraints": [
+      "必须通过父类 from_crawler 获取 spider 实例后再写入设置",
+      "写入时须显式指定 priority=\"spider\"",
+      "仅用于单个 Spider 的参数化配置"
+    ],
+    "cautions": [
+      "通用配置不应放在 Spider 内，应放入项目 settings.py 以保持集中管理"
+    ],
+    "output_contract": [
+      "Spider 实例上已按 spider 优先级写入的设置值"
+    ],
+    "examples": [
+      {
+        "input": "Spider 的 from_crawler 收到 kwargs 中包含 some_argument",
+        "output": "spider.settings.set(\"SOME_SETTING\", kwargs[\"some_argument\"], priority=\"spider\") 后返回 spider",
+        "notes": "以 spider 优先级覆盖设置"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "settings",
+      "spider",
+      "from_crawler",
+      "运行时配置"
+    ],
+    "support_ids": [
+      "f31aad19-8430-5d68-9c9f-521cb1e6d516"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "28b2e31f-4b13-56eb-87be-d42a8f580dcb"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.65,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||micro_skill|micro|micro_skill_node|在 spider 初始化时按参数覆盖指定设置|scrapy|配置管理|运行时设置注入|spider 初始化|spider 内动态设置覆盖"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

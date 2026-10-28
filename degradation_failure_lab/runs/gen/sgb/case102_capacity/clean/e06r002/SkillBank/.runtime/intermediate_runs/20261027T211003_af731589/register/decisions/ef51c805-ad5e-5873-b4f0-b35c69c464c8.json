@@ -1,0 +1,110 @@
+{
+  "skill_id": "ef51c805-ad5e-5873-b4f0-b35c69c464c8",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“有向路网对象建模规范”高度重叠，后者已完整覆盖边属性（长度、基准通行时间、车道数、每车道容量、道路等级、信号类型）及节点信号归属，候选仅提供固定文本格式的逐行解析，属于同一能力的冗余细化，无需单独保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "ef51c805-ad5e-5873-b4f0-b35c69c464c8",
+    "name": "路网边属性与信号配置解析",
+    "description": "按固定字段格式解析每条边的起止节点、道路等级、基础通行时间、车道数、每车道容量及目标节点信号类型，用于构建仿真路网拓扑。适用于从文本边定义构建路网拓扑或核对边容量与信号类型。",
+    "skill_body": "读取每条边定义行，按格式 `EdgeID: From to To | RoadClass | BaseTravelTime | LaneCount | CapacityPerLane | SignalType at To` 逐字段解析，输出结构化边属性表。若某行字段缺失或格式不符，标记为不完整而非猜测补全。\n\n## Objective\n\n将边定义行转换为结构化路网属性表\n## Applicable Signals\n\n- 存在按固定字段格式书写的边定义行\n- 需要构建或核对路网拓扑与边属性\n\n## Contraindications\n\n- 缺少边定义行或字段不完整\n- 边定义格式与固定字段格式不符\n\n## Intervention Moves\n\n- 逐行按分隔符拆分字段\n- 将起止节点、道路等级、基础通行时间、车道数、每车道容量、目标节点信号类型映射为结构化列\n- 对字段缺失或格式异常的行做标记\n\n## Workflow Steps\n\n- 识别边定义行并确认字段分隔格式\n- 逐行解析 EdgeID、From、To、RoadClass、BaseTravelTime、LaneCount、CapacityPerLane、SignalType at To\n- 将解析结果整理为结构化边属性表\n- 对不完整或异常行标注，不进行推测补全\n\n## Constraints\n\n- 严格按固定字段顺序解析\n- 字段缺失时标记而非猜测\n\n## Cautions\n\n- 信号类型归属于目标节点（at To），需与目标节点对应\n- 道路等级与容量字段需保持原值，不做换算\n\n## Output Contract\n\n- 结构化边属性表，含起止节点、道路等级、基础通行时间、车道数、每车道容量、目标节点信号类型\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: E2: N2 to N3 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED\n- Therapist/Output: EdgeID=E2, From=N2, To=N3, RoadClass=ARTERIAL, BaseTravelTime=2, LaneCount=2, CapacityPerLane=2, SignalType at To=SIGNALIZED",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "将边定义行转换为结构化路网属性表",
+    "domain": "交通仿真",
+    "task_family": "路网建模",
+    "method_family": "结构化解析",
+    "stage": "场景初始化",
+    "applicable_signals": [
+      "存在按固定字段格式书写的边定义行",
+      "需要构建或核对路网拓扑与边属性"
+    ],
+    "contraindications": [
+      "缺少边定义行或字段不完整",
+      "边定义格式与固定字段格式不符"
+    ],
+    "intervention_moves": [
+      "逐行按分隔符拆分字段",
+      "将起止节点、道路等级、基础通行时间、车道数、每车道容量、目标节点信号类型映射为结构化列",
+      "对字段缺失或格式异常的行做标记"
+    ],
+    "triggers": [
+      "需要从文本边定义构建路网拓扑",
+      "需要核对边容量与信号类型",
+      "需要将边定义行转换为结构化属性表"
+    ],
+    "workflow_steps": [
+      "识别边定义行并确认字段分隔格式",
+      "逐行解析 EdgeID、From、To、RoadClass、BaseTravelTime、LaneCount、CapacityPerLane、SignalType at To",
+      "将解析结果整理为结构化边属性表",
+      "对不完整或异常行标注，不进行推测补全"
+    ],
+    "constraints": [
+      "严格按固定字段顺序解析",
+      "字段缺失时标记而非猜测"
+    ],
+    "cautions": [
+      "信号类型归属于目标节点（at To），需与目标节点对应",
+      "道路等级与容量字段需保持原值，不做换算"
+    ],
+    "output_contract": [
+      "结构化边属性表，含起止节点、道路等级、基础通行时间、车道数、每车道容量、目标节点信号类型"
+    ],
+    "examples": [
+      {
+        "input": "E2: N2 to N3 | ARTERIAL | 2 | 2 | 2 | SIGNALIZED",
+        "output": "EdgeID=E2, From=N2, To=N3, RoadClass=ARTERIAL, BaseTravelTime=2, LaneCount=2, CapacityPerLane=2, SignalType at To=SIGNALIZED",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "路网建模",
+      "结构化解析",
+      "场景初始化"
+    ],
+    "support_ids": [
+      "8855f1f4-a109-5657-b907-4b6c15601985"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "cec2a743-830a-5074-a437-85bea3f4f299"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|将边定义行转换为结构化路网属性表|交通仿真|路网建模|结构化解析|场景初始化|路网边属性与信号配置解析"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

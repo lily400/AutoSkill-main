@@ -1,0 +1,29 @@
+.......F                                                                 [100%]
+=================================== FAILURES ===================================
+_______ TestDepthLimitZeroBehavior.test_finding_matches_runtime_behavior _______
+
+self = <eval.TestDepthLimitZeroBehavior object at 0x7c0894639850>
+
+    def test_finding_matches_runtime_behavior(self):
+        sys.path.insert(0, ROOT_DIR)
+        import agent_output
+    
+        result = agent_output.get_depth_limit_zero_finding()
+    
+        assert result["depth_limit"] == 0
+        assert result["follows_beyond_start_urls"] is True
+    
+        effective = result["effective_max_depth"]
+>       assert (
+            effective is None
+            or (isinstance(effective, str) and effective.strip().lower() in {"unlimited", "no limit"})
+        ), "Reported effective_max_depth is inconsistent with expected Scrapy behavior"
+E       AssertionError: Reported effective_max_depth is inconsistent with expected Scrapy behavior
+E       assert (1 is None or (False))
+E        +  where False = isinstance(1, str)
+
+/oracle/eval.py:213: AssertionError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED ../oracle/eval.py::TestDepthLimitZeroBehavior::test_finding_matches_runtime_behavior
+1 failed, 7 passed in 0.12s

@@ -1,0 +1,538 @@
+{
+  "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+  "title": "input002\\unions.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+  "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+  "section_heading": "# Unions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "80b314bf-c428-5af1-b966-68199d9d7f64",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 13213,
+        "end": 16127
+      },
+      "excerpt": "```\nfrom typing import Annotated, Any, Literal, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        Union[\n            Annotated[ApplePie, Tag('apple')],\n            Annotated[PumpkinPie, Tag('pumpkin')],\n        ],\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n```\nfrom typing import Annotated, Any, Literal\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        (\n            Annotated[ApplePie, Tag('apple')] |\n            Annotated[PumpkinPie, Tag('pumpkin')]\n        ),\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n`Discriminator`s can also be used to validate `Union` types with combinations of models and primitive types.\n\nFor example:\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 联合类型校验模式选择",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "为给定 Union 字段选择并说明合适的校验模式",
+        "task_family": "数据模型校验",
+        "method_family": "联合类型校验",
+        "stage": "模式选择",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 24,
+        "paragraph_end": 46,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:14:23+00:00"
+    },
+    {
+      "support_id": "eddc1a17-d00a-58e3-8c82-0af9b7343db6",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 13213,
+        "end": 16127
+      },
+      "excerpt": "```\nfrom typing import Annotated, Any, Literal, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        Union[\n            Annotated[ApplePie, Tag('apple')],\n            Annotated[PumpkinPie, Tag('pumpkin')],\n        ],\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n```\nfrom typing import Annotated, Any, Literal\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        (\n            Annotated[ApplePie, Tag('apple')] |\n            Annotated[PumpkinPie, Tag('pumpkin')]\n        ),\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n`Discriminator`s can also be used to validate `Union` types with combinations of models and primitive types.\n\nFor example:\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError",
+      "relation_type": "support",
+      "confidence": 0.75,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "基于 Tag 与 Discriminator 的判别式联合类型构建",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "构建可正确路由的判别式 Union 模型",
+        "task_family": "数据模型校验",
+        "method_family": "判别式联合类型",
+        "stage": "模型构建",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 24,
+        "paragraph_end": 46,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:14:23+00:00"
+    },
+    {
+      "support_id": "c20cb4a3-e38d-5753-9204-955bc13ef01b",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 13213,
+        "end": 16127
+      },
+      "excerpt": "```\nfrom typing import Annotated, Any, Literal, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        Union[\n            Annotated[ApplePie, Tag('apple')],\n            Annotated[PumpkinPie, Tag('pumpkin')],\n        ],\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n```\nfrom typing import Annotated, Any, Literal\n\nfrom pydantic import BaseModel, Discriminator, Tag\n\nclass Pie(BaseModel):\n    time_to_cook: int\n    num_ingredients: int\n\nclass ApplePie(Pie):\n    fruit: Literal['apple'] = 'apple'\n\nclass PumpkinPie(Pie):\n    filling: Literal['pumpkin'] = 'pumpkin'\n\ndef get_discriminator_value(v: Any) -> str:\n    if isinstance(v, dict):\n        return v.get('fruit', v.get('filling'))\n    return getattr(v, 'fruit', getattr(v, 'filling', None))\n\nclass ThanksgivingDinner(BaseModel):\n    dessert: Annotated[\n        (\n            Annotated[ApplePie, Tag('apple')] |\n            Annotated[PumpkinPie, Tag('pumpkin')]\n        ),\n        Discriminator(get_discriminator_value),\n    ]\n\napple_variation = ThanksgivingDinner.model_validate(\n    {'dessert': {'fruit': 'apple', 'time_to_cook': 60, 'num_ingredients': 8}}\n)\nprint(repr(apple_variation))\n\"\"\"\nThanksgivingDinner(dessert=ApplePie(time_to_cook=60, num_ingredients=8, fruit='apple'))\n\"\"\"\n\n`Discriminator`s can also be used to validate `Union` types with combinations of models and primitive types.\n\nFor example:\n\nPython 3.9 and abovePython 3.10 and above\n\n```\nfrom typing import Annotated, Any, Union\n\nfrom pydantic import BaseModel, Discriminator, Tag, ValidationError",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "自定义判别函数编写",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "实现从输入中提取判别值的函数",
+        "task_family": "数据模型校验",
+        "method_family": "判别式联合类型",
+        "stage": "判别逻辑实现",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 3,
+        "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 24,
+        "paragraph_end": 46,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:14:23+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "492b42c7-8be6-5a44-8707-be262683feea",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "Pydantic 联合类型校验模式选择",
+      "description": "为含多个候选模型的 Pydantic Union 字段选择并说明合适的校验模式（从左到右、smart 或判别式），用于定义 Union 字段或排查 Union 校验结果不符合预期的场景。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "为给定 Union 字段选择并说明合适的校验模式",
+      "domain": "pydantic",
+      "task_family": "数据模型校验",
+      "method_family": "联合类型校验",
+      "stage": "模式选择",
+      "applicable_signals": [
+        "字段类型为 Union 且包含多个候选模型",
+        "候选模型之间存在字段重叠或难以区分",
+        "现有 Union 校验结果与预期不符"
+      ],
+      "contraindications": [
+        "非 Union 类型的普通字段校验"
+      ],
+      "intervention_moves": [
+        "确认目标字段是否为 Union 类型",
+        "评估候选模型之间的重叠程度与输入数据特征",
+        "在从左到右、smart、判别式三种模式中选择",
+        "说明选择理由"
+      ],
+      "workflow_steps": [
+        "确认目标字段为 Union 类型且含多个候选模型",
+        "评估候选模型的重叠程度与输入数据特征",
+        "选择校验模式：从左到右（按声明顺序尝试）、smart（自动择优）或判别式（通过判别器显式路由）",
+        "输出选定模式及理由"
+      ],
+      "triggers": [
+        "需要定义含多个候选模型的 Union 字段",
+        "Union 校验结果不符合预期需排查模式"
+      ],
+      "constraints": [
+        "仅适用于 Union 类型字段",
+        "只做模式选择与说明，不涉及具体判别器实现"
+      ],
+      "cautions": [
+        "候选模型高度重叠时，从左到右模式可能匹配到非预期成员",
+        "判别式模式需要额外的判别依据，选择前需确认输入中存在可用的区分字段"
+      ],
+      "output_contract": [
+        "明确选定的校验模式及理由"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "80b314bf-c428-5af1-b966-68199d9d7f64"
+      ],
+      "metadata": {
+        "prompt": "当需要为 Pydantic Union 字段确定校验模式时：先确认字段是否为 Union 类型；再根据输入数据特征与候选模型的重叠程度选择模式——从左到右模式按声明顺序尝试、smart 模式由 Pydantic 自动择优、判别式模式通过判别器显式路由到具体成员；最后输出选定的模式及选择理由。仅做模式选择与说明，不展开具体判别器实现细节。",
+        "tags": [
+          "pydantic",
+          "union",
+          "校验模式",
+          "模式选择"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 24,
+        "paragraph_end": 46,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    },
+    {
+      "draft_id": "5195765f-eca0-5850-9830-ab1d10e503a2",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "基于 Tag 与 Discriminator 的判别式联合类型构建",
+      "description": "使用 Annotated、Tag 和 Discriminator 为 Union 成员打标签并指定判别函数，构建可正确路由的判别式联合类型，适用于需要按字段值路由到具体模型的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "构建可正确路由的判别式 Union 模型",
+      "domain": "pydantic",
+      "task_family": "数据模型校验",
+      "method_family": "判别式联合类型",
+      "stage": "模型构建",
+      "applicable_signals": [
+        "Union 成员可通过某字段值区分",
+        "需要避免从左到右模式的误匹配"
+      ],
+      "contraindications": [
+        "成员间无可靠判别字段",
+        "简单两成员且无歧义时无需判别器"
+      ],
+      "intervention_moves": [
+        "为每个 Union 成员用 Annotated[Model, Tag('标签')] 打标签",
+        "编写判别函数从 dict 或对象读取判别字段并返回标签",
+        "用 Annotated[Union[...], Discriminator(判别函数)] 组合",
+        "通过 model_validate 验证路由结果"
+      ],
+      "workflow_steps": [
+        "定义各成员模型",
+        "为每个成员用 Annotated[Model, Tag('标签')] 打标签",
+        "编写判别函数，从 dict 或对象中读取判别字段并返回对应标签",
+        "用 Annotated[Union[...], Discriminator(判别函数)] 组合",
+        "通过 model_validate 验证路由结果正确"
+      ],
+      "triggers": [
+        "Union 成员可通过某字段值区分",
+        "需要避免从左到右模式的误匹配",
+        "需要按字段值路由到具体模型"
+      ],
+      "constraints": [
+        "判别函数需同时处理 dict 输入与对象输入",
+        "每个 Union 成员的 Tag 值需与判别函数返回值一致"
+      ],
+      "cautions": [
+        "判别字段缺失或返回值不匹配标签时会导致校验失败"
+      ],
+      "output_contract": [
+        "带 Tag 与 Discriminator 的 Union 模型定义并通过校验"
+      ],
+      "examples": [
+        {
+          "input": "Union 成员 ApplePie(fruit='apple') 与 PumpkinPie(filling='pumpkin')，需按 fruit/filling 字段路由",
+          "output": "Annotated[Union[Annotated[ApplePie, Tag('apple')], Annotated[PumpkinPie, Tag('pumpkin')]], Discriminator(get_discriminator_value)]，model_validate 后正确得到 ApplePie 实例",
+          "notes": "判别函数从 dict 读取 fruit 或 filling，从对象读取对应属性"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.75,
+      "support_ids": [
+        "eddc1a17-d00a-58e3-8c82-0af9b7343db6"
+      ],
+      "metadata": {
+        "prompt": "当 Union 成员可通过某字段值区分、且需要避免从左到右模式的误匹配时，使用本技能构建判别式 Union。步骤：1) 定义各成员模型；2) 为每个成员用 Annotated[Model, Tag('标签')] 打标签；3) 编写判别函数，从 dict 或对象中读取判别字段并返回对应标签；4) 用 Annotated[Union[...], Discriminator(判别函数)] 组合；5) 通过 model_validate 验证路由结果正确。",
+        "tags": [
+          "pydantic",
+          "union",
+          "discriminated-union",
+          "tag",
+          "discriminator"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 2,
+        "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 24,
+        "paragraph_end": 46,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    },
+    {
+      "draft_id": "b7bd5604-fd64-5214-90f8-f6cb12f7027d",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "自定义判别函数编写",
+      "description": "编写 callable Discriminator 函数，从 dict 或对象中提取判别值，用于路由 Union 成员。适用于判别逻辑无法用单一字面量字段直接表达、需要从多个候选字段或对象属性中提取判别值的场景。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "实现从输入中提取判别值的函数",
+      "domain": "pydantic",
+      "task_family": "数据模型校验",
+      "method_family": "判别式联合类型",
+      "stage": "判别逻辑实现",
+      "applicable_signals": [
+        "判别值需从多个候选字段或对象属性中提取",
+        "内置字面量判别不足",
+        "Union 成员需要按自定义逻辑路由"
+      ],
+      "contraindications": [
+        "存在单一明确的字面量判别字段时无需自定义函数"
+      ],
+      "intervention_moves": [
+        "定义接收 Any 输入的函数",
+        "对 dict 输入按候选字段顺序取值",
+        "对对象输入按属性顺序取值",
+        "返回判别值供 Discriminator 使用"
+      ],
+      "workflow_steps": [
+        "确认判别值无法由单一字面量字段直接表达",
+        "编写函数：dict 输入按候选字段顺序取值，对象输入按属性顺序取值",
+        "确保 dict 与对象两种输入形态返回一致的判别值",
+        "将函数传入 Discriminator，并为各 Union 成员添加 Tag",
+        "用 model_validate 验证输入被路由到正确成员"
+      ],
+      "triggers": [
+        "需要为 Union 编写 callable Discriminator",
+        "判别值需从多个候选字段或对象属性中提取",
+        "内置字面量判别字段不足以表达判别逻辑"
+      ],
+      "constraints": [
+        "函数需同时兼容 dict 与对象输入",
+        "返回的判别值需与各成员的 Tag 对应"
+      ],
+      "cautions": [
+        "候选字段缺失时需有明确的取值回退顺序，避免返回 None 导致路由失败"
+      ],
+      "output_contract": [
+        "可被 Discriminator 使用的判别函数，且验证时输入被正确路由到对应 Union 成员"
+      ],
+      "examples": [
+        {
+          "input": "需要从 dict 的 fruit 或 filling 字段、或对象的 fruit/filling 属性中提取判别值",
+          "output": "def get_discriminator_value(v): 若为 dict 则返回 v.get('fruit', v.get('filling'))，否则返回 getattr(v, 'fruit', getattr(v, 'filling', None))",
+          "notes": "配合 Annotated[Union[...], Discriminator(get_discriminator_value)] 与 Tag 使用"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "c20cb4a3-e38d-5753-9204-955bc13ef01b"
+      ],
+      "metadata": {
+        "prompt": "实现一个判别函数，接收输入值（dict 或对象），返回用于选择 Union 成员的判别值。对 dict 输入按候选字段顺序取值，对对象输入按属性顺序取值，并保证两种输入形态返回一致结果。将该函数传给 Discriminator 并配合 Tag 标注各 Union 成员。",
+        "tags": [
+          "pydantic",
+          "union",
+          "discriminator",
+          "callable",
+          "validation"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 3,
+        "window_id": "a2260bf6-6a38-50c3-8879-9e70dc06f4dc",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 24,
+        "paragraph_end": 46,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

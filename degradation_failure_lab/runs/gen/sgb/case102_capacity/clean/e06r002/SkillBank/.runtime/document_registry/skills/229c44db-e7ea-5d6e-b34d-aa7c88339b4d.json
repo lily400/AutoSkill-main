@@ -1,0 +1,112 @@
+{
+  "skill_id": "229c44db-e7ea-5d6e-b34d-aa7c88339b4d",
+  "name": "到达先于离开的节点tick更新顺序规则",
+  "description": "在节点级离散tick更新中，当同一tick既有车辆到达该节点、又有车辆尝试离开该节点时，强制先处理到达再处理离开，以保证更新顺序一致。",
+  "skill_body": "在执行节点级tick更新时，先检查该tick是否同时存在到达事件与离开事件。若两者同时存在，必须先处理所有到达该节点的车辆，再处理尝试离开该节点的车辆；不得颠倒顺序。若该tick不存在到达或不存在离开事件，则本规则不适用，按常规更新流程处理。\n\n## Objective\n\n保证同tick到达与离开的处理顺序一致\n## Applicable Signals\n\n- 同一tick同时存在到达与离开事件\n\n## Contraindications\n\n- 该tick无到达或离开事件\n\n## Intervention Moves\n\n- 识别该tick的到达事件与离开事件\n- 先处理到达该节点的车辆\n- 再处理尝试离开该节点的车辆\n\n## Workflow Steps\n\n- 判断当前tick是否同时存在到达事件与离开事件\n- 若同时存在，先处理所有到达该节点的车辆\n- 到达处理完成后，再处理尝试离开该节点的车辆\n- 若不同时存在，则不应用本规则，按常规更新流程处理\n\n## Constraints\n\n- 到达处理必须先于离开处理，不得颠倒\n- 仅在同一tick同时存在到达与离开事件时适用\n\n## Cautions\n\n- 不要将本顺序规则与通行选择逻辑（如信号相位、优先级排序）混淆\n\n## Output Contract\n\n- 按到达先于离开执行的更新结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某tick内，车辆A到达节点N，同时车辆B尝试离开节点N\n- Therapist/Output: 先处理车辆A的到达，再处理车辆B的离开\n- Notes: 体现到达先于离开的顺序一致性",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "保证同tick到达与离开的处理顺序一致",
+  "domain": "交通仿真",
+  "task_family": "更新顺序约束",
+  "method_family": "顺序一致性规则",
+  "stage": "tick更新",
+  "applicable_signals": [
+    "同一tick同时存在到达与离开事件"
+  ],
+  "contraindications": [
+    "该tick无到达或离开事件"
+  ],
+  "intervention_moves": [
+    "识别该tick的到达事件与离开事件",
+    "先处理到达该节点的车辆",
+    "再处理尝试离开该节点的车辆"
+  ],
+  "triggers": [
+    "同一tick同时存在车辆到达节点与车辆尝试离开该节点",
+    "需要确定节点级tick更新的处理顺序"
+  ],
+  "workflow_steps": [
+    "判断当前tick是否同时存在到达事件与离开事件",
+    "若同时存在，先处理所有到达该节点的车辆",
+    "到达处理完成后，再处理尝试离开该节点的车辆",
+    "若不同时存在，则不应用本规则，按常规更新流程处理"
+  ],
+  "constraints": [
+    "到达处理必须先于离开处理，不得颠倒",
+    "仅在同一tick同时存在到达与离开事件时适用"
+  ],
+  "cautions": [
+    "不要将本顺序规则与通行选择逻辑（如信号相位、优先级排序）混淆"
+  ],
+  "output_contract": [
+    "按到达先于离开执行的更新结果"
+  ],
+  "examples": [
+    {
+      "input": "某tick内，车辆A到达节点N，同时车辆B尝试离开节点N",
+      "output": "先处理车辆A的到达，再处理车辆B的离开",
+      "notes": "体现到达先于离开的顺序一致性"
+    }
+  ],
+  "tags": [
+    "交通仿真",
+    "tick更新",
+    "顺序一致性",
+    "节点更新"
+  ],
+  "support_ids": [
+    "54699be3-5ffb-56ae-8fbd-66b3ebe1327c"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "8e9bbd7f-88ed-52d2-bf14-cc4e52daa8d1"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|保证同tick到达与离开的处理顺序一致|交通仿真|更新顺序约束|顺序一致性规则|tick更新|到达先于离开的节点tick更新顺序规则",
+    "change_action": "create",
+    "llm_reason": "该候选规则是一个具体、可执行的tick更新顺序约束，有支持证据且无冲突；与同批候选（歧义声明、未定义处理、同相位排序）不重叠，属于独立的顺序一致性能力。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

@@ -1,0 +1,49 @@
+test_archive_alias_requires_matching_historical_hash (test_clean_cohort.CohortContracts.test_archive_alias_requires_matching_historical_hash) ... ok
+test_duplicate_task_and_cross_task_pair_are_rejected (test_clean_cohort.CohortContracts.test_duplicate_task_and_cross_task_pair_are_rejected) ... ok
+test_formal_index_rejects_another_generation (test_clean_cohort.CohortContracts.test_formal_index_rejects_another_generation) ... ok
+test_partial_pair_keeps_observed_budget_failure_and_unstarted_arm (test_clean_cohort.CohortContracts.test_partial_pair_keeps_observed_budget_failure_and_unstarted_arm) ... ok
+test_pending_tasks_do_not_become_zero_scores (test_clean_cohort.CohortContracts.test_pending_tasks_do_not_become_zero_scores) ... ok
+test_protocol_rejects_equal_but_wrong_native_model (test_clean_cohort.CohortContracts.test_protocol_rejects_equal_but_wrong_native_model) ... ok
+test_exact_generation_gate_blocks_before_credentials (test_clean_cohort.ConfiguredJSON.test_exact_generation_gate_blocks_before_credentials) ... ERROR
+test_original_json_assets_and_blocked_paid_entry (test_clean_cohort.ConfiguredJSON.test_original_json_assets_and_blocked_paid_entry) ... ok
+test_budget_failure_stays_in_success_denominator (test_clean_cohort.FailureClassification.test_budget_failure_stays_in_success_denominator) ... ok
+test_candidate_failure_overrides_legacy_infra_flag (test_clean_cohort.FailureClassification.test_candidate_failure_overrides_legacy_infra_flag) ... ok
+test_scorer_infra_is_not_a_candidate_failure (test_clean_cohort.FailureClassification.test_scorer_infra_is_not_a_candidate_failure) ... ok
+test_unknown_http_is_never_free_budget_exhaustion (test_clean_cohort.FailureClassification.test_unknown_http_is_never_free_budget_exhaustion) ... ok
+test_budget_failure_is_not_dropped_for_missing_junit (test_clean_cohort.TerminalAttribution.test_budget_failure_is_not_dropped_for_missing_junit) ... ok
+test_candidate_preflight_failure_is_counted_without_completed_binding (test_clean_cohort.TerminalAttribution.test_candidate_preflight_failure_is_counted_without_completed_binding) ... ok
+test_normal_wrong_answer_still_requires_valid_junit (test_clean_cohort.TerminalAttribution.test_normal_wrong_answer_still_requires_valid_junit) ... ok
+
+======================================================================
+ERROR: test_exact_generation_gate_blocks_before_credentials (test_clean_cohort.ConfiguredJSON.test_exact_generation_gate_blocks_before_credentials)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/tests/test_clean_cohort.py", line 165, in test_exact_generation_gate_blocks_before_credentials
+    runner=ExperimentRunner(root)
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/runner.py", line 57, in __init__
+    self.cases = cases or CaseManager(root)
+                          ~~~~~~~~~~~^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/catalog.py", line 48, in __init__
+    self.sources = SourceManager(root)
+                   ~~~~~~~~~~~~~^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/catalog.py", line 10, in __init__
+    self.catalog = check('catalog', read(self.root / 'data/catalog.json'))
+                                    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/desktop/mnt/host/d/AS/AutoSkill-main/degradation_failure_lab/src/degradation_lab/io.py", line 9, in read
+    return json.loads(Path(path).read_text(encoding='utf-8'))
+                      ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/pathlib/_local.py", line 546, in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/pathlib/_abc.py", line 632, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/pathlib/_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmplam7xcai/data/catalog.json'
+
+----------------------------------------------------------------------
+Ran 15 tests in 2.237s
+
+FAILED (errors=1)

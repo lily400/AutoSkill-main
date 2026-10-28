@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"a43912b0-2bb6-56a5-a243-b84dcdacbcc6\", \"name\": \"Callable Discriminator Returns None for Unknown Tags\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"Return None from a callable discriminator for unknown input types and expect a union_tag_not_found error\", \"applicable_signals\": [\"判别函数遇到未覆盖的输入类型\", \"需要明确未知判别值的失败行为\"], \"contraindications\": [\"判别逻辑已保证覆盖所有输入类型时\"], \"workflow_steps\": [\"检查判别函数是否覆盖所有已知输入类型并返回对应标签\", \"为未覆盖的输入类型添加显式返回 None 的分支\", \"在调用方预期并捕获 union_tag_not_found 错误\"], \"constraints\": [\"判别函数在无法确定标签时必须返回 None，而非抛出其他异常或返回任意默认标签\"], \"triggers\": [\"判别函数遇到未覆盖的输入类型\", \"需要明确未知判别值的失败行为\"], \"output_contract\": [\"判别函数在未知分支返回 None，调用方捕获 union_tag_not_found 错误\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"556b9c81-2257-59a9-9233-b7eab81bd6d8\", \"name\": \"可调用判别器联合类型校验\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为联合类型字段配置可调用判别器，实现按运行时类型分派校验\", \"applicable_signals\": [\"联合成员需按运行时类型（如 int 与 dict/BaseModel）区分\", \"字符串判别字段无法覆盖判别逻辑\"], \"workflow_steps\": [\"定义判别函数，按运行时类型返回对应标签字符串\", \"判别值未找到时返回 None\", \"用 Annotated 为每个联合成员标注 Tag\", \"用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型\", \"用 model_validate 验证不同输入分派到正确成员实例\"], \"output_contract\": [\"带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例\"], \"score\": 0.530656076678537}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

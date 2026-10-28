@@ -1,0 +1,116 @@
+{
+  "skill_id": "7f1fd94b-d196-5ba3-9f55-e4767e060177",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“车辆属性与状态建模”(e2c8cd5a)高度重复，字段、枚举与校验规则几乎一致，保留会造成冗余；该候选未提供额外可执行价值。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "7f1fd94b-d196-5ba3-9f55-e4767e060177",
+    "name": "车辆实体状态与属性建模",
+    "description": "按规则定义车辆实体的完整属性集（ID、类型、容量、归属、位置、载货、状态），用于构建或校验交通仿真中的车辆对象。",
+    "skill_body": "依据规则为每个车辆实体构建或校验完整属性集：VehicleID（唯一）、VehicleType（BIKE/VAN/TRUCK/MINI_TRUCK）、CapacityUnits（整数且>=1）、HomeDepot（节点）、CurrentLocation（节点含可选停车位，或边含RemainingTravelTime）、LoadUnitsUsed（整数）及当前在车上的已分配货物列表、Status（IDLE_AT_NODE/MOVING/LOADING/UNLOADING/OFFLINE）。逐字段核对取值合法性，输出符合规则的车辆属性清单或对象定义。\n\n## Objective\n\n确保每个车辆实体具备规则要求的全部字段与合法取值\n## Applicable Signals\n\n- 需要创建或校验车辆对象\n- 需要确认车辆状态枚举与位置表示方式\n\n## Contraindications\n\n- 仅需计算行驶时间\n- 处理非车辆实体\n\n## Intervention Moves\n\n- 列出车辆全部必填字段\n- 校验VehicleType取值属于{BIKE, VAN, TRUCK, MINI_TRUCK}\n- 校验CapacityUnits为>=1的整数\n- 校验CurrentLocation为节点或边两种表示之一\n- 校验Status取值属于规定枚举\n\n## Workflow Steps\n\n- 确定VehicleID并确保唯一\n- 指定VehicleType与CapacityUnits\n- 指定HomeDepot节点\n- 按节点或边两种形式之一填写CurrentLocation\n- 填写LoadUnitsUsed与在车货物列表\n- 设置Status为规定枚举之一\n- 输出车辆属性清单或对象定义\n\n## Constraints\n\n- VehicleID必须唯一\n- CapacityUnits必须为>=1的整数\n- VehicleType与Status必须取自规定枚举\n- CurrentLocation只能是节点（含可选停车位）或边（含RemainingTravelTime）\n\n## Cautions\n\n- 位置表示需明确是节点还是边，避免混用\n- 载货字段需与已分配货物列表保持一致\n\n## Output Contract\n\n- 符合规则的车辆属性清单或对象定义\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 创建一辆配送车辆\n- Therapist/Output: VehicleID: 唯一标识；VehicleType: VAN；CapacityUnits: 整数>=1；HomeDepot: 节点；CurrentLocation: 节点或边；LoadUnitsUsed: 整数；Status: IDLE_AT_NODE\n- Notes: 字段取值须符合规定枚举与类型",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保每个车辆实体具备规则要求的全部字段与合法取值",
+    "domain": "交通仿真规则",
+    "task_family": "实体建模",
+    "method_family": "规则化数据建模",
+    "stage": "场景初始化",
+    "applicable_signals": [
+      "需要创建或校验车辆对象",
+      "需要确认车辆状态枚举与位置表示方式"
+    ],
+    "contraindications": [
+      "仅需计算行驶时间",
+      "处理非车辆实体"
+    ],
+    "intervention_moves": [
+      "列出车辆全部必填字段",
+      "校验VehicleType取值属于{BIKE, VAN, TRUCK, MINI_TRUCK}",
+      "校验CapacityUnits为>=1的整数",
+      "校验CurrentLocation为节点或边两种表示之一",
+      "校验Status取值属于规定枚举"
+    ],
+    "triggers": [
+      "需要创建或校验车辆对象",
+      "需要确认车辆状态枚举与位置表示方式"
+    ],
+    "workflow_steps": [
+      "确定VehicleID并确保唯一",
+      "指定VehicleType与CapacityUnits",
+      "指定HomeDepot节点",
+      "按节点或边两种形式之一填写CurrentLocation",
+      "填写LoadUnitsUsed与在车货物列表",
+      "设置Status为规定枚举之一",
+      "输出车辆属性清单或对象定义"
+    ],
+    "constraints": [
+      "VehicleID必须唯一",
+      "CapacityUnits必须为>=1的整数",
+      "VehicleType与Status必须取自规定枚举",
+      "CurrentLocation只能是节点（含可选停车位）或边（含RemainingTravelTime）"
+    ],
+    "cautions": [
+      "位置表示需明确是节点还是边，避免混用",
+      "载货字段需与已分配货物列表保持一致"
+    ],
+    "output_contract": [
+      "符合规则的车辆属性清单或对象定义"
+    ],
+    "examples": [
+      {
+        "input": "创建一辆配送车辆",
+        "output": "VehicleID: 唯一标识；VehicleType: VAN；CapacityUnits: 整数>=1；HomeDepot: 节点；CurrentLocation: 节点或边；LoadUnitsUsed: 整数；Status: IDLE_AT_NODE",
+        "notes": "字段取值须符合规定枚举与类型"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "实体建模",
+      "车辆属性",
+      "场景初始化"
+    ],
+    "support_ids": [
+      "96f7cd30-127b-53a7-8d01-19016b3b969a"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "66923e52-d015-5434-8738-33aac988c7aa"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|确保每个车辆实体具备规则要求的全部字段与合法取值|交通仿真规则|实体建模|规则化数据建模|场景初始化|车辆实体状态与属性建模"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,120 @@
+{
+  "skill_id": "4641701b-2dc0-5429-a380-d65c1c0ec55d",
+  "name": "Pydantic 模型级校验器与 ValidationInfo 使用",
+  "description": "实现 Pydantic 模型级校验器，并在校验中通过 ValidationInfo 读取字段数据、已校验数据与校验上下文，用于跨字段依赖或需要访问上下文的校验场景。",
+  "skill_body": "当校验逻辑依赖多个字段，或需要访问 ValidationInfo 的 data 或 context 时，使用本技能：在模型中定义模型级校验器（annotated 或 decorator 模式），按需读取 info.data（已校验字段值）与 info.context（校验上下文），在条件不满足时抛出校验错误，并构造模型实例验证校验器按预期工作。\n\n## Objective\n\n实现模型级校验并正确读取校验信息与上下文\n## Applicable Signals\n\n- 校验规则涉及两个及以上字段的相互依赖\n- 校验需要读取已校验字段数据（data）\n- 校验需要读取外部传入的校验上下文（context）\n\n## Contraindications\n\n- 仅涉及单字段简单约束时，应使用字段级校验器而非模型级校验器\n\n## Intervention Moves\n\n- 选择模型级校验器模式（annotated 或 decorator）\n- 在校验器中通过 ValidationInfo 读取 data 与 context\n- 在条件不满足时抛出校验错误\n- 运行模型验证校验器行为\n\n## Workflow Steps\n\n- 判断校验是否确需跨字段依赖或访问校验上下文\n- 在模型中定义模型级校验器（annotated 或 decorator 模式）\n- 在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）\n- 当校验条件不满足时抛出校验错误\n- 构造模型实例验证校验器按预期工作\n\n## Constraints\n\n- 仅在跨字段依赖或需要访问 ValidationInfo 数据/上下文时使用模型级校验器\n- 单字段简单约束应使用字段级校验器\n\n## Cautions\n\n- 校验器执行顺序会影响可读取的字段数据，需注意依赖字段的校验先后\n\n## Output Contract\n\n- 可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [
+    "688b17b0-4bcf-5eb2-879a-50609da68fe0",
+    "9ac11db1-8466-56be-bf2b-9bed656dacd8"
+  ],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "parent",
+  "visible_role": "parent",
+  "objective": "实现模型级校验并正确读取校验信息与上下文",
+  "domain": "pydantic",
+  "task_family": "模型校验",
+  "method_family": "模型校验器",
+  "stage": "模型级校验实现",
+  "applicable_signals": [
+    "校验规则涉及两个及以上字段的相互依赖",
+    "校验需要读取已校验字段数据（data）",
+    "校验需要读取外部传入的校验上下文（context）"
+  ],
+  "contraindications": [
+    "仅涉及单字段简单约束时，应使用字段级校验器而非模型级校验器"
+  ],
+  "intervention_moves": [
+    "选择模型级校验器模式（annotated 或 decorator）",
+    "在校验器中通过 ValidationInfo 读取 data 与 context",
+    "在条件不满足时抛出校验错误",
+    "运行模型验证校验器行为"
+  ],
+  "triggers": [
+    "校验逻辑依赖多个字段",
+    "需要访问 ValidationInfo 的 data",
+    "需要访问 ValidationInfo 的 context",
+    "需要实现模型级而非字段级校验"
+  ],
+  "workflow_steps": [
+    "判断校验是否确需跨字段依赖或访问校验上下文",
+    "在模型中定义模型级校验器（annotated 或 decorator 模式）",
+    "在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）",
+    "当校验条件不满足时抛出校验错误",
+    "构造模型实例验证校验器按预期工作"
+  ],
+  "constraints": [
+    "仅在跨字段依赖或需要访问 ValidationInfo 数据/上下文时使用模型级校验器",
+    "单字段简单约束应使用字段级校验器"
+  ],
+  "cautions": [
+    "校验器执行顺序会影响可读取的字段数据，需注意依赖字段的校验先后"
+  ],
+  "output_contract": [
+    "可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误"
+  ],
+  "examples": [],
+  "tags": [
+    "pydantic",
+    "模型校验",
+    "ValidationInfo",
+    "跨字段校验",
+    "校验上下文"
+  ],
+  "support_ids": [
+    "c0482437-45c1-56f1-a73c-a15764b64f88"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "8c594988-6766-5192-8a85-c1c09284a655"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "pydantic::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "pydantic|||session_skill|session|workflow_skill|实现模型级校验并正确读取校验信息与上下文|pydantic|模型校验|模型校验器|模型级校验实现|pydantic 模型级校验器与 validationinfo 使用",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "parent",
+    "visible_role": "parent",
+    "child_skill_ids": [
+      "688b17b0-4bcf-5eb2-879a-50609da68fe0",
+      "9ac11db1-8466-56be-bf2b-9bed656dacd8"
+    ]
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

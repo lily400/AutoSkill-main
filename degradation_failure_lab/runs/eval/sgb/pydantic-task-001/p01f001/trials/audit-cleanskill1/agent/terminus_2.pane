@@ -1,0 +1,338 @@
+[?2004hroot@e7a5879a6ff9:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ sed -n '1,220p' /harbor/skills/0166b7ef-ec54-5e0c-9bd2-086b92fc3430/SKILL.md
+[?2004l---
+id: "0166b7ef-ec54-5e0c-9bd2-086b92fc3430"
+name: "Pydantic 验证器模式选型与实现"
+description: "根据校验需求选择字段验证器（annotated 或 decorator 模式）或模型验证器（before/after），并按正确签名实现，用于为 Pydantic 模型添加自定义校验逻辑时。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "字段校验"
+  - "模型校验"
+  - "模式选型"
+triggers:
+  - "需要为字段或整个模型添加自定义校验"
+  - "不确定使用 annotated 还是 decorator 模式"
+  - "需要在 before 与 after 模型验证器之间做选择"
+examples:
+  - input: "需要在整个模型校验完成后做跨字段一致性检查"
+    output: "选择 after 模型验证器，定义为实例方法并返回校验后的实例"
+    notes: "after 验证器在整体模型校验后运行"
+---
+
+# Pydantic 验证器模式选型与实现
+
+根据校验需求选择字段验证器（annotated 或 decorator 模式）或模型验证器（before/after），并按正确签名实现，用于为 Pydantic 模型添加自定义校验逻辑时。
+
+## Prompt
+
+先判断校验目标是单个字段还是整个模型：字段级校验在 annotated 模式与 decorator 模式之间选型，模型级校验在 before 与 after 之间选型。选定后按对应签名实现验证器，确保 after 模型验证器为实例方法并返回校验后的实例。最后给出可运行代码并说明选型理由。
+
+## Objective
+
+为给定校验需求选择并实现正确的 Pydantic 验证器模式
+## Applicable Signals
+
+- 校验逻辑作用于单个字段
+- 校验逻辑需要访问整个已校验模型
+- 需要在初始化前后介入校验
+
+## Contraindications
+
+- 仅需内置字段约束即可满足
+- 校验逻辑与模型定义无关
+
+## Intervention Moves
+
+- 区分字段级与模型级校验需求
+- 字段级在 annotated 与 decorator 模式间选型
+- 模型级在 before 与 after 之间选型
+- 按所选模式实现验证器并校验签名
+
+## Workflow Steps
+
+- 明确校验目标是单字段还是整个模型
+- 字段级：在 annotated 模式与 decorator 模式之间选择并实现
+- 模型级：在 before 与 after 验证器之间选择并实现
+- after 验证器定义为实例方法并返回校验后的实例
+- 输出可运行代码并说明选型理由
+
+## Constraints
+
+- after 模型验证器必须返回校验后的实例
+- 验证器签名需与所选模式匹配
+
+## Cautions
+
+- 模型级 after 验证器作为实例方法运行，属于初始化后钩子，遗漏返回值会导致校验结果丢失
+
+## Output Contract
+
+- 可运行的验证器代码，模式选择有明确理由
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要在整个模型校验完成后做跨字段一致性检查
+- Therapist/Output: 选择 after 模型验证器，定义为实例方法并返回校验后的实例
+- Notes: after 验证器在整体模型校验后运行
+
+## Triggers
+
+- 需要为字段或整个模型添加自定义校验
+- 不确定使用 annotated 还是 decorator 模式
+- 需要在 before 与 after 模型验证器之间做选择
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要在整个模型校验完成后做跨字段一致性检查
+
+Output:
+
+  选择 after 模型验证器，定义为实例方法并返回校验后的实例
+
+Notes:
+
+  after 验证器在整体模型校验后运行
+[?2004hp1$ sed -n '1,220p' /harbor/skills/15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce/SKILL.md
+[?2004l---
+id: "15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce"
+name: "Wrap 校验器前后处理与提前终止"
+description: "使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "wrap"
+  - "字段校验"
+triggers:
+  - "需要在标准校验前后插入自定义逻辑"
+  - "需要在校验早期直接返回或抛错终止"
+  - "需要最灵活的校验流程控制"
+---
+
+# Wrap 校验器前后处理与提前终止
+
+使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。
+
+## Prompt
+
+实现一个 wrap 校验器：在标准校验前后插入自定义逻辑，或在需要时提前返回/抛错终止校验。先确认简单类型转换不适用本技能（应改用 annotated 校验器）。编写函数时明确前后处理分支与提前终止分支，并保证返回值为最终字段值。
+
+## Objective
+
+在字段校验中实现前后处理或提前终止逻辑
+## Applicable Signals
+
+- 标准校验前后需要自定义代码
+- 需要提前返回或抛错以终止校验
+
+## Contraindications
+
+- 简单类型转换用 annotated 校验器即可
+
+## Intervention Moves
+
+- 在 Pydantic 及其他校验器处理前后运行代码
+- 通过提前返回值终止校验
+- 通过抛错终止校验
+
+## Workflow Steps
+
+- 判断是否确需 wrap 校验器（否则改用 annotated 校验器）
+- 编写 wrap 校验器函数，明确前后处理逻辑
+- 在需要时提前返回最终值或抛出错误以终止校验
+- 确认返回值为最终字段值
+
+## Constraints
+
+- wrap 校验器为最灵活模式，应仅在需要前后处理或提前终止时使用
+
+## Cautions
+
+- 提前返回会跳过后续校验器处理，需确认符合预期
+
+## Output Contract
+
+- 可运行的 wrap 校验器函数，含前后处理或提前终止分支
+
+## Triggers
+
+- 需要在标准校验前后插入自定义逻辑
+- 需要在校验早期直接返回或抛错终止
+- 需要最灵活的校验流程控制
+[?2004hp1$ sed -n '1,220p' /harbor/skills/3f2908c2-5e45-53d0-8741-3e78c412be38/SKILL.md
+[?2004l---
+id: "3f2908c2-5e45-53d0-8741-3e78c412be38"
+name: "Pydantic 校验器执行顺序控制"
+description: "按 Pydantic 规定的顺序组织字段校验器与模型校验器：字段校验先于模型校验，before 模式先于 after 模式，确保校验逻辑的依赖关系正确。适用于模型中存在多个校验器或校验逻辑依赖其他字段已校验值的设计场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "ordering"
+  - "validation"
+triggers:
+  - "模型中有多个字段校验器和模型校验器"
+  - "校验逻辑依赖其他字段已校验后的值"
+  - "需要确定 before 与 after 校验器的相对执行位置"
+examples:
+  - input: "模型中有字段校验器与依赖其他字段已校验值的模型校验器"
+    output: "将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行"
+    notes: "字段校验先于模型校验"
+---
+
+# Pydantic 校验器执行顺序控制
+
+按 Pydantic 规定的顺序组织字段校验器与模型校验器：字段校验先于模型校验，before 模式先于 after 模式，确保校验逻辑的依赖关系正确。适用于模型中存在多个校验器或校验逻辑依赖其他字段已校验值的设计场景。
+
+## Prompt
+
+在设计或审查 Pydantic 模型校验器时，先梳理各校验器的依赖关系，再按 Pydantic 执行顺序规则安排：字段校验器先于模型校验器执行；同一层级内 before 模式先于 after 模式执行。若某校验逻辑依赖其他字段已校验后的值，应将其放在模型校验器或 after 模式中；若需要处理原始输入，应使用 before 模式并注意原始输入类型不确定。确认顺序后检查依赖关系是否成立。
+
+## Objective
+
+正确安排多个校验器的执行顺序
+## Applicable Signals
+
+- 模型中同时存在字段校验器与模型校验器
+- 校验器之间或校验器与字段之间存在数据依赖
+- 校验器使用 before 或 after 模式且需要确定执行先后
+
+## Contraindications
+
+- 只有一个独立校验器且无顺序依赖
+- 校验器之间不存在任何数据或执行依赖
+
+## Intervention Moves
+
+- 识别每个校验器的依赖对象与所需输入状态
+- 按字段校验先于模型校验的规则排列
+- 在同一层级内按 before 先于 after 的规则排列
+- 对依赖已校验值的逻辑改用模型校验器或 after 模式
+- 对需要处理原始输入的逻辑使用 before 模式并处理类型不确定性
+
+## Workflow Steps
+
+- 列出模型中所有字段校验器与模型校验器
+- 标注每个校验器的输入依赖（原始输入或已校验值）
+- 按字段校验先于模型校验排序
+- 在同一层级内按 before 先于 after 排序
+- 验证排序后各校验器的依赖关系成立
+
+## Constraints
+
+- 字段校验器先于模型校验器执行
+- before 模式先于 after 模式执行
+- 依赖已校验值的逻辑不得放在 before 模式中
+
+## Cautions
+
+- before 模式接收原始输入，类型不确定，需处理所有可能的输入类型
+- 即使 before 校验器对输入做了转换，Pydantic 仍会按声明类型执行校验
+
+## Output Contract
+
+- 校验器顺序符合 Pydantic 执行规则且依赖关系正确的模型设计
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 模型中有字段校验器与依赖其他字段已校验值的模型校验器
+- Therapist/Output: 将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行
+- Notes: 字段校验先于模型校验
+
+## Triggers
+
+- 模型中有多个字段校验器和模型校验器
+- 校验逻辑依赖其他字段已校验后的值
+- 需要确定 before 与 after 校验器的相对执行位置
+
+## Examples
+
+### Example 1
+
+Input:
+
+  模型中有字段校验器与依赖其他字段已校验值的模型校验器
+
+Output:
+
+  将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行
+
+Notes:
+
+  字段校验先于模型校验
+[?2004hp1$ cat > /workspace/agent_output.py <<'PY'
+[?2004l[?2004h> from __future__ import annotations
+[?2004l[?2004h> 
+[?2004l[?2004h> from typing import Annotated, Any
+[?2004l[?2004h> 
+[?2004l[?2004h> from pydantic import BaseModel, BeforeValidator, WrapValidator, AfterValidator
+[?2004l[?2004h> from pydantic import ValidationInfo
+[?2004l[?2004h> 
+[?2004l[?2004h> VALIDATION_LOG: list[dict[str, Any]] = []
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _before_validator(value: Any) -> Any:
+[?2004l[?2004h>     VALIDATION_LOG.append({"event": "before", "value": value})
+[?2004l[?2004h>     # Convert raw input x into an intermediate value that, after inner int parsing
+[?2004l[?2004h>     # and the after-validator below, yields 2*x + 10.
+[?2004l[?2004h>     return value * 2 + 5
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _wrap_validator(value: Any, handler, info: ValidationInfo) -> Any:
+[?2004l[?2004h>     VALIDATION_LOG.append({"event": "wrap_start", "value": value})
+[?2004l[?2004h>     result = handler(value)
+[?2004l[?2004h>     VALIDATION_LOG.append({"event": "wrap_end", "value": result})
+[?2004l[?2004h>     return result
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> def _after_validator(value: int) -> int:
+[?2004l[?2004h>     VALIDATION_LOG.append({"event": "after", "value": value})
+[?2004l[?2004h>     return value * 2
+[?2004l[?2004h> 
+[?2004l[?2004h> 
+[?2004l[?2004h> class MyModel(BaseModel):
+[?2004l[?2004h>     value: Annotated[
+[?2004l[?2004h>         int,
+[?2004l[?2004h>         BeforeValidator(_before_validator),
+[?2004l[?2004h>         WrapValidator(_wrap_validator),
+[?2004l[?2004h>         AfterValidator(_after_validator),
+[?2004l[?2004h>     ]
+[?2004l[?2004h> 
+[?2004l[?2004h>     def model_post_init(self, __context: Any) -> None:
+[?2004l[?2004h>         # Expose the structured log on the instance as well.
+[?2004l[?2004h>         object.__setattr__(self, "validation_log", VALIDATION_LOG)
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ python3 - <<'PY'
+[?2004l[?2004h> from pathlib import Path
+[?2004l[?2004h> path = Path('/workspace/agent_output.py')
+[?2004l[?2004h> text = path.read_text()
+[?2004l[?2004h> text = text.replace('''class MyModel(BaseModel):
+[?2004l[?2004h>     value: Annotated[
+[?2004l[?2004h>         int,
+[?2004l[?2004h>         BeforeValidator(_before_validator),
+[?2004l[?2004h>         WrapValidator(_wrap_validator),
+[?2004l[?2004h>         AfterValidator(_after_validator),
+[?2004l[?2004h>     ]
+[?2004l[?2004h> ''','''class MyModel(BaseModel):
+[?2004l[?2004h>     value: Annotated[
+[?2004l[?2004h>         int,
+[?2004l[?2004h>         AfterValidator(_after_validator),
+[?2004l[?2004h>         WrapValidator(_wrap_validator),
+[?2004l[?2004h>         BeforeValidator(_before_validator),
+[?2004l[?2004h>     ]
+[?2004l[?2004h> ''')
+[?2004l[?2004h> path.write_text(text)
+[?2004l[?2004h> PY
+[?2004l[?2004hp1$ python3 -m py_compile /workspace/agent_output.py
+[?2004l[?2004hp1$ 

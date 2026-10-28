@@ -1,0 +1,107 @@
+{
+  "skill_id": "ede325cc-bee8-53fd-95d4-e880820f45c0",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次多个候选（3a5a6ffa、4e47719c、87359e2c）高度重复，均为无效/不完整输入处理规则，且本候选描述更泛化、缺乏具体校验对象与下游阻断约束，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "ede325cc-bee8-53fd-95d4-e880820f45c0",
+    "name": "无效或不完整输入处理规则",
+    "description": "当输入缺失、格式错误或产品目录 JSON 校验失败时，按既定规则标记并处理无效输入，避免臆造结果，保障流程在脏数据下的稳健性。",
+    "skill_body": "在执行任何分析任务前，先校验输入是否完整且符合约定格式。若发现字段缺失、格式不符或产品目录 JSON 校验不通过，则按既定规则标记该输入为无效并执行规定的降级或报错处理，不得基于无效输入臆造分析结果。\n\n## Objective\n\n在输入无效或不完整时执行规定的降级/报错处理，避免产生臆造输出\n## Applicable Signals\n\n- 输入字段缺失\n- 输入格式不符合约定\n- 产品目录 JSON 校验失败\n- 输入数据不完整\n\n## Contraindications\n\n- 输入完整且已通过校验时无需触发本规则\n\n## Intervention Moves\n\n- 校验输入完整性与格式合规性\n- 对产品目录 JSON 执行校验\n- 将无效输入标记并按规则处理\n- 拒绝基于无效输入生成分析结果\n\n## Workflow Steps\n\n- 接收输入并检查字段完整性与格式是否符合约定\n- 对产品目录 JSON 执行校验\n- 若校验不通过或输入缺失，标记该输入为无效\n- 按既定规则执行降级或报错处理，不产生臆造输出\n- 将无效输入状态与处理结果向下游交接\n\n## Constraints\n\n- 不得基于无效或不完整输入臆造分析结果\n- 必须按既定规则处理而非自行发挥\n\n## Cautions\n\n- 区分可修复的格式问题与不可用的缺失输入\n- 确保无效标记清晰传递给下游调用方\n\n## Output Contract\n\n- 无效输入被明确标记并按规则处理，不产生臆造输出，处理状态可向下游交接。",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在输入无效或不完整时执行规定的降级/报错处理，避免产生臆造输出",
+    "domain": "流程执行",
+    "task_family": "输入校验与异常处理",
+    "method_family": "规则化校验",
+    "stage": "输入预处理",
+    "applicable_signals": [
+      "输入字段缺失",
+      "输入格式不符合约定",
+      "产品目录 JSON 校验失败",
+      "输入数据不完整"
+    ],
+    "contraindications": [
+      "输入完整且已通过校验时无需触发本规则"
+    ],
+    "intervention_moves": [
+      "校验输入完整性与格式合规性",
+      "对产品目录 JSON 执行校验",
+      "将无效输入标记并按规则处理",
+      "拒绝基于无效输入生成分析结果"
+    ],
+    "triggers": [
+      "输入字段缺失或格式不符合约定",
+      "产品目录 JSON 校验不通过",
+      "输入数据不完整或存在脏数据"
+    ],
+    "workflow_steps": [
+      "接收输入并检查字段完整性与格式是否符合约定",
+      "对产品目录 JSON 执行校验",
+      "若校验不通过或输入缺失，标记该输入为无效",
+      "按既定规则执行降级或报错处理，不产生臆造输出",
+      "将无效输入状态与处理结果向下游交接"
+    ],
+    "constraints": [
+      "不得基于无效或不完整输入臆造分析结果",
+      "必须按既定规则处理而非自行发挥"
+    ],
+    "cautions": [
+      "区分可修复的格式问题与不可用的缺失输入",
+      "确保无效标记清晰传递给下游调用方"
+    ],
+    "output_contract": [
+      "无效输入被明确标记并按规则处理，不产生臆造输出，处理状态可向下游交接。"
+    ],
+    "examples": [],
+    "tags": [
+      "输入校验",
+      "异常处理",
+      "数据合规",
+      "流程稳健性"
+    ],
+    "support_ids": [
+      "35189a9c-0199-5557-a84e-84e0d8a2a43b"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "974e0bb7-7376-5cbc-91d9-ba27825c3130"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.6,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|在输入无效或不完整时执行规定的降级/报错处理，避免产生臆造输出|流程执行|输入校验与异常处理|规则化校验|输入预处理|无效或不完整输入处理规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

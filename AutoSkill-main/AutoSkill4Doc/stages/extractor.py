@@ -1079,6 +1079,11 @@ class LLMDocumentSkillExtractor:
             confidence=clip_confidence(item.get("confidence"), default=0.75),
             support_ids=[support_id],
             metadata={
+                **{
+                    key: record.metadata[key]
+                    for key in ("family_name", "family_id", "profile_id")
+                    if str((record.metadata or {}).get(key) or "").strip()
+                },
                 "prompt": prompt,
                 "tags": tags,
                 "files": maybe_json_dict(item.get("files")),

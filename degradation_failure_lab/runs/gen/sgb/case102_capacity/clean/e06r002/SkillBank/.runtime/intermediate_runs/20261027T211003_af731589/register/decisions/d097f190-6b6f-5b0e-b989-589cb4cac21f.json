@@ -1,0 +1,118 @@
+{
+  "skill_id": "d097f190-6b6f-5b0e-b989-589cb4cac21f",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能为独立的按优先级加权计算单张托运单迟到惩罚的微技能，与同批候选无重叠，无冲突证据，保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "d097f190-6b6f-5b0e-b989-589cb4cac21f",
+    "name": "按优先级计算托运单迟到惩罚",
+    "description": "在评分/结算阶段，对单张已完成且迟到的托运单，按优先级映射每 tick 迟到惩罚权重并计算该托运单的迟到惩罚值。",
+    "skill_body": "在评分/结算阶段，对每张已迟到的托运单：1) 读取其优先级；2) 按映射取每 tick 迟到惩罚权重（LOW=0.5，STANDARD=1.0，HIGH=2.0，CRITICAL=4.0）；3) 计算迟到 tick 数（实际完成 tick 减去应完成 tick，未迟到则为 0）；4) 惩罚值 = 迟到 tick 数 × 对应权重。仅输出单项惩罚，不计算整体网络服务分。\n\n## Objective\n\n按优先级权重正确计算单张托运单的迟到惩罚值\n## Applicable Signals\n\n- 托运单已完成且存在迟到 tick\n- 需要按优先级映射惩罚权重\n- 需要单项托运单的迟到惩罚值\n\n## Contraindications\n\n- 托运单未迟到（惩罚为 0，无需计算）\n- 需要计算整体网络服务分而非单项惩罚\n\n## Intervention Moves\n\n- 读取托运单优先级\n- 按优先级映射每 tick 惩罚权重\n- 计算迟到 tick 数\n- 以迟到 tick 数乘以权重得到惩罚值\n\n## Workflow Steps\n\n- 确认托运单已完成并确定迟到 tick 数\n- 读取托运单优先级\n- 按映射取权重：LOW=0.5，STANDARD=1.0，HIGH=2.0，CRITICAL=4.0\n- 惩罚值 = 迟到 tick 数 × 权重\n- 输出该托运单的迟到惩罚值\n\n## Constraints\n\n- 权重必须严格按优先级映射，不得混用\n- 仅计算单项惩罚，不汇总为整体服务分\n\n## Cautions\n\n- 迟到 tick 数为 0 时惩罚应为 0\n- 优先级取值须为 LOW/STANDARD/HIGH/CRITICAL 之一\n\n## Output Contract\n\n- 每张托运单的迟到惩罚值（迟到 tick 数 × 对应优先级权重）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 托运单优先级 HIGH，迟到 3 tick\n- Therapist/Output: 迟到惩罚 = 3 × 2.0 = 6.0\n- Notes: HIGH 权重为 2.0\n\n### Example 2\n\n- Client/Input: 托运单优先级 LOW，迟到 2 tick\n- Therapist/Output: 迟到惩罚 = 2 × 0.5 = 1.0\n- Notes: LOW 权重为 0.5",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按优先级权重正确计算单张托运单的迟到惩罚值",
+    "domain": "交通仿真规则",
+    "task_family": "服务评分",
+    "method_family": "加权惩罚计算",
+    "stage": "评分/结算阶段",
+    "applicable_signals": [
+      "托运单已完成且存在迟到 tick",
+      "需要按优先级映射惩罚权重",
+      "需要单项托运单的迟到惩罚值"
+    ],
+    "contraindications": [
+      "托运单未迟到（惩罚为 0，无需计算）",
+      "需要计算整体网络服务分而非单项惩罚"
+    ],
+    "intervention_moves": [
+      "读取托运单优先级",
+      "按优先级映射每 tick 惩罚权重",
+      "计算迟到 tick 数",
+      "以迟到 tick 数乘以权重得到惩罚值"
+    ],
+    "triggers": [
+      "需要计算托运单迟到惩罚",
+      "需要按优先级区分惩罚权重",
+      "结算阶段需要单张托运单的迟到成本"
+    ],
+    "workflow_steps": [
+      "确认托运单已完成并确定迟到 tick 数",
+      "读取托运单优先级",
+      "按映射取权重：LOW=0.5，STANDARD=1.0，HIGH=2.0，CRITICAL=4.0",
+      "惩罚值 = 迟到 tick 数 × 权重",
+      "输出该托运单的迟到惩罚值"
+    ],
+    "constraints": [
+      "权重必须严格按优先级映射，不得混用",
+      "仅计算单项惩罚，不汇总为整体服务分"
+    ],
+    "cautions": [
+      "迟到 tick 数为 0 时惩罚应为 0",
+      "优先级取值须为 LOW/STANDARD/HIGH/CRITICAL 之一"
+    ],
+    "output_contract": [
+      "每张托运单的迟到惩罚值（迟到 tick 数 × 对应优先级权重）"
+    ],
+    "examples": [
+      {
+        "input": "托运单优先级 HIGH，迟到 3 tick",
+        "output": "迟到惩罚 = 3 × 2.0 = 6.0",
+        "notes": "HIGH 权重为 2.0"
+      },
+      {
+        "input": "托运单优先级 LOW，迟到 2 tick",
+        "output": "迟到惩罚 = 2 × 0.5 = 1.0",
+        "notes": "LOW 权重为 0.5"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "服务评分",
+      "迟到惩罚",
+      "优先级权重"
+    ],
+    "support_ids": [
+      "3934c3b2-90fb-54fe-8de5-211b68ee856c"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "3fb70e42-3a2c-5c95-9262-05e6b6f4099b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|按优先级权重正确计算单张托运单的迟到惩罚值|交通仿真规则|服务评分|加权惩罚计算|评分/结算阶段|按优先级计算托运单迟到惩罚"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

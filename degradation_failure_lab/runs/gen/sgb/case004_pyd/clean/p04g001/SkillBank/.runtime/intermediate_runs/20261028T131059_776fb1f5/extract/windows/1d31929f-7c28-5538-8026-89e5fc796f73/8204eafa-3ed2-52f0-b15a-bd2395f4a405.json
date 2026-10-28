@@ -1,0 +1,185 @@
+{
+  "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+  "title": "input002\\unions.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+  "window_id": "8204eafa-3ed2-52f0-b15a-bd2395f4a405",
+  "section_heading": "# Unions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "46ea5522-f7ee-5042-8e3a-6ac681520ecc",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case004_pyd\\clean\\p04g001\\inputs\\input002\\unions.md",
+      "section": "# Unions",
+      "span": {
+        "start": 5220,
+        "end": 5479
+      },
+      "excerpt": "The smart mode algorithm uses two metrics to determine the best match for the input:\n\n1. The number of valid fields set (relevant for models, dataclasses, and typed dicts)\n2. The exactness of the match (relevant for all types)\n\n#### Number of valid fields set",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input002\\unions.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Union 智能模式最佳匹配选择",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "依据有效字段数与匹配精确度两项指标确定 Union 的最佳成员匹配",
+        "task_family": "union_validation",
+        "method_family": "smart_mode_matching",
+        "stage": "type_resolution",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 1,
+        "window_id": "8204eafa-3ed2-52f0-b15a-bd2395f4a405",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 38,
+        "paragraph_end": 40,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      },
+      "created_at": "2026-10-28T05:13:04+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "6f035678-6bc5-5e9b-b471-bc49795ea59c",
+      "doc_id": "1d31929f-7c28-5538-8026-89e5fc796f73",
+      "name": "Union 智能模式最佳匹配选择",
+      "description": "在 Pydantic 校验 Union 类型时，依据有效字段数量与匹配精确度两项指标，判断输入应归属哪个候选成员类型。适用于需要解释或预测智能模式下成员选择结果的场景。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "依据有效字段数与匹配精确度两项指标确定 Union 的最佳成员匹配",
+      "domain": "pydantic",
+      "task_family": "union_validation",
+      "method_family": "smart_mode_matching",
+      "stage": "type_resolution",
+      "applicable_signals": [
+        "Union 校验存在多个候选成员",
+        "需要解释智能模式成员选择结果"
+      ],
+      "contraindications": [
+        "使用从左到右模式而非智能模式",
+        "输入与所有成员均不匹配需要报错处理"
+      ],
+      "intervention_moves": [
+        "确认处于智能模式",
+        "统计各候选成员的有效字段设置数量",
+        "评估各候选成员的匹配精确度",
+        "综合两项指标选出最佳匹配成员"
+      ],
+      "workflow_steps": [
+        "确认当前为智能模式",
+        "对每个候选成员评估有效字段设置数量（模型、dataclass、typed dict）",
+        "对每个候选成员评估匹配精确度（所有类型）",
+        "综合两项指标确定最佳匹配成员",
+        "说明所选成员及依据"
+      ],
+      "triggers": [
+        "校验 Union 类型且存在多个候选成员",
+        "需要解释或预测智能模式下的成员选择结果"
+      ],
+      "constraints": [
+        "仅在智能模式下适用",
+        "有效字段数量指标仅对模型、dataclass、typed dict 有意义",
+        "匹配精确度指标适用于所有类型"
+      ],
+      "cautions": [
+        "若输入与所有成员均不匹配，应转入 Union 校验错误处理而非本技能"
+      ],
+      "output_contract": [
+        "确定并说明 Union 输入匹配到的具体成员类型及依据"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.7,
+      "support_ids": [
+        "46ea5522-f7ee-5042-8e3a-6ac681520ecc"
+      ],
+      "metadata": {
+        "prompt": "当需要判断 Union 输入在智能模式下匹配到哪个成员时：1) 确认当前为智能模式而非从左到右模式；2) 对每个候选成员评估有效字段设置数量（适用于模型、dataclass、typed dict）；3) 评估匹配精确度（适用于所有类型）；4) 综合两项指标确定最佳匹配成员；5) 说明所选成员及依据。若输入与所有成员均不匹配，则不属于本技能范围，应转入错误处理。",
+        "tags": [
+          "pydantic",
+          "union",
+          "smart_mode",
+          "type_resolution"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# Unions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "8204eafa-3ed2-52f0-b15a-bd2395f4a405",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 38,
+        "paragraph_end": 40,
+        "heading_path": [
+          "# Unions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input002\\unions.md"
+        ],
+        "subsection_headings": [
+          "### Left to Right Mode",
+          "Smart Mode",
+          "Discriminated Unions",
+          "Discriminated Unions with `str` discriminators",
+          "Discriminated Unions with callable `Discriminator`",
+          "Nested Discriminated Unions",
+          "Union Validation Errors"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "Unions are fundamentally different to all other types Pydantic validates - instead of requiring all fields/items/values to be valid, unions require only one member to be valid."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

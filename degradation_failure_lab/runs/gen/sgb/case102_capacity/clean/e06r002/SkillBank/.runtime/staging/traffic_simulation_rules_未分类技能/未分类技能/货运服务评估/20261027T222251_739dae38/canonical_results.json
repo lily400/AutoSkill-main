@@ -1,0 +1,162 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "货运服务评估",
+  "run_id": "20261027T222251_739dae38",
+  "skills": [
+    {
+      "skill_id": "20fcdd02-8fae-5c9e-a2e7-d5e30a089d04",
+      "name": "货运交付与延误判定",
+      "description": "依据货运是否在目的节点完成卸载来判定交付状态，并按DueTime计算延误tick数（准时为0，否则为DeliveredTime减DueTime）。用于评估货运完成情况与服务指标。",
+      "skill_body": "对每个货运对象执行交付与延误判定：\n1. 确认该货运是否已在DestinationNode完成卸载；未卸载则标记为未交付，不计算延误。\n2. 已卸载则记录DeliveredTime（卸载完成的tick）。\n3. 若DeliveredTime <= DueTime，延误为0；否则延误 = DeliveredTime - DueTime（tick）。\n4. 输出每个货运的交付状态与延误tick值。\n仅做指标判定，不涉及车辆动作选择或前置条件校验。\n\n## Objective\n\n判定货运是否交付并计算其延误tick数\n## Applicable Signals\n\n- 货运已在DestinationNode卸载\n- 存在DueTime与DeliveredTime可用于比较\n- 需要汇总延误或服务水平指标\n\n## Contraindications\n\n- 货运尚未卸载\n- 需要计算车辆动作而非货运指标\n- 缺少DueTime或DeliveredTime信息\n\n## Intervention Moves\n\n- 检查卸载节点是否为DestinationNode\n- 记录DeliveredTime\n- 比较DeliveredTime与DueTime并计算延误\n- 输出交付状态与延误tick值\n\n## Workflow Steps\n\n- 确认货运是否在DestinationNode完成卸载\n- 未卸载则标记未交付并跳过延误计算\n- 已卸载则记录DeliveredTime\n- 若DeliveredTime <= DueTime则延误为0，否则延误 = DeliveredTime - DueTime\n- 输出每个货运的交付状态与延误tick值\n\n## Constraints\n\n- 交付判定仅以在DestinationNode卸载为准\n- 延误以tick为单位\n- 准时交付延误记为0而非负值\n\n## Cautions\n\n- 未卸载的货运不应计算延误\n- 避免将车辆动作请求误当作交付完成\n\n## Output Contract\n\n- 每个货运的交付状态与延误tick值\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 货运在DueTime=10时于DestinationNode卸载，DeliveredTime=10\n- Therapist/Output: 交付状态：已交付；延误：0 tick\n- Notes: 准时交付延误为0\n\n### Example 2\n\n- Client/Input: 货运在DueTime=10时于DestinationNode卸载，DeliveredTime=14\n- Therapist/Output: 交付状态：已交付；延误：4 tick\n- Notes: 延误为DeliveredTime减DueTime",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "判定货运是否交付并计算其延误tick数",
+      "domain": "交通仿真规则",
+      "task_family": "货运服务评估",
+      "method_family": "规则化指标计算",
+      "stage": "交付评估",
+      "applicable_signals": [
+        "货运已在DestinationNode卸载",
+        "存在DueTime与DeliveredTime可用于比较",
+        "需要汇总延误或服务水平指标"
+      ],
+      "contraindications": [
+        "货运尚未卸载",
+        "需要计算车辆动作而非货运指标",
+        "缺少DueTime或DeliveredTime信息"
+      ],
+      "intervention_moves": [
+        "检查卸载节点是否为DestinationNode",
+        "记录DeliveredTime",
+        "比较DeliveredTime与DueTime并计算延误",
+        "输出交付状态与延误tick值"
+      ],
+      "triggers": [
+        "货运在目的节点完成卸载",
+        "需要统计延误或服务水平",
+        "需要输出货运交付状态与延误指标"
+      ],
+      "workflow_steps": [
+        "确认货运是否在DestinationNode完成卸载",
+        "未卸载则标记未交付并跳过延误计算",
+        "已卸载则记录DeliveredTime",
+        "若DeliveredTime <= DueTime则延误为0，否则延误 = DeliveredTime - DueTime",
+        "输出每个货运的交付状态与延误tick值"
+      ],
+      "constraints": [
+        "交付判定仅以在DestinationNode卸载为准",
+        "延误以tick为单位",
+        "准时交付延误记为0而非负值"
+      ],
+      "cautions": [
+        "未卸载的货运不应计算延误",
+        "避免将车辆动作请求误当作交付完成"
+      ],
+      "output_contract": [
+        "每个货运的交付状态与延误tick值"
+      ],
+      "examples": [
+        {
+          "input": "货运在DueTime=10时于DestinationNode卸载，DeliveredTime=10",
+          "output": "交付状态：已交付；延误：0 tick",
+          "notes": "准时交付延误为0"
+        },
+        {
+          "input": "货运在DueTime=10时于DestinationNode卸载，DeliveredTime=14",
+          "output": "交付状态：已交付；延误：4 tick",
+          "notes": "延误为DeliveredTime减DueTime"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "货运评估",
+        "延误计算",
+        "服务指标"
+      ],
+      "support_ids": [
+        "74b19706-4468-5deb-a6c3-283a00a52ce9"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "e179667d-fbdb-515d-b362-230341ff842c"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|判定货运是否交付并计算其延误tick数|交通仿真规则|货运服务评估|规则化指标计算|交付评估|货运交付与延误判定",
+        "change_action": "create",
+        "llm_reason": "候选技能定义了独立的货运交付判定与延误计算规则，与同批其他候选无重叠，且有支持证据、无冲突，应保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "7031ba10-ea30-4d2d-9a76-f26ffb09b25e",
+      "entity_type": "skill",
+      "entity_id": "20fcdd02-8fae-5c9e-a2e7-d5e30a089d04",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能定义了独立的货运交付判定与延误计算规则，与同批其他候选无重叠，且有支持证据、无冲突，应保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "20fcdd02-8fae-5c9e-a2e7-d5e30a089d04",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "74b19706-4468-5deb-a6c3-283a00a52ce9"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+...........FF...                                                         [100%]
+=================================== FAILURES ===================================
+________________ TestValidatorOrdering.test_wrap_sees_raw_input ________________
+
+self = <eval.TestValidatorOrdering object at 0x76c2cb2fb3f0>
+
+    def test_wrap_sees_raw_input(self):
+        instance = agent_output.MyModel(value=10)
+        log = _extract_log(instance)
+    
+        found = False
+        for entry in log:
+            if isinstance(entry, dict):
+                event = entry.get("event", "")
+                if "wrap" in event and ("before" in event or "start" in event):
+                    if entry.get("value") == 10 or entry.get("input") == 10 or entry.get("raw") == 10:
+                        found = True
+                        break
+            elif isinstance(entry, str):
+                if "wrap" in entry and "10" in entry:
+                    found = True
+                    break
+    
+>       assert found, "Wrap validator should log that it observed raw input 10"
+E       AssertionError: Wrap validator should log that it observed raw input 10
+E       assert False
+
+/oracle/eval.py:146: AssertionError
+____ TestValidatorOrdering.test_order_matches_documented_pipeline_semantics ____
+
+self = <eval.TestValidatorOrdering object at 0x76c2cb2fb690>
+
+    def test_order_matches_documented_pipeline_semantics(self):
+        """
+        We do not require exact event names, but we require a sequence that demonstrates:
+        1) wrap starts first
+        2) before runs during inner validation
+        3) wrap resumes after handler returns
+        4) after occurs after inner validation result is available
+    
+        Pydantic docs state that with Annotated, before and wrap validators run
+        right-to-left, then after validators run left-to-right.
+        """
+        instance = agent_output.MyModel(value=10)
+        events = [_normalize_event_name(e).lower() for e in _extract_log(instance)]
+    
+        wrap_start_idx = _find_index(
+            events,
+            lambda e: ("wrap" in e) and ("before" in e or "start" in e or "enter" in e)
+        )
+        before_idx = _find_index(
+            events,
+            lambda e: e == "before" or "before_validator" in e or e.startswith("before_")
+        )
+        wrap_end_idx = _find_index(
+            events,
+            lambda e: ("wrap" in e) and ("after" in e or "end" in e or "exit" in e or "resume" in e)
+        )
+        after_idx = _find_index(
+            events,
+            lambda e: e == "after" or "after_validator" in e or e.startswith("after_")
+        )
+    
+        assert wrap_start_idx != -1, f"Could not find wrap-start event in log: {events}"
+        assert before_idx != -1, f"Could not find before event in log: {events}"
+        assert wrap_end_idx != -1, f"Could not find wrap-end event in log: {events}"
+        assert after_idx != -1, f"Could not find after event in log: {events}"
+    
+>       assert wrap_start_idx < before_idx, (
+            "Wrap should begin before the inner pipeline's before-validator runs"
+        )
+E       AssertionError: Wrap should begin before the inner pipeline's before-validator runs
+E       assert 1 < 0
+
+/oracle/eval.py:184: AssertionError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED ../oracle/eval.py::TestValidatorOrdering::test_wrap_sees_raw_input - A...
+FAILED ../oracle/eval.py::TestValidatorOrdering::test_order_matches_documented_pipeline_semantics
+2 failed, 14 passed in 0.11s

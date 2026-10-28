@@ -1,0 +1,259 @@
+..FFF.F                                                                  [100%]
+=================================== FAILURES ===================================
+____________________________ test_cl_case[3-case2] _____________________________
+
+case_index = 3
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'is_sportswear', 'row': 1, 'value': 'Yes'}], 'missing_c...ke\nr017,"a",yes,yes,Nike,nike\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = [], expected = [{'column': 'is_sportswear', 'row': 1, 'value': 'Yes'}]
+path = 'case_3.details.invalid_values'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+>           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_3.details.invalid_values: len 0 != 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+E            +  and   1 = len([{'column': 'is_sportswear', 'row': 1, 'value': 'Yes'}])
+
+oracle/eval.py:85: AssertionError
+____________________________ test_cl_case[4-case3] _____________________________
+
+case_index = 4
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'is_apparel_product', 'row': 1, 'value': 'YES'}], 'miss...ke\nr017,"a",yes,yes,Nike,nike\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = []
+expected = [{'column': 'is_apparel_product', 'row': 1, 'value': 'YES'}]
+path = 'case_4.details.invalid_values'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+>           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_4.details.invalid_values: len 0 != 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+E            +  and   1 = len([{'column': 'is_apparel_product', 'row': 1, 'value': 'YES'}])
+
+oracle/eval.py:85: AssertionError
+____________________________ test_cl_case[5-case4] _____________________________
+
+case_index = 5
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'competitor_or_nike', 'row': 1, 'value': 'Nike'}], 'mis...ke\nr017,"a",yes,yes,Nike,nike\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = []
+expected = [{'column': 'competitor_or_nike', 'row': 1, 'value': 'Nike'}]
+path = 'case_5.details.invalid_values'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+>           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_5.details.invalid_values: len 0 != 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+E            +  and   1 = len([{'column': 'competitor_or_nike', 'row': 1, 'value': 'Nike'}])
+
+oracle/eval.py:85: AssertionError
+____________________________ test_cl_case[7-case6] _____________________________
+
+case_index = 7
+case = {'expected_output': {'details': {'invalid_values': [{'column': 'is_sportswear', 'row': 21, 'value': 'Yes'}], 'missing_...ke\nr018,"a",yes,yes,Nike,nike\nr019,"a",yes,yes,Nike,nike\nr020,"a",yes,yes,Nike,nike\nr021,"a",Yes,yes,Nike,nike\n'}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+>       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = [], expected = [{'column': 'is_sportswear', 'row': 21, 'value': 'Yes'}]
+path = 'case_7.details.invalid_values'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+            assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, list):
+            assert isinstance(actual, list), f"{path}: expected list, got {type(actual).__name__}"
+>           assert len(actual) == len(expected), f"{path}: len {len(actual)} != {len(expected)}"
+E           AssertionError: case_7.details.invalid_values: len 0 != 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+E            +  and   1 = len([{'column': 'is_sportswear', 'row': 21, 'value': 'Yes'}])
+
+oracle/eval.py:85: AssertionError
+-------------------- generated xml file: /results/junit.xml --------------------
+=========================== short test summary info ============================
+FAILED oracle/eval.py::test_cl_case[3-case2] - AssertionError: case_3.details...
+FAILED oracle/eval.py::test_cl_case[4-case3] - AssertionError: case_4.details...
+FAILED oracle/eval.py::test_cl_case[5-case4] - AssertionError: case_5.details...
+FAILED oracle/eval.py::test_cl_case[7-case6] - AssertionError: case_7.details...
+4 failed, 3 passed in 0.21s

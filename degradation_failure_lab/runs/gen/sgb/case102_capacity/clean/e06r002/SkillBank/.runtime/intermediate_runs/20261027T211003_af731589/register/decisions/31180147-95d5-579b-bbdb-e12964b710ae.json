@@ -1,0 +1,114 @@
+{
+  "skill_id": "31180147-95d5-579b-bbdb-e12964b710ae",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "31180147-95d5-579b-bbdb-e12964b710ae",
+    "name": "装载作业完成判定",
+    "description": "对 START_LOADING 发起的装载作业，按 WorkUnits=SizeUnits 与 HandlingRate 计算完成所需 tick 数，并据此更新车辆与货物状态。适用于车辆在节点开始装载货物、需要判断何时装载完成时。",
+    "skill_body": "当车辆在节点执行 START_LOADING 时，按以下步骤判定装载作业完成情况：\n1. 确认车辆位于节点且已发起装载，货物处于 PENDING_AT_ORIGIN 等可装载状态。\n2. 计算 WorkUnits = SizeUnits(货物)。\n3. 取对应车辆类型的 HandlingRate。\n4. 用 WorkUnits 与 HandlingRate 推算完成所需 tick 数（若 WorkUnits ≤ HandlingRate，则单 tick 内完成）。\n5. 若本 tick 内完成，更新车辆状态为已装载并空闲于当前节点，货物随车；若未完成，保留作业进行中状态。\n6. 输出更新后的车辆与货物状态，供后续 tick 快照使用。\n\n## Objective\n\n判定装载作业是否在单 tick 内完成并更新状态\n## Applicable Signals\n\n- 车辆在节点发起 START_LOADING\n- 货物处于待装载状态\n- 需要推算装载完成所需 tick 数\n\n## Contraindications\n\n- 车辆未在节点或未发起装载\n- 涉及卸载作业\n\n## Intervention Moves\n\n- 计算 WorkUnits = SizeUnits(货物)\n- 取车辆类型对应的 HandlingRate\n- 比较 WorkUnits 与 HandlingRate 判定是否单 tick 完成\n- 更新车辆为已装载并空闲、货物随车\n\n## Workflow Steps\n\n- 确认车辆位于节点且已发起装载\n- 计算 WorkUnits = SizeUnits(货物)\n- 取对应车辆类型的 HandlingRate\n- 推算完成所需 tick 数\n- 按结果更新车辆与货物状态\n- 输出更新后的状态供快照使用\n\n## Constraints\n\n- WorkUnits 必须等于货物 SizeUnits\n- HandlingRate 必须按车辆类型取值\n- 仅在装载阶段执行，不处理卸载\n\n## Cautions\n\n- 若 WorkUnits 超过 HandlingRate，作业需跨多个 tick，不可误判为单 tick 完成\n\n## Output Contract\n\n- 车辆状态更新为已装载并空闲于当前节点，货物状态相应更新（随车），并给出完成所需 tick 数。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: V1 在 N1 执行 START_LOADING([C1])，SizeUnits(C1)=3，HandlingRate(TRUCK)=4\n- Therapist/Output: WorkUnits=3 ≤ HandlingRate=4，装载在单 tick 内完成；tick 1 时 V1 已装载 C1 并空闲于 N1\n- Notes: ScoreSoFar 仍为 0，尚无指标",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "判定装载作业是否在单 tick 内完成并更新状态",
+    "domain": "交通仿真规则",
+    "task_family": "装卸作业",
+    "method_family": "工作量/处理速率计算",
+    "stage": "装卸阶段",
+    "applicable_signals": [
+      "车辆在节点发起 START_LOADING",
+      "货物处于待装载状态",
+      "需要推算装载完成所需 tick 数"
+    ],
+    "contraindications": [
+      "车辆未在节点或未发起装载",
+      "涉及卸载作业"
+    ],
+    "intervention_moves": [
+      "计算 WorkUnits = SizeUnits(货物)",
+      "取车辆类型对应的 HandlingRate",
+      "比较 WorkUnits 与 HandlingRate 判定是否单 tick 完成",
+      "更新车辆为已装载并空闲、货物随车"
+    ],
+    "triggers": [
+      "车辆执行 START_LOADING",
+      "需要判断货物何时装载完成",
+      "装载阶段需要更新车辆与货物状态"
+    ],
+    "workflow_steps": [
+      "确认车辆位于节点且已发起装载",
+      "计算 WorkUnits = SizeUnits(货物)",
+      "取对应车辆类型的 HandlingRate",
+      "推算完成所需 tick 数",
+      "按结果更新车辆与货物状态",
+      "输出更新后的状态供快照使用"
+    ],
+    "constraints": [
+      "WorkUnits 必须等于货物 SizeUnits",
+      "HandlingRate 必须按车辆类型取值",
+      "仅在装载阶段执行，不处理卸载"
+    ],
+    "cautions": [
+      "若 WorkUnits 超过 HandlingRate，作业需跨多个 tick，不可误判为单 tick 完成"
+    ],
+    "output_contract": [
+      "车辆状态更新为已装载并空闲于当前节点，货物状态相应更新（随车），并给出完成所需 tick 数。"
+    ],
+    "examples": [
+      {
+        "input": "V1 在 N1 执行 START_LOADING([C1])，SizeUnits(C1)=3，HandlingRate(TRUCK)=4",
+        "output": "WorkUnits=3 ≤ HandlingRate=4，装载在单 tick 内完成；tick 1 时 V1 已装载 C1 并空闲于 N1",
+        "notes": "ScoreSoFar 仍为 0，尚无指标"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "装卸作业",
+      "工作量计算",
+      "状态更新"
+    ],
+    "support_ids": [
+      "9fbe4db1-c279-5a3c-93b5-d09e28622212"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "041a6bcf-8f72-5f09-81aa-f3d7b1573cbd"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|micro_skill_node|判定装载作业是否在单 tick 内完成并更新状态|交通仿真规则|装卸作业|工作量/处理速率计算|装卸阶段|装载作业完成判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

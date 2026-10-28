@@ -1,0 +1,101 @@
+{
+  "skill_id": "06335499-935b-54df-8a05-71ba06f71653",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "06335499-935b-54df-8a05-71ba06f71653",
+    "name": "到达先于离开的时序处理",
+    "description": "在同一 tick 内，当车辆到达节点与其它车辆尝试离开该节点同时发生时，先处理到达事件再处理离开事件，以保证每 tick 更新顺序一致。",
+    "skill_body": "在每个 tick 处理节点事件时，先判断该 tick 内是否存在车辆到达该节点且同时有车辆尝试离开该节点。若存在，则先处理所有到达事件，再处理离开事件；若该 tick 内无到达或离开事件，则不适用本规则。\n\n## Objective\n\n在同一 tick 内正确排序节点到达与离开事件\n## Applicable Signals\n\n- 同一 tick 内既有车辆到达又有车辆离开同一节点\n\n## Contraindications\n\n- 该 tick 内无到达或离开事件\n\n## Intervention Moves\n\n- 识别该 tick 内到达该节点的车辆\n- 识别该 tick 内尝试离开该节点的车辆\n- 先处理到达事件\n- 再处理离开事件\n\n## Workflow Steps\n\n- 检查该 tick 内是否有车辆到达该节点\n- 检查该 tick 内是否有车辆尝试离开该节点\n- 若两者同时存在，先处理到达事件\n- 到达处理完毕后，再处理离开事件\n\n## Constraints\n\n- 到达事件必须先于离开事件处理\n- 仅在到达与离开发生在同一 tick 时适用\n\n## Cautions\n\n- 不要将本规则与无信号节点优先级裁决混淆，本规则只处理时间顺序\n\n## Output Contract\n\n- 按到达优先顺序处理完毕的 tick 事件序列",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在同一 tick 内正确排序节点到达与离开事件",
+    "domain": "交通仿真规则",
+    "task_family": "事件时序处理",
+    "method_family": "固定顺序更新规则",
+    "stage": "每 tick 更新",
+    "applicable_signals": [
+      "同一 tick 内既有车辆到达又有车辆离开同一节点"
+    ],
+    "contraindications": [
+      "该 tick 内无到达或离开事件"
+    ],
+    "intervention_moves": [
+      "识别该 tick 内到达该节点的车辆",
+      "识别该 tick 内尝试离开该节点的车辆",
+      "先处理到达事件",
+      "再处理离开事件"
+    ],
+    "triggers": [
+      "同一 tick 内既有车辆到达又有车辆离开同一节点",
+      "需要确定节点到达与离开事件的更新顺序"
+    ],
+    "workflow_steps": [
+      "检查该 tick 内是否有车辆到达该节点",
+      "检查该 tick 内是否有车辆尝试离开该节点",
+      "若两者同时存在，先处理到达事件",
+      "到达处理完毕后，再处理离开事件"
+    ],
+    "constraints": [
+      "到达事件必须先于离开事件处理",
+      "仅在到达与离开发生在同一 tick 时适用"
+    ],
+    "cautions": [
+      "不要将本规则与无信号节点优先级裁决混淆，本规则只处理时间顺序"
+    ],
+    "output_contract": [
+      "按到达优先顺序处理完毕的 tick 事件序列"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "事件时序",
+      "tick更新",
+      "节点处理"
+    ],
+    "support_ids": [
+      "cab33d29-38bc-597d-8494-a2d5fd8d19a5"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "9569e5cd-a8eb-5c87-940b-8577ca421b38"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|在同一 tick 内正确排序节点到达与离开事件|交通仿真规则|事件时序处理|固定顺序更新规则|每 tick 更新|到达先于离开的时序处理"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

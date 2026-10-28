@@ -1,0 +1,111 @@
+{
+  "skill_id": "5f70ff3e-d82b-511a-b231-14c88a0d80b1",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批候选 65cd74f5-7080-569c-8d4a-d9aa13d9d57a（Pydantic 联合类型校验模式选择）在目标、任务族、方法族与工作流上高度重叠，属于同批冗余；后者覆盖范围更完整，保留该候选会造成重复能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "5f70ff3e-d82b-511a-b231-14c88a0d80b1",
+    "name": "Pydantic 联合类型验证模式选择",
+    "description": "根据可预测性与性能需求，在 left-to-right、smart、discriminated 三种联合验证模式中选择合适的策略，并给出简短决策说明。用于设计或审查 Pydantic 联合类型字段时。",
+    "skill_body": "当调用方需要为 Pydantic 联合类型字段决定验证策略时，先确认联合成员是否可通过判别字段区分。若可区分，优先推荐 discriminated unions，因为其性能更好且更可预测，能控制针对哪个成员进行验证。若不可区分，则在 left-to-right 模式（按顺序尝试，返回首个匹配）与 smart 模式（按顺序尝试但会越过首个匹配以寻找更优匹配，为多数联合验证的默认模式）之间权衡。最终输出所选模式及简短理由。\n\n## Objective\n\n为给定联合类型选择并说明最合适的验证模式\n## Applicable Signals\n\n- 联合类型字段需要确定验证策略\n- 需要在性能与可预测性之间做取舍\n- 联合成员存在可用于区分的判别字段\n\n## Contraindications\n\n- 联合成员无法通过判别字段区分且需要自定义逻辑时未评估\n\n## Intervention Moves\n\n- 判断联合成员是否可通过判别字段区分\n- 若可区分则推荐 discriminated unions\n- 若不可区分则在 left-to-right 与 smart 模式间权衡\n- 说明所选模式及理由\n\n## Workflow Steps\n\n- 确认联合类型字段的成员构成\n- 评估成员是否可通过判别字段区分\n- 可区分时选择 discriminated unions\n- 不可区分时在 left-to-right 与 smart 模式间权衡\n- 输出所选模式及简短理由\n\n## Constraints\n\n- 仅在联合验证模式选择范围内给出建议\n- 不涉及具体判别器实现或错误处理流程\n\n## Cautions\n\n- discriminated unions 需要成员具备可用的判别字段，否则不适用\n\n## Output Contract\n\n- 给出所选模式及理由的简短决策说明\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合成员可通过类型字段区分，需要更高性能与可预测性\n- Therapist/Output: 推荐 discriminated unions：性能更好且更可预测，可控制针对哪个成员验证。",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为给定联合类型选择并说明最合适的验证模式",
+    "domain": "pydantic",
+    "task_family": "union_validation",
+    "method_family": "mode_selection",
+    "stage": "design",
+    "applicable_signals": [
+      "联合类型字段需要确定验证策略",
+      "需要在性能与可预测性之间做取舍",
+      "联合成员存在可用于区分的判别字段"
+    ],
+    "contraindications": [
+      "联合成员无法通过判别字段区分且需要自定义逻辑时未评估"
+    ],
+    "intervention_moves": [
+      "判断联合成员是否可通过判别字段区分",
+      "若可区分则推荐 discriminated unions",
+      "若不可区分则在 left-to-right 与 smart 模式间权衡",
+      "说明所选模式及理由"
+    ],
+    "triggers": [
+      "需要为联合类型字段决定验证策略",
+      "用户询问三种联合验证模式的差异与取舍",
+      "审查现有联合类型字段的验证模式是否合适"
+    ],
+    "workflow_steps": [
+      "确认联合类型字段的成员构成",
+      "评估成员是否可通过判别字段区分",
+      "可区分时选择 discriminated unions",
+      "不可区分时在 left-to-right 与 smart 模式间权衡",
+      "输出所选模式及简短理由"
+    ],
+    "constraints": [
+      "仅在联合验证模式选择范围内给出建议",
+      "不涉及具体判别器实现或错误处理流程"
+    ],
+    "cautions": [
+      "discriminated unions 需要成员具备可用的判别字段，否则不适用"
+    ],
+    "output_contract": [
+      "给出所选模式及理由的简短决策说明"
+    ],
+    "examples": [
+      {
+        "input": "联合成员可通过类型字段区分，需要更高性能与可预测性",
+        "output": "推荐 discriminated unions：性能更好且更可预测，可控制针对哪个成员验证。",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "union",
+      "validation-mode",
+      "design"
+    ],
+    "support_ids": [
+      "f5446fe8-7d39-500e-a579-891765cbb5f9"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "2f50a012-2640-5a10-a939-2ab0d428df4c"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|为给定联合类型选择并说明最合适的验证模式|pydantic|union_validation|mode_selection|design|pydantic 联合类型验证模式选择"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

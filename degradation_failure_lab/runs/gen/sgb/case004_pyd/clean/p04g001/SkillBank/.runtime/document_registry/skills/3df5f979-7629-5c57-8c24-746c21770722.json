@@ -1,0 +1,116 @@
+{
+  "skill_id": "3df5f979-7629-5c57-8c24-746c21770722",
+  "name": "联合类型从左到右校验顺序控制",
+  "description": "解释并预测 Pydantic 联合类型按声明顺序从左到右依次尝试成员校验的行为，以及 lax 模式下类型转换导致的意外匹配；用于调试或设计含混合成员（如 int/str）的联合字段。",
+  "skill_body": "当需要解释联合类型为何返回非预期成员类型，或设计含 int/str 混合成员的联合字段时，按以下要点说明：联合类型按成员声明顺序从左到右依次尝试校验，第一个通过校验的成员即为结果；在 lax 模式下，字符串等输入可能被转换为更早声明的成员类型（如 '123' 被转换为 int），从而产生意外匹配。若需要确定性区分成员类型，应改用判别联合而非依赖顺序。\n\n## Objective\n\n理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱\n## Applicable Signals\n\n- 联合字段返回了与预期不同的成员类型\n- 联合成员包含可相互转换的类型（如 int 与 str）\n- 输入为数字字符串但结果被解析为 int\n\n## Contraindications\n\n- 需要确定性区分成员类型时应改用判别联合，而非依赖顺序校验\n\n## Intervention Moves\n\n- 说明联合类型按声明顺序从左到右尝试成员校验\n- 指出 lax 模式下字符串可被转换为更早声明的 int 成员\n- 建议在需要确定性区分时改用判别联合\n\n## Workflow Steps\n\n- 确认联合成员的声明顺序\n- 判断输入是否可被更早声明的成员在 lax 模式下转换\n- 解释实际匹配到的成员及原因\n- 若需确定性区分，建议改用判别联合\n\n## Constraints\n\n- 仅适用于解释或预测联合类型校验顺序与类型转换行为\n- 不替代判别联合等确定性区分方案\n\n## Cautions\n\n- lax 模式下的隐式类型转换可能导致与直觉不符的解析结果\n\n## Output Contract\n\n- 能说明联合类型按声明顺序尝试且 lax 模式会转换字符串为 int 的规则\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合字段声明为 int | str，输入为字符串 '123'，结果 id 为 int 类型\n- Therapist/Output: 因为联合按声明顺序先尝试 int 成员，lax 模式下 '123' 被转换为 int 并通过校验，故结果为 int 而非 str。\n- Notes: 体现从左到右顺序与 lax 类型转换的意外匹配",
+  "asset_type": "knowledge_reference",
+  "granularity": "session",
+  "asset_node_id": "knowledge_reference_node",
+  "asset_path": "family_root/knowledge_reference_node",
+  "asset_level": 1,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 1.0,
+  "hierarchy_status": "root",
+  "visible_role": "leaf",
+  "objective": "理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱",
+  "domain": "pydantic",
+  "task_family": "联合类型校验",
+  "method_family": "顺序校验规则",
+  "stage": "模型设计",
+  "applicable_signals": [
+    "联合字段返回了与预期不同的成员类型",
+    "联合成员包含可相互转换的类型（如 int 与 str）",
+    "输入为数字字符串但结果被解析为 int"
+  ],
+  "contraindications": [
+    "需要确定性区分成员类型时应改用判别联合，而非依赖顺序校验"
+  ],
+  "intervention_moves": [
+    "说明联合类型按声明顺序从左到右尝试成员校验",
+    "指出 lax 模式下字符串可被转换为更早声明的 int 成员",
+    "建议在需要确定性区分时改用判别联合"
+  ],
+  "triggers": [
+    "需要解释联合类型为何返回非预期成员类型",
+    "设计含 int/str 混合成员的联合字段",
+    "调试联合类型解析结果"
+  ],
+  "workflow_steps": [
+    "确认联合成员的声明顺序",
+    "判断输入是否可被更早声明的成员在 lax 模式下转换",
+    "解释实际匹配到的成员及原因",
+    "若需确定性区分，建议改用判别联合"
+  ],
+  "constraints": [
+    "仅适用于解释或预测联合类型校验顺序与类型转换行为",
+    "不替代判别联合等确定性区分方案"
+  ],
+  "cautions": [
+    "lax 模式下的隐式类型转换可能导致与直觉不符的解析结果"
+  ],
+  "output_contract": [
+    "能说明联合类型按声明顺序尝试且 lax 模式会转换字符串为 int 的规则"
+  ],
+  "examples": [
+    {
+      "input": "联合字段声明为 int | str，输入为字符串 '123'，结果 id 为 int 类型",
+      "output": "因为联合按声明顺序先尝试 int 成员，lax 模式下 '123' 被转换为 int 并通过校验，故结果为 int 而非 str。",
+      "notes": "体现从左到右顺序与 lax 类型转换的意外匹配"
+    }
+  ],
+  "tags": [
+    "pydantic",
+    "union",
+    "validation-order",
+    "lax-mode",
+    "type-coercion"
+  ],
+  "support_ids": [
+    "146cba65-2453-529b-a463-e35a98f44942"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "21864a50-10ff-5b07-affb-cddba5a590e3"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.75,
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "pydantic::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱|pydantic|联合类型校验|顺序校验规则|模型设计|联合类型从左到右校验顺序控制",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 1.0,
+    "hierarchy_status": "root",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

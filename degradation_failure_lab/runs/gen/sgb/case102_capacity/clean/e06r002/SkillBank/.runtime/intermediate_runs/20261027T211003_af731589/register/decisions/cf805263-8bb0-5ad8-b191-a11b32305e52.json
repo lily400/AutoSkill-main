@@ -1,0 +1,100 @@
+{
+  "skill_id": "cf805263-8bb0-5ad8-b191-a11b32305e52",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "cf805263-8bb0-5ad8-b191-a11b32305e52",
+    "name": "边最大车辆数计算",
+    "description": "按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算指定边的最大允许占用车辆数，作为准入校验的容量基准。",
+    "skill_body": "给定一条边的 LaneCount(edge) 与 CapacityPerLane(edge)，计算 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)，输出该边的最大允许占用车辆数，作为后续准入校验的容量基准。若缺少任一参数，不要臆造数值，应报告参数缺失。\n\n## Objective\n\n计算指定边的最大允许占用车辆数\n## Applicable Signals\n\n- 需要判断占用是否超限\n- 需要边容量基准值\n\n## Contraindications\n\n- 缺少车道数或每车道容量参数\n\n## Intervention Moves\n\n- 读取该边的 LaneCount(edge)\n- 读取该边的 CapacityPerLane(edge)\n- 按公式相乘得到 MaxVehicles(edge)\n\n## Workflow Steps\n\n- 确认目标边并获取 LaneCount(edge) 与 CapacityPerLane(edge)\n- 计算 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)\n- 输出 MaxVehicles(edge) 数值，供准入校验使用\n\n## Constraints\n\n- 必须使用公式 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)\n- 缺少任一参数时不得臆造数值\n\n## Cautions\n\n- 该结果仅作为容量基准，不替代准入判定逻辑\n\n## Output Contract\n\n- 输出 MaxVehicles(edge) 数值",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "计算指定边的最大允许占用车辆数",
+    "domain": "交通仿真规则",
+    "task_family": "容量计算",
+    "method_family": "公式计算",
+    "stage": "capacity_evaluation",
+    "applicable_signals": [
+      "需要判断占用是否超限",
+      "需要边容量基准值"
+    ],
+    "contraindications": [
+      "缺少车道数或每车道容量参数"
+    ],
+    "intervention_moves": [
+      "读取该边的 LaneCount(edge)",
+      "读取该边的 CapacityPerLane(edge)",
+      "按公式相乘得到 MaxVehicles(edge)"
+    ],
+    "triggers": [
+      "需要判断占用是否超限",
+      "需要边容量基准值"
+    ],
+    "workflow_steps": [
+      "确认目标边并获取 LaneCount(edge) 与 CapacityPerLane(edge)",
+      "计算 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)",
+      "输出 MaxVehicles(edge) 数值，供准入校验使用"
+    ],
+    "constraints": [
+      "必须使用公式 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge)",
+      "缺少任一参数时不得臆造数值"
+    ],
+    "cautions": [
+      "该结果仅作为容量基准，不替代准入判定逻辑"
+    ],
+    "output_contract": [
+      "输出 MaxVehicles(edge) 数值"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "容量计算",
+      "边容量",
+      "准入校验"
+    ],
+    "support_ids": [
+      "785ae8a6-67f4-537b-ae58-fbd5281eae00"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "efebe356-508e-5c1e-b685-9dc590ee435c"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|计算指定边的最大允许占用车辆数|交通仿真规则|容量计算|公式计算|capacity_evaluation|边最大车辆数计算"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

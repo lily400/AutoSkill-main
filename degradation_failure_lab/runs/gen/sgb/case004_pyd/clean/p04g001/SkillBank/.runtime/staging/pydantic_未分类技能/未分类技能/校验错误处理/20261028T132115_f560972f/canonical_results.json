@@ -1,0 +1,154 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "校验错误处理",
+  "run_id": "20261028T132115_f560972f",
+  "skills": [
+    {
+      "skill_id": "5ec4f759-4cce-551e-8fa3-5ad3cd48e463",
+      "name": "自定义 Discriminator 错误信息",
+      "description": "通过 Discriminator 构造器传入自定义错误类型、消息与上下文，使判别联合校验失败时输出更简洁可读的错误。适用于普通 Union 报错过于冗长、需要为判别失败提供清晰错误信息的场景。",
+      "skill_body": "当判别联合校验失败且默认错误信息过于冗长时，使用 Discriminator 构造器定制错误类型、消息与上下文。先确认字段为判别联合（而非普通 Union），再定义判别函数或判别字段，并在 Discriminator 构造器中传入自定义错误规格，最后触发校验失败以确认输出简洁可读。\n\n## Objective\n\n定制判别联合的错误类型、消息与上下文\n## Applicable Signals\n\n- 普通 Union 校验错误过于冗长\n- 需要为判别失败提供清晰错误信息\n\n## Contraindications\n\n- 默认错误信息已足够\n- 非判别联合场景\n\n## Intervention Moves\n\n- 确认目标字段为判别联合而非普通 Union\n- 定义判别函数或判别字段\n- 在 Discriminator 构造器中传入自定义错误类型、消息与上下文\n- 触发校验失败并核对错误输出是否简洁可读\n\n## Workflow Steps\n\n- 确认字段使用判别联合（discriminator）而非普通 Union\n- 定义判别函数或判别字段以区分联合成员\n- 在 Discriminator 构造器中传入自定义错误类型、消息与上下文\n- 构造非法输入触发校验失败\n- 核对 ValidationError 输出是否简洁可读并符合预期\n\n## Constraints\n\n- 仅用于判别联合场景\n- 自定义错误规格需通过 Discriminator 构造器传入\n\n## Cautions\n\n- 若默认错误信息已足够清晰，无需定制\n- 普通 Union 场景不适用本技能\n\n## Output Contract\n\n- 带自定义错误类型与消息的 ValidationError 输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 判别联合校验失败，普通 Union 报错过于冗长\n- Therapist/Output: 通过 Discriminator 构造器定制错误类型、消息与上下文后，ValidationError 输出简洁可读\n- Notes: 需先确认字段为判别联合",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "定制判别联合的错误类型、消息与上下文",
+      "domain": "pydantic",
+      "task_family": "校验错误处理",
+      "method_family": "Discriminator 定制",
+      "stage": "错误处理",
+      "applicable_signals": [
+        "普通 Union 校验错误过于冗长",
+        "需要为判别失败提供清晰错误信息"
+      ],
+      "contraindications": [
+        "默认错误信息已足够",
+        "非判别联合场景"
+      ],
+      "intervention_moves": [
+        "确认目标字段为判别联合而非普通 Union",
+        "定义判别函数或判别字段",
+        "在 Discriminator 构造器中传入自定义错误类型、消息与上下文",
+        "触发校验失败并核对错误输出是否简洁可读"
+      ],
+      "triggers": [
+        "普通 Union 校验错误过于冗长",
+        "需要为判别失败提供清晰错误信息",
+        "判别联合校验失败需要定制错误输出"
+      ],
+      "workflow_steps": [
+        "确认字段使用判别联合（discriminator）而非普通 Union",
+        "定义判别函数或判别字段以区分联合成员",
+        "在 Discriminator 构造器中传入自定义错误类型、消息与上下文",
+        "构造非法输入触发校验失败",
+        "核对 ValidationError 输出是否简洁可读并符合预期"
+      ],
+      "constraints": [
+        "仅用于判别联合场景",
+        "自定义错误规格需通过 Discriminator 构造器传入"
+      ],
+      "cautions": [
+        "若默认错误信息已足够清晰，无需定制",
+        "普通 Union 场景不适用本技能"
+      ],
+      "output_contract": [
+        "带自定义错误类型与消息的 ValidationError 输出"
+      ],
+      "examples": [
+        {
+          "input": "判别联合校验失败，普通 Union 报错过于冗长",
+          "output": "通过 Discriminator 构造器定制错误类型、消息与上下文后，ValidationError 输出简洁可读",
+          "notes": "需先确认字段为判别联合"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "discriminated-union",
+        "validation-error",
+        "discriminator"
+      ],
+      "support_ids": [
+        "6f26c559-4083-5f6b-8ff0-026ece1f3463"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "0422ab95-424b-516b-aa4e-6a9302bbff55"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|定制判别联合的错误类型、消息与上下文|pydantic|校验错误处理|discriminator 定制|错误处理|自定义 discriminator 错误信息",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "63fc4187-4af0-4d40-943f-6d013d98e3eb",
+      "entity_type": "skill",
+      "entity_id": "5ec4f759-4cce-551e-8fa3-5ad3cd48e463",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "5ec4f759-4cce-551e-8fa3-5ad3cd48e463",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "6f26c559-4083-5f6b-8ff0-026ece1f3463"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

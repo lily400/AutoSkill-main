@@ -1,0 +1,105 @@
+{
+  "skill_id": "f535020a-8194-52f1-b428-29f2184ed2e3",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“Pydantic 判别式联合类型建模”和“可调用判别器联合类型校验”高度重叠，后两者已分别覆盖 str 判别器与可调用 Discriminator 两条路径，本候选缺乏独立可执行价值，属于同批冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "f535020a-8194-52f1-b428-29f2184ed2e3",
+    "name": "判别联合类型设计",
+    "description": "使用带 discriminator 的联合类型（含 str 判别器与可调用 Discriminator）为联合成员建立确定性路由，避免左到右顺序校验带来的歧义。适用于需要可靠区分联合成员、或成员存在顺序依赖问题的模型设计场景。",
+    "skill_body": "当联合类型成员存在歧义或顺序依赖时，为其设计判别联合：先确认成员间存在可用于区分的判别字段，再选择 str 判别器或可调用 Discriminator 建立确定性成员路由，最后验证输入能被正确路由到目标成员。若成员间无共同判别字段且无法构造判别器，则不要强行使用判别联合。\n\n## Objective\n\n通过判别器为联合类型建立确定性成员路由\n## Applicable Signals\n\n- 联合成员存在歧义或顺序依赖问题\n- 需要基于字段值确定性选择成员模型\n- 左到右模式下出现意外成员匹配\n\n## Contraindications\n\n- 成员间无共同判别字段且无法构造判别器\n\n## Intervention Moves\n\n- 确认成员间存在可用于区分的判别字段\n- 选择 str 判别器或可调用 Discriminator 建立路由\n- 验证输入被正确路由到目标成员\n\n## Workflow Steps\n\n- 识别联合成员歧义或顺序依赖问题\n- 确认成员间存在共同判别字段或可构造判别器\n- 选择判别方式：str 判别器或可调用 Discriminator\n- 定义带 discriminator 的联合类型\n- 验证输入能正确路由到目标成员\n\n## Constraints\n\n- 仅在成员间存在可用判别字段或可构造判别器时使用\n- 判别器需能确定性地区分成员\n\n## Cautions\n\n- 左到右模式下宽松校验可能导致意外成员匹配，判别联合可避免此类歧义\n\n## Output Contract\n\n- 定义出带 discriminator 的联合类型，并能正确路由到目标成员",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "通过判别器为联合类型建立确定性成员路由",
+    "domain": "pydantic",
+    "task_family": "联合类型校验",
+    "method_family": "判别联合",
+    "stage": "模型设计",
+    "applicable_signals": [
+      "联合成员存在歧义或顺序依赖问题",
+      "需要基于字段值确定性选择成员模型",
+      "左到右模式下出现意外成员匹配"
+    ],
+    "contraindications": [
+      "成员间无共同判别字段且无法构造判别器"
+    ],
+    "intervention_moves": [
+      "确认成员间存在可用于区分的判别字段",
+      "选择 str 判别器或可调用 Discriminator 建立路由",
+      "验证输入被正确路由到目标成员"
+    ],
+    "triggers": [
+      "联合成员存在歧义或顺序依赖问题",
+      "需要基于字段值确定性选择成员模型",
+      "左到右模式产生意外校验结果"
+    ],
+    "workflow_steps": [
+      "识别联合成员歧义或顺序依赖问题",
+      "确认成员间存在共同判别字段或可构造判别器",
+      "选择判别方式：str 判别器或可调用 Discriminator",
+      "定义带 discriminator 的联合类型",
+      "验证输入能正确路由到目标成员"
+    ],
+    "constraints": [
+      "仅在成员间存在可用判别字段或可构造判别器时使用",
+      "判别器需能确定性地区分成员"
+    ],
+    "cautions": [
+      "左到右模式下宽松校验可能导致意外成员匹配，判别联合可避免此类歧义"
+    ],
+    "output_contract": [
+      "定义出带 discriminator 的联合类型，并能正确路由到目标成员"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "union",
+      "discriminated-union",
+      "discriminator",
+      "模型设计"
+    ],
+    "support_ids": [
+      "b6925c22-f5d2-5a75-b4b8-773230870a10"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "b40aa2fd-82d4-56e9-8696-3ed37d7068cb"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|通过判别器为联合类型建立确定性成员路由|pydantic|联合类型校验|判别联合|模型设计|判别联合类型设计"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

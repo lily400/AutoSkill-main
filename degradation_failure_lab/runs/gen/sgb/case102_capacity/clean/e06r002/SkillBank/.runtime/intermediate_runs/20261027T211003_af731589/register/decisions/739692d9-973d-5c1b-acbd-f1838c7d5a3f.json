@@ -1,0 +1,117 @@
+{
+  "skill_id": "739692d9-973d-5c1b-acbd-f1838c7d5a3f",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“离散时间步移动执行流程”高度重叠，属于同一tick移动执行与到达判定能力，保留其一即可，避免重复技能。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "739692d9-973d-5c1b-acbd-f1838c7d5a3f",
+    "name": "离散tick车辆移动执行与到达判定",
+    "description": "在单个仿真tick内按顺序编排车辆移动执行与到达判定：递减剩余行驶时间、尝试到达、应用信号相位与容量约束、确定推迟或完成，并推进到下一tick。适用于需要处理一个tick的车辆移动且存在多车辆与信号约束的场景。",
+    "skill_body": "按tick顺序执行移动阶段：\n1. 确认当前tick编号及对应信号相位（如 t mod 周期 = 相位）。\n2. 在Movement Execution Phase中，对每条边上的车辆递减RemainingTravelTime。\n3. 对RemainingTravelTime降为0的车辆，尝试到达下游节点。\n4. 检查目标节点信号相位：若车辆所在边不在该相位的GreenEdges中，则不得完成进入交叉口的移动，到达推迟至下一tick，车辆保持在其边的下游边界。\n5. 检查边容量与队列约束，确认是否允许进入。\n6. 汇总本tick的完成与推迟结果，推进到下一tick。\n仅执行本tick的移动编排，不扩展到静态规则查询或其他阶段。\n\n## Objective\n\n在单个tick内正确编排车辆移动执行与到达判定\n## Applicable Signals\n\n- 需要处理一个仿真tick的车辆移动\n- 存在多车辆与信号约束\n- 车辆RemainingTravelTime降为0并尝试到达节点\n\n## Contraindications\n\n- 仅需查询静态规则文本\n- 不涉及车辆移动执行的阶段\n\n## Intervention Moves\n\n- 递减RemainingTravelTime\n- 尝试到达下游节点\n- 按信号相位GreenEdges门控到达\n- 应用边容量与队列约束\n- 判定完成或推迟至下一tick\n\n## Workflow Steps\n\n- 确认当前tick编号及对应信号相位\n- 在Movement Execution Phase递减各车辆RemainingTravelTime\n- 对RemainingTravelTime为0的车辆尝试到达下游节点\n- 检查目标节点相位GreenEdges，若所在边不在其中则推迟到达\n- 应用边容量与队列约束\n- 汇总完成与推迟结果并推进到下一tick\n\n## Constraints\n\n- 到达判定必须同时满足信号相位与容量约束\n- 被信号门控阻止的车辆保持在其边的下游边界，不得进入交叉口\n- 推迟的到达在下一tick重新判定\n\n## Cautions\n\n- 同一相位可能跨多个tick持续，需按 t mod 周期重新确认相位\n- 不得跳过容量检查直接完成到达\n\n## Output Contract\n\n- 该tick的车辆状态更新结果（完成到达或推迟的车辆清单）与下一tick输入\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: tick 4，V2在E2、V3在E5，RemainingTravelTime均为1，t mod 6 = 4为Phase C，GreenEdges = {E18, E19, E7}\n- Therapist/Output: V2与V3剩余时间递减至0并尝试到达N3，但E2、E5不在GreenEdges中，到达推迟至tick 5，车辆保持在下游边界\n- Notes: tick 5仍为Phase C，限制继续适用",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "在单个tick内正确编排车辆移动执行与到达判定",
+    "domain": "交通仿真",
+    "task_family": "tick处理",
+    "method_family": "顺序执行流程",
+    "stage": "Movement Execution Phase",
+    "applicable_signals": [
+      "需要处理一个仿真tick的车辆移动",
+      "存在多车辆与信号约束",
+      "车辆RemainingTravelTime降为0并尝试到达节点"
+    ],
+    "contraindications": [
+      "仅需查询静态规则文本",
+      "不涉及车辆移动执行的阶段"
+    ],
+    "intervention_moves": [
+      "递减RemainingTravelTime",
+      "尝试到达下游节点",
+      "按信号相位GreenEdges门控到达",
+      "应用边容量与队列约束",
+      "判定完成或推迟至下一tick"
+    ],
+    "triggers": [
+      "需要处理一个仿真tick的车辆移动",
+      "存在多车辆与信号约束",
+      "需要判定车辆到达是否被信号相位推迟"
+    ],
+    "workflow_steps": [
+      "确认当前tick编号及对应信号相位",
+      "在Movement Execution Phase递减各车辆RemainingTravelTime",
+      "对RemainingTravelTime为0的车辆尝试到达下游节点",
+      "检查目标节点相位GreenEdges，若所在边不在其中则推迟到达",
+      "应用边容量与队列约束",
+      "汇总完成与推迟结果并推进到下一tick"
+    ],
+    "constraints": [
+      "到达判定必须同时满足信号相位与容量约束",
+      "被信号门控阻止的车辆保持在其边的下游边界，不得进入交叉口",
+      "推迟的到达在下一tick重新判定"
+    ],
+    "cautions": [
+      "同一相位可能跨多个tick持续，需按 t mod 周期重新确认相位",
+      "不得跳过容量检查直接完成到达"
+    ],
+    "output_contract": [
+      "该tick的车辆状态更新结果（完成到达或推迟的车辆清单）与下一tick输入"
+    ],
+    "examples": [
+      {
+        "input": "tick 4，V2在E2、V3在E5，RemainingTravelTime均为1，t mod 6 = 4为Phase C，GreenEdges = {E18, E19, E7}",
+        "output": "V2与V3剩余时间递减至0并尝试到达N3，但E2、E5不在GreenEdges中，到达推迟至tick 5，车辆保持在下游边界",
+        "notes": "tick 5仍为Phase C，限制继续适用"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "tick处理",
+      "移动执行",
+      "信号门控",
+      "到达判定"
+    ],
+    "support_ids": [
+      "76309836-4341-5f10-bf95-73f2b9d053e7"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "99899199-439f-55ad-8947-942908ba7c4d"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|在单个tick内正确编排车辆移动执行与到达判定|交通仿真|tick处理|顺序执行流程|movement execution phase|离散tick车辆移动执行与到达判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,1086 @@
+{
+  "schema": "autoskill.document.staging.raw_candidates.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "模型校验",
+  "run_id": "20261028T130522_9b737722",
+  "documents": [
+    {
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "source_type": "document",
+      "title": "input001\\validators.md",
+      "authors": [],
+      "year": null,
+      "domain": "",
+      "raw_text": "# Validators - Pydantic Validation\n\n# Validators\n\nIn addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),\nyou can leverage custom validators at the field and model levels to enforce more complex constraints\nand ensure the integrity of your data.\n\nWant to quickly jump to the relevant validator section?\n\n- Field validators\n\n---\n  - field *after* validators\n  - field *before* validators\n  - field *plain* validators\n  - field *wrap* validators\n- Model validators\n\n---\n  - model *before* validators\n  - model *after* validators\n  - model *wrap* validators\n\n## Field validators\n\nAPI Documentation\n\n[`pydantic.functional_validators.WrapValidator`](../../api/functional_validators/#pydantic.functional_validators.WrapValidator)\n\n[`pydantic.functional_validators.PlainValidator`](../../api/functional_validators/#pydantic.functional_validators.PlainValidator)\n\n[`pydantic.functional_validators.BeforeValidator`](../../api/functional_validators/#pydantic.functional_validators.BeforeValidator)\n\n[`pydantic.functional_validators.AfterValidator`](../../api/functional_validators/#pydantic.functional_validators.AfterValidator)\n\n[`pydantic.functional_validators.field_validator`](../../api/functional_validators/#pydantic.functional_validators.field_validator)\n\nIn its simplest form, a field validator is a callable taking the value to be validated as an argument and\n**returning the validated value**. The callable can perform checks for specific conditions (see\nraising validation errors) and make changes to the validated value (coercion or mutation).\n\n**Four** different types of validators can be used. They can all be defined using the\n[annotated pattern](../fields/#the-annotated-pattern) or using the\n[`field_validator()`](../../api/functional_validators/#pydantic.functional_validators.field_validator) decorator, applied on a [class method](https://docs.python.org/3/library/functions.html#classmethod):\n\n- ***After* validators**: run after Pydantic's internal validation. They are generally more type safe and thus easier to implement.\n\nAnnotated patternDecorator\n\nHere is an example of a validator performing a validation check, and returning the value unchanged.\n\n```\nfrom typing import Annotated\n\nfrom pydantic import AfterValidator, BaseModel, ValidationError\n\ndef is_even(value: int) -> int:\n    if value % 2 == 1:\n        raise ValueError(f'{value} is not an even number')\n    return value  # (1)!\n\nclass Model(BaseModel):\n    number: Annotated[int, AfterValidator(is_even)]\n\ntry:\n    Model(number=1)\nexcept ValidationError as err:\n    print(err)\n    \"\"\"\n    1 validation error for Model\n    number\n      Value error, 1 is not an even number [type=value_error, input_value=1, input_type=int]\n    \"\"\"\n```\n\n1. Note that it is important to return the validated value.\n\nHere is an example of a validator performing a validation check, and returning the value unchanged,\nthis time using the [`field_validator()`](../../api/functional_validators/#pydantic.functional_validators.field_validator) decorator.\n\n```\nfrom pydantic import BaseModel, ValidationError, field_validator\n\nclass Model(BaseModel):\n    number: int\n\n    @field_validator('number', mode='after')  # (1)!\n    @classmethod\n    def is_even(cls, value: int) -> int:\n        if value % 2 == 1:\n            raise ValueError(f'{value} is not an even number')\n        return value  # (2)!\n\ntry:\n    Model(number=1)\nexcept ValidationError as err:\n    print(err)\n    \"\"\"\n    1 validation error for Model\n    number\n      Value error, 1 is not an even number [type=value_error, input_value=1, input_type=int]\n    \"\"\"\n```\n\n1. `'after'` is the default mode for the decorator, and can be omitted.\n2. Note that it is important to return the validated value.\n\nExample mutating the value\n\nHere is an example of a validator making changes to the validated value (no exception is raised).\n\nAnnotated patternDecorator\n\n```\nfrom typing import Annotated\n\nfrom pydantic import AfterValidator, BaseModel\n\ndef double_number(value: int) -> int:\n    return value * 2\n\nclass Model(BaseModel):\n    number: Annotated[int, AfterValidator(double_number)]\n\nprint(Model(number=2))\n#> number=4\n```\n\n```\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    number: int\n\n    @field_validator('number', mode='after')  # (1)!\n    @classmethod\n    def double_number(cls, value: int) -> int:\n        return value * 2\n\nprint(Model(number=2))\n#> number=4\n```\n\n1. `'after'` is the default mode for the decorator, and can be omitted.\n- ***Before* validators**: run before Pydantic's internal parsing and validation (e.g. coercion of a `str` to an `int`).\n These are more flexible than *after* validators, but they also have to deal with the raw input, which\n in theory could be any arbitrary object. You should also avoid mutating the value directly if you are raising a\n validation error later in your validator function, as the mutated value may be passed to other\n validators if using [unions](../unions/).\n\nThe value returned from this callable is then validated against the provided type annotation by Pydantic.\n\nAnnotated patternDecorator\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, BeforeValidator, ValidationError\n\ndef ensure_list(value: Any) -> Any:  # (1)!\n    if not isinstance(value, list):  # (2)!\n        return [value]\n    else:\n        return value\n\nclass Model(BaseModel):\n    numbers: Annotated[list[int], BeforeValidator(ensure_list)]\n\nprint(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n\n```\nfrom typing import Any\n\nfrom pydantic import BaseModel, ValidationError, field_validator\n\nclass Model(BaseModel):\n    numbers: list[int]\n\n    @field_validator('numbers', mode='before')\n    @classmethod\n    def ensure_list(cls, value: Any) -> Any:  # (1)!\n        if not isinstance(value, list):  # (2)!\n            return [value]\n        else:\n            return value\n\nprint(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n- ***Plain* validators**: act similarly to *before* validators but they **terminate validation immediately** after returning,\n so no further validators are called and Pydantic does not do any of its internal validation against the field type.\n\nAnnotated patternDecorator\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, PlainValidator\n\ndef val_number(value: Any) -> Any:\n    if isinstance(value, int):\n        return value * 2\n    else:\n        return value\n\nclass Model(BaseModel):\n    number: Annotated[int, PlainValidator(val_number)]\n\nprint(Model(number=4))\n#> number=8\nprint(Model(number='invalid'))  # (1)!\n#> number='invalid'\n```\n\n1. Although `'invalid'` shouldn't validate against the `int` type, Pydantic accepts the input.\n\n```\nfrom typing import Any\n\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    number: int\n\n    @field_validator('number', mode='plain')\n    @classmethod\n    def val_number(cls, value: Any) -> Any:\n        if isinstance(value, int):\n            return value * 2\n        else:\n            return value\n\nprint(Model(number=4))\n#> number=8\nprint(Model(number='invalid'))  # (1)!\n#> number='invalid'\n```\n\n1. Although `'invalid'` shouldn't validate against the `int` type, Pydantic accepts the input.\n- ***Wrap* validators**: are the most flexible of all. You can run code before or after Pydantic and other validators\n process the input, or you can terminate validation immediately, either by returning the value early or by raising an\n error.\n\nSuch validators must be defined with a **mandatory** extra *handler* parameter: a callable taking the value to be validated\nas an argument. Internally, this handler will delegate validation of the value to Pydantic. You are free to wrap the call\nto the handler in a [`try..except`](https://docs.python.org/3/tutorial/errors.html#handling-exceptions) block, or not call it at all.\n\nAnnotated patternDecorator\n\n```\nfrom typing import Any\n\nfrom typing import Annotated\n\nfrom pydantic import BaseModel, Field, ValidationError, ValidatorFunctionWrapHandler, WrapValidator\n\ndef truncate(value: Any, handler: ValidatorFunctionWrapHandler) -> str:\n    try:\n        return handler(value)\n    except ValidationError as err:\n        if err.errors()[0]['type'] == 'string_too_long':\n            return handler(value[:5])\n        else:\n            raise\n\nclass Model(BaseModel):\n    my_string: Annotated[str, Field(max_length=5), WrapValidator(truncate)]\n\nprint(Model(my_string='abcde'))\n#> my_string='abcde'\nprint(Model(my_string='abcdef'))\n#> my_string='abcde'\n```\n\n```\nfrom typing import Any\n\nfrom typing import Annotated\n\nfrom pydantic import BaseModel, Field, ValidationError, ValidatorFunctionWrapHandler, field_validator\n\nclass Model(BaseModel):\n    my_string: Annotated[str, Field(max_length=5)]\n\n    @field_validator('my_string', mode='wrap')\n    @classmethod\n    def truncate(cls, value: Any, handler: ValidatorFunctionWrapHandler) -> str:\n        try:\n            return handler(value)\n        except ValidationError as err:\n            if err.errors()[0]['type'] == 'string_too_long':\n                return handler(value[:5])\n            else:\n                raise\n\nprint(Model(my_string='abcde'))\n#> my_string='abcde'\nprint(Model(my_string='abcdef'))\n#> my_string='abcde'\n```\n\nAs mentioned in the [fields documentation](../fields/#validate-default-values), default values of fields\nare *not* validated unless configured to do so, and thus custom validators will not be applied as well.\n\n### Which validator pattern to use\n\nWhile both approaches can achieve the same thing, each pattern provides different benefits.\n\n#### Using the annotated pattern\n\nOne of the key benefits of using the [annotated pattern](../fields/#the-annotated-pattern) is to make\nvalidators reusable:\n\n```\nfrom typing import Annotated\n\nfrom pydantic import AfterValidator, BaseModel\n\ndef is_even(value: int) -> int:\n    if value % 2 == 1:\n        raise ValueError(f'{value} is not an even number')\n    return value\n\nEvenNumber = Annotated[int, AfterValidator(is_even)]\n\nclass Model1(BaseModel):\n    my_number: EvenNumber\n\nclass Model2(BaseModel):\n    other_number: Annotated[EvenNumber, AfterValidator(lambda v: v + 2)]\n\nclass Model3(BaseModel):\n    list_of_even_numbers: list[EvenNumber]  # (1)!\n```\n\n1. As mentioned in the [annotated pattern](../fields/#the-annotated-pattern) documentation,\n we can also make use of validators for specific parts of the annotation (in this case,\n validation is applied for list items, but not the whole list).\n\nIt is also easier to understand which validators are applied to a type, by just looking at the field annotation.\n\n#### Using the decorator pattern\n\nOne of the key benefits of using the [`field_validator()`](../../api/functional_validators/#pydantic.functional_validators.field_validator) decorator is to apply\nthe function to multiple fields:\n\n```\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    f1: str\n    f2: str\n\n    @field_validator('f1', 'f2', mode='before')\n    @classmethod\n    def capitalize(cls, value: str) -> str:\n        return value.capitalize()\n```\n\nHere are a couple additional notes about the decorator usage:\n\n- If you want the validator to apply to all fields (including the ones defined in subclasses), you can pass\n `'*'` as the field name argument.\n- By default, the decorator will ensure the provided field name(s) are defined on the model. If you want to\n disable this check during class creation, you can do so by passing `False` to the `check_fields` argument.\n This is useful when the field validator is defined on a base class, and the field is expected to exist on\n subclasses.\n\n## Model validators\n\nAPI Documentation\n\n[`pydantic.functional_validators.model_validator`](../../api/functional_validators/#pydantic.functional_validators.model_validator)\n\nValidation can also be performed on the entire model's data using the [`model_validator()`](../../api/functional_validators/#pydantic.functional_validators.model_validator)\ndecorator.\n\n**Three** different types of model validators can be used:\n\n- ***After* validators**: run after the whole model has been validated. As such, they are defined as\n *instance* methods and can be seen as post-initialization hooks. Important note: the validated instance\n should be returned.\n\n```\nfrom typing_extensions import Self\n\nfrom pydantic import BaseModel, model_validator\n\nclass UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n\n    @model_validator(mode='after')\n    def check_passwords_match(self) -> Self:\n        if self.password != self.password_repeat:\n            raise ValueError('Passwords do not match')\n        return self\n```\n- ***Before* validators**: are run before the model is instantiated. These are more flexible than *after* validators,\n but they also have to deal with the raw input, which in theory could be any arbitrary object. You should also avoid\n mutating the value directly if you are raising a validation error later in your validator\n function, as the mutated value may be passed to other validators if using [unions](../unions/).\n\n```\nfrom typing import Any\n\nfrom pydantic import BaseModel, model_validator\n\nclass UserModel(BaseModel):\n    username: str\n\n    @model_validator(mode='before')\n    @classmethod\n    def check_card_number_not_present(cls, data: Any) -> Any:  # (1)!\n        if isinstance(data, dict):  # (2)!\n            if 'card_number' in data:\n                raise ValueError(\"'card_number' should not be included\")\n        return data\n```\n  1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `data`. *Before* validators take the raw input, which\n can be anything.\n  2. Most of the time, the input data will be a dictionary (e.g. when calling `UserModel(username='...')`). However,\n this is not always the case. For instance, if the [`from_attributes`](../../api/config/#pydantic.config.ConfigDict.from_attributes)\n configuration value is set, you might receive an arbitrary class instance for the `data` argument.\n- ***Wrap* validators**: are the most flexible of all. You can run code before or after Pydantic and\n other validators process the input data, or you can terminate validation immediately, either by returning\n the data early or by raising an error.\n\n```\nimport logging\nfrom typing import Any\n\nfrom typing_extensions import Self\n\nfrom pydantic import BaseModel, ModelWrapValidatorHandler, ValidationError, model_validator\n\nclass UserModel(BaseModel):\n    username: str\n\n    @model_validator(mode='wrap')\n    @classmethod\n    def log_failed_validation(cls, data: Any, handler: ModelWrapValidatorHandler[Self]) -> Self:\n        try:\n            return handler(data)\n        except ValidationError:\n            logging.error('Model %s failed to validate with data %s', cls, data)\n            raise\n```\n\nA model validator defined in a base class will be called during the validation of a subclass instance.\n\nOverriding a model validator in a subclass will override the base class' validator, and thus only the subclass' version of said validator will be called.\n\n## Raising validation errors\n\nTo raise a validation error, three types of exceptions can be used:\n\n- [`ValueError`](https://docs.python.org/3/library/exceptions.html#ValueError): this is the most common exception raised inside validators.\n- [`AssertionError`](https://docs.python.org/3/library/exceptions.html#AssertionError): using the [assert](https://docs.python.org/3/reference/simple_stmts.html#assert) statement also works, but be aware that these statements\n are skipped when Python is run with the [-O](https://docs.python.org/3/using/cmdline.html#cmdoption-O) optimization flag.\n- [`PydanticCustomError`](../../api/pydantic_core/#pydantic_core.PydanticCustomError): a bit more verbose, but provides extra flexibility:\n\n```\nfrom pydantic_core import PydanticCustomError\n\nfrom pydantic import BaseModel, ValidationError, field_validator\n\nclass Model(BaseModel):\n    x: int\n\n    @field_validator('x', mode='after')\n    @classmethod\n    def validate_x(cls, v: int) -> int:\n        if v % 42 == 0:\n            raise PydanticCustomError(\n                'the_answer_error',\n                '{number} is the answer!',\n                {'number': v},\n            )\n        return v\n\ntry:\n    Model(x=42 * 2)\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    x\n      84 is the answer! [type=the_answer_error, input_value=84, input_type=int]\n    \"\"\"\n```\n\n## Validation info\n\nBoth the field and model validators callables (in all modes) can optionally take an extra\n[`ValidationInfo`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo) argument, providing useful extra information, such as:\n\n- already validated data\n- user defined context\n- the current [validation mode](../models/#validating-data): either `'python'`, `'json'` or `'strings'` (see the [`mode`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.mode) property)\n- the current field name, if using a field validator (see the [`field_name`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.field_name) property).\n\n### Validation data\n\nFor field validators, the already validated data can be accessed using the [`data`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.data)\nproperty. Here is an example than can be used as an alternative to the *after* model validator\nexample:\n\n```\nfrom pydantic import BaseModel, ValidationInfo, field_validator\n\nclass UserModel(BaseModel):\n    password: str\n    password_repeat: str\n    username: str\n\n    @field_validator('password_repeat', mode='after')\n    @classmethod\n    def check_passwords_match(cls, value: str, info: ValidationInfo) -> str:\n        if value != info.data['password']:\n            raise ValueError('Passwords do not match')\n        return value\n```\n\nAs validation is performed in the [order fields are defined](../models/#field-ordering), you have to\nmake sure you are not accessing a field that hasn't been validated yet. In the code above, for example,\nthe `username` validated value is not available yet, as it is defined *after* `password_repeat`.\n\nThe [`data`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.data) property is `None` for model validators.\n\n### Validation context\n\nYou can pass a context object to the [validation methods](../models/#validating-data), which can be accessed\ninside the validator functions using the [`context`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.context) property:\n\n```\nfrom pydantic import BaseModel, ValidationInfo, field_validator\n\nclass Model(BaseModel):\n    text: str\n\n    @field_validator('text', mode='after')\n    @classmethod\n    def remove_stopwords(cls, v: str, info: ValidationInfo) -> str:\n        if isinstance(info.context, dict):\n            stopwords = info.context.get('stopwords', set())\n            v = ' '.join(w for w in v.split() if w.lower() not in stopwords)\n        return v\n\ndata = {'text': 'This is an example document'}\nprint(Model.model_validate(data))  # no context\n#> text='This is an example document'\nprint(Model.model_validate(data, context={'stopwords': ['this', 'is', 'an']}))\n#> text='example document'\n```\n\nSimilarly, you can [use a context for serialization](../serialization/#serialization-context).\n\nProviding context when directly instantiating a model\n\nIt is currently not possible to provide a context when directly instantiating a model\n(i.e. when calling `Model(...)`). You can work around this through the use of a\n[`ContextVar`](https://docs.python.org/3/library/contextvars.html#contextvars.ContextVar) and a custom `__init__` method:\n\n```\nfrom __future__ import annotations\n\nfrom collections.abc import Generator\nfrom contextlib import contextmanager\nfrom contextvars import ContextVar\nfrom typing import Any\n\nfrom pydantic import BaseModel, ValidationInfo, field_validator\n\n_init_context_var = ContextVar('_init_context_var', default=None)\n\n@contextmanager\ndef init_context(value: dict[str, Any]) -> Generator[None]:\n    token = _init_context_var.set(value)\n    try:\n        yield\n    finally:\n        _init_context_var.reset(token)\n\nclass Model(BaseModel):\n    my_number: int\n\n    def __init__(self, /, **data: Any) -> None:\n        self.__pydantic_validator__.validate_python(\n            data,\n            self_instance=self,\n            context=_init_context_var.get(),\n        )\n\n    @field_validator('my_number')\n    @classmethod\n    def multiply_with_context(cls, value: int, info: ValidationInfo) -> int:\n        if isinstance(info.context, dict):\n            multiplier = info.context.get('multiplier', 1)\n            value = value * multiplier\n        return value\n\nprint(Model(my_number=2))\n#> my_number=2\n\nwith init_context({'multiplier': 3}):\n    print(Model(my_number=2))\n    #> my_number=6\n\nprint(Model(my_number=2))\n#> my_number=2\n```\n\n## Ordering of validators\n\nWhen using the annotated pattern, the order in which validators are applied\nis defined as follows: *before* and *wrap* validators\nare run from right to left, and *after* validators are then run from left to right:\n\n```\nfrom pydantic import AfterValidator, BaseModel, BeforeValidator, WrapValidator\n\nclass Model(BaseModel):\n    name: Annotated[\n        str,\n        AfterValidator(runs_3rd),\n        AfterValidator(runs_4th),\n        BeforeValidator(runs_2nd),\n        WrapValidator(runs_1st),\n    ]\n```\n\nInternally, validators defined using the decorator are converted to their annotated\nform counterpart and added last after the existing metadata for the field. This means that the same ordering\nlogic applies.\n\n## Special types\n\nPydantic provides a few special utilities that can be used to customize validation.\n\n- [`InstanceOf`](../../api/functional_validators/#pydantic.functional_validators.InstanceOf) can be used to validate that a value is an instance of a given class.\n\n```\nfrom pydantic import BaseModel, InstanceOf, ValidationError\n\nclass Fruit:\n    def __repr__(self):\n        return self.__class__.__name__\n\nclass Banana(Fruit): ...\n\nclass Apple(Fruit): ...\n\nclass Basket(BaseModel):\n    fruits: list[InstanceOf[Fruit]]\n\nprint(Basket(fruits=[Banana(), Apple()]))\n#> fruits=[Banana, Apple]\ntry:\n    Basket(fruits=[Banana(), 'Apple'])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Basket\n    fruits.1\n      Input should be an instance of Fruit [type=is_instance_of, input_value='Apple', input_type=str]\n    \"\"\"\n```\n- [`SkipValidation`](../../api/functional_validators/#pydantic.functional_validators.SkipValidation) can be used to skip validation on a field.\n\n```\nfrom pydantic import BaseModel, SkipValidation\n\nclass Model(BaseModel):\n    names: list[SkipValidation[str]]\n\nm = Model(names=['foo', 'bar'])\nprint(m)\n#> names=['foo', 'bar']\n\nm = Model(names=['foo', 123])  # (1)!\nprint(m)\n#> names=['foo', 123]\n```\n  1. Note that the validation of the second item is skipped. If it has the wrong type it will emit a\n warning during serialization.\n- [`ValidateAs`](../../api/functional_validators/#pydantic.functional_validators.ValidateAs) can be used to validate an custom type from a\n type natively supported by Pydantic. This is particularly useful when using custom types with multiple fields.\n\n```\nfrom typing import Annotated\n\nfrom pydantic import BaseModel, TypeAdapter, ValidateAs\n\nclass MyCls:\n    def __init__(self, a: int) -> None:\n        self.a = a\n\n    def __repr__(self) -> str:\n        return f\"MyCls(a={self.a})\"\n\nclass ValModel(BaseModel):\n    a: int\n\nta = TypeAdapter(\n    Annotated[MyCls, ValidateAs(ValModel, lambda v: MyCls(a=v.a))]\n)\n\nprint(ta.validate_python({'a': 1}))\n#> MyCls(a=1)\n```\n- [`PydanticUseDefault`](../../api/pydantic_core/#pydantic_core.PydanticUseDefault) can be used to notify Pydantic that the default value\n should be used.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic_core import PydanticUseDefault\n\nfrom pydantic import BaseModel, BeforeValidator\n\ndef default_if_none(value: Any) -> Any:\n    if value is None:\n        raise PydanticUseDefault()\n    return value\n\nclass Model(BaseModel):\n    name: Annotated[str, BeforeValidator(default_if_none)] = 'default_name'\n\nprint(Model(name=None))\n#> name='default_name'\n```\n\n## JSON Schema and field validators\n\nWhen using *before*, *plain* or *wrap*\nfield validators, the accepted input type may be different from the field annotation.\n\nConsider the following example:\n\n```\nfrom typing import Any\n\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    value: str\n\n    @field_validator('value', mode='before')\n    @classmethod\n    def cast_ints(cls, value: Any) -> Any:\n        if isinstance(value, int):\n            return str(value)\n        else:\n            return value\n\nprint(Model(value='a'))\n#> value='a'\nprint(Model(value=1))\n#> value='1'\n```\n\nWhile the type hint for `value` is `str`, the `cast_ints` validator also allows integers. To specify the correct\ninput type, the `json_schema_input_type` argument can be provided:\n\n```\nfrom typing import Any, Union\n\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    value: str\n\n    @field_validator(\n        'value', mode='before', json_schema_input_type=Union[int, str]\n    )\n    @classmethod\n    def cast_ints(cls, value: Any) -> Any:\n        if isinstance(value, int):\n            return str(value)\n        else:\n            return value\n\nprint(Model.model_json_schema()['properties']['value'])\n#> {'anyOf': [{'type': 'integer'}, {'type': 'string'}], 'title': 'Value'}\n```\n\nAs a convenience, Pydantic will use the field type if the argument is not provided (unless you are using\na *plain* validator, in which case `json_schema_input_type` defaults to\n[`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as the field type is completely discarded).\n\n Was this page helpful?\n\n Thanks for your feedback!\n\n Thanks for your feedback!\n\n Back to top",
+      "sections": [
+        {
+          "heading": "input001\\validators.md",
+          "text": "# Validators - Pydantic Validation",
+          "level": 1,
+          "span": {
+            "start": 0,
+            "end": 36
+          },
+          "metadata": {
+            "heading_path": [
+              "input001\\validators.md"
+            ],
+            "parent_heading": "",
+            "section_summary": "# Validators - Pydantic Validation",
+            "sibling_headings": [
+              "# Validators"
+            ]
+          }
+        },
+        {
+          "heading": "# Validators",
+          "text": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),\nyou can leverage custom validators at the field and model levels to enforce more complex constraints\nand ensure the integrity of your data.\n\nWant to quickly jump to the relevant validator section?\n\n- Field validators\n\n---\n  - field *after* validators\n  - field *before* validators\n  - field *plain* validators\n  - field *wrap* validators\n- Model validators\n\n---\n  - model *before* validators\n  - model *after* validators\n  - model *wrap* validators",
+          "level": 1,
+          "span": {
+            "start": 49,
+            "end": 592
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators"
+            ],
+            "parent_heading": "",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),",
+            "sibling_headings": [
+              "input001\\validators.md"
+            ]
+          }
+        },
+        {
+          "heading": "## Field validators",
+          "text": "API Documentation\n\n[`pydantic.functional_validators.WrapValidator`](../../api/functional_validators/#pydantic.functional_validators.WrapValidator)\n\n[`pydantic.functional_validators.PlainValidator`](../../api/functional_validators/#pydantic.functional_validators.PlainValidator)\n\n[`pydantic.functional_validators.BeforeValidator`](../../api/functional_validators/#pydantic.functional_validators.BeforeValidator)\n\n[`pydantic.functional_validators.AfterValidator`](../../api/functional_validators/#pydantic.functional_validators.AfterValidator)\n\n[`pydantic.functional_validators.field_validator`](../../api/functional_validators/#pydantic.functional_validators.field_validator)\n\nIn its simplest form, a field validator is a callable taking the value to be validated as an argument and\n**returning the validated value**. The callable can perform checks for specific conditions (see\nraising validation errors) and make changes to the validated value (coercion or mutation).\n\n**Four** different types of validators can be used. They can all be defined using the\n[annotated pattern](../fields/#the-annotated-pattern) or using the\n[`field_validator()`](../../api/functional_validators/#pydantic.functional_validators.field_validator) decorator, applied on a [class method](https://docs.python.org/3/library/functions.html#classmethod):\n\n- ***After* validators**: run after Pydantic's internal validation. They are generally more type safe and thus easier to implement.\n\nAnnotated patternDecorator\n\nHere is an example of a validator performing a validation check, and returning the value unchanged.\n\n```\nfrom typing import Annotated\n\nfrom pydantic import AfterValidator, BaseModel, ValidationError\n\ndef is_even(value: int) -> int:\n    if value % 2 == 1:\n        raise ValueError(f'{value} is not an even number')\n    return value  # (1)!\n\nclass Model(BaseModel):\n    number: Annotated[int, AfterValidator(is_even)]\n\ntry:\n    Model(number=1)\nexcept ValidationError as err:\n    print(err)\n    \"\"\"\n    1 validation error for Model\n    number\n      Value error, 1 is not an even number [type=value_error, input_value=1, input_type=int]\n    \"\"\"\n```\n\n1. Note that it is important to return the validated value.\n\nHere is an example of a validator performing a validation check, and returning the value unchanged,\nthis time using the [`field_validator()`](../../api/functional_validators/#pydantic.functional_validators.field_validator) decorator.\n\n```\nfrom pydantic import BaseModel, ValidationError, field_validator\n\nclass Model(BaseModel):\n    number: int\n\n    @field_validator('number', mode='after')  # (1)!\n    @classmethod\n    def is_even(cls, value: int) -> int:\n        if value % 2 == 1:\n            raise ValueError(f'{value} is not an even number')\n        return value  # (2)!\n\ntry:\n    Model(number=1)\nexcept ValidationError as err:\n    print(err)\n    \"\"\"\n    1 validation error for Model\n    number\n      Value error, 1 is not an even number [type=value_error, input_value=1, input_type=int]\n    \"\"\"\n```\n\n1. `'after'` is the default mode for the decorator, and can be omitted.\n2. Note that it is important to return the validated value.",
+          "level": 2,
+          "span": {
+            "start": 612,
+            "end": 3749
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "## Field validators"
+            ],
+            "parent_heading": "# Validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "API Documentation",
+            "sibling_headings": [
+              "Which validator pattern to use",
+              "Model validators",
+              "Raising validation errors",
+              "Validation info",
+              "Ordering of validators",
+              "Special types"
+            ]
+          }
+        },
+        {
+          "heading": "Example mutating the value",
+          "text": "Here is an example of a validator making changes to the validated value (no exception is raised).\n\nAnnotated patternDecorator\n\n```\nfrom typing import Annotated\n\nfrom pydantic import AfterValidator, BaseModel\n\ndef double_number(value: int) -> int:\n    return value * 2\n\nclass Model(BaseModel):\n    number: Annotated[int, AfterValidator(double_number)]\n\nprint(Model(number=2))\n#> number=4\n```\n\n```\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    number: int\n\n    @field_validator('number', mode='after')  # (1)!\n    @classmethod\n    def double_number(cls, value: int) -> int:\n        return value * 2\n\nprint(Model(number=2))\n#> number=4\n```\n\n1. `'after'` is the default mode for the decorator, and can be omitted.\n- ***Before* validators**: run before Pydantic's internal parsing and validation (e.g. coercion of a `str` to an `int`).\n These are more flexible than *after* validators, but they also have to deal with the raw input, which\n in theory could be any arbitrary object. You should also avoid mutating the value directly if you are raising a\n validation error later in your validator function, as the mutated value may be passed to other\n validators if using [unions](../unions/).\n\nThe value returned from this callable is then validated against the provided type annotation by Pydantic.\n\nAnnotated patternDecorator\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, BeforeValidator, ValidationError\n\ndef ensure_list(value: Any) -> Any:  # (1)!\n    if not isinstance(value, list):  # (2)!\n        return [value]\n    else:\n        return value\n\nclass Model(BaseModel):\n    numbers: Annotated[list[int], BeforeValidator(ensure_list)]\n\nprint(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n\n```\nfrom typing import Any\n\nfrom pydantic import BaseModel, ValidationError, field_validator\n\nclass Model(BaseModel):\n    numbers: list[int]\n\n    @field_validator('numbers', mode='before')\n    @classmethod\n    def ensure_list(cls, value: Any) -> Any:  # (1)!\n        if not isinstance(value, list):  # (2)!\n            return [value]\n        else:\n            return value\n\nprint(Model(numbers=2))\n#> numbers=[2]\ntry:\n    Model(numbers='str')\nexcept ValidationError as err:\n    print(err)  # (3)!\n    \"\"\"\n    1 validation error for Model\n    numbers.0\n      Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value='str', input_type=str]\n    \"\"\"\n```\n\n1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `value`. *Before* validators take the raw input, which\n can be anything.\n2. Note that you might want to check for other sequence types (such as tuples) that would normally successfully\n validate against the `list` type. *Before* validators give you more flexibility, but you have to account for\n every possible case.\n3. Pydantic still performs validation against the `int` type, no matter if our `ensure_list` validator\n did operations on the original input type.\n- ***Plain* validators**: act similarly to *before* validators but they **terminate validation immediately** after returning,\n so no further validators are called and Pydantic does not do any of its internal validation against the field type.\n\nAnnotated patternDecorator\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic import BaseModel, PlainValidator\n\ndef val_number(value: Any) -> Any:\n    if isinstance(value, int):\n        return value * 2\n    else:\n        return value\n\nclass Model(BaseModel):\n    number: Annotated[int, PlainValidator(val_number)]\n\nprint(Model(number=4))\n#> number=8\nprint(Model(number='invalid'))  # (1)!\n#> number='invalid'\n```\n\n1. Although `'invalid'` shouldn't validate against the `int` type, Pydantic accepts the input.\n\n```\nfrom typing import Any\n\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    number: int\n\n    @field_validator('number', mode='plain')\n    @classmethod\n    def val_number(cls, value: Any) -> Any:\n        if isinstance(value, int):\n            return value * 2\n        else:\n            return value\n\nprint(Model(number=4))\n#> number=8\nprint(Model(number='invalid'))  # (1)!\n#> number='invalid'\n```\n\n1. Although `'invalid'` shouldn't validate against the `int` type, Pydantic accepts the input.\n- ***Wrap* validators**: are the most flexible of all. You can run code before or after Pydantic and other validators\n process the input, or you can terminate validation immediately, either by returning the value early or by raising an\n error.\n\nSuch validators must be defined with a **mandatory** extra *handler* parameter: a callable taking the value to be validated\nas an argument. Internally, this handler will delegate validation of the value to Pydantic. You are free to wrap the call\nto the handler in a [`try..except`](https://docs.python.org/3/tutorial/errors.html#handling-exceptions) block, or not call it at all.\n\nAnnotated patternDecorator\n\n```\nfrom typing import Any\n\nfrom typing import Annotated\n\nfrom pydantic import BaseModel, Field, ValidationError, ValidatorFunctionWrapHandler, WrapValidator\n\ndef truncate(value: Any, handler: ValidatorFunctionWrapHandler) -> str:\n    try:\n        return handler(value)\n    except ValidationError as err:\n        if err.errors()[0]['type'] == 'string_too_long':\n            return handler(value[:5])\n        else:\n            raise\n\nclass Model(BaseModel):\n    my_string: Annotated[str, Field(max_length=5), WrapValidator(truncate)]\n\nprint(Model(my_string='abcde'))\n#> my_string='abcde'\nprint(Model(my_string='abcdef'))\n#> my_string='abcde'\n```\n\n```\nfrom typing import Any\n\nfrom typing import Annotated\n\nfrom pydantic import BaseModel, Field, ValidationError, ValidatorFunctionWrapHandler, field_validator\n\nclass Model(BaseModel):\n    my_string: Annotated[str, Field(max_length=5)]\n\n    @field_validator('my_string', mode='wrap')\n    @classmethod\n    def truncate(cls, value: Any, handler: ValidatorFunctionWrapHandler) -> str:\n        try:\n            return handler(value)\n        except ValidationError as err:\n            if err.errors()[0]['type'] == 'string_too_long':\n                return handler(value[:5])\n            else:\n                raise\n\nprint(Model(my_string='abcde'))\n#> my_string='abcde'\nprint(Model(my_string='abcdef'))\n#> my_string='abcde'\n```\n\nAs mentioned in the [fields documentation](../fields/#validate-default-values), default values of fields\nare *not* validated unless configured to do so, and thus custom validators will not be applied as well.",
+          "level": 3,
+          "span": {
+            "start": 3776,
+            "end": 11137
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "## Field validators",
+              "Example mutating the value"
+            ],
+            "parent_heading": "## Field validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Here is an example of a validator making changes to the validated value (no exception is raised)."
+          }
+        },
+        {
+          "heading": "Which validator pattern to use",
+          "text": "While both approaches can achieve the same thing, each pattern provides different benefits.",
+          "level": 2,
+          "span": {
+            "start": 11172,
+            "end": 11266
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Which validator pattern to use"
+            ],
+            "parent_heading": "# Validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "While both approaches can achieve the same thing, each pattern provides different benefits.",
+            "sibling_headings": [
+              "## Field validators",
+              "Model validators",
+              "Raising validation errors",
+              "Validation info",
+              "Ordering of validators",
+              "Special types"
+            ]
+          }
+        },
+        {
+          "heading": "Using the annotated pattern",
+          "text": "One of the key benefits of using the [annotated pattern](../fields/#the-annotated-pattern) is to make\nvalidators reusable:\n\n```\nfrom typing import Annotated\n\nfrom pydantic import AfterValidator, BaseModel\n\ndef is_even(value: int) -> int:\n    if value % 2 == 1:\n        raise ValueError(f'{value} is not an even number')\n    return value\n\nEvenNumber = Annotated[int, AfterValidator(is_even)]\n\nclass Model1(BaseModel):\n    my_number: EvenNumber\n\nclass Model2(BaseModel):\n    other_number: Annotated[EvenNumber, AfterValidator(lambda v: v + 2)]\n\nclass Model3(BaseModel):\n    list_of_even_numbers: list[EvenNumber]  # (1)!\n```\n\n1. As mentioned in the [annotated pattern](../fields/#the-annotated-pattern) documentation,\n we can also make use of validators for specific parts of the annotation (in this case,\n validation is applied for list items, but not the whole list).\n\nIt is also easier to understand which validators are applied to a type, by just looking at the field annotation.",
+          "level": 3,
+          "span": {
+            "start": 11299,
+            "end": 12283
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Which validator pattern to use",
+              "Using the annotated pattern"
+            ],
+            "parent_heading": "Which validator pattern to use",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "One of the key benefits of using the [annotated pattern](../fields/#the-annotated-pattern) is to make",
+            "sibling_headings": [
+              "Using the decorator pattern"
+            ]
+          }
+        },
+        {
+          "heading": "Using the decorator pattern",
+          "text": "One of the key benefits of using the [`field_validator()`](../../api/functional_validators/#pydantic.functional_validators.field_validator) decorator is to apply\nthe function to multiple fields:\n\n```\nfrom pydantic import BaseModel, field_validator\n\nclass Model(BaseModel):\n    f1: str\n    f2: str\n\n    @field_validator('f1', 'f2', mode='before')\n    @classmethod\n    def capitalize(cls, value: str) -> str:\n        return value.capitalize()\n```\n\nHere are a couple additional notes about the decorator usage:\n\n- If you want the validator to apply to all fields (including the ones defined in subclasses), you can pass\n `'*'` as the field name argument.\n- By default, the decorator will ensure the provided field name(s) are defined on the model. If you want to\n disable this check during class creation, you can do so by passing `False` to the `check_fields` argument.\n This is useful when the field validator is defined on a base class, and the field is expected to exist on\n subclasses.",
+          "level": 3,
+          "span": {
+            "start": 12316,
+            "end": 13306
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Which validator pattern to use",
+              "Using the decorator pattern"
+            ],
+            "parent_heading": "Which validator pattern to use",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "One of the key benefits of using the [`field_validator()`](../../api/functional_validators/#pydantic.functional_validators.field_validator) decorator is to apply",
+            "sibling_headings": [
+              "Using the annotated pattern"
+            ]
+          }
+        },
+        {
+          "heading": "Model validators",
+          "text": "API Documentation\n\n[`pydantic.functional_validators.model_validator`](../../api/functional_validators/#pydantic.functional_validators.model_validator)\n\nValidation can also be performed on the entire model's data using the [`model_validator()`](../../api/functional_validators/#pydantic.functional_validators.model_validator)\ndecorator.\n\n**Three** different types of model validators can be used:\n\n- ***After* validators**: run after the whole model has been validated. As such, they are defined as\n *instance* methods and can be seen as post-initialization hooks. Important note: the validated instance\n should be returned.\n\n```\nfrom typing_extensions import Self\n\nfrom pydantic import BaseModel, model_validator\n\nclass UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n\n    @model_validator(mode='after')\n    def check_passwords_match(self) -> Self:\n        if self.password != self.password_repeat:\n            raise ValueError('Passwords do not match')\n        return self\n```\n- ***Before* validators**: are run before the model is instantiated. These are more flexible than *after* validators,\n but they also have to deal with the raw input, which in theory could be any arbitrary object. You should also avoid\n mutating the value directly if you are raising a validation error later in your validator\n function, as the mutated value may be passed to other validators if using [unions](../unions/).\n\n```\nfrom typing import Any\n\nfrom pydantic import BaseModel, model_validator\n\nclass UserModel(BaseModel):\n    username: str\n\n    @model_validator(mode='before')\n    @classmethod\n    def check_card_number_not_present(cls, data: Any) -> Any:  # (1)!\n        if isinstance(data, dict):  # (2)!\n            if 'card_number' in data:\n                raise ValueError(\"'card_number' should not be included\")\n        return data\n```\n  1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `data`. *Before* validators take the raw input, which\n can be anything.\n  2. Most of the time, the input data will be a dictionary (e.g. when calling `UserModel(username='...')`). However,\n this is not always the case. For instance, if the [`from_attributes`](../../api/config/#pydantic.config.ConfigDict.from_attributes)\n configuration value is set, you might receive an arbitrary class instance for the `data` argument.\n- ***Wrap* validators**: are the most flexible of all. You can run code before or after Pydantic and\n other validators process the input data, or you can terminate validation immediately, either by returning\n the data early or by raising an error.\n\n```\nimport logging\nfrom typing import Any\n\nfrom typing_extensions import Self\n\nfrom pydantic import BaseModel, ModelWrapValidatorHandler, ValidationError, model_validator\n\nclass UserModel(BaseModel):\n    username: str\n\n    @model_validator(mode='wrap')\n    @classmethod\n    def log_failed_validation(cls, data: Any, handler: ModelWrapValidatorHandler[Self]) -> Self:\n        try:\n            return handler(data)\n        except ValidationError:\n            logging.error('Model %s failed to validate with data %s', cls, data)\n            raise\n```\n\nA model validator defined in a base class will be called during the validation of a subclass instance.\n\nOverriding a model validator in a subclass will override the base class' validator, and thus only the subclass' version of said validator will be called.",
+          "level": 2,
+          "span": {
+            "start": 13326,
+            "end": 16776
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Model validators"
+            ],
+            "parent_heading": "# Validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "API Documentation",
+            "sibling_headings": [
+              "## Field validators",
+              "Which validator pattern to use",
+              "Raising validation errors",
+              "Validation info",
+              "Ordering of validators",
+              "Special types"
+            ]
+          }
+        },
+        {
+          "heading": "Raising validation errors",
+          "text": "To raise a validation error, three types of exceptions can be used:\n\n- [`ValueError`](https://docs.python.org/3/library/exceptions.html#ValueError): this is the most common exception raised inside validators.\n- [`AssertionError`](https://docs.python.org/3/library/exceptions.html#AssertionError): using the [assert](https://docs.python.org/3/reference/simple_stmts.html#assert) statement also works, but be aware that these statements\n are skipped when Python is run with the [-O](https://docs.python.org/3/using/cmdline.html#cmdoption-O) optimization flag.\n- [`PydanticCustomError`](../../api/pydantic_core/#pydantic_core.PydanticCustomError): a bit more verbose, but provides extra flexibility:\n\n```\nfrom pydantic_core import PydanticCustomError\n\nfrom pydantic import BaseModel, ValidationError, field_validator\n\nclass Model(BaseModel):\n    x: int\n\n    @field_validator('x', mode='after')\n    @classmethod\n    def validate_x(cls, v: int) -> int:\n        if v % 42 == 0:\n            raise PydanticCustomError(\n                'the_answer_error',\n                '{number} is the answer!',\n                {'number': v},\n            )\n        return v\n\ntry:\n    Model(x=42 * 2)\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Model\n    x\n      84 is the answer! [type=the_answer_error, input_value=84, input_type=int]\n    \"\"\"\n```",
+          "level": 2,
+          "span": {
+            "start": 16805,
+            "end": 18166
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Raising validation errors"
+            ],
+            "parent_heading": "# Validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "To raise a validation error, three types of exceptions can be used:",
+            "sibling_headings": [
+              "## Field validators",
+              "Which validator pattern to use",
+              "Model validators",
+              "Validation info",
+              "Ordering of validators",
+              "Special types"
+            ]
+          }
+        },
+        {
+          "heading": "Validation info",
+          "text": "Both the field and model validators callables (in all modes) can optionally take an extra\n[`ValidationInfo`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo) argument, providing useful extra information, such as:\n\n- already validated data\n- user defined context\n- the current [validation mode](../models/#validating-data): either `'python'`, `'json'` or `'strings'` (see the [`mode`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.mode) property)\n- the current field name, if using a field validator (see the [`field_name`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.field_name) property).",
+          "level": 2,
+          "span": {
+            "start": 18185,
+            "end": 18858
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Validation info"
+            ],
+            "parent_heading": "# Validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Both the field and model validators callables (in all modes) can optionally take an extra",
+            "sibling_headings": [
+              "## Field validators",
+              "Which validator pattern to use",
+              "Model validators",
+              "Raising validation errors",
+              "Ordering of validators",
+              "Special types"
+            ]
+          }
+        },
+        {
+          "heading": "Validation data",
+          "text": "For field validators, the already validated data can be accessed using the [`data`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.data)\nproperty. Here is an example than can be used as an alternative to the *after* model validator\nexample:\n\n```\nfrom pydantic import BaseModel, ValidationInfo, field_validator\n\nclass UserModel(BaseModel):\n    password: str\n    password_repeat: str\n    username: str\n\n    @field_validator('password_repeat', mode='after')\n    @classmethod\n    def check_passwords_match(cls, value: str, info: ValidationInfo) -> str:\n        if value != info.data['password']:\n            raise ValueError('Passwords do not match')\n        return value\n```\n\nAs validation is performed in the [order fields are defined](../models/#field-ordering), you have to\nmake sure you are not accessing a field that hasn't been validated yet. In the code above, for example,\nthe `username` validated value is not available yet, as it is defined *after* `password_repeat`.\n\nThe [`data`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.data) property is `None` for model validators.",
+          "level": 3,
+          "span": {
+            "start": 18878,
+            "end": 20015
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Validation info",
+              "Validation data"
+            ],
+            "parent_heading": "Validation info",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "For field validators, the already validated data can be accessed using the [`data`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.data)",
+            "sibling_headings": [
+              "Validation context"
+            ]
+          }
+        },
+        {
+          "heading": "Validation context",
+          "text": "You can pass a context object to the [validation methods](../models/#validating-data), which can be accessed\ninside the validator functions using the [`context`](../../api/pydantic_core_schema/#pydantic_core.core_schema.ValidationInfo.context) property:\n\n```\nfrom pydantic import BaseModel, ValidationInfo, field_validator\n\nclass Model(BaseModel):\n    text: str\n\n    @field_validator('text', mode='after')\n    @classmethod\n    def remove_stopwords(cls, v: str, info: ValidationInfo) -> str:\n        if isinstance(info.context, dict):\n            stopwords = info.context.get('stopwords', set())\n            v = ' '.join(w for w in v.split() if w.lower() not in stopwords)\n        return v\n\ndata = {'text': 'This is an example document'}\nprint(Model.model_validate(data))  # no context\n#> text='This is an example document'\nprint(Model.model_validate(data, context={'stopwords': ['this', 'is', 'an']}))\n#> text='example document'\n```\n\nSimilarly, you can [use a context for serialization](../serialization/#serialization-context).\n\nProviding context when directly instantiating a model\n\nIt is currently not possible to provide a context when directly instantiating a model\n(i.e. when calling `Model(...)`). You can work around this through the use of a\n[`ContextVar`](https://docs.python.org/3/library/contextvars.html#contextvars.ContextVar) and a custom `__init__` method:\n\n```\nfrom __future__ import annotations\n\nfrom collections.abc import Generator\nfrom contextlib import contextmanager\nfrom contextvars import ContextVar\nfrom typing import Any\n\nfrom pydantic import BaseModel, ValidationInfo, field_validator\n\n_init_context_var = ContextVar('_init_context_var', default=None)\n\n@contextmanager\ndef init_context(value: dict[str, Any]) -> Generator[None]:\n    token = _init_context_var.set(value)\n    try:\n        yield\n    finally:\n        _init_context_var.reset(token)\n\nclass Model(BaseModel):\n    my_number: int\n\n    def __init__(self, /, **data: Any) -> None:\n        self.__pydantic_validator__.validate_python(\n            data,\n            self_instance=self,\n            context=_init_context_var.get(),\n        )\n\n    @field_validator('my_number')\n    @classmethod\n    def multiply_with_context(cls, value: int, info: ValidationInfo) -> int:\n        if isinstance(info.context, dict):\n            multiplier = info.context.get('multiplier', 1)\n            value = value * multiplier\n        return value\n\nprint(Model(my_number=2))\n#> my_number=2\n\nwith init_context({'multiplier': 3}):\n    print(Model(my_number=2))\n    #> my_number=6\n\nprint(Model(my_number=2))\n#> my_number=2\n```",
+          "level": 3,
+          "span": {
+            "start": 20038,
+            "end": 22631
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Validation info",
+              "Validation context"
+            ],
+            "parent_heading": "Validation info",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "You can pass a context object to the [validation methods](../models/#validating-data), which can be accessed",
+            "sibling_headings": [
+              "Validation data"
+            ]
+          }
+        },
+        {
+          "heading": "Ordering of validators",
+          "text": "When using the annotated pattern, the order in which validators are applied\nis defined as follows: *before* and *wrap* validators\nare run from right to left, and *after* validators are then run from left to right:\n\n```\nfrom pydantic import AfterValidator, BaseModel, BeforeValidator, WrapValidator\n\nclass Model(BaseModel):\n    name: Annotated[\n        str,\n        AfterValidator(runs_3rd),\n        AfterValidator(runs_4th),\n        BeforeValidator(runs_2nd),\n        WrapValidator(runs_1st),\n    ]\n```\n\nInternally, validators defined using the decorator are converted to their annotated\nform counterpart and added last after the existing metadata for the field. This means that the same ordering\nlogic applies.",
+          "level": 2,
+          "span": {
+            "start": 22657,
+            "end": 23371
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Ordering of validators"
+            ],
+            "parent_heading": "# Validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "When using the annotated pattern, the order in which validators are applied",
+            "sibling_headings": [
+              "## Field validators",
+              "Which validator pattern to use",
+              "Model validators",
+              "Raising validation errors",
+              "Validation info",
+              "Special types"
+            ]
+          }
+        },
+        {
+          "heading": "Special types",
+          "text": "Pydantic provides a few special utilities that can be used to customize validation.\n\n- [`InstanceOf`](../../api/functional_validators/#pydantic.functional_validators.InstanceOf) can be used to validate that a value is an instance of a given class.\n\n```\nfrom pydantic import BaseModel, InstanceOf, ValidationError\n\nclass Fruit:\n    def __repr__(self):\n        return self.__class__.__name__\n\nclass Banana(Fruit): ...\n\nclass Apple(Fruit): ...\n\nclass Basket(BaseModel):\n    fruits: list[InstanceOf[Fruit]]\n\nprint(Basket(fruits=[Banana(), Apple()]))\n#> fruits=[Banana, Apple]\ntry:\n    Basket(fruits=[Banana(), 'Apple'])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Basket\n    fruits.1\n      Input should be an instance of Fruit [type=is_instance_of, input_value='Apple', input_type=str]\n    \"\"\"\n```\n- [`SkipValidation`](../../api/functional_validators/#pydantic.functional_validators.SkipValidation) can be used to skip validation on a field.\n\n```\nfrom pydantic import BaseModel, SkipValidation\n\nclass Model(BaseModel):\n    names: list[SkipValidation[str]]\n\nm = Model(names=['foo', 'bar'])\nprint(m)\n#> names=['foo', 'bar']\n\nm = Model(names=['foo', 123])  # (1)!\nprint(m)\n#> names=['foo', 123]\n```\n  1. Note that the validation of the second item is skipped. If it has the wrong type it will emit a\n warning during serialization.\n- [`ValidateAs`](../../api/functional_validators/#pydantic.functional_validators.ValidateAs) can be used to validate an custom type from a\n type natively supported by Pydantic. This is particularly useful when using custom types with multiple fields.\n\n```\nfrom typing import Annotated\n\nfrom pydantic import BaseModel, TypeAdapter, ValidateAs\n\nclass MyCls:\n    def __init__(self, a: int) -> None:\n        self.a = a\n\n    def __repr__(self) -> str:\n        return f\"MyCls(a={self.a})\"\n\nclass ValModel(BaseModel):\n    a: int\n\nta = TypeAdapter(\n    Annotated[MyCls, ValidateAs(ValModel, lambda v: MyCls(a=v.a))]\n)\n\nprint(ta.validate_python({'a': 1}))\n#> MyCls(a=1)\n```\n- [`PydanticUseDefault`](../../api/pydantic_core/#pydantic_core.PydanticUseDefault) can be used to notify Pydantic that the default value\n should be used.\n\n```\nfrom typing import Annotated, Any\n\nfrom pydantic_core import PydanticUseDefault\n\nfrom pydantic import BaseModel, BeforeValidator\n\ndef default_if_none(value: Any) -> Any:\n    if value is None:\n        raise PydanticUseDefault()\n    return value\n\nclass Model(BaseModel):\n    name: Annotated[str, BeforeValidator(default_if_none)] = 'default_name'\n\nprint(Model(name=None))\n#> name='default_name'\n```",
+          "level": 2,
+          "span": {
+            "start": 23388,
+            "end": 25969
+          },
+          "metadata": {
+            "heading_path": [
+              "# Validators",
+              "Special types"
+            ],
+            "parent_heading": "# Validators",
+            "heading_number": "",
+            "heading_kind": "outline_llm",
+            "section_summary": "Pydantic provides a few special utilities that can be used to customize validation.",
+            "sibling_headings": [
+              "## Field validators",
+              "Which validator pattern to use",
+              "Model validators",
+              "Raising validation errors",
+              "Validation info",
+              "Ordering of validators"
+            ]
+          }
+        }
+      ],
+      "metadata": {
+        "case_id": "case001_pyd",
+        "condition_id": "clean",
+        "lab_run_id": "p01g001",
+        "input_manifest": {
+          "schema_version": 1,
+          "case_id": "case001_pyd",
+          "condition_id": "clean",
+          "inputs": [
+            {
+              "input_id": "input001",
+              "source_id": "sgb-8cc5d9de352332cd",
+              "source_sha256": "46a8a05c8a6e74d71c6a1ad4ef72c2a0c161bf617262248baf037fc687c5ce7f",
+              "path": "inputs/input001/validators.md",
+              "sha256": "46a8a05c8a6e74d71c6a1ad4ef72c2a0c161bf617262248baf037fc687c5ce7f",
+              "original_path": "data/raw_sources/sgb/5a8bd61d/46a8a05c8a6e74d7/validators.md",
+              "execution_path": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md"
+            }
+          ]
+        },
+        "channel": "offline_extract_from_doc",
+        "source_type": "document",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "domain_type": "pydantic",
+        "resume_key": "6d80b179e25c95cbdc09aeeb20ab61374ca1bbaa41968009adc0c838aecff159",
+        "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+        "family_name": "未分类技能",
+        "family_confidence": 0.5,
+        "family_source": "default",
+        "family_reason": "taxonomy has no constrained family candidates",
+        "profile_id": "pydantic::未分类技能",
+        "taxonomy_id": "pydantic"
+      },
+      "checksum": "0eb80ad23e7ec3f48baec51f899522d578fb1b69",
+      "content_hash": "0eb80ad23e7ec3f48baec51f899522d578fb1b69",
+      "imported_at": "2026-10-28T04:52:03+00:00"
+    }
+  ],
+  "support_records": [
+    {
+      "support_id": "cd88700d-ce2b-5523-a900-392c03194c0e",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "688b17b0-4bcf-5eb2-879a-50609da68fe0",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 14817,
+        "end": 15985
+      },
+      "excerpt": "class UserModel(BaseModel):\n    username: str\n\n@model_validator(mode='before')\n    @classmethod\n    def check_card_number_not_present(cls, data: Any) -> Any:  # (1)!\n        if isinstance(data, dict):  # (2)!\n            if 'card_number' in data:\n                raise ValueError(\"'card_number' should not be included\")\n        return data\n```\n  1. Notice the use of [`Any`](https://docs.python.org/3/library/typing.html#typing.Any) as a type hint for `data`. *Before* validators take the raw input, which\n can be anything.\n  2. Most of the time, the input data will be a dictionary (e.g. when calling `UserModel(username='...')`). However,\n this is not always the case. For instance, if the [`from_attributes`](../../api/config/#pydantic.config.ConfigDict.from_attributes)\n configuration value is set, you might receive an arbitrary class instance for the `data` argument.\n- ***Wrap* validators**: are the most flexible of all. You can run code before or after Pydantic and\n other validators process the input data, or you can terminate validation immediately, either by returning\n the data early or by raising an error.\n\n```\nimport logging\nfrom typing import Any",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 模型校验器实现",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "实现模型级 before/after 校验并正确处理原始输入",
+        "task_family": "模型校验",
+        "method_family": "model_validator",
+        "stage": "模型级校验实现",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "e232d2f6-73d9-52e7-85de-50cddaa5f7bf",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 37,
+        "paragraph_end": 39,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:56:16+00:00"
+    },
+    {
+      "support_id": "c0482437-45c1-56f1-a73c-a15764b64f88",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "skill_id": "4641701b-2dc0-5429-a380-d65c1c0ec55d",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 23781,
+        "end": 24361
+      },
+      "excerpt": "class Basket(BaseModel):\n    fruits: list[InstanceOf[Fruit]]\n\nprint(Basket(fruits=[Banana(), Apple()]))\n#> fruits=[Banana, Apple]\ntry:\n    Basket(fruits=[Banana(), 'Apple'])\nexcept ValidationError as e:\n    print(e)\n    \"\"\"\n    1 validation error for Basket\n    fruits.1\n      Input should be an instance of Fruit [type=is_instance_of, input_value='Apple', input_type=str]\n    \"\"\"\n```\n- [`SkipValidation`](../../api/functional_validators/#pydantic.functional_validators.SkipValidation) can be used to skip validation on a field.\n\n```\nfrom pydantic import BaseModel, SkipValidation",
+      "relation_type": "support",
+      "confidence": 0.7,
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic 模型校验器与校验信息使用",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "实现模型级校验并正确读取校验信息与上下文",
+        "task_family": "模型校验",
+        "method_family": "模型校验器",
+        "stage": "模型级校验实现",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 2,
+        "window_id": "995484f3-2f8d-5a20-8c86-25ceb3c0e94b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 29,
+        "paragraph_end": 31,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      },
+      "created_at": "2026-10-28T04:57:23+00:00"
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "89ec68b5-d03e-5023-afdb-321740706043",
+      "name": "模型级校验器实现",
+      "description": "在 Pydantic 模型级别实现校验器，对多个字段或整体数据执行跨字段一致性检查与变更，适用于字段级校验无法覆盖的整体数据约束。",
+      "skill_body": "实现模型级校验器：定义一个接收模型数据（或模型实例）的校验函数，在其中执行跨字段一致性检查或整体数据约束校验，必要时对数据进行变更，并在不满足条件时抛出校验错误。校验器应返回校验后的数据，保持类型安全，避免与单字段校验器职责重叠。\n\n## Objective\n\n实现跨字段或模型级校验逻辑\n## Applicable Signals\n\n- 约束涉及多个字段之间的关系\n- 需要在整体数据层面执行校验\n- 单字段校验器无法表达该约束\n\n## Contraindications\n\n- 仅涉及单字段校验时不应使用模型校验器\n- 约束可由字段级校验器表达时优先使用字段级校验\n\n## Intervention Moves\n\n- 定义接收模型数据的校验函数\n- 在函数内执行跨字段一致性检查\n- 对校验后的数据进行必要的变更或强制转换\n- 在不满足条件时抛出校验错误\n- 返回校验后的数据\n\n## Workflow Steps\n\n- 确认约束为跨字段或模型级，字段级校验无法覆盖\n- 编写模型校验器函数，接收模型数据作为输入\n- 在函数内实现一致性检查与必要的值变更\n- 对不满足条件的情况抛出校验错误\n- 返回校验后的数据并确认校验器可运行\n\n## Constraints\n\n- 校验器应返回校验后的值\n- 校验器应保持类型安全\n- 校验器职责限定在模型级，不与字段级校验器重复\n\n## Cautions\n\n- 校验器可对值进行变更（强制转换或修改），需确保变更符合预期\n- 抛出校验错误时应提供清晰的错误信息\n\n## Output Contract\n\n- 一个可运行的模型校验器，能够对模型级或跨字段数据进行校验并在不满足条件时抛出校验错误。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "实现跨字段或模型级校验逻辑",
+      "domain": "pydantic",
+      "task_family": "模型校验",
+      "method_family": "model validator 实现",
+      "stage": "模型级校验",
+      "applicable_signals": [
+        "约束涉及多个字段之间的关系",
+        "需要在整体数据层面执行校验",
+        "单字段校验器无法表达该约束"
+      ],
+      "contraindications": [
+        "仅涉及单字段校验时不应使用模型校验器",
+        "约束可由字段级校验器表达时优先使用字段级校验"
+      ],
+      "intervention_moves": [
+        "定义接收模型数据的校验函数",
+        "在函数内执行跨字段一致性检查",
+        "对校验后的数据进行必要的变更或强制转换",
+        "在不满足条件时抛出校验错误",
+        "返回校验后的数据"
+      ],
+      "triggers": [
+        "需要跨字段一致性检查",
+        "字段级校验无法覆盖整体数据约束",
+        "需要在模型级别对整体数据进行校验或变更"
+      ],
+      "workflow_steps": [
+        "确认约束为跨字段或模型级，字段级校验无法覆盖",
+        "编写模型校验器函数，接收模型数据作为输入",
+        "在函数内实现一致性检查与必要的值变更",
+        "对不满足条件的情况抛出校验错误",
+        "返回校验后的数据并确认校验器可运行"
+      ],
+      "constraints": [
+        "校验器应返回校验后的值",
+        "校验器应保持类型安全",
+        "校验器职责限定在模型级，不与字段级校验器重复"
+      ],
+      "cautions": [
+        "校验器可对值进行变更（强制转换或修改），需确保变更符合预期",
+        "抛出校验错误时应提供清晰的错误信息"
+      ],
+      "output_contract": [
+        "一个可运行的模型校验器，能够对模型级或跨字段数据进行校验并在不满足条件时抛出校验错误。"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "model-validator",
+        "跨字段校验",
+        "模型级校验"
+      ],
+      "support_ids": [
+        "39003716-eaee-58c9-b628-e5747815a166"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "95026d5f-7483-54a9-9bc9-078a168f063b"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|实现跨字段或模型级校验逻辑|pydantic|模型校验|model validator 实现|模型级校验|模型级校验器实现"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "544e142c-82e8-5525-aad6-4025f145cdbf",
+      "name": "Pydantic 模型级跨字段校验器编写",
+      "description": "使用 model_validator 为整个模型编写跨字段校验逻辑，在模型级别检查字段间一致性并在不合法时抛出 ValidationError。适用于字段级校验器无法覆盖的多字段联合约束场景。",
+      "skill_body": "当需要检查多个字段之间的一致性、且字段级校验器无法覆盖该联合约束时，使用本技能编写模型级校验器。\n\n执行要点：\n1. 确认约束确实涉及多个字段的联合关系，而非单字段规则。\n2. 在模型上使用 model_validator 装饰器定义校验方法，明确校验模式（如 after 模式，在字段校验完成后运行）。\n3. 在校验方法中读取相关字段值，检查跨字段一致性。\n4. 不满足约束时抛出 ValidationError（或 ValueError），错误信息应说明具体不合法原因。\n5. 若校验器对值做了修改，务必返回校验后的值。\n6. 用不合法输入触发校验，确认错误信息与类型符合预期。\n\n保持单一目标：只实现模型级跨字段校验，不混入字段级校验器职责。\n\n## Objective\n\n实现跨字段的模型级校验逻辑\n## Applicable Signals\n\n- 约束涉及两个及以上字段的联合关系\n- 字段级校验器无法表达该约束\n- 需要在模型构造时统一校验并报错\n\n## Contraindications\n\n- 仅涉及单字段校验时\n- 无需跨字段依赖检查时\n\n## Intervention Moves\n\n- 在模型上定义 model_validator 校验方法\n- 在校验方法中读取相关字段并检查一致性\n- 不满足约束时抛出 ValidationError 并给出明确错误信息\n- 若修改了值则返回校验后的值\n- 用不合法输入验证错误输出\n\n## Workflow Steps\n\n- 确认约束为跨字段联合约束\n- 使用 model_validator 装饰器定义模型级校验方法\n- 在校验方法中检查字段间一致性\n- 不合法时抛出 ValidationError 并说明原因\n- 如修改值则返回校验后的值\n- 用不合法输入测试并确认错误信息\n\n## Constraints\n\n- 校验器应聚焦模型级跨字段逻辑，不重复字段级校验职责\n- 抛出错误时需提供可读的错误说明\n- 若校验器修改了值，必须返回校验后的值\n\n## Cautions\n\n- 注意校验器运行顺序，after 模式在字段校验完成后执行\n- 错误信息应指向具体不合法原因，便于定位\n\n## Output Contract\n\n- 可运行的模型校验器，跨字段不合法时抛出 ValidationError，并带有明确的错误信息。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 模型含 number 字段，要求为偶数，输入 number=1\n- Therapist/Output: 抛出 ValidationError：Value error, 1 is not an even number [type=value_error, input_value=1, input_type=int]\n- Notes: 错误信息说明具体不合法原因",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "实现跨字段的模型级校验逻辑",
+      "domain": "pydantic",
+      "task_family": "模型校验",
+      "method_family": "model_validator 编写",
+      "stage": "模型级校验",
+      "applicable_signals": [
+        "约束涉及两个及以上字段的联合关系",
+        "字段级校验器无法表达该约束",
+        "需要在模型构造时统一校验并报错"
+      ],
+      "contraindications": [
+        "仅涉及单字段校验时",
+        "无需跨字段依赖检查时"
+      ],
+      "intervention_moves": [
+        "在模型上定义 model_validator 校验方法",
+        "在校验方法中读取相关字段并检查一致性",
+        "不满足约束时抛出 ValidationError 并给出明确错误信息",
+        "若修改了值则返回校验后的值",
+        "用不合法输入验证错误输出"
+      ],
+      "triggers": [
+        "需要检查多个字段之间的一致性",
+        "字段级校验器无法覆盖的联合约束",
+        "需要在模型级别抛出 ValidationError"
+      ],
+      "workflow_steps": [
+        "确认约束为跨字段联合约束",
+        "使用 model_validator 装饰器定义模型级校验方法",
+        "在校验方法中检查字段间一致性",
+        "不合法时抛出 ValidationError 并说明原因",
+        "如修改值则返回校验后的值",
+        "用不合法输入测试并确认错误信息"
+      ],
+      "constraints": [
+        "校验器应聚焦模型级跨字段逻辑，不重复字段级校验职责",
+        "抛出错误时需提供可读的错误说明",
+        "若校验器修改了值，必须返回校验后的值"
+      ],
+      "cautions": [
+        "注意校验器运行顺序，after 模式在字段校验完成后执行",
+        "错误信息应指向具体不合法原因，便于定位"
+      ],
+      "output_contract": [
+        "可运行的模型校验器，跨字段不合法时抛出 ValidationError，并带有明确的错误信息。"
+      ],
+      "examples": [
+        {
+          "input": "模型含 number 字段，要求为偶数，输入 number=1",
+          "output": "抛出 ValidationError：Value error, 1 is not an even number [type=value_error, input_value=1, input_type=int]",
+          "notes": "错误信息说明具体不合法原因"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "model_validator",
+        "跨字段校验",
+        "模型级校验"
+      ],
+      "support_ids": [
+        "37062182-7402-5610-9fc6-ef5cbe2e6ac0"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "864e8548-0b72-5d73-ac3a-b63affba5a94"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|micro_skill_node|实现跨字段的模型级校验逻辑|pydantic|模型校验|model_validator 编写|模型级校验|pydantic 模型级跨字段校验器编写"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "688b17b0-4bcf-5eb2-879a-50609da68fe0",
+      "name": "Pydantic 模型级 before/after 校验器实现",
+      "description": "使用 model_validator 在 before/after 阶段对整体模型输入执行校验，处理原始输入类型并支持提前终止校验，适用于跨字段或模型级约束。",
+      "skill_body": "实现模型级校验器时，先判断校验时机：需要在 Pydantic 及其他校验器处理输入之前介入、或需访问原始输入时使用 mode='before'；需要在字段校验完成后对已解析模型做跨字段约束时使用 mode='after'。before 校验器的 data 参数类型标注为 Any，因为原始输入可能是字典，也可能在启用 from_attributes 时是任意类实例，需先判断类型再访问键。校验失败时抛出 ValueError 以终止校验。\n\n## Objective\n\n实现模型级 before/after 校验并正确处理原始输入\n## Applicable Signals\n\n- 约束涉及多个字段或整个模型\n- 需要在字段校验之前检查原始输入中是否包含禁止字段\n- 需要在字段校验之后对已解析模型做整体校验\n\n## Contraindications\n\n- 仅涉及单字段校验\n- 无需访问原始输入数据\n\n## Intervention Moves\n\n- 选择 mode='before' 或 mode='after' 以匹配校验时机\n- before 校验器将 data 标注为 Any 并先判断是否为 dict 再访问键\n- 校验失败时抛出 ValueError 终止校验\n- 校验通过时返回 data 以继续后续处理\n\n## Workflow Steps\n\n- 确定约束是模型级还是字段级，模型级才使用 model_validator\n- 根据是否需要访问原始输入选择 mode='before'，否则选择 mode='after'\n- before 校验器将 data 参数标注为 Any，并先判断类型（如 isinstance(data, dict)）再访问键\n- 在检测到违规时抛出 ValueError 并给出明确信息\n- 校验通过时返回 data\n\n## Constraints\n\n- before 校验器接收的原始输入不一定是字典，需先判断类型\n- 校验失败应通过抛出 ValueError 终止校验\n\n## Cautions\n\n- 启用 from_attributes 时 before 校验器可能收到任意类实例而非字典\n- 不要假设原始输入总是字典\n\n## Output Contract\n\n- 可运行的 model_validator 实现，含 before/after 模式与类型处理\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要在模型级禁止输入中出现 card_number 字段\n- Therapist/Output: @model_validator(mode='before')\n@classmethod\ndef check_card_number_not_present(cls, data: Any) -> Any:\n    if isinstance(data, dict):\n        if 'card_number' in data:\n            raise ValueError(\"'card_number' should not be included\")\n    return data\n- Notes: before 校验器将 data 标注为 Any，并先判断是否为字典再访问键",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "实现模型级 before/after 校验并正确处理原始输入",
+      "domain": "pydantic",
+      "task_family": "模型校验",
+      "method_family": "model_validator",
+      "stage": "模型级校验实现",
+      "applicable_signals": [
+        "约束涉及多个字段或整个模型",
+        "需要在字段校验之前检查原始输入中是否包含禁止字段",
+        "需要在字段校验之后对已解析模型做整体校验"
+      ],
+      "contraindications": [
+        "仅涉及单字段校验",
+        "无需访问原始输入数据"
+      ],
+      "intervention_moves": [
+        "选择 mode='before' 或 mode='after' 以匹配校验时机",
+        "before 校验器将 data 标注为 Any 并先判断是否为 dict 再访问键",
+        "校验失败时抛出 ValueError 终止校验",
+        "校验通过时返回 data 以继续后续处理"
+      ],
+      "triggers": [
+        "需要跨字段或整体模型约束校验",
+        "需要在 Pydantic 处理前后介入校验"
+      ],
+      "workflow_steps": [
+        "确定约束是模型级还是字段级，模型级才使用 model_validator",
+        "根据是否需要访问原始输入选择 mode='before'，否则选择 mode='after'",
+        "before 校验器将 data 参数标注为 Any，并先判断类型（如 isinstance(data, dict)）再访问键",
+        "在检测到违规时抛出 ValueError 并给出明确信息",
+        "校验通过时返回 data"
+      ],
+      "constraints": [
+        "before 校验器接收的原始输入不一定是字典，需先判断类型",
+        "校验失败应通过抛出 ValueError 终止校验"
+      ],
+      "cautions": [
+        "启用 from_attributes 时 before 校验器可能收到任意类实例而非字典",
+        "不要假设原始输入总是字典"
+      ],
+      "output_contract": [
+        "可运行的 model_validator 实现，含 before/after 模式与类型处理"
+      ],
+      "examples": [
+        {
+          "input": "需要在模型级禁止输入中出现 card_number 字段",
+          "output": "@model_validator(mode='before')\n@classmethod\ndef check_card_number_not_present(cls, data: Any) -> Any:\n    if isinstance(data, dict):\n        if 'card_number' in data:\n            raise ValueError(\"'card_number' should not be included\")\n    return data",
+          "notes": "before 校验器将 data 标注为 Any，并先判断是否为字典再访问键"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "model_validator",
+        "模型级校验",
+        "before",
+        "after"
+      ],
+      "support_ids": [
+        "cd88700d-ce2b-5523-a900-392c03194c0e"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "35410a3a-f8f2-5930-9712-11f523b65f65"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|实现模型级 before/after 校验并正确处理原始输入|pydantic|模型校验|model_validator|模型级校验实现|pydantic 模型级 before/after 校验器实现"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "b0980678-7418-5cdd-b5dc-b84f61f3f5fa",
+      "name": "Pydantic 字段校验器选择与实现",
+      "description": "为 Pydantic 模型字段选择并实现自定义校验器：在 annotated 模式与 decorator 模式之间做选择，并处理值变更与校验跳过。用于需要为单个字段添加自定义校验逻辑时。",
+      "skill_body": "当需要为 Pydantic 模型的单个字段添加自定义校验逻辑时，先判断校验需求：若校验逻辑简单、可复用、以类型注解方式表达，优先使用 annotated 模式（Annotated + 校验函数）；若需要访问字段值、进行变更或依赖装饰器上下文，使用 decorator 模式（field_validator）。实现时明确所选模式，确保校验函数签名与模式匹配，必要时使用 SkipValidation 跳过某字段校验。不要用于跨字段或模型级校验。\n\n## Objective\n\n为 Pydantic 模型字段选择并实现合适的自定义校验器模式\n## Applicable Signals\n\n- 需要为单个字段添加自定义校验逻辑\n- 需要在 annotated 与 decorator 两种校验器模式间做选择\n- 需要跳过某字段校验（SkipValidation）\n\n## Contraindications\n\n- 需要跨字段或模型级校验时（应使用模型校验器）\n\n## Intervention Moves\n\n- 判断校验需求是否属于单字段级\n- 在 annotated 模式与 decorator 模式之间选择\n- 按所选模式实现校验函数\n- 必要时使用 SkipValidation 跳过字段校验\n\n## Workflow Steps\n\n- 确认校验目标为单个字段而非跨字段或模型级\n- 评估校验逻辑：简单可复用选 annotated 模式；需访问值或变更选 decorator 模式\n- 按所选模式实现校验函数并接入模型字段\n- 如需跳过某字段校验，使用 SkipValidation\n- 验证实现可运行且校验行为符合预期\n\n## Constraints\n\n- 仅处理字段级校验，不扩展到模型级校验\n- 明确标注采用的 annotated 或 decorator 模式\n\n## Cautions\n\n- 跨字段或模型级校验不属于本技能范围，应改用模型校验器\n\n## Output Contract\n\n- 可运行的字段校验器实现，明确采用 annotated 或 decorator 模式",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "为 Pydantic 模型字段选择并实现合适的自定义校验器模式",
+      "domain": "pydantic",
+      "task_family": "模型校验",
+      "method_family": "字段校验器",
+      "stage": "字段校验实现",
+      "applicable_signals": [
+        "需要为单个字段添加自定义校验逻辑",
+        "需要在 annotated 与 decorator 两种校验器模式间做选择",
+        "需要跳过某字段校验（SkipValidation）"
+      ],
+      "contraindications": [
+        "需要跨字段或模型级校验时（应使用模型校验器）"
+      ],
+      "intervention_moves": [
+        "判断校验需求是否属于单字段级",
+        "在 annotated 模式与 decorator 模式之间选择",
+        "按所选模式实现校验函数",
+        "必要时使用 SkipValidation 跳过字段校验"
+      ],
+      "triggers": [
+        "需要为单个字段添加自定义校验逻辑",
+        "需要在 annotated 与 decorator 两种校验器模式间做选择",
+        "需要处理字段值变更或跳过字段校验"
+      ],
+      "workflow_steps": [
+        "确认校验目标为单个字段而非跨字段或模型级",
+        "评估校验逻辑：简单可复用选 annotated 模式；需访问值或变更选 decorator 模式",
+        "按所选模式实现校验函数并接入模型字段",
+        "如需跳过某字段校验，使用 SkipValidation",
+        "验证实现可运行且校验行为符合预期"
+      ],
+      "constraints": [
+        "仅处理字段级校验，不扩展到模型级校验",
+        "明确标注采用的 annotated 或 decorator 模式"
+      ],
+      "cautions": [
+        "跨字段或模型级校验不属于本技能范围，应改用模型校验器"
+      ],
+      "output_contract": [
+        "可运行的字段校验器实现，明确采用 annotated 或 decorator 模式"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "字段校验",
+        "validator",
+        "annotated",
+        "decorator"
+      ],
+      "support_ids": [
+        "ca741c62-bcc4-5be8-83e5-98c0ff938320"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "3afa0b33-b04a-5edb-87ef-5f0bf866def2"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|为 pydantic 模型字段选择并实现合适的自定义校验器模式|pydantic|模型校验|字段校验器|字段校验实现|pydantic 字段校验器选择与实现"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "4641701b-2dc0-5429-a380-d65c1c0ec55d",
+      "name": "Pydantic 模型级校验器与 ValidationInfo 使用",
+      "description": "实现 Pydantic 模型级校验器，并在校验中通过 ValidationInfo 读取字段数据、已校验数据与校验上下文，用于跨字段依赖或需要访问上下文的校验场景。",
+      "skill_body": "当校验逻辑依赖多个字段，或需要访问 ValidationInfo 的 data 或 context 时，使用本技能：在模型中定义模型级校验器（annotated 或 decorator 模式），按需读取 info.data（已校验字段值）与 info.context（校验上下文），在条件不满足时抛出校验错误，并构造模型实例验证校验器按预期工作。\n\n## Objective\n\n实现模型级校验并正确读取校验信息与上下文\n## Applicable Signals\n\n- 校验规则涉及两个及以上字段的相互依赖\n- 校验需要读取已校验字段数据（data）\n- 校验需要读取外部传入的校验上下文（context）\n\n## Contraindications\n\n- 仅涉及单字段简单约束时，应使用字段级校验器而非模型级校验器\n\n## Intervention Moves\n\n- 选择模型级校验器模式（annotated 或 decorator）\n- 在校验器中通过 ValidationInfo 读取 data 与 context\n- 在条件不满足时抛出校验错误\n- 运行模型验证校验器行为\n\n## Workflow Steps\n\n- 判断校验是否确需跨字段依赖或访问校验上下文\n- 在模型中定义模型级校验器（annotated 或 decorator 模式）\n- 在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）\n- 当校验条件不满足时抛出校验错误\n- 构造模型实例验证校验器按预期工作\n\n## Constraints\n\n- 仅在跨字段依赖或需要访问 ValidationInfo 数据/上下文时使用模型级校验器\n- 单字段简单约束应使用字段级校验器\n\n## Cautions\n\n- 校验器执行顺序会影响可读取的字段数据，需注意依赖字段的校验先后\n\n## Output Contract\n\n- 可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "实现模型级校验并正确读取校验信息与上下文",
+      "domain": "pydantic",
+      "task_family": "模型校验",
+      "method_family": "模型校验器",
+      "stage": "模型级校验实现",
+      "applicable_signals": [
+        "校验规则涉及两个及以上字段的相互依赖",
+        "校验需要读取已校验字段数据（data）",
+        "校验需要读取外部传入的校验上下文（context）"
+      ],
+      "contraindications": [
+        "仅涉及单字段简单约束时，应使用字段级校验器而非模型级校验器"
+      ],
+      "intervention_moves": [
+        "选择模型级校验器模式（annotated 或 decorator）",
+        "在校验器中通过 ValidationInfo 读取 data 与 context",
+        "在条件不满足时抛出校验错误",
+        "运行模型验证校验器行为"
+      ],
+      "triggers": [
+        "校验逻辑依赖多个字段",
+        "需要访问 ValidationInfo 的 data",
+        "需要访问 ValidationInfo 的 context",
+        "需要实现模型级而非字段级校验"
+      ],
+      "workflow_steps": [
+        "判断校验是否确需跨字段依赖或访问校验上下文",
+        "在模型中定义模型级校验器（annotated 或 decorator 模式）",
+        "在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）",
+        "当校验条件不满足时抛出校验错误",
+        "构造模型实例验证校验器按预期工作"
+      ],
+      "constraints": [
+        "仅在跨字段依赖或需要访问 ValidationInfo 数据/上下文时使用模型级校验器",
+        "单字段简单约束应使用字段级校验器"
+      ],
+      "cautions": [
+        "校验器执行顺序会影响可读取的字段数据，需注意依赖字段的校验先后"
+      ],
+      "output_contract": [
+        "可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "模型校验",
+        "ValidationInfo",
+        "跨字段校验",
+        "校验上下文"
+      ],
+      "support_ids": [
+        "c0482437-45c1-56f1-a73c-a15764b64f88"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "8c594988-6766-5192-8a85-c1c09284a655"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|实现模型级校验并正确读取校验信息与上下文|pydantic|模型校验|模型校验器|模型级校验实现|pydantic 模型级校验器与 validationinfo 使用"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ]
+}

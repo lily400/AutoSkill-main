@@ -1,0 +1,118 @@
+{
+  "skill_id": "1c80de8f-6664-5ae4-bcd1-e851e00dd234",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 6a5c594f 高度重复（同名、同目标、同六段解析流程），且 53a03e0c 已覆盖快照分区与字段约定，保留会造成冗余；本候选无额外可执行价值。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "1c80de8f-6664-5ae4-bcd1-e851e00dd234",
+    "name": "AFN 状态快照解析",
+    "description": "按 GLOBAL/NODES/EDGES/VEHICLES/CONSIGNMENTS/INCIDENTS_ACTIVE 六段结构解析并校验 AFN 仿真状态快照，供后续规则判定使用。",
+    "skill_body": "给定某一 tick 的 AFN 仿真状态快照文本，按六段结构（GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）逐段解析为可查询的状态对象，并核对各段字段是否齐全。仅做状态读取与字段完整性检查，不执行动作决策或冲突裁决。\n\n## Objective\n\n将结构化状态快照正确解析为可查询的仿真状态对象\n## Applicable Signals\n\n- 提供的是某一 tick 的完整状态快照\n- 需要按六段结构读取状态字段\n\n## Contraindications\n\n- 仅有单条边或单辆车的局部信息\n- 需要执行动作决策而非读取状态\n\n## Intervention Moves\n\n- 识别并切分六个段：GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE\n- 解析 GLOBAL 段的 TimeTick、ScenarioName、ScoreSoFar\n- 解析 NODES 段的 NodeID、NodeType、PackagesAtNode、ParkingVehicles\n- 解析 EDGES 段的 EdgeID、Status（OPEN/CLOSED）、Occupancy（VehicleID, RemainingTravelTime）\n- 汇总为可查询状态对象并输出字段完整性检查结果\n\n## Workflow Steps\n\n- 确认输入为某一 tick 的完整状态快照\n- 按六段结构切分快照\n- 逐段解析字段：GLOBAL（TimeTick、ScenarioName、ScoreSoFar）；NODES（NodeID、NodeType、PackagesAtNode、ParkingVehicles）；EDGES（EdgeID、Status、Occupancy）\n- 组装为可查询状态对象\n- 核对各段字段是否齐全并记录缺失项\n\n## Constraints\n\n- 仅做状态读取与解析，不执行动作决策\n- 不进行规则冲突裁决\n- 输入须为完整快照而非局部信息\n\n## Cautions\n\n- ScoreSoFar 可能为暂定值，解析时保留原值不做推断\n- EDGES 的 Occupancy 项为 (VehicleID, RemainingTravelTime) 形式，需成对解析\n\n## Output Contract\n\n- 解析后的六段状态对象及字段完整性检查结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: GLOBAL\nTimeTick: 0\nScenarioName: Morning Rush\nScoreSoFar: 0\n- Therapist/Output: GLOBAL 段解析为 {TimeTick: 0, ScenarioName: \"Morning Rush\", ScoreSoFar: 0}\n- Notes: GLOBAL 段字段示例\n\n### Example 2\n\n- Client/Input: NODES\nN1 DEPOT PackagesAtNode: [C1, C2] ParkingVehicles: [V1, V2]\nN2 HUB PackagesAtNode: [] ParkingVehicles: []\n- Therapist/Output: NODES 段解析为节点列表，含 NodeID、NodeType、PackagesAtNode、ParkingVehicles\n- Notes: NODES 段字段示例",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "将结构化状态快照正确解析为可查询的仿真状态对象",
+    "domain": "交通仿真",
+    "task_family": "状态表示",
+    "method_family": "结构化快照解析",
+    "stage": "状态读取",
+    "applicable_signals": [
+      "提供的是某一 tick 的完整状态快照",
+      "需要按六段结构读取状态字段"
+    ],
+    "contraindications": [
+      "仅有单条边或单辆车的局部信息",
+      "需要执行动作决策而非读取状态"
+    ],
+    "intervention_moves": [
+      "识别并切分六个段：GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE",
+      "解析 GLOBAL 段的 TimeTick、ScenarioName、ScoreSoFar",
+      "解析 NODES 段的 NodeID、NodeType、PackagesAtNode、ParkingVehicles",
+      "解析 EDGES 段的 EdgeID、Status（OPEN/CLOSED）、Occupancy（VehicleID, RemainingTravelTime）",
+      "汇总为可查询状态对象并输出字段完整性检查结果"
+    ],
+    "triggers": [
+      "需要读取某一 tick 的完整仿真状态",
+      "需要核对快照各段字段是否齐全"
+    ],
+    "workflow_steps": [
+      "确认输入为某一 tick 的完整状态快照",
+      "按六段结构切分快照",
+      "逐段解析字段：GLOBAL（TimeTick、ScenarioName、ScoreSoFar）；NODES（NodeID、NodeType、PackagesAtNode、ParkingVehicles）；EDGES（EdgeID、Status、Occupancy）",
+      "组装为可查询状态对象",
+      "核对各段字段是否齐全并记录缺失项"
+    ],
+    "constraints": [
+      "仅做状态读取与解析，不执行动作决策",
+      "不进行规则冲突裁决",
+      "输入须为完整快照而非局部信息"
+    ],
+    "cautions": [
+      "ScoreSoFar 可能为暂定值，解析时保留原值不做推断",
+      "EDGES 的 Occupancy 项为 (VehicleID, RemainingTravelTime) 形式，需成对解析"
+    ],
+    "output_contract": [
+      "解析后的六段状态对象及字段完整性检查结果"
+    ],
+    "examples": [
+      {
+        "input": "GLOBAL\nTimeTick: 0\nScenarioName: Morning Rush\nScoreSoFar: 0",
+        "output": "GLOBAL 段解析为 {TimeTick: 0, ScenarioName: \"Morning Rush\", ScoreSoFar: 0}",
+        "notes": "GLOBAL 段字段示例"
+      },
+      {
+        "input": "NODES\nN1 DEPOT PackagesAtNode: [C1, C2] ParkingVehicles: [V1, V2]\nN2 HUB PackagesAtNode: [] ParkingVehicles: []",
+        "output": "NODES 段解析为节点列表，含 NodeID、NodeType、PackagesAtNode、ParkingVehicles",
+        "notes": "NODES 段字段示例"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "状态表示",
+      "快照解析",
+      "AFN"
+    ],
+    "support_ids": [
+      "8b559934-ba0e-5863-aa9b-4509bcdacc62"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "b148d44c-2bd2-5ec7-97ad-b37e2bbaf6c8"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|将结构化状态快照正确解析为可查询的仿真状态对象|交通仿真|状态表示|结构化快照解析|状态读取|afn 状态快照解析"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

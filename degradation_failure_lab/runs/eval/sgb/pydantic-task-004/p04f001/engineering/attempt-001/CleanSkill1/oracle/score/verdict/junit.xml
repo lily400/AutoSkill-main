@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="20" time="0.121" timestamp="2026-10-28T06:17:02.360736+00:00" hostname="46fd120297f9"><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_required_exports_exist" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_models_are_pydantic_models" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_source_mentions_annotated_discriminator_and_tag" time="0.001" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_source_defines_named_discriminator_function" time="0.002" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_dict_input_cat_validates_correctly_direct_union" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_dict_input_dog_validates_correctly_direct_union" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_dict_input_bird_validates_correctly_direct_union" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_container_validation_cat" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_container_validation_dog" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_container_validation_bird" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_discriminator_handles_dict_inputs" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_discriminator_handles_model_instances" time="0.000"><failure message="AssertionError: assert None == 'cat'&#10; +  where None = &lt;function &lt;lambda&gt; at 0x787e01555a80&gt;(Cat())">self = &lt;eval.TestNestedDiscriminatorDifferentFieldNames object at 0x787e015afaf0&gt;
+
+    def test_discriminator_handles_model_instances(self):
+        """pet_discriminator should extract the tag from model instances, not only dicts."""
+        fn = agent_output.pet_discriminator
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=4)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=5)
+        bird = agent_output.Bird(animal_type="bird", wing_span=6)
+    
+&gt;       assert fn(cat) == "cat"
+E       AssertionError: assert None == 'cat'
+E        +  where None = &lt;function &lt;lambda&gt; at 0x787e01555a80&gt;(Cat())
+
+/oracle/eval.py:142: AssertionError</failure></testcase><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_union_accepts_model_instances" time="0.000"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate&#10;  Unable to extract tag using discriminator pet_discriminator() [type=union_tag_not_found, input_value={'pet_type': 'cat', 'meow_volume': 9}, input_type=dict]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/union_tag_not_found">self = &lt;eval.TestNestedDiscriminatorDifferentFieldNames object at 0x787e0157c050&gt;
+
+    def test_union_accepts_model_instances(self):
+        """Direct union validation should also accept already-created model instances."""
+        adapter = _pet_adapter()
+    
+        cat = agent_output.Cat(pet_type="cat", meow_volume=9)
+        dog = agent_output.Dog(pet_kind="dog", bark_level=10)
+        bird = agent_output.Bird(animal_type="bird", wing_span=11)
+    
+&gt;       cat2 = adapter.validate_python(cat)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/oracle/eval.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/bridge/code_bridge.py:112: in validate_python
+    def validate_python(self,value):return replay('validate_python','Pet',value)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/bridge/code_bridge.py:59: in replay
+    if not row['ok']:raise_error(row['error'])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = {'message': '1 validation error for tagged-union[Cat,Dog,Bird]\n  Unable to extract tag using discriminator pet_discri...r': 'pet_discriminator()'}, 'input': {'meow_volume': 9, 'pet_type': 'cat'}, 'loc': [], 'type': 'union_tag_not_found'}]}
+
+    def raise_error(value):
+        if value['type']=='ValidationError':
+            from pydantic import ValidationError
+            records = value['validation_errors']
+            for record in records:
+                record.pop('msg',None);record.pop('url',None)
+                if record.get('type')=='value_error':
+                    record.setdefault('ctx',{})['error']=ValueError(str(record.get('ctx',{}).get('error','candidate validation')))
+&gt;           raise ValidationError.from_exception_data('Isolated candidate',records)
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for Isolated candidate
+E             Unable to extract tag using discriminator pet_discriminator() [type=union_tag_not_found, input_value={'pet_type': 'cat', 'meow_volume': 9}, input_type=dict]
+E               For further information visit https://errors.pydantic.dev/2.13/v/union_tag_not_found
+
+/bridge/code_bridge.py:27: ValidationError</failure></testcase><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_serialization_preserves_original_field_names" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_nested_serialization_preserves_original_field_names" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_missing_discriminator_field_raises_validation_error" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_unknown_discriminator_value_raises_validation_error" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_wrong_field_name_for_variant_does_not_validate" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_each_model_uses_expected_discriminator_field_name" time="0.000" /><testcase classname="eval.TestNestedDiscriminatorDifferentFieldNames" name="test_literal_values_are_correct" time="0.000" /></testsuite></testsuites>

@@ -1,0 +1,112 @@
+{
+  "skill_id": "17ea238a-42a4-5809-91ab-1be2c09a18b0",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“判别联合类型设计”和“判别联合校验”高度重叠，均围绕使用 Discriminator/Tag 构建判别式联合类型，缺乏独立且必要的差异化能力，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "17ea238a-42a4-5809-91ab-1be2c09a18b0",
+    "name": "基于 Tag 与 Discriminator 的判别式联合类型构建",
+    "description": "使用 Annotated、Tag 和 Discriminator 为 Union 成员打标签并指定判别函数，构建可正确路由的判别式联合类型，适用于需要按字段值路由到具体模型的场景。",
+    "skill_body": "当 Union 成员可通过某字段值区分、且需要避免从左到右模式的误匹配时，使用本技能构建判别式 Union。步骤：1) 定义各成员模型；2) 为每个成员用 Annotated[Model, Tag('标签')] 打标签；3) 编写判别函数，从 dict 或对象中读取判别字段并返回对应标签；4) 用 Annotated[Union[...], Discriminator(判别函数)] 组合；5) 通过 model_validate 验证路由结果正确。\n\n## Objective\n\n构建可正确路由的判别式 Union 模型\n## Applicable Signals\n\n- Union 成员可通过某字段值区分\n- 需要避免从左到右模式的误匹配\n\n## Contraindications\n\n- 成员间无可靠判别字段\n- 简单两成员且无歧义时无需判别器\n\n## Intervention Moves\n\n- 为每个 Union 成员用 Annotated[Model, Tag('标签')] 打标签\n- 编写判别函数从 dict 或对象读取判别字段并返回标签\n- 用 Annotated[Union[...], Discriminator(判别函数)] 组合\n- 通过 model_validate 验证路由结果\n\n## Workflow Steps\n\n- 定义各成员模型\n- 为每个成员用 Annotated[Model, Tag('标签')] 打标签\n- 编写判别函数，从 dict 或对象中读取判别字段并返回对应标签\n- 用 Annotated[Union[...], Discriminator(判别函数)] 组合\n- 通过 model_validate 验证路由结果正确\n\n## Constraints\n\n- 判别函数需同时处理 dict 输入与对象输入\n- 每个 Union 成员的 Tag 值需与判别函数返回值一致\n\n## Cautions\n\n- 判别字段缺失或返回值不匹配标签时会导致校验失败\n\n## Output Contract\n\n- 带 Tag 与 Discriminator 的 Union 模型定义并通过校验\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Union 成员 ApplePie(fruit='apple') 与 PumpkinPie(filling='pumpkin')，需按 fruit/filling 字段路由\n- Therapist/Output: Annotated[Union[Annotated[ApplePie, Tag('apple')], Annotated[PumpkinPie, Tag('pumpkin')]], Discriminator(get_discriminator_value)]，model_validate 后正确得到 ApplePie 实例\n- Notes: 判别函数从 dict 读取 fruit 或 filling，从对象读取对应属性",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "构建可正确路由的判别式 Union 模型",
+    "domain": "pydantic",
+    "task_family": "数据模型校验",
+    "method_family": "判别式联合类型",
+    "stage": "模型构建",
+    "applicable_signals": [
+      "Union 成员可通过某字段值区分",
+      "需要避免从左到右模式的误匹配"
+    ],
+    "contraindications": [
+      "成员间无可靠判别字段",
+      "简单两成员且无歧义时无需判别器"
+    ],
+    "intervention_moves": [
+      "为每个 Union 成员用 Annotated[Model, Tag('标签')] 打标签",
+      "编写判别函数从 dict 或对象读取判别字段并返回标签",
+      "用 Annotated[Union[...], Discriminator(判别函数)] 组合",
+      "通过 model_validate 验证路由结果"
+    ],
+    "triggers": [
+      "Union 成员可通过某字段值区分",
+      "需要避免从左到右模式的误匹配",
+      "需要按字段值路由到具体模型"
+    ],
+    "workflow_steps": [
+      "定义各成员模型",
+      "为每个成员用 Annotated[Model, Tag('标签')] 打标签",
+      "编写判别函数，从 dict 或对象中读取判别字段并返回对应标签",
+      "用 Annotated[Union[...], Discriminator(判别函数)] 组合",
+      "通过 model_validate 验证路由结果正确"
+    ],
+    "constraints": [
+      "判别函数需同时处理 dict 输入与对象输入",
+      "每个 Union 成员的 Tag 值需与判别函数返回值一致"
+    ],
+    "cautions": [
+      "判别字段缺失或返回值不匹配标签时会导致校验失败"
+    ],
+    "output_contract": [
+      "带 Tag 与 Discriminator 的 Union 模型定义并通过校验"
+    ],
+    "examples": [
+      {
+        "input": "Union 成员 ApplePie(fruit='apple') 与 PumpkinPie(filling='pumpkin')，需按 fruit/filling 字段路由",
+        "output": "Annotated[Union[Annotated[ApplePie, Tag('apple')], Annotated[PumpkinPie, Tag('pumpkin')]], Discriminator(get_discriminator_value)]，model_validate 后正确得到 ApplePie 实例",
+        "notes": "判别函数从 dict 读取 fruit 或 filling，从对象读取对应属性"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "union",
+      "discriminated-union",
+      "tag",
+      "discriminator"
+    ],
+    "support_ids": [
+      "eddc1a17-d00a-58e3-8c82-0af9b7343db6"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "5195765f-eca0-5850-9830-ab1d10e503a2"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|构建可正确路由的判别式 union 模型|pydantic|数据模型校验|判别式联合类型|模型构建|基于 tag 与 discriminator 的判别式联合类型构建"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

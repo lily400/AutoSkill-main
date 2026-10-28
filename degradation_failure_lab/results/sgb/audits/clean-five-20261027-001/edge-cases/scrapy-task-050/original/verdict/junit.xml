@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="8" time="1.574" timestamp="2026-10-28T04:46:59.844859+00:00" hostname="134a00fd8b23"><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_file_exists" time="0.001" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_file_not_empty" time="0.002" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_module_imports" time="0.264" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_has_required_api" time="0.000" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_depth_limit_setting_is_zero" time="0.000" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_finding_structure_and_semantics" time="0.000" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_runtime_behavior_crawls_beyond_depth_zero" time="1.221" /><testcase classname="eval.TestDepthLimitZeroBehavior" name="test_finding_matches_runtime_behavior" time="0.001"><failure message="AssertionError: Reported effective_max_depth is inconsistent with expected Scrapy behavior&#10;assert (1 is None or (False))&#10; +  where False = isinstance(1, str)">self = &lt;eval.TestDepthLimitZeroBehavior object at 0x7315dc2ca550&gt;
+
+    def test_finding_matches_runtime_behavior(self):
+        sys.path.insert(0, ROOT_DIR)
+        import agent_output
+    
+        result = agent_output.get_depth_limit_zero_finding()
+    
+        assert result["depth_limit"] == 0
+        assert result["follows_beyond_start_urls"] is True
+    
+        effective = result["effective_max_depth"]
+&gt;       assert (
+            effective is None
+            or (isinstance(effective, str) and effective.strip().lower() in {"unlimited", "no limit"})
+        ), "Reported effective_max_depth is inconsistent with expected Scrapy behavior"
+E       AssertionError: Reported effective_max_depth is inconsistent with expected Scrapy behavior
+E       assert (1 is None or (False))
+E        +  where False = isinstance(1, str)
+
+/oracle/eval.py:213: AssertionError</failure></testcase></testsuite></testsuites>

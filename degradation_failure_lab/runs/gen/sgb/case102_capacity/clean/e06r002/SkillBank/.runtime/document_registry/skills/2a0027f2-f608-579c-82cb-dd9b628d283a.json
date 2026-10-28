@@ -1,0 +1,111 @@
+{
+  "skill_id": "2a0027f2-f608-579c-82cb-dd9b628d283a",
+  "name": "同相位实体规范排序规则",
+  "description": "当同一相位内需要确定多个实体的处理顺序且规则未指定其他优先级时，按VehicleID升序、再按NodeID升序的规范顺序处理，以消除顺序歧义并保证仿真确定性。",
+  "skill_body": "在每tick更新中，若同一相位内需要对实体排序处理，先检查是否有规则明确指定了不同优先级；若无，则按VehicleID升序排序，VehicleID相同时再按NodeID升序排序，输出确定性的实体处理顺序列表。\n\n## Objective\n\n消除同相位内实体处理顺序的歧义\n## Applicable Signals\n\n- 同相位内多个实体需排序处理\n- 规则未指定其他优先级\n\n## Contraindications\n\n- 规则已明确指定不同优先级\n- 跨相位处理\n\n## Intervention Moves\n\n- 检查是否存在规则明确指定的不同优先级\n- 若无其他优先级，按VehicleID升序排序\n- VehicleID相同时按NodeID升序排序\n- 输出确定性实体处理顺序列表\n\n## Workflow Steps\n\n- 确认当前处理处于同一相位内且需要实体排序\n- 检查是否有规则明确指定了不同优先级\n- 若无，按VehicleID升序排序\n- VehicleID相同时按NodeID升序排序\n- 输出确定性的实体处理顺序列表\n\n## Constraints\n\n- 仅在规则未指定其他优先级时应用规范排序\n- 排序仅限同一相位内，不跨相位\n\n## Cautions\n\n- 若规则已明确指定不同优先级，应遵循该优先级而非规范排序\n\n## Output Contract\n\n- 确定性的实体处理顺序列表",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "消除同相位内实体处理顺序的歧义",
+  "domain": "交通仿真规则",
+  "task_family": "确定性保障",
+  "method_family": "规范排序约束",
+  "stage": "每tick更新",
+  "applicable_signals": [
+    "同相位内多个实体需排序处理",
+    "规则未指定其他优先级"
+  ],
+  "contraindications": [
+    "规则已明确指定不同优先级",
+    "跨相位处理"
+  ],
+  "intervention_moves": [
+    "检查是否存在规则明确指定的不同优先级",
+    "若无其他优先级，按VehicleID升序排序",
+    "VehicleID相同时按NodeID升序排序",
+    "输出确定性实体处理顺序列表"
+  ],
+  "triggers": [
+    "同相位内多个实体需排序处理",
+    "规则未指定其他优先级",
+    "需要消除实体处理顺序歧义"
+  ],
+  "workflow_steps": [
+    "确认当前处理处于同一相位内且需要实体排序",
+    "检查是否有规则明确指定了不同优先级",
+    "若无，按VehicleID升序排序",
+    "VehicleID相同时按NodeID升序排序",
+    "输出确定性的实体处理顺序列表"
+  ],
+  "constraints": [
+    "仅在规则未指定其他优先级时应用规范排序",
+    "排序仅限同一相位内，不跨相位"
+  ],
+  "cautions": [
+    "若规则已明确指定不同优先级，应遵循该优先级而非规范排序"
+  ],
+  "output_contract": [
+    "确定性的实体处理顺序列表"
+  ],
+  "examples": [],
+  "tags": [
+    "交通仿真",
+    "确定性",
+    "排序约束",
+    "每tick更新"
+  ],
+  "support_ids": [
+    "07927e8a-90ad-5bd1-b102-04a46ccbf055"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "b96ddc03-3638-5b5c-9324-a165481d7c3c"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|消除同相位内实体处理顺序的歧义|交通仿真规则|确定性保障|规范排序约束|每tick更新|同相位实体规范排序规则",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

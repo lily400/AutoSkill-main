@@ -1,0 +1,105 @@
+{
+  "skill_id": "839f4723-46db-561b-83cf-66fba17e5049",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选“边容量计算与超容判定规则”高度重复，公式、判定逻辑与约束一致，保留该候选会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "839f4723-46db-561b-83cf-66fba17e5049",
+    "name": "边容量与排队冲突计算",
+    "description": "根据车道数与每车道容量计算边的最大车辆容量（MaxVehicles = LaneCount × CapacityPerLane），并据此判定该边是否达到或超过容量、是否形成排队或冲突。用于需要评估某条边当前承载状态时。",
+    "skill_body": "当需要评估某条边的承载状态时：1) 读取该边的 LaneCount 与 CapacityPerLane 参数；2) 按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算最大车辆容量；3) 将该边当前车辆数与 MaxVehicles 比较，判定是否达到或超过容量；4) 输出 MaxVehicles 数值及是否超容/排队的结论。若缺少车道数或每车道容量参数，则说明无法计算，不要臆造数值。\n\n## Objective\n\n按 MaxVehicles = LaneCount × CapacityPerLane 计算边容量并判定超容/排队状态\n## Applicable Signals\n\n- 查询某条边的容量上限\n- 判断边是否超容或形成排队\n- 解释冲突或拥堵的成因\n\n## Contraindications\n\n- 缺少车道数或每车道容量参数\n- 问题与边容量无关\n\n## Intervention Moves\n\n- 读取 LaneCount 与 CapacityPerLane\n- 计算 MaxVehicles = LaneCount × CapacityPerLane\n- 将当前车辆数与 MaxVehicles 比较并判定超容/排队\n\n## Workflow Steps\n\n- 确认目标边及其 LaneCount、CapacityPerLane 参数\n- 按公式计算 MaxVehicles(edge)\n- 获取该边当前车辆数并与 MaxVehicles 比较\n- 输出容量数值与超容/排队结论\n\n## Constraints\n\n- 容量必须严格按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算\n- 缺少必要参数时不得臆造数值\n\n## Cautions\n\n- 本技能仅覆盖容量计算与超容判定，不涉及车辆动作合法性规则\n\n## Output Contract\n\n- 给出该边的 MaxVehicles 数值及是否超容/排队的结论",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "按 MaxVehicles = LaneCount × CapacityPerLane 计算边容量并判定超容/排队状态",
+    "domain": "交通仿真规则",
+    "task_family": "容量与拥堵判定",
+    "method_family": "容量公式计算",
+    "stage": "状态评估",
+    "applicable_signals": [
+      "查询某条边的容量上限",
+      "判断边是否超容或形成排队",
+      "解释冲突或拥堵的成因"
+    ],
+    "contraindications": [
+      "缺少车道数或每车道容量参数",
+      "问题与边容量无关"
+    ],
+    "intervention_moves": [
+      "读取 LaneCount 与 CapacityPerLane",
+      "计算 MaxVehicles = LaneCount × CapacityPerLane",
+      "将当前车辆数与 MaxVehicles 比较并判定超容/排队"
+    ],
+    "triggers": [
+      "需要判断某条边是否达到或超过车辆容量",
+      "需要解释排队或冲突的成因",
+      "需要给出某条边的 MaxVehicles 数值"
+    ],
+    "workflow_steps": [
+      "确认目标边及其 LaneCount、CapacityPerLane 参数",
+      "按公式计算 MaxVehicles(edge)",
+      "获取该边当前车辆数并与 MaxVehicles 比较",
+      "输出容量数值与超容/排队结论"
+    ],
+    "constraints": [
+      "容量必须严格按 MaxVehicles(edge) = LaneCount(edge) × CapacityPerLane(edge) 计算",
+      "缺少必要参数时不得臆造数值"
+    ],
+    "cautions": [
+      "本技能仅覆盖容量计算与超容判定，不涉及车辆动作合法性规则"
+    ],
+    "output_contract": [
+      "给出该边的 MaxVehicles 数值及是否超容/排队的结论"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "边容量",
+      "排队",
+      "拥堵判定",
+      "容量公式"
+    ],
+    "support_ids": [
+      "8c834555-858b-506b-9aef-ddb81bf7b823"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "aefd9078-3258-5268-b09c-9f6c407c104b"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|按 maxvehicles = lanecount × capacityperlane 计算边容量并判定超容/排队状态|交通仿真规则|容量与拥堵判定|容量公式计算|状态评估|边容量与排队冲突计算"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

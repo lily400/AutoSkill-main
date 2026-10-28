@@ -1,0 +1,105 @@
+{
+  "skill_id": "390c336b-af48-5bdc-b568-7aff4e8ef919",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“评论与SKU语义匹配及情感量化流程”高度重叠，后者已覆盖品类硬约束筛选与语义相似度匹配，且额外包含情感量化与输入校验，候选未提供独立新增能力，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "390c336b-af48-5bdc-b568-7aff4e8ef919",
+    "name": "评论匹配SKU流程",
+    "description": "将用户评论按品类硬约束与语义相似度匹配到产品目录中的对应SKU，作为多智能体选品流程中的匹配阶段使用。",
+    "skill_body": "执行评论到SKU的匹配：先依据产品描述判定品类（Tops/Bottoms/Outerwear），将品类作为硬约束筛选候选SKU，再在候选内按语义相似度判断评论与产品的匹配程度，最后输出评论到SKU的匹配结果。\n\n## Objective\n\n把评论映射到正确SKU\n## Applicable Signals\n\n- 评论与产品目录同时可用\n- 需要为评论确定对应产品\n\n## Contraindications\n\n- 产品目录无效或缺失\n- 评论与产品无对应关系\n\n## Intervention Moves\n\n- 从产品描述判定品类\n- 以品类作为硬约束筛选候选SKU\n- 在候选内做语义相似度判断\n- 输出匹配结果\n\n## Workflow Steps\n\n- 依据产品描述判定品类：Tops（hoodies、t-shirts、long sleeves、sweatshirts、pullovers、jerseys）、Bottoms（pants、joggers、shorts、tights、leggings、track pants）、Outerwear（jackets、windbreakers、parkas、vests、coaches jackets）\n- 以品类作为硬约束筛选候选SKU\n- 在候选SKU范围内按语义相似度判断评论与产品的匹配程度\n- 输出评论到SKU的匹配结果\n\n## Constraints\n\n- 品类匹配为硬性要求，不得跨品类匹配\n- 语义相似度判断仅在品类约束筛选后的候选内进行\n\n## Cautions\n\n- 产品目录无效或缺失时不应执行匹配\n- 评论与产品无对应关系时不应强行匹配\n\n## Output Contract\n\n- 评论到SKU的匹配结果",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "把评论映射到正确SKU",
+    "domain": "商品目录运营",
+    "task_family": "评论-SKU匹配",
+    "method_family": "语义相似度与品类约束匹配",
+    "stage": "匹配阶段",
+    "applicable_signals": [
+      "评论与产品目录同时可用",
+      "需要为评论确定对应产品"
+    ],
+    "contraindications": [
+      "产品目录无效或缺失",
+      "评论与产品无对应关系"
+    ],
+    "intervention_moves": [
+      "从产品描述判定品类",
+      "以品类作为硬约束筛选候选SKU",
+      "在候选内做语义相似度判断",
+      "输出匹配结果"
+    ],
+    "triggers": [
+      "已有评论与产品目录需建立对应关系",
+      "需要按品类硬约束筛选候选SKU"
+    ],
+    "workflow_steps": [
+      "依据产品描述判定品类：Tops（hoodies、t-shirts、long sleeves、sweatshirts、pullovers、jerseys）、Bottoms（pants、joggers、shorts、tights、leggings、track pants）、Outerwear（jackets、windbreakers、parkas、vests、coaches jackets）",
+      "以品类作为硬约束筛选候选SKU",
+      "在候选SKU范围内按语义相似度判断评论与产品的匹配程度",
+      "输出评论到SKU的匹配结果"
+    ],
+    "constraints": [
+      "品类匹配为硬性要求，不得跨品类匹配",
+      "语义相似度判断仅在品类约束筛选后的候选内进行"
+    ],
+    "cautions": [
+      "产品目录无效或缺失时不应执行匹配",
+      "评论与产品无对应关系时不应强行匹配"
+    ],
+    "output_contract": [
+      "评论到SKU的匹配结果"
+    ],
+    "examples": [],
+    "tags": [
+      "评论匹配",
+      "SKU映射",
+      "品类约束",
+      "语义相似度",
+      "选品流程"
+    ],
+    "support_ids": [
+      "db0ca0a7-7168-5345-b5bb-55216cb66f58"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "7c27b39e-1039-579f-b1fb-0527421ad3f8"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|把评论映射到正确sku|商品目录运营|评论-sku匹配|语义相似度与品类约束匹配|匹配阶段|评论匹配sku流程"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

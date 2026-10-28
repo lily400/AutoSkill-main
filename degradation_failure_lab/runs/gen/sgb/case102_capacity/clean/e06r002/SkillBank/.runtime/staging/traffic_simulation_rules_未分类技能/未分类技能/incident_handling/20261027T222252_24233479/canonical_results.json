@@ -1,0 +1,307 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "incident_handling",
+  "run_id": "20261027T222252_24233479",
+  "skills": [
+    {
+      "skill_id": "578dde0f-98ed-55c6-a95a-07eb359fcd7a",
+      "name": "Incident Effect Application During Resolution Phase",
+      "description": "Applies active incident effects to edges during the Incident Resolution Phase of each tick, honoring StartTick/EndTick windows and reverting to baseline when expired. Use when advancing simulation ticks with active or scheduled incidents.",
+      "skill_body": "During the Incident Resolution Phase of tick t, for each incident evaluate whether StartTick <= t < EndTick. If active, apply its effect to the affected edge: for CLOSE_EDGE, block new vehicle entry while allowing vehicles already on the edge to continue; for REDUCE_CAPACITY, apply the CapacityMultiplier to the edge capacity. If t >= EndTick, revert the edge to its baseline attributes unless another active incident modifies it. Update edge attributes accordingly and report the resulting state.\n\n## Objective\n\nCorrectly apply and expire incident effects on edges per tick.\n## Applicable Signals\n\n- Active or scheduled incidents present at current tick\n- Tick equals an incident StartTick or reaches EndTick\n\n## Contraindications\n\n- No incidents are defined or active\n- Outside the Incident Resolution Phase\n\n## Intervention Moves\n\n- Check StartTick <= t < EndTick for each incident\n- Apply CLOSE_EDGE by blocking new entries while allowing on-edge vehicles to continue\n- Apply REDUCE_CAPACITY by scaling edge capacity with CapacityMultiplier\n- Revert edge to baseline when t >= EndTick unless another active incident applies\n\n## Workflow Steps\n\n- Identify all incidents affecting edges at tick t.\n- For each incident, test whether StartTick <= t < EndTick.\n- If active, apply the effect: CLOSE_EDGE blocks new entries (existing on-edge vehicles continue); REDUCE_CAPACITY scales capacity by CapacityMultiplier.\n- If t >= EndTick, revert the edge to baseline attributes unless another active incident modifies it.\n- Record updated edge attributes for the tick.\n\n## Constraints\n\n- EndTick is exclusive.\n- CapacityMultiplier must be in (0,1].\n- CLOSE_EDGE does not stop vehicles already on the edge.\n\n## Cautions\n\n- Multiple incidents may affect the same edge; baseline reversion applies only if no other active incident modifies it.\n\n## Output Contract\n\n- Edge attributes updated to reflect active incidents or reverted to baseline.\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: Tick t within [StartTick, EndTick) for a REDUCE_CAPACITY incident with CapacityMultiplier 0.5 on an edge.\n- Therapist/Output: Edge capacity scaled to 50% of baseline for that tick.\n- Notes: Effect applied during Incident Resolution Phase.\n\n### Example 2\n\n- Client/Input: Tick t >= EndTick for a CLOSE_EDGE incident with no other active incident on the edge.\n- Therapist/Output: Edge reverted to baseline attributes; new entries permitted.\n- Notes: EndTick is exclusive.",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "051b46c6-eb00-5693-995a-de8aaefaff4d"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "Correctly apply and expire incident effects on edges per tick.",
+      "domain": "traffic simulation",
+      "task_family": "incident_handling",
+      "method_family": "rule_based_tick_update",
+      "stage": "incident_resolution_phase",
+      "applicable_signals": [
+        "Active or scheduled incidents present at current tick",
+        "Tick equals an incident StartTick or reaches EndTick"
+      ],
+      "contraindications": [
+        "No incidents are defined or active",
+        "Outside the Incident Resolution Phase"
+      ],
+      "intervention_moves": [
+        "Check StartTick <= t < EndTick for each incident",
+        "Apply CLOSE_EDGE by blocking new entries while allowing on-edge vehicles to continue",
+        "Apply REDUCE_CAPACITY by scaling edge capacity with CapacityMultiplier",
+        "Revert edge to baseline when t >= EndTick unless another active incident applies"
+      ],
+      "triggers": [
+        "A tick is being processed and incidents exist",
+        "An incident's StartTick or EndTick boundary is reached"
+      ],
+      "workflow_steps": [
+        "Identify all incidents affecting edges at tick t.",
+        "For each incident, test whether StartTick <= t < EndTick.",
+        "If active, apply the effect: CLOSE_EDGE blocks new entries (existing on-edge vehicles continue); REDUCE_CAPACITY scales capacity by CapacityMultiplier.",
+        "If t >= EndTick, revert the edge to baseline attributes unless another active incident modifies it.",
+        "Record updated edge attributes for the tick."
+      ],
+      "constraints": [
+        "EndTick is exclusive.",
+        "CapacityMultiplier must be in (0,1].",
+        "CLOSE_EDGE does not stop vehicles already on the edge."
+      ],
+      "cautions": [
+        "Multiple incidents may affect the same edge; baseline reversion applies only if no other active incident modifies it."
+      ],
+      "output_contract": [
+        "Edge attributes updated to reflect active incidents or reverted to baseline."
+      ],
+      "examples": [
+        {
+          "input": "Tick t within [StartTick, EndTick) for a REDUCE_CAPACITY incident with CapacityMultiplier 0.5 on an edge.",
+          "output": "Edge capacity scaled to 50% of baseline for that tick.",
+          "notes": "Effect applied during Incident Resolution Phase."
+        },
+        {
+          "input": "Tick t >= EndTick for a CLOSE_EDGE incident with no other active incident on the edge.",
+          "output": "Edge reverted to baseline attributes; new entries permitted.",
+          "notes": "EndTick is exclusive."
+        }
+      ],
+      "tags": [
+        "traffic_simulation",
+        "incident_handling",
+        "tick_update",
+        "edge_capacity"
+      ],
+      "support_ids": [
+        "37dc4635-20ae-5e42-a90f-9c9cbf4be2c3"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "0351bb37-7235-541e-b22c-689f5ec27d4e"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|correctly apply and expire incident effects on edges per tick.|traffic simulation|incident_handling|rule_based_tick_update|incident_resolution_phase|incident effect application during resolution phase",
+        "change_action": "create",
+        "llm_reason": "Distinct incident-resolution capability with clear tick-window semantics and effect application rules; no same-batch redundancy or conflict evidence.",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "051b46c6-eb00-5693-995a-de8aaefaff4d"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "abcdd505-af46-547b-ab28-ef5fd68f2e3a",
+      "name": "CLOSE_EDGE Entry Restriction Rule",
+      "description": "Enforces that while a CLOSE_EDGE incident is active on an edge, vehicles already on the edge continue to travel normally but no new vehicles may enter. Use when routing or admitting vehicles onto an edge under an active closure.",
+      "skill_body": "Before admitting any vehicle onto a target edge, check whether a CLOSE_EDGE incident is active on that edge for the current tick (StartTick <= t < EndTick). If active, block all new vehicle entries while allowing vehicles already on the edge to continue traveling as normal. If the incident window has expired (t >= EndTick) or the incident is REDUCE_CAPACITY rather than CLOSE_EDGE, do not apply this restriction.\n\n## Objective\n\nPrevent new vehicle entry onto closed edges while allowing existing traffic to proceed.\n## Applicable Signals\n\n- CLOSE_EDGE incident active on the target edge\n- Vehicle attempting to enter an edge\n- Current tick within incident window (StartTick <= t < EndTick)\n\n## Contraindications\n\n- Incident is REDUCE_CAPACITY rather than CLOSE_EDGE\n- Incident window has expired (t >= EndTick)\n\n## Intervention Moves\n\n- Check active incidents on the target edge before admitting a vehicle\n- Block new entries while CLOSE_EDGE is active\n- Allow vehicles already on the edge to continue traveling normally\n\n## Workflow Steps\n\n- Identify the target edge for the vehicle entry.\n- Determine whether a CLOSE_EDGE incident is active on that edge for the current tick (StartTick <= t < EndTick).\n- If active, deny new vehicle entry to the edge.\n- Leave vehicles already on the edge unaffected so they continue traveling as normal.\n- If the incident window has expired or the effect is not CLOSE_EDGE, do not apply this restriction.\n\n## Constraints\n\n- Restriction applies only while StartTick <= t < EndTick.\n- Only CLOSE_EDGE incidents trigger this admission block.\n- Vehicles already on the edge must not be stopped by this rule.\n\n## Cautions\n\n- Do not confuse CLOSE_EDGE with REDUCE_CAPACITY; capacity reduction does not block entry.\n- Re-evaluate each tick since the incident window is exclusive at EndTick.\n\n## Output Contract\n\n- No new vehicles admitted to a closed edge; on-edge vehicles unaffected and continue traveling normally.\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: A CLOSE_EDGE incident is active on edge E5 for the current tick; a vehicle requests entry to E5.\n- Therapist/Output: Entry denied; the vehicle is not admitted to E5, while vehicles already on E5 continue traveling.\n- Notes: Applies only while StartTick <= t < EndTick.",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "Prevent new vehicle entry onto closed edges while allowing existing traffic to proceed.",
+      "domain": "traffic simulation",
+      "task_family": "incident_handling",
+      "method_family": "constraint_enforcement",
+      "stage": "vehicle_entry_admission",
+      "applicable_signals": [
+        "CLOSE_EDGE incident active on the target edge",
+        "Vehicle attempting to enter an edge",
+        "Current tick within incident window (StartTick <= t < EndTick)"
+      ],
+      "contraindications": [
+        "Incident is REDUCE_CAPACITY rather than CLOSE_EDGE",
+        "Incident window has expired (t >= EndTick)"
+      ],
+      "intervention_moves": [
+        "Check active incidents on the target edge before admitting a vehicle",
+        "Block new entries while CLOSE_EDGE is active",
+        "Allow vehicles already on the edge to continue traveling normally"
+      ],
+      "triggers": [
+        "A CLOSE_EDGE incident is active on a target edge",
+        "A vehicle is about to enter an edge"
+      ],
+      "workflow_steps": [
+        "Identify the target edge for the vehicle entry.",
+        "Determine whether a CLOSE_EDGE incident is active on that edge for the current tick (StartTick <= t < EndTick).",
+        "If active, deny new vehicle entry to the edge.",
+        "Leave vehicles already on the edge unaffected so they continue traveling as normal.",
+        "If the incident window has expired or the effect is not CLOSE_EDGE, do not apply this restriction."
+      ],
+      "constraints": [
+        "Restriction applies only while StartTick <= t < EndTick.",
+        "Only CLOSE_EDGE incidents trigger this admission block.",
+        "Vehicles already on the edge must not be stopped by this rule."
+      ],
+      "cautions": [
+        "Do not confuse CLOSE_EDGE with REDUCE_CAPACITY; capacity reduction does not block entry.",
+        "Re-evaluate each tick since the incident window is exclusive at EndTick."
+      ],
+      "output_contract": [
+        "No new vehicles admitted to a closed edge; on-edge vehicles unaffected and continue traveling normally."
+      ],
+      "examples": [
+        {
+          "input": "A CLOSE_EDGE incident is active on edge E5 for the current tick; a vehicle requests entry to E5.",
+          "output": "Entry denied; the vehicle is not admitted to E5, while vehicles already on E5 continue traveling.",
+          "notes": "Applies only while StartTick <= t < EndTick."
+        }
+      ],
+      "tags": [
+        "traffic_simulation",
+        "incident_handling",
+        "constraint_enforcement",
+        "edge_closure",
+        "vehicle_admission"
+      ],
+      "support_ids": [
+        "0670df18-5dfb-58db-82bf-f755cbdd00f3"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "1a577586-2843-56a2-897d-5b696d785bfc"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|prevent new vehicle entry onto closed edges while allowing existing traffic to proceed.|traffic simulation|incident_handling|constraint_enforcement|vehicle_entry_admission|close_edge entry restriction rule",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "2bd9f61c-9365-47ba-9567-0fa1f09c8b08",
+      "entity_type": "skill",
+      "entity_id": "578dde0f-98ed-55c6-a95a-07eb359fcd7a",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "Distinct incident-resolution capability with clear tick-window semantics and effect application rules; no same-batch redundancy or conflict evidence.",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "578dde0f-98ed-55c6-a95a-07eb359fcd7a",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "37dc4635-20ae-5e42-a90f-9c9cbf4be2c3"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "14412207-e19e-41b8-b42a-c668e5e51175",
+      "entity_type": "skill",
+      "entity_id": "abcdd505-af46-547b-ab28-ef5fd68f2e3a",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "abcdd505-af46-547b-ab28-ef5fd68f2e3a",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "0670df18-5dfb-58db-82bf-f755cbdd00f3"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

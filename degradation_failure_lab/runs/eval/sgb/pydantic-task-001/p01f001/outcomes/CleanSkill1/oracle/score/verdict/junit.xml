@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="16" time="0.161" timestamp="2026-10-28T06:08:57.101804+00:00" hostname="418441ea9962"><testcase classname="eval.TestValidatorOrdering" name="test_model_exists" time="0.001" /><testcase classname="eval.TestValidatorOrdering" name="test_value_field_uses_annotated" time="0.000" /><testcase classname="eval.TestValidatorOrdering" name="test_required_validator_kinds_present" time="0.000" /><testcase classname="eval.TestValidatorOrdering" name="test_input_10_produces_output_30" time="0.000"><failure message="AssertionError: Expected 30, got 50&#10;assert 50 == 30&#10; +  where 50 = MyModel().value">self = &lt;eval.TestValidatorOrdering object at 0x707e13a50180&gt;
+
+    def test_input_10_produces_output_30(self):
+        instance = agent_output.MyModel(value=10)
+&gt;       assert instance.value == 30, f"Expected 30, got {instance.value}"
+E       AssertionError: Expected 30, got 50
+E       assert 50 == 30
+E        +  where 50 = MyModel().value
+
+/oracle/eval.py:102: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[0-10]" time="0.001" /><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[3-16]" time="0.000"><failure message="AssertionError: Input 3: expected 16, got 22&#10;assert 22 == 16&#10; +  where 22 = MyModel().value">self = &lt;eval.TestValidatorOrdering object at 0x707e13a3c5a0&gt;, input_val = 3
+expected = 16
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+        instance = agent_output.MyModel(value=input_val)
+&gt;       assert instance.value == expected, f"Input {input_val}: expected {expected}, got {instance.value}"
+E       AssertionError: Input 3: expected 16, got 22
+E       assert 22 == 16
+E        +  where 22 = MyModel().value
+
+/oracle/eval.py:117: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[5-20]" time="0.000"><failure message="AssertionError: Input 5: expected 20, got 30&#10;assert 30 == 20&#10; +  where 30 = MyModel().value">self = &lt;eval.TestValidatorOrdering object at 0x707e13a3c6b0&gt;, input_val = 5
+expected = 20
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+        instance = agent_output.MyModel(value=input_val)
+&gt;       assert instance.value == expected, f"Input {input_val}: expected {expected}, got {instance.value}"
+E       AssertionError: Input 5: expected 20, got 30
+E       assert 30 == 20
+E        +  where 30 = MyModel().value
+
+/oracle/eval.py:117: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[10-30]" time="0.001"><failure message="AssertionError: Input 10: expected 30, got 50&#10;assert 50 == 30&#10; +  where 50 = MyModel().value">self = &lt;eval.TestValidatorOrdering object at 0x707e13ff2750&gt;, input_val = 10
+expected = 30
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+        instance = agent_output.MyModel(value=input_val)
+&gt;       assert instance.value == expected, f"Input {input_val}: expected {expected}, got {instance.value}"
+E       AssertionError: Input 10: expected 30, got 50
+E       assert 50 == 30
+E        +  where 50 = MyModel().value
+
+/oracle/eval.py:117: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[12-34]" time="0.000"><failure message="AssertionError: Input 12: expected 34, got 58&#10;assert 58 == 34&#10; +  where 58 = MyModel().value">self = &lt;eval.TestValidatorOrdering object at 0x707e13ff2850&gt;, input_val = 12
+expected = 34
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+        instance = agent_output.MyModel(value=input_val)
+&gt;       assert instance.value == expected, f"Input {input_val}: expected {expected}, got {instance.value}"
+E       AssertionError: Input 12: expected 34, got 58
+E       assert 58 == 34
+E        +  where 58 = MyModel().value
+
+/oracle/eval.py:117: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_multiple_inputs[-5-0]" time="0.000"><failure message="AssertionError: Input -5: expected 0, got -10&#10;assert -10 == 0&#10; +  where -10 = MyModel().value">self = &lt;eval.TestValidatorOrdering object at 0x707e13a1e8a0&gt;, input_val = -5
+expected = 0
+
+    @pytest.mark.parametrize(
+        "input_val, expected",
+        [
+            (0, 10),
+            (3, 16),
+            (5, 20),
+            (10, 30),
+            (12, 34),
+            (-5, 0),
+        ],
+    )
+    def test_multiple_inputs(self, input_val, expected):
+        instance = agent_output.MyModel(value=input_val)
+&gt;       assert instance.value == expected, f"Input {input_val}: expected {expected}, got {instance.value}"
+E       AssertionError: Input -5: expected 0, got -10
+E       assert -10 == 0
+E        +  where -10 = MyModel().value
+
+/oracle/eval.py:117: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_log_is_structured_and_nontrivial" time="0.000" /><testcase classname="eval.TestValidatorOrdering" name="test_wrap_sees_raw_input" time="0.000"><failure message="AssertionError: Wrap validator should log that it observed raw input 10&#10;assert False">self = &lt;eval.TestValidatorOrdering object at 0x707e13a4f3f0&gt;
+
+    def test_wrap_sees_raw_input(self):
+        instance = agent_output.MyModel(value=10)
+        log = _extract_log(instance)
+    
+        found = False
+        for entry in log:
+            if isinstance(entry, dict):
+                event = entry.get("event", "")
+                if "wrap" in event and ("before" in event or "start" in event):
+                    if entry.get("value") == 10 or entry.get("input") == 10 or entry.get("raw") == 10:
+                        found = True
+                        break
+            elif isinstance(entry, str):
+                if "wrap" in entry and "10" in entry:
+                    found = True
+                    break
+    
+&gt;       assert found, "Wrap validator should log that it observed raw input 10"
+E       AssertionError: Wrap validator should log that it observed raw input 10
+E       assert False
+
+/oracle/eval.py:146: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_order_matches_documented_pipeline_semantics" time="0.000"><failure message="AssertionError: Wrap should begin before the inner pipeline's before-validator runs&#10;assert 1 &lt; 0">self = &lt;eval.TestValidatorOrdering object at 0x707e13a4f690&gt;
+
+    def test_order_matches_documented_pipeline_semantics(self):
+        """
+        We do not require exact event names, but we require a sequence that demonstrates:
+        1) wrap starts first
+        2) before runs during inner validation
+        3) wrap resumes after handler returns
+        4) after occurs after inner validation result is available
+    
+        Pydantic docs state that with Annotated, before and wrap validators run
+        right-to-left, then after validators run left-to-right.
+        """
+        instance = agent_output.MyModel(value=10)
+        events = [_normalize_event_name(e).lower() for e in _extract_log(instance)]
+    
+        wrap_start_idx = _find_index(
+            events,
+            lambda e: ("wrap" in e) and ("before" in e or "start" in e or "enter" in e)
+        )
+        before_idx = _find_index(
+            events,
+            lambda e: e == "before" or "before_validator" in e or e.startswith("before_")
+        )
+        wrap_end_idx = _find_index(
+            events,
+            lambda e: ("wrap" in e) and ("after" in e or "end" in e or "exit" in e or "resume" in e)
+        )
+        after_idx = _find_index(
+            events,
+            lambda e: e == "after" or "after_validator" in e or e.startswith("after_")
+        )
+    
+        assert wrap_start_idx != -1, f"Could not find wrap-start event in log: {events}"
+        assert before_idx != -1, f"Could not find before event in log: {events}"
+        assert wrap_end_idx != -1, f"Could not find wrap-end event in log: {events}"
+        assert after_idx != -1, f"Could not find after event in log: {events}"
+    
+&gt;       assert wrap_start_idx &lt; before_idx, (
+            "Wrap should begin before the inner pipeline's before-validator runs"
+        )
+E       AssertionError: Wrap should begin before the inner pipeline's before-validator runs
+E       assert 1 &lt; 0
+
+/oracle/eval.py:184: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_not_hardcoded_for_single_value" time="0.000"><failure message="AssertionError: Expected affine transform 2*x+10, got [-34, 6, 14, 38, 86]&#10;assert [-34, 6, 14, 38, 86] == [-12, 8, 12, 24, 48]&#10;  &#10;  At index 0 diff: -34 != -12&#10;  Use -v to get more diff">self = &lt;eval.TestValidatorOrdering object at 0x707e1381c6d0&gt;
+
+    def test_not_hardcoded_for_single_value(self):
+        vals = [-11, -1, 1, 7, 19]
+        outputs = [agent_output.MyModel(value=v).value for v in vals]
+        expected = [2 * v + 10 for v in vals]
+&gt;       assert outputs == expected, f"Expected affine transform 2*x+10, got {outputs}"
+E       AssertionError: Expected affine transform 2*x+10, got [-34, 6, 14, 38, 86]
+E       assert [-34, 6, 14, 38, 86] == [-12, 8, 12, 24, 48]
+E         
+E         At index 0 diff: -34 != -12
+E         Use -v to get more diff
+
+/oracle/eval.py:198: AssertionError</failure></testcase><testcase classname="eval.TestValidatorOrdering" name="test_model_instantiation_uses_pydantic_validation" time="0.001" /><testcase classname="eval.TestValidatorOrdering" name="test_no_decorator_based_field_validator_requirement" time="0.002" /></testsuite></testsuites>

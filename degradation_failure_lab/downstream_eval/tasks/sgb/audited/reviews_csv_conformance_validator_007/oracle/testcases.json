@@ -1,0 +1,134 @@
+{
+  "task_id": "reviews_csv_conformance_validator_007",
+  "test_id": "tc_007",
+  "setup_code": "import math\nimport numpy as np\nimport random\nimport itertools\nimport collections\n",
+  "function_name": "solve",
+  "solution_code": "def solve(input_data):\n    \"\"\"Processed Reviews CSV Conformance Validator with Casing Enforcement.\n\n    SOP source: <input_validation> Validating Processed Reviews (CSV)\n    \"\"\"\n    import csv\n    import io\n\n    csv_text = input_data.get('csv_text', '')\n\n    # Document-specific constants (SOP: <input_validation> Validating Processed Reviews (CSV))\n    REQUIRED_COLUMNS = [\n        'review_id', 'review', 'is_sportswear', 'is_apparel_product', 'brand', 'competitor_or_nike'\n    ]\n    ALLOWED_IS = {'yes', 'no'}\n    ALLOWED_COMP = {'nike', 'competitor', 'n/a'}\n    MIN_ROWS = 20\n\n    def error(issue):\n        # Exact SOP ERROR template for processed reviews\n        msg = (\n            'ERROR: Invalid processed reviews received from orchestrator.\\n\\n'\n            f'Issue: {issue}\\n\\n'\n            'Required format: CSV output from review_processor with all classification columns.\\n\\n'\n            'Cannot proceed with review analysis. Please provide corrected processed reviews.'\n        )\n        return {\n            'ok': False,\n            'message': msg,\n            'details': {\n                'row_count': 0,\n                'missing_columns': [],\n                'invalid_values': []\n            }\n        }\n\n    # 1) Parse CSV\n    try:\n        f = io.StringIO(csv_text)\n        reader = csv.reader(f)\n        rows = list(reader)\n    except Exception:\n        return error('Valid CSV format that can be parsed')\n\n    if not rows:\n        return error('Valid CSV format that can be parsed')\n\n    header = rows[0]\n    data_rows = rows[1:]\n\n    # Normalize header whitespace only (SOP does not allow value normalization; header trimming is pragmatic)\n    header = [h.strip() for h in header]\n\n    col_index = {name: i for i, name in enumerate(header)}\n\n    # 2) Required columns present (precedence #1)\n    missing = [c for c in REQUIRED_COLUMNS if c not in col_index]\n    if missing:\n        # SOP example style: Missing column 'competitor_or_nike'\n        issue = f\"Missing column '{missing[0]}'\"\n        out = error(issue)\n        out['details']['row_count'] = len(data_rows)\n        out['details']['missing_columns'] = missing\n        return out\n\n    # 3) Validate classification values (precedence #2)\n    invalids = []\n    for r_i, row in enumerate(data_rows, start=1):  # 1-based data row index\n        # Pad short rows\n        if len(row) < len(header):\n            row = row + [''] * (len(header) - len(row))\n\n        is_sportswear = row[col_index['is_sportswear']].strip()\n        is_apparel = row[col_index['is_apparel_product']].strip()\n        comp = row[col_index['competitor_or_nike']].strip()\n\n        if is_sportswear not in ALLOWED_IS:\n            invalids.append({'row': r_i, 'column': 'is_sportswear', 'value': is_sportswear})\n        elif is_apparel not in ALLOWED_IS:\n            invalids.append({'row': r_i, 'column': 'is_apparel_product', 'value': is_apparel})\n        elif comp not in ALLOWED_COMP:\n            invalids.append({'row': r_i, 'column': 'competitor_or_nike', 'value': comp})\n\n        if invalids:\n            break\n\n    if invalids:\n        first = invalids[0]\n        col = first['column']\n        val = first['value']\n        # SOP example style includes lowercase requirement when casing is wrong\n        if col in ('is_sportswear', 'is_apparel_product'):\n            issue = f\"Found invalid value '{val}' in {col} column (must be lowercase 'yes')\" if val.lower() == 'yes' else f\"Found invalid value '{val}' in {col} column\"\n        else:\n            issue = f\"Found invalid value '{val}' in {col} column\"\n        out = error(issue)\n        out['details']['row_count'] = len(data_rows)\n        out['details']['invalid_values'] = invalids\n        return out\n\n    # 4) Minimum row count (precedence #3)\n    if len(data_rows) < MIN_ROWS:\n        out = error(f'Only {len(data_rows)} rows found, expected at least {MIN_ROWS}')\n        out['details']['row_count'] = len(data_rows)\n        return out\n\n    # Success\n    return {\n        'ok': True,\n        'message': f'SUCCESS: Processed reviews CSV validated ({len(data_rows)} rows).',\n        'details': {\n            'row_count': len(data_rows),\n            'missing_columns': [],\n            'invalid_values': []\n        }\n    }\n",
+  "test_cases": [
+    {
+      "input": {
+        "csv_text": "review_id,review,is_sportswear,is_apparel_product,brand,competitor_or_nike\nr001,\"a\",yes,yes,Nike,nike\nr002,\"a\",no,yes,Nike,n/a\nr003,\"a\",yes,no,Nike,competitor\nr004,\"a\",yes,yes,Nike,nike\nr005,\"a\",yes,yes,Nike,nike\nr006,\"a\",yes,yes,Nike,nike\nr007,\"a\",yes,yes,Nike,nike\nr008,\"a\",yes,yes,Nike,nike\nr009,\"a\",yes,yes,Nike,nike\nr010,\"a\",yes,yes,Nike,nike\nr011,\"a\",yes,yes,Nike,nike\nr012,\"a\",yes,yes,Nike,nike\nr013,\"a\",yes,yes,Nike,nike\nr014,\"a\",yes,yes,Nike,nike\nr015,\"a\",yes,yes,Nike,nike\nr016,\"a\",yes,yes,Nike,nike\nr017,\"a\",yes,yes,Nike,nike\nr018,\"a\",yes,yes,Nike,nike\nr019,\"a\",yes,yes,Nike,nike\nr020,\"a\",yes,yes,Nike,nike\n"
+      },
+      "expected_output": {
+        "ok": true,
+        "message": "SUCCESS: Processed reviews CSV validated (20 rows).",
+        "details": {
+          "row_count": 20,
+          "missing_columns": [],
+          "invalid_values": []
+        }
+      }
+    },
+    {
+      "input": {
+        "csv_text": "review_id,review,is_sportswear,is_apparel_product,brand\nr001,\"a\",yes,yes,Nike\nr002,\"a\",yes,yes,Nike\nr003,\"a\",yes,yes,Nike\nr004,\"a\",yes,yes,Nike\nr005,\"a\",yes,yes,Nike\nr006,\"a\",yes,yes,Nike\nr007,\"a\",yes,yes,Nike\nr008,\"a\",yes,yes,Nike\nr009,\"a\",yes,yes,Nike\nr010,\"a\",yes,yes,Nike\nr011,\"a\",yes,yes,Nike\nr012,\"a\",yes,yes,Nike\nr013,\"a\",yes,yes,Nike\nr014,\"a\",yes,yes,Nike\nr015,\"a\",yes,yes,Nike\nr016,\"a\",yes,yes,Nike\nr017,\"a\",yes,yes,Nike\nr018,\"a\",yes,yes,Nike\nr019,\"a\",yes,yes,Nike\nr020,\"a\",yes,yes,Nike\n"
+      },
+      "expected_output": {
+        "ok": false,
+        "message": "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Missing column 'competitor_or_nike'\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.",
+        "details": {
+          "row_count": 20,
+          "missing_columns": [
+            "competitor_or_nike"
+          ],
+          "invalid_values": []
+        }
+      }
+    },
+    {
+      "input": {
+        "csv_text": "review_id,review,is_sportswear,is_apparel_product,brand,competitor_or_nike\nr001,\"a\",Yes,yes,Nike,nike\nr002,\"a\",yes,yes,Nike,nike\nr003,\"a\",yes,yes,Nike,nike\nr004,\"a\",yes,yes,Nike,nike\nr005,\"a\",yes,yes,Nike,nike\nr006,\"a\",yes,yes,Nike,nike\nr007,\"a\",yes,yes,Nike,nike\nr008,\"a\",yes,yes,Nike,nike\nr009,\"a\",yes,yes,Nike,nike\nr010,\"a\",yes,yes,Nike,nike\nr011,\"a\",yes,yes,Nike,nike\nr012,\"a\",yes,yes,Nike,nike\nr013,\"a\",yes,yes,Nike,nike\nr014,\"a\",yes,yes,Nike,nike\nr015,\"a\",yes,yes,Nike,nike\nr016,\"a\",yes,yes,Nike,nike\nr017,\"a\",yes,yes,Nike,nike\nr018,\"a\",yes,yes,Nike,nike\nr019,\"a\",yes,yes,Nike,nike\nr020,\"a\",yes,yes,Nike,nike\n"
+      },
+      "expected_output": {
+        "ok": false,
+        "message": "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.",
+        "details": {
+          "row_count": 20,
+          "missing_columns": [],
+          "invalid_values": [
+            {
+              "row": 1,
+              "column": "is_sportswear",
+              "value": "Yes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "input": {
+        "csv_text": "review_id,review,is_sportswear,is_apparel_product,brand,competitor_or_nike\nr001,\"a\",yes,YES,Nike,nike\nr002,\"a\",yes,yes,Nike,nike\nr003,\"a\",yes,yes,Nike,nike\nr004,\"a\",yes,yes,Nike,nike\nr005,\"a\",yes,yes,Nike,nike\nr006,\"a\",yes,yes,Nike,nike\nr007,\"a\",yes,yes,Nike,nike\nr008,\"a\",yes,yes,Nike,nike\nr009,\"a\",yes,yes,Nike,nike\nr010,\"a\",yes,yes,Nike,nike\nr011,\"a\",yes,yes,Nike,nike\nr012,\"a\",yes,yes,Nike,nike\nr013,\"a\",yes,yes,Nike,nike\nr014,\"a\",yes,yes,Nike,nike\nr015,\"a\",yes,yes,Nike,nike\nr016,\"a\",yes,yes,Nike,nike\nr017,\"a\",yes,yes,Nike,nike\nr018,\"a\",yes,yes,Nike,nike\nr019,\"a\",yes,yes,Nike,nike\nr020,\"a\",yes,yes,Nike,nike\n"
+      },
+      "expected_output": {
+        "ok": false,
+        "message": "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'YES' in is_apparel_product column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.",
+        "details": {
+          "row_count": 20,
+          "missing_columns": [],
+          "invalid_values": [
+            {
+              "row": 1,
+              "column": "is_apparel_product",
+              "value": "YES"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "input": {
+        "csv_text": "review_id,review,is_sportswear,is_apparel_product,brand,competitor_or_nike\nr001,\"a\",yes,yes,Nike,Nike\nr002,\"a\",yes,yes,Nike,nike\nr003,\"a\",yes,yes,Nike,nike\nr004,\"a\",yes,yes,Nike,nike\nr005,\"a\",yes,yes,Nike,nike\nr006,\"a\",yes,yes,Nike,nike\nr007,\"a\",yes,yes,Nike,nike\nr008,\"a\",yes,yes,Nike,nike\nr009,\"a\",yes,yes,Nike,nike\nr010,\"a\",yes,yes,Nike,nike\nr011,\"a\",yes,yes,Nike,nike\nr012,\"a\",yes,yes,Nike,nike\nr013,\"a\",yes,yes,Nike,nike\nr014,\"a\",yes,yes,Nike,nike\nr015,\"a\",yes,yes,Nike,nike\nr016,\"a\",yes,yes,Nike,nike\nr017,\"a\",yes,yes,Nike,nike\nr018,\"a\",yes,yes,Nike,nike\nr019,\"a\",yes,yes,Nike,nike\nr020,\"a\",yes,yes,Nike,nike\n"
+      },
+      "expected_output": {
+        "ok": false,
+        "message": "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Nike' in competitor_or_nike column\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.",
+        "details": {
+          "row_count": 20,
+          "missing_columns": [],
+          "invalid_values": [
+            {
+              "row": 1,
+              "column": "competitor_or_nike",
+              "value": "Nike"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "input": {
+        "csv_text": "review_id,review,is_sportswear,is_apparel_product,brand,competitor_or_nike\nr001,\"a\",yes,yes,Nike,nike\nr002,\"a\",yes,yes,Nike,nike\nr003,\"a\",yes,yes,Nike,nike\nr004,\"a\",yes,yes,Nike,nike\nr005,\"a\",yes,yes,Nike,nike\nr006,\"a\",yes,yes,Nike,nike\nr007,\"a\",yes,yes,Nike,nike\nr008,\"a\",yes,yes,Nike,nike\nr009,\"a\",yes,yes,Nike,nike\nr010,\"a\",yes,yes,Nike,nike\nr011,\"a\",yes,yes,Nike,nike\nr012,\"a\",yes,yes,Nike,nike\nr013,\"a\",yes,yes,Nike,nike\nr014,\"a\",yes,yes,Nike,nike\nr015,\"a\",yes,yes,Nike,nike\nr016,\"a\",yes,yes,Nike,nike\nr017,\"a\",yes,yes,Nike,nike\nr018,\"a\",yes,yes,Nike,nike\nr019,\"a\",yes,yes,Nike,nike\n"
+      },
+      "expected_output": {
+        "ok": false,
+        "message": "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Only 19 rows found, expected at least 20\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.",
+        "details": {
+          "row_count": 19,
+          "missing_columns": [],
+          "invalid_values": []
+        }
+      }
+    },
+    {
+      "input": {
+        "csv_text": "review_id,review,is_sportswear,is_apparel_product,brand,competitor_or_nike\nr001,\"a\",yes,yes,Nike,nike\nr002,\"a\",yes,yes,Nike,nike\nr003,\"a\",yes,yes,Nike,nike\nr004,\"a\",yes,yes,Nike,nike\nr005,\"a\",yes,yes,Nike,nike\nr006,\"a\",yes,yes,Nike,nike\nr007,\"a\",yes,yes,Nike,nike\nr008,\"a\",yes,yes,Nike,nike\nr009,\"a\",yes,yes,Nike,nike\nr010,\"a\",yes,yes,Nike,nike\nr011,\"a\",yes,yes,Nike,nike\nr012,\"a\",yes,yes,Nike,nike\nr013,\"a\",yes,yes,Nike,nike\nr014,\"a\",yes,yes,Nike,nike\nr015,\"a\",yes,yes,Nike,nike\nr016,\"a\",yes,yes,Nike,nike\nr017,\"a\",yes,yes,Nike,nike\nr018,\"a\",yes,yes,Nike,nike\nr019,\"a\",yes,yes,Nike,nike\nr020,\"a\",yes,yes,Nike,nike\nr021,\"a\",Yes,yes,Nike,nike\n"
+      },
+      "expected_output": {
+        "ok": false,
+        "message": "ERROR: Invalid processed reviews received from orchestrator.\n\nIssue: Found invalid value 'Yes' in is_sportswear column (must be lowercase 'yes')\n\nRequired format: CSV output from review_processor with all classification columns.\n\nCannot proceed with review analysis. Please provide corrected processed reviews.",
+        "details": {
+          "row_count": 21,
+          "missing_columns": [],
+          "invalid_values": [
+            {
+              "row": 21,
+              "column": "is_sportswear",
+              "value": "Yes"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "timeout_seconds": 120
+}

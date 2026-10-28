@@ -1,0 +1,153 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "评论数据预处理",
+  "run_id": "20261028T135030_ed5c6024",
+  "skills": [
+    {
+      "skill_id": "555ffad0-26e3-5408-a321-ea0963dca8e6",
+      "name": "评论子集筛选与品牌分组",
+      "description": "从已分类评论CSV中按 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\" 过滤，再按 competitor_or_nike 拆分为 Nike 与竞品两个子集，用于后续情感或计数分析前的数据准备。",
+      "skill_body": "接收已分类评论CSV，先校验所需列存在，再按 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\" 过滤，最后按 competitor_or_nike 拆分为 Nike 子集与竞品子集并输出。\n\n## Objective\n\n生成符合条件且按品牌归属分组的评论子集\n## Applicable Signals\n\n- 输入为 review_processor 输出的已分类评论CSV\n- CSV 含 review_id、review、is_sportswear、is_apparel_product、brand、competitor_or_nike 列\n- 下游需要 Nike 与竞品两个独立子集\n\n## Contraindications\n\n- 输入缺少所需分类列\n- 尚未完成评论分类\n\n## Intervention Moves\n\n- 校验所需分类列是否存在\n- 按 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\" 过滤\n- 按 competitor_or_nike 拆分为 nike 与 competitor 两个子集\n\n## Workflow Steps\n\n- 读取已分类评论CSV，确认包含 is_sportswear、is_apparel_product、competitor_or_nike 列\n- 过滤保留 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\" 的行\n- 在过滤结果中按 competitor_or_nike=\"nike\" 提取 Nike 子集\n- 在过滤结果中按 competitor_or_nike=\"competitor\" 提取竞品子集\n- 输出两个子集供后续情感或计数分析使用\n\n## Constraints\n\n- 过滤条件必须同时满足 is_sportswear=\"yes\" 与 is_apparel_product=\"yes\"\n- 分组仅依据 competitor_or_nike 列的 nike 与 competitor 取值\n\n## Cautions\n\n- competitor_or_nike 为 \"n/a\" 的行不进入任一子集\n- 缺少所需列时应停止并报告，而非猜测补全\n\n## Output Contract\n\n- 两个过滤后的评论子集（Nike 与竞品），均满足 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\"，并分别对应 competitor_or_nike=\"nike\" 与 \"competitor\"。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 已分类评论CSV，含 is_sportswear、is_apparel_product、competitor_or_nike 列\n- Therapist/Output: Nike 子集（is_sportswear=yes 且 is_apparel_product=yes 且 competitor_or_nike=nike）与竞品子集（同过滤条件且 competitor_or_nike=competitor）\n- Notes: competitor_or_nike=n/a 的行被排除",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "生成符合条件且按品牌归属分组的评论子集",
+      "domain": "运营数据处理",
+      "task_family": "评论数据预处理",
+      "method_family": "条件过滤与分组",
+      "stage": "数据准备",
+      "applicable_signals": [
+        "输入为 review_processor 输出的已分类评论CSV",
+        "CSV 含 review_id、review、is_sportswear、is_apparel_product、brand、competitor_or_nike 列",
+        "下游需要 Nike 与竞品两个独立子集"
+      ],
+      "contraindications": [
+        "输入缺少所需分类列",
+        "尚未完成评论分类"
+      ],
+      "intervention_moves": [
+        "校验所需分类列是否存在",
+        "按 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\" 过滤",
+        "按 competitor_or_nike 拆分为 nike 与 competitor 两个子集"
+      ],
+      "triggers": [
+        "已有含 is_sportswear、is_apparel_product、competitor_or_nike 列的评论CSV",
+        "需要分别分析 Nike 与竞品评论"
+      ],
+      "workflow_steps": [
+        "读取已分类评论CSV，确认包含 is_sportswear、is_apparel_product、competitor_or_nike 列",
+        "过滤保留 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\" 的行",
+        "在过滤结果中按 competitor_or_nike=\"nike\" 提取 Nike 子集",
+        "在过滤结果中按 competitor_or_nike=\"competitor\" 提取竞品子集",
+        "输出两个子集供后续情感或计数分析使用"
+      ],
+      "constraints": [
+        "过滤条件必须同时满足 is_sportswear=\"yes\" 与 is_apparel_product=\"yes\"",
+        "分组仅依据 competitor_or_nike 列的 nike 与 competitor 取值"
+      ],
+      "cautions": [
+        "competitor_or_nike 为 \"n/a\" 的行不进入任一子集",
+        "缺少所需列时应停止并报告，而非猜测补全"
+      ],
+      "output_contract": [
+        "两个过滤后的评论子集（Nike 与竞品），均满足 is_sportswear=\"yes\" 且 is_apparel_product=\"yes\"，并分别对应 competitor_or_nike=\"nike\" 与 \"competitor\"。"
+      ],
+      "examples": [
+        {
+          "input": "已分类评论CSV，含 is_sportswear、is_apparel_product、competitor_or_nike 列",
+          "output": "Nike 子集（is_sportswear=yes 且 is_apparel_product=yes 且 competitor_or_nike=nike）与竞品子集（同过滤条件且 competitor_or_nike=competitor）",
+          "notes": "competitor_or_nike=n/a 的行被排除"
+        }
+      ],
+      "tags": [
+        "评论数据预处理",
+        "条件过滤",
+        "分组",
+        "数据准备"
+      ],
+      "support_ids": [
+        "ab7318e5-1b3b-5cc9-8630-f8cc5bc415d8"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "9e190b16-be6f-5874-ad3c-6d9005eb0428"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|生成符合条件且按品牌归属分组的评论子集|运营数据处理|评论数据预处理|条件过滤与分组|数据准备|评论子集筛选与品牌分组",
+        "change_action": "create",
+        "llm_reason": "候选技能是独立的评论数据预处理能力（条件过滤+品牌分组），与同批的适用性判定、情感分类、条件计数技能职责不同，无冗余或冲突，可保留。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "2ea062a3-3518-42cb-b47e-7125bd82770c",
+      "entity_type": "skill",
+      "entity_id": "555ffad0-26e3-5408-a321-ea0963dca8e6",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能是独立的评论数据预处理能力（条件过滤+品牌分组），与同批的适用性判定、情感分类、条件计数技能职责不同，无冗余或冲突，可保留。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "555ffad0-26e3-5408-a321-ea0963dca8e6",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "ab7318e5-1b3b-5cc9-8630-f8cc5bc415d8"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "skill_id": "a02a90b6-242c-550c-95aa-f54fc00173b6",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批 peer 技能“事件时间窗效果应用与恢复规则”高度重叠：后者已完整覆盖 CLOSE_EDGE 的准入限制（阻止新车辆进入、允许已在边车辆继续行驶）及时间窗与恢复逻辑，单独保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "a02a90b6-242c-550c-95aa-f54fc00173b6",
+    "name": "CLOSE_EDGE 事件车辆准入限制规则",
+    "description": "在 CLOSE_EDGE 事件激活期间判定车辆能否进入受影响边：已在边上的车辆继续正常行驶，禁止任何新车辆进入；事件结束后恢复基线属性。",
+    "skill_body": "当 CLOSE_EDGE 事件处于激活状态且需要判定车辆能否进入某条边时，按以下规则执行：\n1. 确认事件类型为 CLOSE_EDGE（而非 REDUCE_CAPACITY）。\n2. 确认当前 tick 落在 [StartTick, EndTick) 区间内，即事件处于激活状态（EndTick 为排他边界）。\n3. 对已在受影响边上的车辆：允许其继续正常行驶，不强制移除或阻断。\n4. 对试图进入该边的新车辆：拒绝进入，保持其当前位置或排队状态。\n5. 当 t >= EndTick 后，边恢复基线属性（除非被其他活跃事件修改），准入限制解除。\n\n## Objective\n\n在边关闭期间正确限制新车辆进入，同时允许已有车辆通行\n## Applicable Signals\n\n- CLOSE_EDGE 事件激活\n- 车辆请求进入受影响边\n- 当前 tick 在 StartTick 与 EndTick 之间\n\n## Contraindications\n\n- 事件类型为 REDUCE_CAPACITY（应改用容量削减规则）\n- 事件尚未激活或已过期（t < StartTick 或 t >= EndTick）\n\n## Intervention Moves\n\n- 识别事件类型为 CLOSE_EDGE\n- 校验 tick 是否在激活区间内\n- 对已在边上的车辆放行\n- 对新进入车辆拒绝准入\n\n## Workflow Steps\n\n- 确认事件 EffectType 为 CLOSE_EDGE\n- 确认 StartTick <= t < EndTick\n- 对已在边上的车辆允许继续行驶\n- 对试图进入的新车辆拒绝准入\n- t >= EndTick 后解除限制并恢复基线属性\n\n## Constraints\n\n- 仅对 CLOSE_EDGE 事件生效\n- 已在边上的车辆不得被强制移除\n- EndTick 为排他边界\n\n## Cautions\n\n- 若同时存在其他活跃事件，恢复时需考虑其叠加影响\n- 不得将本规则套用于 REDUCE_CAPACITY 事件\n\n## Output Contract\n\n- 边关闭期间无新车辆进入且已有车辆正常通行；事件结束后边恢复基线属性\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: CLOSE_EDGE 事件激活，tick 在 [StartTick, EndTick) 内，车辆 A 已在边上，车辆 B 请求进入\n- Therapist/Output: 车辆 A 继续行驶，车辆 B 被拒绝进入\n- Notes: 已在边上的车辆放行，新车辆禁止准入",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在边关闭期间正确限制新车辆进入，同时允许已有车辆通行",
+    "domain": "交通仿真规则",
+    "task_family": "事件处理",
+    "method_family": "准入限制",
+    "stage": "Incident Resolution Phase",
+    "applicable_signals": [
+      "CLOSE_EDGE 事件激活",
+      "车辆请求进入受影响边",
+      "当前 tick 在 StartTick 与 EndTick 之间"
+    ],
+    "contraindications": [
+      "事件类型为 REDUCE_CAPACITY（应改用容量削减规则）",
+      "事件尚未激活或已过期（t < StartTick 或 t >= EndTick）"
+    ],
+    "intervention_moves": [
+      "识别事件类型为 CLOSE_EDGE",
+      "校验 tick 是否在激活区间内",
+      "对已在边上的车辆放行",
+      "对新进入车辆拒绝准入"
+    ],
+    "triggers": [
+      "CLOSE_EDGE 事件处于激活状态",
+      "需判定车辆能否进入某条边",
+      "Incident Resolution Phase 中处理道路封闭"
+    ],
+    "workflow_steps": [
+      "确认事件 EffectType 为 CLOSE_EDGE",
+      "确认 StartTick <= t < EndTick",
+      "对已在边上的车辆允许继续行驶",
+      "对试图进入的新车辆拒绝准入",
+      "t >= EndTick 后解除限制并恢复基线属性"
+    ],
+    "constraints": [
+      "仅对 CLOSE_EDGE 事件生效",
+      "已在边上的车辆不得被强制移除",
+      "EndTick 为排他边界"
+    ],
+    "cautions": [
+      "若同时存在其他活跃事件，恢复时需考虑其叠加影响",
+      "不得将本规则套用于 REDUCE_CAPACITY 事件"
+    ],
+    "output_contract": [
+      "边关闭期间无新车辆进入且已有车辆正常通行；事件结束后边恢复基线属性"
+    ],
+    "examples": [
+      {
+        "input": "CLOSE_EDGE 事件激活，tick 在 [StartTick, EndTick) 内，车辆 A 已在边上，车辆 B 请求进入",
+        "output": "车辆 A 继续行驶，车辆 B 被拒绝进入",
+        "notes": "已在边上的车辆放行，新车辆禁止准入"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "事件处理",
+      "准入限制",
+      "道路封闭"
+    ],
+    "support_ids": [
+      "98d3ab25-2aff-599f-a22f-8f7228a75ca7"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "97e13b69-a908-5802-a697-6285eb960eba"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|在边关闭期间正确限制新车辆进入，同时允许已有车辆通行|交通仿真规则|事件处理|准入限制|incident resolution phase|close_edge 事件车辆准入限制规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,864 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "数据校验",
+  "run_id": "20261028T130521_4788ec04",
+  "skills": [
+    {
+      "skill_id": "3697a04c-0fec-56b7-8448-1c44e3349e5e",
+      "name": "Before 校验器安全实现",
+      "description": "在 Pydantic 中实现 before 模式校验器：在内部解析与校验之前处理原始输入，并避免在校验失败前直接修改值，防止变更值流入其他校验器（如 unions）。适用于需要处理原始输入且校验器可能抛出校验错误的场景。",
+      "skill_body": "实现 before 校验器时，先确认需求必须在 Pydantic 内部解析前处理原始输入；函数接收原始输入（理论上可为任意对象），需自行处理类型不确定性。若后续可能抛出校验错误，避免直接原地修改值，改为返回新值或在校验通过后再变更，以防变更值流入其他校验器（如 unions）。返回的值将由 Pydantic 依据类型注解再次校验。\n\n## Objective\n\n安全地实现 before 校验器，避免副作用污染后续校验\n## Applicable Signals\n\n- 需要绕过或先于 Pydantic 内部解析与校验（如 str 到 int 的强制转换）处理输入\n- 校验逻辑需面对任意原始对象类型\n- 校验函数内可能抛出校验错误且涉及值变更\n\n## Contraindications\n\n- after 校验器已能满足需求\n- 无需处理原始输入类型\n\n## Intervention Moves\n\n- 确认使用 before 模式而非默认 after 模式\n- 在函数内处理原始输入的类型不确定性\n- 避免在校验失败前直接原地修改值\n- 返回新值交由类型注解再次校验\n\n## Workflow Steps\n\n- 判断是否必须在 Pydantic 内部解析前处理原始输入，否则改用 after 校验器\n- 编写 before 校验器函数，接收原始输入并处理其类型不确定性\n- 若函数后续可能抛出校验错误，避免直接原地修改值，改为返回新值\n- 返回结果，由 Pydantic 依据类型注解再次校验\n\n## Constraints\n\n- before 校验器运行于 Pydantic 内部解析与校验之前\n- 返回的值必须能通过类型注解的再次校验\n- 避免在校验失败前直接修改值，以防变更值流入其他校验器（如 unions）\n\n## Cautions\n\n- before 校验器比 after 校验器更灵活，但需处理任意原始输入对象\n- 在 unions 场景下，被修改的值可能传递给其他校验器，需格外谨慎\n\n## Output Contract\n\n- 返回经类型注解再次校验的值的 before 校验器函数\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要在 Pydantic 解析前处理原始输入，且校验器可能抛出校验错误\n- Therapist/Output: 实现 before 校验器：处理原始输入，避免在校验失败前原地修改值，返回新值交由类型注解再次校验\n- Notes: 若无需处理原始输入，应改用 after 校验器",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "安全地实现 before 校验器，避免副作用污染后续校验",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "before 校验器实现",
+      "stage": "实现",
+      "applicable_signals": [
+        "需要绕过或先于 Pydantic 内部解析与校验（如 str 到 int 的强制转换）处理输入",
+        "校验逻辑需面对任意原始对象类型",
+        "校验函数内可能抛出校验错误且涉及值变更"
+      ],
+      "contraindications": [
+        "after 校验器已能满足需求",
+        "无需处理原始输入类型"
+      ],
+      "intervention_moves": [
+        "确认使用 before 模式而非默认 after 模式",
+        "在函数内处理原始输入的类型不确定性",
+        "避免在校验失败前直接原地修改值",
+        "返回新值交由类型注解再次校验"
+      ],
+      "triggers": [
+        "需要在 Pydantic 内部解析前处理原始输入",
+        "校验器可能抛出校验错误且涉及值变更"
+      ],
+      "workflow_steps": [
+        "判断是否必须在 Pydantic 内部解析前处理原始输入，否则改用 after 校验器",
+        "编写 before 校验器函数，接收原始输入并处理其类型不确定性",
+        "若函数后续可能抛出校验错误，避免直接原地修改值，改为返回新值",
+        "返回结果，由 Pydantic 依据类型注解再次校验"
+      ],
+      "constraints": [
+        "before 校验器运行于 Pydantic 内部解析与校验之前",
+        "返回的值必须能通过类型注解的再次校验",
+        "避免在校验失败前直接修改值，以防变更值流入其他校验器（如 unions）"
+      ],
+      "cautions": [
+        "before 校验器比 after 校验器更灵活，但需处理任意原始输入对象",
+        "在 unions 场景下，被修改的值可能传递给其他校验器，需格外谨慎"
+      ],
+      "output_contract": [
+        "返回经类型注解再次校验的值的 before 校验器函数"
+      ],
+      "examples": [
+        {
+          "input": "需要在 Pydantic 解析前处理原始输入，且校验器可能抛出校验错误",
+          "output": "实现 before 校验器：处理原始输入，避免在校验失败前原地修改值，返回新值交由类型注解再次校验",
+          "notes": "若无需处理原始输入，应改用 after 校验器"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "before-validator",
+        "数据校验",
+        "副作用防护"
+      ],
+      "support_ids": [
+        "1357f09a-b5c0-5879-b48e-cea9442a8913"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "92c156c7-926f-502c-a733-28d304319900"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.65,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|安全地实现 before 校验器，避免副作用污染后续校验|pydantic|数据校验|before 校验器实现|实现|before 校验器安全实现",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "3f2908c2-5e45-53d0-8741-3e78c412be38",
+      "name": "Pydantic 校验器执行顺序控制",
+      "description": "按 Pydantic 规定的顺序组织字段校验器与模型校验器：字段校验先于模型校验，before 模式先于 after 模式，确保校验逻辑的依赖关系正确。适用于模型中存在多个校验器或校验逻辑依赖其他字段已校验值的设计场景。",
+      "skill_body": "在设计或审查 Pydantic 模型校验器时，先梳理各校验器的依赖关系，再按 Pydantic 执行顺序规则安排：字段校验器先于模型校验器执行；同一层级内 before 模式先于 after 模式执行。若某校验逻辑依赖其他字段已校验后的值，应将其放在模型校验器或 after 模式中；若需要处理原始输入，应使用 before 模式并注意原始输入类型不确定。确认顺序后检查依赖关系是否成立。\n\n## Objective\n\n正确安排多个校验器的执行顺序\n## Applicable Signals\n\n- 模型中同时存在字段校验器与模型校验器\n- 校验器之间或校验器与字段之间存在数据依赖\n- 校验器使用 before 或 after 模式且需要确定执行先后\n\n## Contraindications\n\n- 只有一个独立校验器且无顺序依赖\n- 校验器之间不存在任何数据或执行依赖\n\n## Intervention Moves\n\n- 识别每个校验器的依赖对象与所需输入状态\n- 按字段校验先于模型校验的规则排列\n- 在同一层级内按 before 先于 after 的规则排列\n- 对依赖已校验值的逻辑改用模型校验器或 after 模式\n- 对需要处理原始输入的逻辑使用 before 模式并处理类型不确定性\n\n## Workflow Steps\n\n- 列出模型中所有字段校验器与模型校验器\n- 标注每个校验器的输入依赖（原始输入或已校验值）\n- 按字段校验先于模型校验排序\n- 在同一层级内按 before 先于 after 排序\n- 验证排序后各校验器的依赖关系成立\n\n## Constraints\n\n- 字段校验器先于模型校验器执行\n- before 模式先于 after 模式执行\n- 依赖已校验值的逻辑不得放在 before 模式中\n\n## Cautions\n\n- before 模式接收原始输入，类型不确定，需处理所有可能的输入类型\n- 即使 before 校验器对输入做了转换，Pydantic 仍会按声明类型执行校验\n\n## Output Contract\n\n- 校验器顺序符合 Pydantic 执行规则且依赖关系正确的模型设计\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 模型中有字段校验器与依赖其他字段已校验值的模型校验器\n- Therapist/Output: 将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行\n- Notes: 字段校验先于模型校验",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "正确安排多个校验器的执行顺序",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "校验器排序",
+      "stage": "设计",
+      "applicable_signals": [
+        "模型中同时存在字段校验器与模型校验器",
+        "校验器之间或校验器与字段之间存在数据依赖",
+        "校验器使用 before 或 after 模式且需要确定执行先后"
+      ],
+      "contraindications": [
+        "只有一个独立校验器且无顺序依赖",
+        "校验器之间不存在任何数据或执行依赖"
+      ],
+      "intervention_moves": [
+        "识别每个校验器的依赖对象与所需输入状态",
+        "按字段校验先于模型校验的规则排列",
+        "在同一层级内按 before 先于 after 的规则排列",
+        "对依赖已校验值的逻辑改用模型校验器或 after 模式",
+        "对需要处理原始输入的逻辑使用 before 模式并处理类型不确定性"
+      ],
+      "triggers": [
+        "模型中有多个字段校验器和模型校验器",
+        "校验逻辑依赖其他字段已校验后的值",
+        "需要确定 before 与 after 校验器的相对执行位置"
+      ],
+      "workflow_steps": [
+        "列出模型中所有字段校验器与模型校验器",
+        "标注每个校验器的输入依赖（原始输入或已校验值）",
+        "按字段校验先于模型校验排序",
+        "在同一层级内按 before 先于 after 排序",
+        "验证排序后各校验器的依赖关系成立"
+      ],
+      "constraints": [
+        "字段校验器先于模型校验器执行",
+        "before 模式先于 after 模式执行",
+        "依赖已校验值的逻辑不得放在 before 模式中"
+      ],
+      "cautions": [
+        "before 模式接收原始输入，类型不确定，需处理所有可能的输入类型",
+        "即使 before 校验器对输入做了转换，Pydantic 仍会按声明类型执行校验"
+      ],
+      "output_contract": [
+        "校验器顺序符合 Pydantic 执行规则且依赖关系正确的模型设计"
+      ],
+      "examples": [
+        {
+          "input": "模型中有字段校验器与依赖其他字段已校验值的模型校验器",
+          "output": "将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行",
+          "notes": "字段校验先于模型校验"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "validator",
+        "ordering",
+        "validation"
+      ],
+      "support_ids": [
+        "7346aadc-b010-5048-980e-caf4c4da45d8"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "d581d03f-7f0b-5bd8-bfce-f0f933b2298e"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|正确安排多个校验器的执行顺序|pydantic|数据校验|校验器排序|设计|pydantic 校验器执行顺序控制",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "bfefe7d8-3421-5458-9efa-0bc78f7f439d",
+      "name": "Pydantic 校验错误抛出规范",
+      "description": "在校验器内检测到非法输入时，通过抛出 ValueError 或 PydanticCustomError 报告校验失败，使 Pydantic 将其包装为结构化 ValidationError 并附带错误类型与输入信息。适用于需要拒绝非法输入或自定义错误消息/错误类型的场景。",
+      "skill_body": "当校验器判定输入非法时，不要返回布尔值或静默修正，而应抛出异常：简单场景抛出 ValueError 并给出清晰消息；需要自定义错误类型或结构化上下文时抛出 PydanticCustomError。抛出后由 Pydantic 统一包装为 ValidationError，调用方据此获得结构化错误信息。仅用于校验类失败，系统级异常不应以此方式报告。\n\n## Objective\n\n在校验失败时产生结构化、可读的校验错误\n## Applicable Signals\n\n- 校验器内已判定输入不满足约束\n- 需要向调用方提供明确的错误类型与输入值\n- 默认错误消息不足以表达业务含义\n\n## Contraindications\n\n- 校验通过、无需报错时不应抛出异常\n- 需要抛出非校验类异常（如系统错误、IO 错误）时不应使用本技能\n\n## Intervention Moves\n\n- 在非法分支抛出 ValueError 并附清晰消息\n- 需要自定义错误类型时抛出 PydanticCustomError\n- 依赖 Pydantic 将异常包装为 ValidationError，不自行构造错误对象\n\n## Workflow Steps\n\n- 在校验器逻辑中判断输入是否满足约束\n- 若不满足，选择 ValueError（简单消息）或 PydanticCustomError（自定义类型/上下文）\n- 抛出异常并给出可读的错误消息\n- 由 Pydantic 包装为 ValidationError 返回给调用方\n\n## Constraints\n\n- 仅在校验失败分支抛出异常\n- 错误消息应清晰可读，便于定位问题\n- 不自行构造或吞掉 ValidationError\n\n## Cautions\n\n- 抛出非校验类异常不会被包装为 ValidationError，可能破坏调用方错误处理\n- 错误消息应避免泄露敏感输入细节\n\n## Output Contract\n\n- 抛出 ValueError 或 PydanticCustomError，并被 Pydantic 包装为结构化 ValidationError，包含错误类型与输入信息\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 校验器检测到输入无法解析为整数\n- Therapist/Output: 抛出 ValueError，Pydantic 包装为 ValidationError，错误类型为 int_parsing 并附带输入值\n- Notes: 错误消息应说明期望类型与实际输入",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在校验失败时产生结构化、可读的校验错误",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "错误报告",
+      "stage": "实现",
+      "applicable_signals": [
+        "校验器内已判定输入不满足约束",
+        "需要向调用方提供明确的错误类型与输入值",
+        "默认错误消息不足以表达业务含义"
+      ],
+      "contraindications": [
+        "校验通过、无需报错时不应抛出异常",
+        "需要抛出非校验类异常（如系统错误、IO 错误）时不应使用本技能"
+      ],
+      "intervention_moves": [
+        "在非法分支抛出 ValueError 并附清晰消息",
+        "需要自定义错误类型时抛出 PydanticCustomError",
+        "依赖 Pydantic 将异常包装为 ValidationError，不自行构造错误对象"
+      ],
+      "triggers": [
+        "校验器检测到非法输入需要拒绝",
+        "需要自定义错误消息或错误类型",
+        "希望校验失败以结构化 ValidationError 形式暴露给调用方"
+      ],
+      "workflow_steps": [
+        "在校验器逻辑中判断输入是否满足约束",
+        "若不满足，选择 ValueError（简单消息）或 PydanticCustomError（自定义类型/上下文）",
+        "抛出异常并给出可读的错误消息",
+        "由 Pydantic 包装为 ValidationError 返回给调用方"
+      ],
+      "constraints": [
+        "仅在校验失败分支抛出异常",
+        "错误消息应清晰可读，便于定位问题",
+        "不自行构造或吞掉 ValidationError"
+      ],
+      "cautions": [
+        "抛出非校验类异常不会被包装为 ValidationError，可能破坏调用方错误处理",
+        "错误消息应避免泄露敏感输入细节"
+      ],
+      "output_contract": [
+        "抛出 ValueError 或 PydanticCustomError，并被 Pydantic 包装为结构化 ValidationError，包含错误类型与输入信息"
+      ],
+      "examples": [
+        {
+          "input": "校验器检测到输入无法解析为整数",
+          "output": "抛出 ValueError，Pydantic 包装为 ValidationError，错误类型为 int_parsing 并附带输入值",
+          "notes": "错误消息应说明期望类型与实际输入"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "validation",
+        "error-reporting",
+        "validator"
+      ],
+      "support_ids": [
+        "acfd3b75-9212-524a-adc8-758422111c35"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "615d4eed-41bd-56d7-ad88-d9d997902ae9"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在校验失败时产生结构化、可读的校验错误|pydantic|数据校验|错误报告|实现|pydantic 校验错误抛出规范",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "4045e587-c93f-5cf1-96d8-34f912827e83",
+      "name": "Pydantic 模型级跨字段校验器",
+      "description": "使用 model_validator(mode='after') 在模型实例化后校验同一模型内多个字段之间的一致性，不一致时抛出 ValueError。适用于字段级约束无法表达的跨字段逻辑。",
+      "skill_body": "在模型定义中声明一个 mode='after' 的 model_validator，接收已实例化的模型自身，比较相关字段值；若不一致则抛出 ValueError 并给出清晰错误信息；校验通过时返回 self。\n\n## Objective\n\n在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误\n## Applicable Signals\n\n- 模型包含两个及以上需相互比较的字段\n- 单字段约束无法覆盖的依赖关系\n\n## Contraindications\n\n- 仅需单字段约束时\n- 需要在实例化前处理原始输入时（应使用 before 校验器）\n\n## Intervention Moves\n\n- 声明 @model_validator(mode='after') 方法\n- 在方法内比较相关字段值\n- 不一致时 raise ValueError 并说明原因\n- 校验通过时 return self\n\n## Workflow Steps\n\n- 确认跨字段一致性需求无法由字段级约束表达\n- 在模型类中定义 mode='after' 的 model_validator 方法\n- 在方法内读取并比较相关字段\n- 不一致时抛出 ValueError 并给出明确错误信息\n- 校验通过时返回 self\n\n## Constraints\n\n- after 校验器在模型实例化后运行，操作的是已解析的字段值\n- 校验失败必须抛出 ValueError 以触发验证错误\n\n## Cautions\n\n- before 校验器处理原始输入，若在 before 中直接修改值后又抛出验证错误，被修改的值可能传递给其他校验器（如使用 unions 时），应避免\n\n## Output Contract\n\n- 返回 self 的 after 模型校验器，校验失败时抛出 ValueError\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n- Therapist/Output: @model_validator(mode='after')\ndef check_passwords_match(self) -> Self:\n    if self.password != self.password_repeat:\n        raise ValueError('Passwords do not match')\n    return self\n- Notes: 跨字段一致性校验示例",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+      "parent_candidate_ids": [
+        "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+        "4641701b-2dc0-5429-a380-d65c1c0ec55d"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.72,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "模型校验器",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "模型包含两个及以上需相互比较的字段",
+        "单字段约束无法覆盖的依赖关系"
+      ],
+      "contraindications": [
+        "仅需单字段约束时",
+        "需要在实例化前处理原始输入时（应使用 before 校验器）"
+      ],
+      "intervention_moves": [
+        "声明 @model_validator(mode='after') 方法",
+        "在方法内比较相关字段值",
+        "不一致时 raise ValueError 并说明原因",
+        "校验通过时 return self"
+      ],
+      "triggers": [
+        "需要比较同一模型内多个字段的值",
+        "字段级约束无法表达跨字段逻辑",
+        "需要在模型实例化后校验字段一致性"
+      ],
+      "workflow_steps": [
+        "确认跨字段一致性需求无法由字段级约束表达",
+        "在模型类中定义 mode='after' 的 model_validator 方法",
+        "在方法内读取并比较相关字段",
+        "不一致时抛出 ValueError 并给出明确错误信息",
+        "校验通过时返回 self"
+      ],
+      "constraints": [
+        "after 校验器在模型实例化后运行，操作的是已解析的字段值",
+        "校验失败必须抛出 ValueError 以触发验证错误"
+      ],
+      "cautions": [
+        "before 校验器处理原始输入，若在 before 中直接修改值后又抛出验证错误，被修改的值可能传递给其他校验器（如使用 unions 时），应避免"
+      ],
+      "output_contract": [
+        "返回 self 的 after 模型校验器，校验失败时抛出 ValueError"
+      ],
+      "examples": [
+        {
+          "input": "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str",
+          "output": "@model_validator(mode='after')\ndef check_passwords_match(self) -> Self:\n    if self.password != self.password_repeat:\n        raise ValueError('Passwords do not match')\n    return self",
+          "notes": "跨字段一致性校验示例"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "model_validator",
+        "跨字段校验",
+        "数据校验"
+      ],
+      "support_ids": [
+        "f7fca6c2-0c39-5b21-9a0a-5ad91201fdeb"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "dfa65445-0c8f-5133-ae69-5eedd6bba9af"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误|pydantic|数据校验|模型校验器|模型定义|pydantic 模型级跨字段校验器",
+        "change_action": "create",
+        "llm_reason": "候选技能聚焦于使用 model_validator(mode='after') 进行跨字段一致性校验，与同批次的错误抛出规范、before 校验器实现、字段校验器通配符配置在方法族和阶段上均不同，无冗余；支持证据充分且无冲突，保留为新微技能。",
+        "parent_skill_id": "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+        "parent_candidate_ids": [
+          "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+          "4641701b-2dc0-5429-a380-d65c1c0ec55d"
+        ],
+        "hierarchy_confidence": 0.72,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "9eb16e27-a3e6-5b09-a407-854038ca54a2",
+      "name": "Pydantic before 校验器安全变异约束",
+      "description": "在编写或审查 Pydantic before 校验器时，约束对原始输入的直接变异行为：若校验器后续可能抛出验证错误，应避免直接变异值，以防变异后的值经 union 等路径传递给其他校验器产生副作用。",
+      "skill_body": "在编写或审查 before 校验器时执行以下约束检查：\n1. 确认当前校验器为 before 模式（在模型实例化之前运行，处理原始输入）。\n2. 判断校验器内是否存在后续可能抛出验证错误的路径。\n3. 若存在该路径，避免直接变异输入值；改为基于副本或返回新值，确保变异不会泄漏到其他校验器（尤其是 union 场景）。\n4. 若确需变异且不会抛出错误，方可就地修改，并说明理由。\n5. 输出符合约束的 before 校验器实现或审查结论。\n\n## Objective\n\n防止 before 校验器中不安全的值变异导致副作用传播\n## Applicable Signals\n\n- 正在编写 before 校验器\n- 校验器内可能后续抛出验证错误\n- 输入值可能经 union 传递给其他校验器\n\n## Contraindications\n\n- after 校验器中已实例化的安全场景\n- 校验器不会抛出验证错误且无 union 传播风险的就地变异\n\n## Intervention Moves\n\n- 识别 before 校验器中的错误抛出路径\n- 避免直接变异原始输入值\n- 改用副本或返回新值以隔离变异\n- 在 union 场景下确认变异不会泄漏\n\n## Workflow Steps\n\n- 确认校验器为 before 模式\n- 检查是否存在后续抛出验证错误的路径\n- 若存在则避免直接变异输入值，改用副本或返回新值\n- 在 union 场景下验证变异不会传递给其他校验器\n- 输出符合约束的实现或审查结论\n\n## Constraints\n\n- 仅在 before 校验器场景应用\n- 存在后续错误抛出路径时不得直接变异原始输入\n- 需考虑 union 下变异值可能传递给其他校验器\n\n## Cautions\n\n- before 校验器处理的是任意原始输入，需谨慎对待类型\n- 就地变异在 union 场景下可能产生难以追踪的副作用\n\n## Output Contract\n\n- 未发生不安全变异的 before 校验器实现，或针对现有 before 校验器的变异安全审查结论",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止 before 校验器中不安全的值变异导致副作用传播",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "校验器约束",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "正在编写 before 校验器",
+        "校验器内可能后续抛出验证错误",
+        "输入值可能经 union 传递给其他校验器"
+      ],
+      "contraindications": [
+        "after 校验器中已实例化的安全场景",
+        "校验器不会抛出验证错误且无 union 传播风险的就地变异"
+      ],
+      "intervention_moves": [
+        "识别 before 校验器中的错误抛出路径",
+        "避免直接变异原始输入值",
+        "改用副本或返回新值以隔离变异",
+        "在 union 场景下确认变异不会泄漏"
+      ],
+      "triggers": [
+        "编写 before 校验器",
+        "审查 before 校验器中的值变异",
+        "校验器内存在后续可能抛出验证错误的路径",
+        "使用 union 且涉及 before 校验器变异"
+      ],
+      "workflow_steps": [
+        "确认校验器为 before 模式",
+        "检查是否存在后续抛出验证错误的路径",
+        "若存在则避免直接变异输入值，改用副本或返回新值",
+        "在 union 场景下验证变异不会传递给其他校验器",
+        "输出符合约束的实现或审查结论"
+      ],
+      "constraints": [
+        "仅在 before 校验器场景应用",
+        "存在后续错误抛出路径时不得直接变异原始输入",
+        "需考虑 union 下变异值可能传递给其他校验器"
+      ],
+      "cautions": [
+        "before 校验器处理的是任意原始输入，需谨慎对待类型",
+        "就地变异在 union 场景下可能产生难以追踪的副作用"
+      ],
+      "output_contract": [
+        "未发生不安全变异的 before 校验器实现，或针对现有 before 校验器的变异安全审查结论"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "validator",
+        "before-validator",
+        "mutation-safety",
+        "union"
+      ],
+      "support_ids": [
+        "43d03a28-6070-5e7c-a6c6-78da780d4613"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "f0850c7e-9033-500b-b37f-b5cf8a9ea3f3"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||safety_rule|micro|safety_rule_node|防止 before 校验器中不安全的值变异导致副作用传播|pydantic|数据校验|校验器约束|模型定义|pydantic before 校验器安全变异约束",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "faa883e0-e41a-5e19-868e-c3c8400b4db4",
+      "name": "字段校验器访问已校验数据",
+      "description": "在字段校验器中通过 ValidationInfo.data 读取已校验的其他字段值，用于跨字段依赖校验，可作为 after 模型校验器的替代方案。",
+      "skill_body": "当需要在字段级校验中依赖其他已校验字段的值时，为字段校验器添加 ValidationInfo 参数，通过 info.data 读取已校验数据并据此完成校验；若依赖的字段尚未校验，则不要使用此方式。\n\n## Objective\n\n在字段级校验中安全访问已校验数据以完成跨字段校验\n## Applicable Signals\n\n- 字段校验逻辑需要读取其他字段的已校验值\n- 考虑用字段校验器替代 after 模型校验器\n\n## Contraindications\n\n- 需要访问尚未校验的字段\n- 校验逻辑与单字段无关且更适合模型级校验\n\n## Intervention Moves\n\n- 为字段校验器函数增加 ValidationInfo 参数\n- 通过 info.data 属性读取已校验数据\n- 基于已校验数据执行跨字段校验并返回结果\n\n## Workflow Steps\n\n- 确认目标字段依赖的其他字段在校验顺序中已先完成校验\n- 在字段校验器签名中加入 ValidationInfo 参数\n- 通过 info.data 读取已校验数据并执行校验逻辑\n- 返回校验结果或抛出校验错误\n\n## Constraints\n\n- 仅能访问已校验的数据，不能依赖尚未校验的字段\n\n## Cautions\n\n- 依赖字段的校验顺序会影响 info.data 中可用数据，需确认顺序正确\n\n## Output Contract\n\n- 字段校验器正确读取 ValidationInfo.data 并返回校验结果",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在字段级校验中安全访问已校验数据以完成跨字段校验",
+      "domain": "pydantic",
+      "task_family": "数据校验",
+      "method_family": "字段校验器",
+      "stage": "校验执行",
+      "applicable_signals": [
+        "字段校验逻辑需要读取其他字段的已校验值",
+        "考虑用字段校验器替代 after 模型校验器"
+      ],
+      "contraindications": [
+        "需要访问尚未校验的字段",
+        "校验逻辑与单字段无关且更适合模型级校验"
+      ],
+      "intervention_moves": [
+        "为字段校验器函数增加 ValidationInfo 参数",
+        "通过 info.data 属性读取已校验数据",
+        "基于已校验数据执行跨字段校验并返回结果"
+      ],
+      "triggers": [
+        "需要在字段校验器中依赖其他已校验字段的值",
+        "希望用字段校验器替代 after 模型校验器"
+      ],
+      "workflow_steps": [
+        "确认目标字段依赖的其他字段在校验顺序中已先完成校验",
+        "在字段校验器签名中加入 ValidationInfo 参数",
+        "通过 info.data 读取已校验数据并执行校验逻辑",
+        "返回校验结果或抛出校验错误"
+      ],
+      "constraints": [
+        "仅能访问已校验的数据，不能依赖尚未校验的字段"
+      ],
+      "cautions": [
+        "依赖字段的校验顺序会影响 info.data 中可用数据，需确认顺序正确"
+      ],
+      "output_contract": [
+        "字段校验器正确读取 ValidationInfo.data 并返回校验结果"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "字段校验",
+        "跨字段校验",
+        "ValidationInfo"
+      ],
+      "support_ids": [
+        "05fba65e-8e32-5890-9b0e-cd585a29238e"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "0964dd22-67e5-50b5-a61b-23f0227b9dbe"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在字段级校验中安全访问已校验数据以完成跨字段校验|pydantic|数据校验|字段校验器|校验执行|字段校验器访问已校验数据",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "4fd099b3-51d0-41e2-b51a-70e89bfd428f",
+      "entity_type": "skill",
+      "entity_id": "3697a04c-0fec-56b7-8448-1c44e3349e5e",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3697a04c-0fec-56b7-8448-1c44e3349e5e",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "1357f09a-b5c0-5879-b48e-cea9442a8913"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "be228cf7-1dbe-4f3c-a6a6-3de10c6cd8d4",
+      "entity_type": "skill",
+      "entity_id": "3f2908c2-5e45-53d0-8741-3e78c412be38",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3f2908c2-5e45-53d0-8741-3e78c412be38",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "7346aadc-b010-5048-980e-caf4c4da45d8"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "f97c6b9d-5f65-4528-89b8-2decc5d84bf4",
+      "entity_type": "skill",
+      "entity_id": "bfefe7d8-3421-5458-9efa-0bc78f7f439d",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "bfefe7d8-3421-5458-9efa-0bc78f7f439d",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "acfd3b75-9212-524a-adc8-758422111c35"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "c2852f07-a18e-4e3e-bfb2-fbf876959acd",
+      "entity_type": "skill",
+      "entity_id": "4045e587-c93f-5cf1-96d8-34f912827e83",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能聚焦于使用 model_validator(mode='after') 进行跨字段一致性校验，与同批次的错误抛出规范、before 校验器实现、字段校验器通配符配置在方法族和阶段上均不同，无冗余；支持证据充分且无冲突，保留为新微技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "4045e587-c93f-5cf1-96d8-34f912827e83",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "f7fca6c2-0c39-5b21-9a0a-5ad91201fdeb"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "33ff4d7d-d061-4fd3-bd38-c33540706f1a",
+      "entity_type": "skill",
+      "entity_id": "9eb16e27-a3e6-5b09-a407-854038ca54a2",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "9eb16e27-a3e6-5b09-a407-854038ca54a2",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "43d03a28-6070-5e7c-a6c6-78da780d4613"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "4cc915d4-a1fd-4daf-b208-bd853972ee4c",
+      "entity_type": "skill",
+      "entity_id": "faa883e0-e41a-5e19-868e-c3c8400b4db4",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "faa883e0-e41a-5e19-868e-c3c8400b4db4",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "05fba65e-8e32-5890-9b0e-cd585a29238e"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

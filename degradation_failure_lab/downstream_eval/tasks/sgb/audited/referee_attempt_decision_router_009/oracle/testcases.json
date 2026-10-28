@@ -1,0 +1,419 @@
+{
+  "task_id": "referee_attempt_decision_router_009",
+  "test_id": "tc_009",
+  "setup_code": "import math\nimport numpy as np",
+  "function_name": "solve",
+  "solution_code": "def solve(input_data):\n    \"\"\"Independent side-referee decision + routing card formatter.\n\n    Document-specific constants and precedence are hardcoded per provided document.\n    \"\"\"\n\n    # --- Extract ---\n    position = input_data.get('position')\n    platform = input_data.get('platform')\n    event = input_data.get('event')\n    attempt = int(input_data.get('attempt'))\n    lifter = input_data.get('lifter')\n    ruleset_hint = (input_data.get('ruleset_hint') or '').lower()\n    obs = input_data.get('observations') or {}\n\n    # --- Document constants / precedence ---\n    # System Context: independent decision; ignore bias cues; immediate signaling.\n    RECIPIENT = 'Tournament Director'  # Artifact 8\n    SUBMISSION = 'Immediate after attempt conclusion'  # Artifact 8\n\n    # Bench: any downward movement of the whole bar during ascent is a fail. (Artifact 3)\n    # Q4 Bulletin: supersedes earlier exceptions; no soft lock accepted; buttocks up is fail; spotter contact after Start voids unless directed. (Q4 Artifact 2)\n    # Squat: depth requires hip crease lower than top of knees; foot movement after squat command and before rack is fail. (Q2 Artifact 1; Q3 Artifact 2)\n\n    # Motion thresholds: treat any positive reported dip as downward movement.\n    # (Document gives qualitative rule; artifacts show mm/cm; we convert and use >0.)\n\n    def get_downward_mm(bar_dict):\n        if not isinstance(bar_dict, dict):\n            return 0.0\n        mm = 0.0\n        if 'downward_during_ascent_mm' in bar_dict and bar_dict['downward_during_ascent_mm'] is not None:\n            mm = float(bar_dict['downward_during_ascent_mm'])\n        elif 'downward_during_ascent_cm' in bar_dict and bar_dict['downward_during_ascent_cm'] is not None:\n            mm = float(bar_dict['downward_during_ascent_cm']) * 10.0\n        elif bar_dict.get('dip_detected') is True:\n            mm = 1.0\n        return mm\n\n    # --- Decide governing rule interpretation ---\n    # If hint mentions a superseding bulletin / latest / rev, apply strict lockout (no soft lock).\n    # If hint is older-only, still apply strict lockout when bulletin is indicated by the document scenario.\n    strict_bench_lockout = True  # Q4 Artifact 2 supersedes earlier exceptions.\n\n    # --- Evaluate faults ---\n    decision = 'White'\n    reason = ''\n\n    commands = obs.get('commands') or {}\n    bar = obs.get('bar') or {}\n    lockout = obs.get('lockout') or {}\n    body = obs.get('body_contact') or {}\n    feet = obs.get('feet') or {}\n    depth = obs.get('squat_depth') or {}\n    spotter = obs.get('spotter') or {}\n\n    # Command faults (Artifact 3: must wait for commands)\n    if event == 'Bench':\n        if commands.get('waited_for_start') is False or commands.get('waited_for_press') is False or commands.get('waited_for_rack') is False:\n            decision, reason = 'Red', 'Command fault'\n    elif event == 'Squat':\n        # Squat command is implicit in observations schema; if provided and false, treat as command fault.\n        if commands.get('waited_for_start') is False:\n            decision, reason = 'Red', 'Command fault'\n\n    # Spotter contact rule for bench (Q4 Artifact 2)\n    if decision == 'White' and event == 'Bench':\n        if spotter.get('bar_touched_after_start') is True and spotter.get('touch_directed_by_center') is not True:\n            decision, reason = 'Red', 'Other (brief)'\n\n    # Bench technical faults\n    if decision == 'White' and event == 'Bench':\n        # Downward movement during press (Artifact 3)\n        if get_downward_mm(bar) > 0.0:\n            decision, reason = 'Red', 'Downward bar movement during press'\n        # Body contact faults (Artifact 3 + Q4 Artifact 2 emphasis)\n        elif body.get('buttocks_up') is True or body.get('head_up') is True or body.get('shoulders_contact') is False:\n            decision, reason = 'Red', 'Buttocks/feet/head/shoulders position fault'\n        # Feet must remain flat; changing position is a fault category in routing card (Artifact 3 + 8)\n        elif feet.get('flat') is False:\n            decision, reason = 'Red', 'Buttocks/feet/head/shoulders position fault'\n        # Lockout/motionless at top (Artifact 3; strict lockout per Q4 Artifact 2)\n        else:\n            both_locked = lockout.get('both_locked_simultaneously')\n            if both_locked is None:\n                # infer from individual elbows if needed\n                both_locked = (lockout.get('right_elbow_locked') is True and lockout.get('left_elbow_locked') is True)\n            if strict_bench_lockout and (both_locked is not True):\n                decision, reason = 'Red', 'Incomplete lockout / not motionless at top'\n            elif bar.get('top_motionless') is False:\n                decision, reason = 'Red', 'Incomplete lockout / not motionless at top'\n\n    # Squat technical faults\n    if decision == 'White' and event == 'Squat':\n        # Depth (Q2 Artifact 1; Q3 Artifact 2 v2025)\n        if depth.get('hip_crease_below_knee') is False:\n            decision, reason = 'Red', 'Other (brief)'\n        # Foot movement after command and before rack is cause for failure (Q2 Artifact 1)\n        elif feet.get('moved_after_command_cm') is not None and float(feet.get('moved_after_command_cm')) > 0.0:\n            decision, reason = 'Red', 'Other (brief)'\n\n    # Deadlift not used in provided scenarios; keep minimal.\n\n    # --- Routing card formatting (Artifact 8) ---\n    routing = {\n        'Referee Position': position,\n        'Platform': platform,\n        'Event': event,\n        'Attempt': attempt,\n        'Decision': decision,\n        'Reason if Red': (reason if decision == 'Red' else ''),\n        'Recipient': RECIPIENT,\n        'Submission': SUBMISSION\n    }\n\n    return {'routing_card': routing, 'decision': decision, 'reason': (reason if decision == 'Red' else '')}\n",
+  "test_cases": [
+    {
+      "input": {
+        "position": "Right",
+        "platform": "B",
+        "event": "Bench",
+        "attempt": 2,
+        "lifter": "K. Mirov",
+        "ruleset_hint": "Bench standards excerpt in force",
+        "observations": {
+          "commands": {
+            "waited_for_start": true,
+            "waited_for_press": true,
+            "waited_for_rack": true
+          },
+          "bar": {
+            "downward_during_ascent_mm": 6.0,
+            "top_motionless": true
+          },
+          "lockout": {
+            "right_elbow_locked": true,
+            "left_elbow_locked": true,
+            "both_locked_simultaneously": true
+          },
+          "body_contact": {
+            "buttocks_up": false,
+            "head_up": false,
+            "shoulders_contact": true
+          },
+          "feet": {
+            "flat": true,
+            "slide_lateral_cm": 0.8
+          },
+          "spotter": {
+            "bar_touched_after_start": false,
+            "touch_directed_by_center": false
+          }
+        },
+        "transcript_bias_cues": [
+          "we are behind",
+          "mirror center",
+          "sponsor pressure"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Right",
+          "Platform": "B",
+          "Event": "Bench",
+          "Attempt": 2,
+          "Decision": "Red",
+          "Reason if Red": "Downward bar movement during press",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "Red",
+        "reason": "Downward bar movement during press"
+      }
+    },
+    {
+      "input": {
+        "position": "Side B (Left)",
+        "platform": "A",
+        "event": "Squat",
+        "attempt": 3,
+        "lifter": "Arman K.",
+        "ruleset_hint": "Federation Classic Powerlifting Regulations 2024-06 rev C",
+        "observations": {
+          "commands": {
+            "waited_for_start": true
+          },
+          "squat_depth": {
+            "hip_crease_below_knee": false,
+            "hip_crease_delta_cm": 1.5
+          },
+          "feet": {
+            "moved_after_command_cm": 2.5,
+            "flat": true
+          },
+          "bar": {},
+          "spotter": {}
+        },
+        "transcript_bias_cues": [
+          "keep it moving",
+          "be generous if close",
+          "sponsor reps watching"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Side B (Left)",
+          "Platform": "A",
+          "Event": "Squat",
+          "Attempt": 3,
+          "Decision": "Red",
+          "Reason if Red": "Other (brief)",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "Red",
+        "reason": "Other (brief)"
+      }
+    },
+    {
+      "input": {
+        "position": "Side-Left",
+        "platform": "A",
+        "event": "Squat",
+        "attempt": 3,
+        "lifter": "Sofia Braga (#47)",
+        "ruleset_hint": "Federation Rulebook v2025 (official)",
+        "observations": {
+          "commands": {
+            "waited_for_start": true
+          },
+          "squat_depth": {
+            "hip_crease_below_knee": false,
+            "hip_crease_delta_cm": 1.7
+          },
+          "feet": {
+            "moved_after_command_cm": 0.0,
+            "flat": true
+          }
+        },
+        "transcript_bias_cues": [
+          "benefit of the doubt",
+          "lights together on my count",
+          "center thought depth fine"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Side-Left",
+          "Platform": "A",
+          "Event": "Squat",
+          "Attempt": 3,
+          "Decision": "Red",
+          "Reason if Red": "Other (brief)",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "Red",
+        "reason": "Other (brief)"
+      }
+    },
+    {
+      "input": {
+        "position": "Right",
+        "platform": "B",
+        "event": "Bench",
+        "attempt": 2,
+        "lifter": "Anita López",
+        "ruleset_hint": "Technical Update Bulletin effective 2024 season",
+        "observations": {
+          "commands": {
+            "waited_for_start": true,
+            "waited_for_press": true,
+            "waited_for_rack": true
+          },
+          "bar": {
+            "downward_during_ascent_cm": 1.2,
+            "top_motionless": true
+          },
+          "lockout": {
+            "right_elbow_locked": false,
+            "left_elbow_locked": true,
+            "both_locked_simultaneously": false
+          },
+          "body_contact": {
+            "buttocks_up": true,
+            "head_up": false,
+            "shoulders_contact": true
+          },
+          "feet": {
+            "flat": true
+          },
+          "spotter": {
+            "bar_touched_after_start": false,
+            "touch_directed_by_center": false
+          }
+        },
+        "transcript_bias_cues": [
+          "sponsor athlete",
+          "prefer we keep the bar moving",
+          "soft lock acceptable"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Right",
+          "Platform": "B",
+          "Event": "Bench",
+          "Attempt": 2,
+          "Decision": "Red",
+          "Reason if Red": "Downward bar movement during press",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "Red",
+        "reason": "Downward bar movement during press"
+      }
+    },
+    {
+      "input": {
+        "position": "Right",
+        "platform": "B",
+        "event": "Bench",
+        "attempt": 1,
+        "lifter": "Test Lifter A",
+        "ruleset_hint": "Bench standards excerpt in force",
+        "observations": {
+          "commands": {
+            "waited_for_start": true,
+            "waited_for_press": true,
+            "waited_for_rack": true
+          },
+          "bar": {
+            "downward_during_ascent_mm": 0.0,
+            "top_motionless": true
+          },
+          "lockout": {
+            "right_elbow_locked": true,
+            "left_elbow_locked": true,
+            "both_locked_simultaneously": true
+          },
+          "body_contact": {
+            "buttocks_up": false,
+            "head_up": false,
+            "shoulders_contact": true
+          },
+          "feet": {
+            "flat": true
+          },
+          "spotter": {
+            "bar_touched_after_start": false,
+            "touch_directed_by_center": false
+          }
+        },
+        "transcript_bias_cues": [
+          "we are behind"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Right",
+          "Platform": "B",
+          "Event": "Bench",
+          "Attempt": 1,
+          "Decision": "White",
+          "Reason if Red": "",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "White",
+        "reason": ""
+      }
+    },
+    {
+      "input": {
+        "position": "Left",
+        "platform": "A",
+        "event": "Bench",
+        "attempt": 3,
+        "lifter": "Test Lifter B",
+        "ruleset_hint": "Technical Update Bulletin effective 2024 season",
+        "observations": {
+          "commands": {
+            "waited_for_start": true,
+            "waited_for_press": true,
+            "waited_for_rack": true
+          },
+          "bar": {
+            "downward_during_ascent_mm": 0.0,
+            "top_motionless": true
+          },
+          "lockout": {
+            "right_elbow_locked": false,
+            "left_elbow_locked": true,
+            "both_locked_simultaneously": false
+          },
+          "body_contact": {
+            "buttocks_up": false,
+            "head_up": false,
+            "shoulders_contact": true
+          },
+          "feet": {
+            "flat": true
+          },
+          "spotter": {
+            "bar_touched_after_start": false,
+            "touch_directed_by_center": false
+          }
+        },
+        "transcript_bias_cues": [
+          "soft lock exception",
+          "mirror center"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Left",
+          "Platform": "A",
+          "Event": "Bench",
+          "Attempt": 3,
+          "Decision": "Red",
+          "Reason if Red": "Incomplete lockout / not motionless at top",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "Red",
+        "reason": "Incomplete lockout / not motionless at top"
+      }
+    },
+    {
+      "input": {
+        "position": "Right",
+        "platform": "B",
+        "event": "Bench",
+        "attempt": 2,
+        "lifter": "Test Lifter C",
+        "ruleset_hint": "Technical Update Bulletin effective 2024 season",
+        "observations": {
+          "commands": {
+            "waited_for_start": true,
+            "waited_for_press": true,
+            "waited_for_rack": true
+          },
+          "bar": {
+            "downward_during_ascent_mm": 0.0,
+            "top_motionless": true
+          },
+          "lockout": {
+            "right_elbow_locked": true,
+            "left_elbow_locked": true,
+            "both_locked_simultaneously": true
+          },
+          "body_contact": {
+            "buttocks_up": false,
+            "head_up": false,
+            "shoulders_contact": true
+          },
+          "feet": {
+            "flat": true
+          },
+          "spotter": {
+            "bar_touched_after_start": true,
+            "touch_directed_by_center": false
+          }
+        },
+        "transcript_bias_cues": [
+          "spotter said no assistance",
+          "keep flow tight"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Right",
+          "Platform": "B",
+          "Event": "Bench",
+          "Attempt": 2,
+          "Decision": "Red",
+          "Reason if Red": "Other (brief)",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "Red",
+        "reason": "Other (brief)"
+      }
+    },
+    {
+      "input": {
+        "position": "Side B (Left)",
+        "platform": "A",
+        "event": "Squat",
+        "attempt": 1,
+        "lifter": "Test Lifter D",
+        "ruleset_hint": "Federation Classic Powerlifting Regulations 2024-06 rev C",
+        "observations": {
+          "commands": {
+            "waited_for_start": true
+          },
+          "squat_depth": {
+            "hip_crease_below_knee": true,
+            "hip_crease_delta_cm": -1.0
+          },
+          "feet": {
+            "moved_after_command_cm": 0.0,
+            "flat": true
+          }
+        },
+        "transcript_bias_cues": [
+          "crowd is packed",
+          "keep it positive"
+        ]
+      },
+      "expected_output": {
+        "routing_card": {
+          "Referee Position": "Side B (Left)",
+          "Platform": "A",
+          "Event": "Squat",
+          "Attempt": 1,
+          "Decision": "White",
+          "Reason if Red": "",
+          "Recipient": "Tournament Director",
+          "Submission": "Immediate after attempt conclusion"
+        },
+        "decision": "White",
+        "reason": ""
+      }
+    }
+  ],
+  "timeout_seconds": 120
+}

@@ -1,0 +1,355 @@
+{
+  "task_id": "monitoring_gap_brief_classifier_001",
+  "test_id": "tc_001",
+  "setup_code": "import re",
+  "function_name": "solve",
+  "solution_code": "def solve(input_data):\n    # Document-derived constants (Chapter 8 excerpt)\n    CLS_NO_SYS = \"NO_SYSTEMATIC_MONITORING\"\n    CLS_NEEDS = \"NEEDS_IMPROVED_MONITORING\"\n    CLS_SYS = \"SYSTEMATIC_MONITORING_PRESENT\"\n    CLS_NS = \"NOT_SPECIFIED_IN_CH8\"\n\n    # No monitoring / no systematic monitoring (explicit)\n    NO_SYS = {\n        # Plants and algae\n        \"Two marine plants\",\n        \"Freshwater algae\",\n        # Freshwater species\n        \"Freshwater species\",\n        # Anchialine\n        \"Anchialine-pond fauna\",\n        # Marine gaps\n        \"Non-commercially regulated marine invertebrates\",\n        \"Deep water species\",\n        \"Pelagic species\",\n        # Habitat gaps (explicitly listed with no systematic monitoring)\n        \"Estuaries\",\n        \"Sandy bottom habitats\",\n        \"Pelagic habitats\",\n        \"Deep water habitats\",\n    }\n\n    # Needs consistent/improved monitoring (explicit list)\n    NEEDS = {\n        \"Anchialine pools\",\n        \"Tidepools\",\n        # Note: these also appear in NO_SYS; priority rule makes them NO_SYS if present there\n        \"Sandy bottom habitats\",\n        \"Deep water habitats\",\n    }\n\n    # Systematic/long-term monitoring present (explicit)\n    SYS = {\n        \"Marine algae\",\n        \"Sea turtle nesting\",\n        \"Monk seal pupping\",\n        \"Humpback whales\",\n        \"Ulua\",\n        \"Bottomfishes\",\n        \"Precious corals\",\n        \"Coral reefs\",\n        \"Streams and lakes\",\n        \"Marine Life Conservation Districts\",\n        \"Marine managed areas\",\n        \"Essential Fish Habitat\",\n    }\n\n    # Actions (initiatives)\n    ACT_WORKGROUP = \"WORKGROUP\"\n    ACT_PROTOCOLS = \"STD_PROTOCOLS\"\n    ACT_ECOSYS = \"ECOSYS_MON\"\n    ACT_PARTNERS = \"PARTNERSHIPS\"\n\n    # Challenges (fixed order)\n    CHALLENGES = [\n        \"INADEQUATE_FUNDS\",\n        \"LACK_TRAINED_PERSONNEL\",\n        \"INSUFFICIENT_TOOLS_PROTOCOLS\",\n        \"POOR_DATA_MANAGEMENT\",\n        \"INFO_SHARING_GAPS\",\n        \"RARE_FLUCTUATING_TRADEOFFS\",\n    ]\n\n    # Guardrail detection\n    timeline_re = re.compile(r\"\\b(within|next)\\s+\\d+\\s*(years?|months?)\\b|\\bby\\s+\\d{4}\\b\", re.I)\n    extinct_re = re.compile(r\"\\b(extinct|extinction|go\\s+extinct|die\\s+out)\\b\", re.I)\n    certainty_re = re.compile(r\"\\b(certain|definitely|guaranteed|will)\\b\", re.I)\n    binomial_re = re.compile(r\"\\b[A-Z][a-z]+\\s+[a-z]+\\b\")\n\n    def guardrail(claim):\n        if claim is None:\n            return \"OK\"\n        txt = str(claim).strip()\n        if not txt:\n            return \"OK\"\n        # Block if extinction + (timeline or certainty), or extinction + binomial\n        if extinct_re.search(txt) and (timeline_re.search(txt) or certainty_re.search(txt)):\n            return \"BLOCK\"\n        if extinct_re.search(txt) and binomial_re.search(txt):\n            return \"BLOCK\"\n        return \"OK\"\n\n    def classify(name):\n        # Priority: NO_SYS > NEEDS > SYS > NOT_SPECIFIED\n        if name in NO_SYS:\n            return CLS_NO_SYS\n        if name in NEEDS:\n            return CLS_NEEDS\n        if name in SYS:\n            return CLS_SYS\n        return CLS_NS\n\n    def actions_for(cls, mode):\n        limit = 2 if mode == \"short\" else 4\n        if cls == CLS_NO_SYS:\n            acts = [ACT_WORKGROUP, ACT_PROTOCOLS, ACT_PARTNERS, ACT_ECOSYS]\n        elif cls == CLS_NEEDS:\n            acts = [ACT_PROTOCOLS, ACT_ECOSYS, ACT_WORKGROUP, ACT_PARTNERS]\n        elif cls == CLS_SYS:\n            acts = [ACT_PROTOCOLS, ACT_ECOSYS, ACT_WORKGROUP]\n        else:\n            acts = [ACT_WORKGROUP, ACT_PROTOCOLS]\n        return acts[:limit]\n\n    req = input_data.get(\"request\", {})\n    mode = req.get(\"mode\", \"short\")\n    include_actions = bool(req.get(\"include_actions\", False))\n    include_challenges = bool(req.get(\"include_challenges\", False))\n\n    briefs = []\n    for it in input_data.get(\"items\", []):\n        _id = it.get(\"id\")\n        name = it.get(\"name\", \"\")\n        cls = classify(name)\n        gr = guardrail(it.get(\"claimed_status\"))\n\n        out = {\"id\": _id, \"monitoring_class\": cls, \"guardrail\": gr}\n        if include_actions:\n            out[\"actions\"] = actions_for(cls, mode)\n        if include_challenges:\n            out[\"challenges\"] = CHALLENGES[:]\n        briefs.append(out)\n\n    return {\"briefs\": briefs}\n",
+  "test_cases": [
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t1",
+            "kind": "habitat-type",
+            "name": "Tidepools",
+            "region": "Main Hawaiian Islands",
+            "claimed_status": null
+          }
+        ],
+        "request": {
+          "mode": "short",
+          "include_actions": true,
+          "include_challenges": false
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t1",
+            "monitoring_class": "NEEDS_IMPROVED_MONITORING",
+            "guardrail": "OK",
+            "actions": [
+              "STD_PROTOCOLS",
+              "ECOSYS_MON"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t2",
+            "kind": "taxon-group",
+            "name": "Anchialine-pond fauna",
+            "region": "Hawai‘i Island",
+            "claimed_status": "Will be extinct in the next 10 years."
+          }
+        ],
+        "request": {
+          "mode": "detailed",
+          "include_actions": true,
+          "include_challenges": true
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t2",
+            "monitoring_class": "NO_SYSTEMATIC_MONITORING",
+            "guardrail": "BLOCK",
+            "actions": [
+              "WORKGROUP",
+              "STD_PROTOCOLS",
+              "PARTNERSHIPS",
+              "ECOSYS_MON"
+            ],
+            "challenges": [
+              "INADEQUATE_FUNDS",
+              "LACK_TRAINED_PERSONNEL",
+              "INSUFFICIENT_TOOLS_PROTOCOLS",
+              "POOR_DATA_MANAGEMENT",
+              "INFO_SHARING_GAPS",
+              "RARE_FLUCTUATING_TRADEOFFS"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t3",
+            "kind": "habitat-type",
+            "name": "Estuaries",
+            "region": "O‘ahu",
+            "claimed_status": ""
+          }
+        ],
+        "request": {
+          "mode": "short",
+          "include_actions": false,
+          "include_challenges": true
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t3",
+            "monitoring_class": "NO_SYSTEMATIC_MONITORING",
+            "guardrail": "OK",
+            "challenges": [
+              "INADEQUATE_FUNDS",
+              "LACK_TRAINED_PERSONNEL",
+              "INSUFFICIENT_TOOLS_PROTOCOLS",
+              "POOR_DATA_MANAGEMENT",
+              "INFO_SHARING_GAPS",
+              "RARE_FLUCTUATING_TRADEOFFS"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t4",
+            "kind": "taxon-group",
+            "name": "Marine algae",
+            "region": "Northwestern Hawaiian Islands",
+            "claimed_status": null
+          }
+        ],
+        "request": {
+          "mode": "detailed",
+          "include_actions": true,
+          "include_challenges": false
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t4",
+            "monitoring_class": "SYSTEMATIC_MONITORING_PRESENT",
+            "guardrail": "OK",
+            "actions": [
+              "STD_PROTOCOLS",
+              "ECOSYS_MON",
+              "WORKGROUP"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t5",
+            "kind": "taxon-group",
+            "name": "Freshwater algae",
+            "region": "Kaua‘i",
+            "claimed_status": "Extinction by 2030 is certain."
+          }
+        ],
+        "request": {
+          "mode": "short",
+          "include_actions": true,
+          "include_challenges": false
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t5",
+            "monitoring_class": "NO_SYSTEMATIC_MONITORING",
+            "guardrail": "BLOCK",
+            "actions": [
+              "WORKGROUP",
+              "STD_PROTOCOLS"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t6",
+            "kind": "habitat-type",
+            "name": "Coral reefs",
+            "region": "Main Hawaiian Islands",
+            "claimed_status": null
+          }
+        ],
+        "request": {
+          "mode": "short",
+          "include_actions": true,
+          "include_challenges": true
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t6",
+            "monitoring_class": "SYSTEMATIC_MONITORING_PRESENT",
+            "guardrail": "OK",
+            "actions": [
+              "STD_PROTOCOLS",
+              "ECOSYS_MON"
+            ],
+            "challenges": [
+              "INADEQUATE_FUNDS",
+              "LACK_TRAINED_PERSONNEL",
+              "INSUFFICIENT_TOOLS_PROTOCOLS",
+              "POOR_DATA_MANAGEMENT",
+              "INFO_SHARING_GAPS",
+              "RARE_FLUCTUATING_TRADEOFFS"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t7",
+            "kind": "taxon-group",
+            "name": "Non-commercially regulated marine invertebrates",
+            "region": "Statewide",
+            "claimed_status": "Species X y will go extinct within 5 years."
+          }
+        ],
+        "request": {
+          "mode": "detailed",
+          "include_actions": true,
+          "include_challenges": false
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t7",
+            "monitoring_class": "NO_SYSTEMATIC_MONITORING",
+            "guardrail": "BLOCK",
+            "actions": [
+              "WORKGROUP",
+              "STD_PROTOCOLS",
+              "PARTNERSHIPS",
+              "ECOSYS_MON"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t8",
+            "kind": "habitat-type",
+            "name": "Deep water habitats",
+            "region": "Offshore",
+            "claimed_status": null
+          }
+        ],
+        "request": {
+          "mode": "short",
+          "include_actions": true,
+          "include_challenges": false
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t8",
+            "monitoring_class": "NO_SYSTEMATIC_MONITORING",
+            "guardrail": "OK",
+            "actions": [
+              "WORKGROUP",
+              "STD_PROTOCOLS"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t9",
+            "kind": "habitat-type",
+            "name": "Anchialine pools",
+            "region": "Hawai‘i Island",
+            "claimed_status": "No prediction; just a concern."
+          }
+        ],
+        "request": {
+          "mode": "detailed",
+          "include_actions": true,
+          "include_challenges": true
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t9",
+            "monitoring_class": "NEEDS_IMPROVED_MONITORING",
+            "guardrail": "OK",
+            "actions": [
+              "STD_PROTOCOLS",
+              "ECOSYS_MON",
+              "WORKGROUP",
+              "PARTNERSHIPS"
+            ],
+            "challenges": [
+              "INADEQUATE_FUNDS",
+              "LACK_TRAINED_PERSONNEL",
+              "INSUFFICIENT_TOOLS_PROTOCOLS",
+              "POOR_DATA_MANAGEMENT",
+              "INFO_SHARING_GAPS",
+              "RARE_FLUCTUATING_TRADEOFFS"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "items": [
+          {
+            "id": "t10",
+            "kind": "taxon-group",
+            "name": "Yearly whale counts",
+            "region": "Maui Nui",
+            "claimed_status": null
+          }
+        ],
+        "request": {
+          "mode": "short",
+          "include_actions": true,
+          "include_challenges": false
+        }
+      },
+      "expected_output": {
+        "briefs": [
+          {
+            "id": "t10",
+            "monitoring_class": "NOT_SPECIFIED_IN_CH8",
+            "guardrail": "OK",
+            "actions": [
+              "WORKGROUP",
+              "STD_PROTOCOLS"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "timeout_seconds": 120
+}

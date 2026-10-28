@@ -1,0 +1,121 @@
+{
+  "skill_id": "6ce985e0-ad59-5d11-a2ac-e89b5df16429",
+  "name": "评论情感极性分类（含混合评论处理）",
+  "description": "依据正负面情感指标词表对单条产品评论判定情感极性，并规定同时含正负信号时的混合评论处理方式。用于需要对评论文本做情感打标或筛选的场景。",
+  "skill_body": "对单条产品评论执行情感极性判定：先扫描评论中是否出现负面情感指标（批评、失望、警告、负面属性描述），再扫描正面情感信号；若仅含负面信号则标为负面，仅含正面信号则标为正面，若同时含正负信号则按混合评论处理并标记为混合。输出该评论的情感极性标签。\n\n## Objective\n\n对单条评论输出情感极性标签并正确处理正负混合信号\n## Applicable Signals\n\n- 评论包含对产品质量、合身度、舒适度、材质的评价\n- 评论中出现批评、失望、警告或负面属性描述词\n- 评论中同时出现正面与负面表述\n\n## Contraindications\n\n- 评论为空或无法解析\n- 需要跨评论聚合统计而非单条判定\n\n## Intervention Moves\n\n- 扫描负面情感指标：批评（质量差、合身度差、不舒适、材质廉价）、失望（期望更高、不值、后悔购买）、警告（避开、不推荐、浪费钱）、负面属性描述（易撕裂、起球、偏小、偏薄）\n- 扫描正面情感信号\n- 依据正负信号组合判定极性：仅负面→负面；仅正面→正面；正负并存→混合\n\n## Workflow Steps\n\n- 读取单条评论文本\n- 匹配负面情感指标词表\n- 匹配正面情感信号\n- 根据正负信号组合判定情感极性标签\n- 若正负信号并存，标记为混合评论\n\n## Constraints\n\n- 仅对单条评论做判定，不做跨评论聚合\n- 混合评论必须显式标记，不得强行归为单一极性\n\n## Cautions\n\n- 关键词匹配可能遗漏隐含情感表达，需注意词表覆盖范围\n\n## Output Contract\n\n- 每条评论附带情感极性标签（正面/负面/混合，含混合标记）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 材质廉价，洗一次就起球，不推荐。\n- Therapist/Output: 负面\n- Notes: 命中批评、负面属性描述与警告类指标\n\n### Example 2\n\n- Client/Input: 版型很好，但面料偏薄，有点失望。\n- Therapist/Output: 混合\n- Notes: 同时含正面与负面信号，标记为混合评论",
+  "asset_type": "micro_skill",
+  "granularity": "micro",
+  "asset_node_id": "micro_skill_node",
+  "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+  "asset_level": 3,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "对单条评论输出情感极性标签并正确处理正负混合信号",
+  "domain": "产品评论分析",
+  "task_family": "文本情感分类",
+  "method_family": "关键词指标匹配",
+  "stage": "评论标注",
+  "applicable_signals": [
+    "评论包含对产品质量、合身度、舒适度、材质的评价",
+    "评论中出现批评、失望、警告或负面属性描述词",
+    "评论中同时出现正面与负面表述"
+  ],
+  "contraindications": [
+    "评论为空或无法解析",
+    "需要跨评论聚合统计而非单条判定"
+  ],
+  "intervention_moves": [
+    "扫描负面情感指标：批评（质量差、合身度差、不舒适、材质廉价）、失望（期望更高、不值、后悔购买）、警告（避开、不推荐、浪费钱）、负面属性描述（易撕裂、起球、偏小、偏薄）",
+    "扫描正面情感信号",
+    "依据正负信号组合判定极性：仅负面→负面；仅正面→正面；正负并存→混合"
+  ],
+  "triggers": [
+    "需要对单条评论判定正面/负面/混合情感",
+    "评论中出现质量、合身度、材质等属性评价词"
+  ],
+  "workflow_steps": [
+    "读取单条评论文本",
+    "匹配负面情感指标词表",
+    "匹配正面情感信号",
+    "根据正负信号组合判定情感极性标签",
+    "若正负信号并存，标记为混合评论"
+  ],
+  "constraints": [
+    "仅对单条评论做判定，不做跨评论聚合",
+    "混合评论必须显式标记，不得强行归为单一极性"
+  ],
+  "cautions": [
+    "关键词匹配可能遗漏隐含情感表达，需注意词表覆盖范围"
+  ],
+  "output_contract": [
+    "每条评论附带情感极性标签（正面/负面/混合，含混合标记）"
+  ],
+  "examples": [
+    {
+      "input": "材质廉价，洗一次就起球，不推荐。",
+      "output": "负面",
+      "notes": "命中批评、负面属性描述与警告类指标"
+    },
+    {
+      "input": "版型很好，但面料偏薄，有点失望。",
+      "output": "混合",
+      "notes": "同时含正面与负面信号，标记为混合评论"
+    }
+  ],
+  "tags": [
+    "情感分类",
+    "评论标注",
+    "关键词匹配",
+    "混合评论"
+  ],
+  "support_ids": [
+    "e4f80005-9a36-52ac-a236-b26cedbfe5df"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "a2640906-3181-503e-9287-605ca94cf99c"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|对单条评论输出情感极性标签并正确处理正负混合信号|产品评论分析|文本情感分类|关键词指标匹配|评论标注|评论情感极性分类（含混合评论处理）",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

@@ -1,0 +1,110 @@
+{
+  "skill_id": "07e18b42-e2ed-5697-b9d6-2a5a7cf3d420",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 b0980678 高度重复（同为 Pydantic 字段校验器 annotated/decorator 选型与实现），且后者覆盖更完整（含 SkipValidation）；本候选无独有内容，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "07e18b42-e2ed-5697-b9d6-2a5a7cf3d420",
+    "name": "Pydantic 字段校验器选择与实现",
+    "description": "为单个 Pydantic 模型字段选择 annotated 或 decorator 字段校验器模式，并实现字段级自定义输入校验。当需要为单个字段添加自定义校验逻辑、并在两种字段校验器模式之间做选择时使用。",
+    "skill_body": "先确认校验目标只涉及单个字段，且内置字段约束无法满足。然后判断校验逻辑是否需要访问其他字段或整个模型输入：若需要，改用模型校验器而非本技能。接着在 annotated 模式与 decorator 模式之间选择：优先使用 annotated 模式以获得更好的类型提示与复用性；当需要更灵活的控制或与既有代码风格一致时使用 decorator 模式。实现校验函数，对不合法输入抛出 ValueError 或 Pydantic 校验错误，并返回校验后的值。最后给出可运行的实现及所选模式的简短理由。\n\n## Objective\n\n为单个字段选择并实现合适的 Pydantic 字段校验器模式\n## Applicable Signals\n\n- 校验需求仅针对单个字段\n- 需要自定义校验逻辑而非内置约束\n- 需要在 annotated 与 decorator 模式间权衡\n\n## Contraindications\n\n- 校验逻辑涉及跨字段或整个模型输入\n- 仅需使用内置字段约束即可满足\n\n## Intervention Moves\n\n- 确认校验范围限于单字段\n- 在 annotated 与 decorator 模式间选择\n- 实现校验函数并在不合法时抛出校验错误\n- 返回校验后的值并说明模式选择理由\n\n## Workflow Steps\n\n- 确认校验目标为单个字段且内置约束不足\n- 判断是否涉及跨字段或模型级输入，若是则改用模型校验器\n- 在 annotated 模式与 decorator 模式之间选择\n- 实现字段校验函数，对不合法输入抛出 ValueError 或校验错误\n- 返回校验后的值\n- 给出可运行实现及所选模式的理由\n\n## Constraints\n\n- 校验逻辑必须限定在单个字段范围内\n- 不合法输入必须通过抛出校验错误来终止校验\n- 校验函数应返回校验后的值\n\n## Cautions\n\n- 若校验实际需要访问其他字段或整个模型输入，应改用模型校验器\n- 若内置字段约束已能满足需求，不应引入自定义校验器\n\n## Output Contract\n\n- 可运行的字段校验器实现，包含所选模式（annotated 或 decorator）及选择理由。",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为单个字段选择并实现合适的 Pydantic 字段校验器模式",
+    "domain": "pydantic",
+    "task_family": "字段校验",
+    "method_family": "validator 模式选择",
+    "stage": "字段级校验实现",
+    "applicable_signals": [
+      "校验需求仅针对单个字段",
+      "需要自定义校验逻辑而非内置约束",
+      "需要在 annotated 与 decorator 模式间权衡"
+    ],
+    "contraindications": [
+      "校验逻辑涉及跨字段或整个模型输入",
+      "仅需使用内置字段约束即可满足"
+    ],
+    "intervention_moves": [
+      "确认校验范围限于单字段",
+      "在 annotated 与 decorator 模式间选择",
+      "实现校验函数并在不合法时抛出校验错误",
+      "返回校验后的值并说明模式选择理由"
+    ],
+    "triggers": [
+      "需要为单个字段添加自定义校验",
+      "需要在 annotated 与 decorator 字段校验器模式间做选择",
+      "内置字段约束不足以表达字段校验规则"
+    ],
+    "workflow_steps": [
+      "确认校验目标为单个字段且内置约束不足",
+      "判断是否涉及跨字段或模型级输入，若是则改用模型校验器",
+      "在 annotated 模式与 decorator 模式之间选择",
+      "实现字段校验函数，对不合法输入抛出 ValueError 或校验错误",
+      "返回校验后的值",
+      "给出可运行实现及所选模式的理由"
+    ],
+    "constraints": [
+      "校验逻辑必须限定在单个字段范围内",
+      "不合法输入必须通过抛出校验错误来终止校验",
+      "校验函数应返回校验后的值"
+    ],
+    "cautions": [
+      "若校验实际需要访问其他字段或整个模型输入，应改用模型校验器",
+      "若内置字段约束已能满足需求，不应引入自定义校验器"
+    ],
+    "output_contract": [
+      "可运行的字段校验器实现，包含所选模式（annotated 或 decorator）及选择理由。"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "field-validator",
+      "validation",
+      "annotated",
+      "decorator"
+    ],
+    "support_ids": [
+      "ceefda1e-a15b-5f59-bce9-40a8bbb04e45"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "46b0a558-7835-5bbf-99b0-69a149af3c07"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|为单个字段选择并实现合适的 pydantic 字段校验器模式|pydantic|字段校验|validator 模式选择|字段级校验实现|pydantic 字段校验器选择与实现"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

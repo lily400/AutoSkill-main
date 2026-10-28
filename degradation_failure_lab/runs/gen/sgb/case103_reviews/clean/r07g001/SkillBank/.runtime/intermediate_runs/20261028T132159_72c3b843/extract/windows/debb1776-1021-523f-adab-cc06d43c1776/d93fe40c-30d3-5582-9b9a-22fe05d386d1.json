@@ -1,0 +1,577 @@
+{
+  "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+  "window_id": "d93fe40c-30d3-5582-9b9a-22fe05d386d1",
+  "section_heading": "# System Context",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "cebd8458-5acb-504e-81a8-6c450cb5c5f5",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+      "section": "# System Context",
+      "span": {
+        "start": 74067,
+        "end": 83904
+      },
+      "excerpt": "[Turn 8 - 2025-08-20T09:20:15] Message from: review_processor\nIf the brand flag is missing this time, it’s likely due to the new parser. I can try a patch, but not before 11:45 ET.\n\n[Turn 9 - 2025-08-20T09:24:40] Message from: sales_forecaster\nIf you can at least separate Nike vs competitor by using the brand text, that’s sufficient for my noon run. We’ll refine after lunch.\n\n[Turn 10 - 2025-08-20T09:27:52] Message from: social_monitor\nNote that some reviews mention multiple items (e.g., hoodie + joggers in one post). Make sure not to undercount if they semantically match multiple SKUs.\n\n[Turn 11 - 2025-08-20T09:33:05] Message from: orchestrator\nFinal reminder: Deliver the per-SKU counts JSON and a brief status message. If there are blockers, state them clearly so we can remediate fast.\n\nArtifacts\n\nArtifact 3 — Data Dictionary (Reviews CSV expected columns)\n- review_id: string unique identifier\n- review: full text\n- is_sportswear: \"yes\" or \"no\"\n- is_apparel_product: \"yes\" or \"no\"\n- brand: canonical brand name or \"N/A\"\n- competitor_or_nike: \"nike\" or \"competitor\" or \"n/a\"\n\nArtifact 4 — Slack Snippet (Export Status)\n[2025-08-19 23:41] review_processor: \"Pushed the new exporter; columns should include competitor_or_nike now.\"\n[2025-08-20 07:12] data_ops: \"Parser warning: missing mapping for competitor_or_nike; may be absent in morning run.\"\n\nArtifact 5 — Retail Launch Calendar (Noise)\n- Oct: Core fleece refresh\n- Nov: Black Friday promos\n- Dec: Cold-weather outerwear focus\n- Jan: Clearance reset\n\nArtifact 6 — Data Quality SOP Excerpt\n- Do not proceed with incomplete classification fields in processed reviews.\n- Do not infer classification values from unrelated fields when absent.\n- If required columns are missing, request corrected input from the source system.",
+      "relation_type": "constraint",
+      "confidence": 0.9,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "缺失分类字段的数据质量校验与退回",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "防止使用不完整或推断出的分类字段产出下游计数结果",
+        "task_family": "数据质量管控",
+        "method_family": "输入校验与退回",
+        "stage": "数据预处理",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "candidate_slot": 1,
+        "window_id": "d93fe40c-30d3-5582-9b9a-22fe05d386d1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 10,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      },
+      "created_at": "2026-10-28T05:33:09+00:00"
+    },
+    {
+      "support_id": "ed3b7869-dd4d-5a09-9ea7-5850d440d64b",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+      "section": "# System Context",
+      "span": {
+        "start": 74067,
+        "end": 83904
+      },
+      "excerpt": "[Turn 8 - 2025-08-20T09:20:15] Message from: review_processor\nIf the brand flag is missing this time, it’s likely due to the new parser. I can try a patch, but not before 11:45 ET.\n\n[Turn 9 - 2025-08-20T09:24:40] Message from: sales_forecaster\nIf you can at least separate Nike vs competitor by using the brand text, that’s sufficient for my noon run. We’ll refine after lunch.\n\n[Turn 10 - 2025-08-20T09:27:52] Message from: social_monitor\nNote that some reviews mention multiple items (e.g., hoodie + joggers in one post). Make sure not to undercount if they semantically match multiple SKUs.\n\n[Turn 11 - 2025-08-20T09:33:05] Message from: orchestrator\nFinal reminder: Deliver the per-SKU counts JSON and a brief status message. If there are blockers, state them clearly so we can remediate fast.\n\nArtifacts\n\nArtifact 3 — Data Dictionary (Reviews CSV expected columns)\n- review_id: string unique identifier\n- review: full text\n- is_sportswear: \"yes\" or \"no\"\n- is_apparel_product: \"yes\" or \"no\"\n- brand: canonical brand name or \"N/A\"\n- competitor_or_nike: \"nike\" or \"competitor\" or \"n/a\"\n\nArtifact 4 — Slack Snippet (Export Status)\n[2025-08-19 23:41] review_processor: \"Pushed the new exporter; columns should include competitor_or_nike now.\"\n[2025-08-20 07:12] data_ops: \"Parser warning: missing mapping for competitor_or_nike; may be absent in morning run.\"\n\nArtifact 5 — Retail Launch Calendar (Noise)\n- Oct: Core fleece refresh\n- Nov: Black Friday promos\n- Dec: Cold-weather outerwear focus\n- Jan: Clearance reset\n\nArtifact 6 — Data Quality SOP Excerpt\n- Do not proceed with incomplete classification fields in processed reviews.\n- Do not infer classification values from unrelated fields when absent.\n- If required columns are missing, request corrected input from the source system.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "按品牌文本的 Nike/竞品二分归类",
+        "asset_type": "micro_skill",
+        "granularity": "micro",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "objective": "在品牌标志缺失时仍能按品牌文本完成 Nike 与竞品的区分",
+        "task_family": "评论分类",
+        "method_family": "文本品牌识别",
+        "stage": "分类处理",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "candidate_slot": 2,
+        "window_id": "d93fe40c-30d3-5582-9b9a-22fe05d386d1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 10,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      },
+      "created_at": "2026-10-28T05:33:09+00:00"
+    },
+    {
+      "support_id": "2e9cd190-33d0-5f67-9736-15c46dfee8dd",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case103_reviews\\clean\\r07g001\\inputs\\input001\\context.md",
+      "section": "# System Context",
+      "span": {
+        "start": 74067,
+        "end": 83904
+      },
+      "excerpt": "[Turn 8 - 2025-08-20T09:20:15] Message from: review_processor\nIf the brand flag is missing this time, it’s likely due to the new parser. I can try a patch, but not before 11:45 ET.\n\n[Turn 9 - 2025-08-20T09:24:40] Message from: sales_forecaster\nIf you can at least separate Nike vs competitor by using the brand text, that’s sufficient for my noon run. We’ll refine after lunch.\n\n[Turn 10 - 2025-08-20T09:27:52] Message from: social_monitor\nNote that some reviews mention multiple items (e.g., hoodie + joggers in one post). Make sure not to undercount if they semantically match multiple SKUs.\n\n[Turn 11 - 2025-08-20T09:33:05] Message from: orchestrator\nFinal reminder: Deliver the per-SKU counts JSON and a brief status message. If there are blockers, state them clearly so we can remediate fast.\n\nArtifacts\n\nArtifact 3 — Data Dictionary (Reviews CSV expected columns)\n- review_id: string unique identifier\n- review: full text\n- is_sportswear: \"yes\" or \"no\"\n- is_apparel_product: \"yes\" or \"no\"\n- brand: canonical brand name or \"N/A\"\n- competitor_or_nike: \"nike\" or \"competitor\" or \"n/a\"\n\nArtifact 4 — Slack Snippet (Export Status)\n[2025-08-19 23:41] review_processor: \"Pushed the new exporter; columns should include competitor_or_nike now.\"\n[2025-08-20 07:12] data_ops: \"Parser warning: missing mapping for competitor_or_nike; may be absent in morning run.\"\n\nArtifact 5 — Retail Launch Calendar (Noise)\n- Oct: Core fleece refresh\n- Nov: Black Friday promos\n- Dec: Cold-weather outerwear focus\n- Jan: Clearance reset\n\nArtifact 6 — Data Quality SOP Excerpt\n- Do not proceed with incomplete classification fields in processed reviews.\n- Do not infer classification values from unrelated fields when absent.\n- If required columns are missing, request corrected input from the source system.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "多SKU语义匹配计数",
+        "asset_type": "session_skill",
+        "granularity": "session",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "objective": "产出准确的每 SKU 评论计数",
+        "task_family": "语义匹配计数",
+        "method_family": "语义相似度匹配",
+        "stage": "计数汇总",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "candidate_slot": 3,
+        "window_id": "d93fe40c-30d3-5582-9b9a-22fe05d386d1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 10,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      },
+      "created_at": "2026-10-28T05:33:09+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "1f9a5dc3-036e-57bb-9484-578e118f8fb3",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "name": "缺失分类字段的数据质量校验与退回",
+      "description": "当处理后的评论数据缺少必需分类字段（如 brand、competitor_or_nike）时，阻断后续处理并要求源系统提供修正输入，禁止从无关字段推断分类值。用于数据预处理阶段的数据质量守门。",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止使用不完整或推断出的分类字段产出下游计数结果",
+      "domain": "数据运营",
+      "task_family": "数据质量管控",
+      "method_family": "输入校验与退回",
+      "stage": "数据预处理",
+      "applicable_signals": [
+        "处理后的评论缺少必需分类列",
+        "解析器警告某字段映射缺失",
+        "分类字段不完整或为空"
+      ],
+      "contraindications": [
+        "所有必需分类字段完整且有效",
+        "缺失字段可从同一记录的其他字段合法推导"
+      ],
+      "intervention_moves": [
+        "校验必需分类字段是否齐全",
+        "发现缺失时阻断后续处理",
+        "禁止从无关字段推断分类值",
+        "向源系统发起修正输入请求",
+        "输出明确的阻断说明"
+      ],
+      "workflow_steps": [
+        "检查处理后的评论数据是否包含全部必需分类字段（如 brand、competitor_or_nike）",
+        "若字段完整有效，放行至下游处理",
+        "若字段缺失或不完整，停止处理，不得从无关字段推断分类值",
+        "向源系统发起修正输入请求",
+        "输出明确的阻断说明，说明缺失字段与所需修正"
+      ],
+      "triggers": [
+        "处理后的评论缺少必需分类列",
+        "解析器警告某字段映射缺失",
+        "分类字段不完整或为空"
+      ],
+      "constraints": [
+        "不得在分类字段不完整时继续处理",
+        "不得从无关字段推断分类值",
+        "必需列缺失时必须请求源系统提供修正输入"
+      ],
+      "cautions": [
+        "阻断说明需清晰指出缺失字段，便于快速补救",
+        "在源系统修正前不得产出下游计数结果"
+      ],
+      "output_contract": [
+        "明确的阻断说明与向源系统发起的修正输入请求"
+      ],
+      "examples": [
+        {
+          "input": "解析器警告：competitor_or_nike 映射缺失，晨间运行数据中该列可能缺失。",
+          "output": "阻断处理：competitor_or_nike 字段缺失，已停止下游计数，请源系统提供含该列的修正输入。",
+          "notes": "不得从 brand 文本或其他字段推断该分类值"
+        }
+      ],
+      "risk_class": "medium",
+      "confidence": 0.9,
+      "support_ids": [
+        "cebd8458-5acb-504e-81a8-6c450cb5c5f5"
+      ],
+      "metadata": {
+        "prompt": "在执行下游计数或匹配前，先校验处理后的评论数据是否包含全部必需分类字段。若发现必需分类字段缺失或不完整，立即停止处理，不得从无关字段推断分类值，并向源系统发起修正输入请求，同时给出明确的阻断说明。",
+        "tags": [
+          "数据质量",
+          "输入校验",
+          "退回",
+          "分类字段",
+          "守门规则"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# System Context"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "d93fe40c-30d3-5582-9b9a-22fe05d386d1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 10,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      }
+    },
+    {
+      "draft_id": "24cb6d6b-cc9b-5bd0-b1d4-d445a798fe02",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "name": "按品牌文本的 Nike/竞品二分归类",
+      "description": "当结构化品牌标志（competitor_or_nike）缺失时，依据评论文本中出现的品牌文本，将每条记录归为 nike 或 competitor，作为下游按 Nike/竞品拆分计数的临时充分方案。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在品牌标志缺失时仍能按品牌文本完成 Nike 与竞品的区分",
+      "domain": "数据运营",
+      "task_family": "评论分类",
+      "method_family": "文本品牌识别",
+      "stage": "分类处理",
+      "applicable_signals": [
+        "competitor_or_nike 字段缺失",
+        "评论文本中出现品牌名",
+        "下游计数需要 Nike/竞品二分"
+      ],
+      "contraindications": [
+        "评论文本无任何品牌线索",
+        "结构化品牌字段已完整可用"
+      ],
+      "intervention_moves": [
+        "逐条读取评论文本",
+        "识别文本中出现的品牌名",
+        "将记录归为 nike 或 competitor",
+        "对无品牌线索的记录标记为无法归类并上报"
+      ],
+      "workflow_steps": [
+        "确认 competitor_or_nike 字段缺失且评论文本含品牌线索",
+        "逐条读取评论文本并识别品牌名",
+        "将记录归为 nike 或 competitor",
+        "对无品牌线索的记录标记为无法归类，不臆测",
+        "输出归类结果并附状态说明与阻塞项"
+      ],
+      "triggers": [
+        "competitor_or_nike 字段缺失但评论文本含品牌名",
+        "下游需要按 Nike/竞品拆分计数"
+      ],
+      "constraints": [
+        "仅依据评论文本中明确出现的品牌线索判断",
+        "不得从无关字段推断分类值",
+        "无品牌线索时不得强行归类"
+      ],
+      "cautions": [
+        "一条评论可能提及多个品牌，需按文本线索谨慎判断",
+        "该归类为临时充分方案，后续应待结构化字段修复后复核"
+      ],
+      "output_contract": [
+        "每条记录标注为 nike 或 competitor 的归类结果，并附简要状态说明与阻塞项。"
+      ],
+      "examples": [],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "ed3b7869-dd4d-5a09-9ea7-5850d440d64b"
+      ],
+      "metadata": {
+        "prompt": "在结构化品牌标志缺失、但评论文本含品牌线索时，逐条读取评论文本，识别其中出现的品牌名，将其归为 nike 或 competitor。仅依据文本中明确出现的品牌线索判断，不得从无关字段推断。若某条记录文本无任何品牌线索，标记为无法归类并上报，不要臆测。输出每条记录的归类结果，并附简要状态说明与阻塞项。",
+        "tags": [
+          "品牌识别",
+          "文本归类",
+          "评论分类",
+          "数据运营"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# System Context"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "asset_node_id": "micro_skill_node",
+        "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+        "asset_level": 3,
+        "visible_role": "leaf",
+        "candidate_slot": 2,
+        "window_id": "d93fe40c-30d3-5582-9b9a-22fe05d386d1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 10,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      }
+    },
+    {
+      "draft_id": "a7501c47-f74c-5891-aae3-d12c4ae3e9e7",
+      "doc_id": "debb1776-1021-523f-adab-cc06d43c1776",
+      "name": "多SKU语义匹配计数",
+      "description": "将每条评论与产品目录做语义匹配，当一条评论可匹配多个 SKU 时分别计入，避免漏计，最终产出每 SKU 评论计数 JSON 及简要状态说明。适用于需要按 SKU 统计评论提及量、且评论可能同时提及多个商品的场景。",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "产出准确的每 SKU 评论计数",
+      "domain": "数据运营",
+      "task_family": "语义匹配计数",
+      "method_family": "语义相似度匹配",
+      "stage": "计数汇总",
+      "applicable_signals": [
+        "评论文本可能同时提及多个商品（如连帽衫与运动裤同帖）",
+        "需要按 SKU 维度而非仅品牌维度汇总",
+        "存在产品目录可供语义比对"
+      ],
+      "contraindications": [
+        "评论与产品目录无对应关系",
+        "仅需品牌层面汇总"
+      ],
+      "intervention_moves": [
+        "逐条评论与产品目录做语义匹配",
+        "对匹配多个 SKU 的评论分别计入各 SKU",
+        "汇总每 SKU 计数并输出 JSON",
+        "附简要状态说明并明确阻塞项"
+      ],
+      "workflow_steps": [
+        "确认产品目录与评论数据可用，检查必需字段是否齐全",
+        "逐条评论与产品目录做语义匹配，识别所有语义对应的 SKU",
+        "对匹配多个 SKU 的评论，分别计入每个匹配 SKU，避免漏计",
+        "汇总生成每 SKU 计数 JSON",
+        "撰写简要状态说明，若存在阻塞则明确列出"
+      ],
+      "triggers": [
+        "需要按 SKU 统计评论提及量",
+        "评论可能同时提及多个商品",
+        "需要输出每 SKU 计数结果"
+      ],
+      "constraints": [
+        "不得因单条评论只计一次而漏计多 SKU 匹配",
+        "不得从未提供的字段推断分类值",
+        "必需字段缺失时应请求修正后的输入，而非继续处理不完整分类字段"
+      ],
+      "cautions": [
+        "评论可能同时提及多个商品，需防止漏计",
+        "若分类字段缺失，应明确报告阻塞而非自行推断"
+      ],
+      "output_contract": [
+        "每 SKU 计数的 JSON 及简要状态说明；若存在阻塞，需清晰说明阻塞项以便快速补救。"
+      ],
+      "examples": [
+        {
+          "input": "一条评论同时提及连帽衫与运动裤，二者均与产品目录中的不同 SKU 语义匹配。",
+          "output": "该评论分别计入连帽衫对应 SKU 与运动裤对应 SKU 的计数，各加一。",
+          "notes": "体现多 SKU 匹配分别计入、避免漏计。"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "2e9cd190-33d0-5f67-9736-15c46dfee8dd"
+      ],
+      "metadata": {
+        "prompt": "对每条评论逐一与产品目录做语义匹配：若评论语义上匹配多个 SKU，则每个匹配的 SKU 各计一次，不得因单条评论只计一次而漏计。仅依据评论文本与目录的语义对应关系计数，不从未提供的字段推断分类值。完成后输出每 SKU 计数 JSON，并附简要状态说明；若存在阻塞（如必需字段缺失），明确说明以便快速补救。",
+        "tags": [
+          "语义匹配",
+          "计数汇总",
+          "多SKU",
+          "数据运营"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "# System Context"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "asset_node_id": "workflow_skill",
+        "asset_path": "family_root/macro_skill/workflow_skill",
+        "asset_level": 2,
+        "visible_role": "parent",
+        "candidate_slot": 3,
+        "window_id": "d93fe40c-30d3-5582-9b9a-22fe05d386d1",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 0,
+        "paragraph_end": 10,
+        "heading_path": [
+          "# System Context"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "# CL-Bench: Procedural Task Execution / Operational Procedures"
+        ],
+        "subsection_headings": [
+          "## **\\<context\\>**",
+          "## **\\<role\\>**",
+          "### **Objective**",
+          "### **Input**",
+          "### **Semantic Matching Task**",
+          "#### **Category Matching (Hard Requirement)**",
+          "#### **Semantic Similarity (Judgment Requirement)**",
+          "### **Sentiment Classification**",
+          "### **Counting Task**",
+          "### **Output Format**",
+          "### **Handling Invalid or Incomplete Input**",
+          "#### **Validating Product Catalog (JSON)**"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "You are part of a multi-agent system designed to curate Nike's FW25 (Fall/Winter 2025\\) men's apparel collection for North America. The system coordinates five specialized agents w"
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

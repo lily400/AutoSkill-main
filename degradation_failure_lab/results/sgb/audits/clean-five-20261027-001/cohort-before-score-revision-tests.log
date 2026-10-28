@@ -1,0 +1,46 @@
+test_archive_alias_requires_matching_historical_hash (test_clean_cohort.CohortContracts.test_archive_alias_requires_matching_historical_hash) ... ok
+test_duplicate_task_and_cross_task_pair_are_rejected (test_clean_cohort.CohortContracts.test_duplicate_task_and_cross_task_pair_are_rejected) ... ok
+test_formal_index_rejects_another_generation (test_clean_cohort.CohortContracts.test_formal_index_rejects_another_generation) ... ok
+test_partial_pair_keeps_observed_budget_failure_and_unstarted_arm (test_clean_cohort.CohortContracts.test_partial_pair_keeps_observed_budget_failure_and_unstarted_arm) ... ok
+test_pending_tasks_do_not_become_zero_scores (test_clean_cohort.CohortContracts.test_pending_tasks_do_not_become_zero_scores) ... ok
+test_protocol_rejects_equal_but_wrong_native_model (test_clean_cohort.CohortContracts.test_protocol_rejects_equal_but_wrong_native_model) ... ok
+test_exact_generation_gate_blocks_before_credentials (test_clean_cohort.ConfiguredJSON.test_exact_generation_gate_blocks_before_credentials) ... ok
+test_original_json_assets_and_blocked_paid_entry (test_clean_cohort.ConfiguredJSON.test_original_json_assets_and_blocked_paid_entry) ... ERROR
+test_budget_failure_stays_in_success_denominator (test_clean_cohort.FailureClassification.test_budget_failure_stays_in_success_denominator) ... ok
+test_candidate_failure_overrides_legacy_infra_flag (test_clean_cohort.FailureClassification.test_candidate_failure_overrides_legacy_infra_flag) ... ok
+test_scorer_infra_is_not_a_candidate_failure (test_clean_cohort.FailureClassification.test_scorer_infra_is_not_a_candidate_failure) ... ok
+test_unknown_http_is_never_free_budget_exhaustion (test_clean_cohort.FailureClassification.test_unknown_http_is_never_free_budget_exhaustion) ... ok
+test_budget_failure_is_not_dropped_for_missing_junit (test_clean_cohort.TerminalAttribution.test_budget_failure_is_not_dropped_for_missing_junit) ... ok
+test_candidate_preflight_failure_is_counted_without_completed_binding (test_clean_cohort.TerminalAttribution.test_candidate_preflight_failure_is_counted_without_completed_binding) ... ok
+test_normal_wrong_answer_still_requires_valid_junit (test_clean_cohort.TerminalAttribution.test_normal_wrong_answer_still_requires_valid_junit) ... ok
+
+======================================================================
+ERROR: test_original_json_assets_and_blocked_paid_entry (test_clean_cohort.ConfiguredJSON.test_original_json_assets_and_blocked_paid_entry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\tests\test_clean_cohort.py", line 173, in test_original_json_assets_and_blocked_paid_entry
+    config=load_binding(LAB,tid); adapter=adapter_for(LAB,config)
+                                          ~~~~~~~~~~~^^^^^^^^^^^^
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\downstream_eval\sgb\pilot.py", line 93, in adapter_for
+    module = importlib.import_module(task['adapter'])
+  File "D:\anoconda1\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 1027, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\downstream_eval\sgb\task_adapters\audited\json_task.py", line 7, in <module>
+    from . import fla
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\downstream_eval\sgb\task_adapters\audited\fla.py", line 6, in <module>
+    from downstream_eval.sgb.task_adapters.scrapy041.scoring import docker_executor, parse_junit, CandidateProtocolError
+  File "D:\AS\AutoSkill-main\degradation_failure_lab\downstream_eval\sgb\task_adapters\scrapy041\scoring.py", line 5, in <module>
+    import resource
+ModuleNotFoundError: No module named 'resource'
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.932s
+
+FAILED (errors=1)

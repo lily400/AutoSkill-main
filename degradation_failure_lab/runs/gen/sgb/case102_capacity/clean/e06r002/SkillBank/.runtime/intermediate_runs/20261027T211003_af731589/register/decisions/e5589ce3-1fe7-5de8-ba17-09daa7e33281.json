@@ -1,0 +1,110 @@
+{
+  "skill_id": "e5589ce3-1fe7-5de8-ba17-09daa7e33281",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 6d049763-18ca-551c-8c40-24e342fca436（节点到达先于离开的事件排序规则）实质重复，属于同一 tick 内到达先于离开的排序约束，保留其一即可，本候选无额外可执行内容。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "e5589ce3-1fe7-5de8-ba17-09daa7e33281",
+    "name": "到达先于离开的 tick 更新顺序规则",
+    "description": "当同一 tick 内某节点同时存在车辆到达事件与车辆离开事件时，强制先处理到达事件、再处理离开事件，以保证逐 tick 节点状态更新顺序的一致性。",
+    "skill_body": "在每个 tick 的节点状态更新中，先检查该节点是否同时存在到达事件与离开事件。若两者均存在，则先按到达事件更新节点队列与状态，再处理离开事件；若仅存在其中一类事件，按常规处理，本规则不介入。执行时仅负责事件排序，不改变通行放行、信号相位或优先级裁决逻辑。\n\n## Objective\n\n强制同 tick 内到达先于离开的处理顺序\n## Applicable Signals\n\n- 同一 tick 同时存在到达与离开事件\n\n## Contraindications\n\n- 该 tick 无到达或离开事件\n- 需要裁决通行放行、信号相位或优先级顺序（应使用相应规则而非本规则）\n\n## Intervention Moves\n\n- 识别该 tick 内节点的到达事件集合\n- 识别该 tick 内节点的离开事件集合\n- 先应用到达事件更新节点状态\n- 再应用离开事件更新节点状态\n\n## Workflow Steps\n\n- 对每个节点收集当前 tick 的到达事件与离开事件\n- 若两者均存在，则先处理全部到达事件\n- 到达处理完成后再处理离开事件\n- 若仅存在其中一类事件，按常规处理，不触发本排序约束\n\n## Constraints\n\n- 到达事件必须先于离开事件处理\n- 本规则仅约束事件排序，不改变其他通行或优先级规则\n\n## Cautions\n\n- 不要将本规则与信号放行顺序或优先级裁决混淆\n- 仅在到达与离开同 tick 共存时生效\n\n## Output Contract\n\n- 符合到达先于离开顺序的 tick 更新结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 某 tick 内节点 N 同时有车辆 A 到达、车辆 B 尝试离开\n- Therapist/Output: 先处理车辆 A 的到达并更新节点队列，再处理车辆 B 的离开\n- Notes: 到达先于离开",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "强制同 tick 内到达先于离开的处理顺序",
+    "domain": "交通仿真规则",
+    "task_family": "仿真更新顺序约束",
+    "method_family": "事件排序约束",
+    "stage": "每 tick 状态更新",
+    "applicable_signals": [
+      "同一 tick 同时存在到达与离开事件"
+    ],
+    "contraindications": [
+      "该 tick 无到达或离开事件",
+      "需要裁决通行放行、信号相位或优先级顺序（应使用相应规则而非本规则）"
+    ],
+    "intervention_moves": [
+      "识别该 tick 内节点的到达事件集合",
+      "识别该 tick 内节点的离开事件集合",
+      "先应用到达事件更新节点状态",
+      "再应用离开事件更新节点状态"
+    ],
+    "triggers": [
+      "同一 tick 内某节点同时出现车辆到达与车辆离开事件",
+      "需要校验或实现逐 tick 节点更新顺序"
+    ],
+    "workflow_steps": [
+      "对每个节点收集当前 tick 的到达事件与离开事件",
+      "若两者均存在，则先处理全部到达事件",
+      "到达处理完成后再处理离开事件",
+      "若仅存在其中一类事件，按常规处理，不触发本排序约束"
+    ],
+    "constraints": [
+      "到达事件必须先于离开事件处理",
+      "本规则仅约束事件排序，不改变其他通行或优先级规则"
+    ],
+    "cautions": [
+      "不要将本规则与信号放行顺序或优先级裁决混淆",
+      "仅在到达与离开同 tick 共存时生效"
+    ],
+    "output_contract": [
+      "符合到达先于离开顺序的 tick 更新结果"
+    ],
+    "examples": [
+      {
+        "input": "某 tick 内节点 N 同时有车辆 A 到达、车辆 B 尝试离开",
+        "output": "先处理车辆 A 的到达并更新节点队列，再处理车辆 B 的离开",
+        "notes": "到达先于离开"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "更新顺序",
+      "事件排序",
+      "节点更新",
+      "tick"
+    ],
+    "support_ids": [
+      "193b9a42-7e6b-52e8-8561-00b79c5aa973"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "26783baa-ccdb-5160-a038-7a63b7b7d1fa"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|强制同 tick 内到达先于离开的处理顺序|交通仿真规则|仿真更新顺序约束|事件排序约束|每 tick 状态更新|到达先于离开的 tick 更新顺序规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

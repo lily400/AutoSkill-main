@@ -1,0 +1,1589 @@
+[?2004hroot@ad8c00253ccd:/workspace# export PS1='p1$ '; clear
+[?2004l[H[J[3J[?2004hp1$ cat /harbor/skills/0166b7ef-ec54-5e0c-9bd2-086b92fc3430/SKILL.md
+[?2004l---
+id: "0166b7ef-ec54-5e0c-9bd2-086b92fc3430"
+name: "Pydantic 验证器模式选型与实现"
+description: "根据校验需求选择字段验证器（annotated 或 decorator 模式）或模型验证器（before/after），并按正确签名实现，用于为 Pydantic 模型添加自定义校验逻辑时。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "字段校验"
+  - "模型校验"
+  - "模式选型"
+triggers:
+  - "需要为字段或整个模型添加自定义校验"
+  - "不确定使用 annotated 还是 decorator 模式"
+  - "需要在 before 与 after 模型验证器之间做选择"
+examples:
+  - input: "需要在整个模型校验完成后做跨字段一致性检查"
+    output: "选择 after 模型验证器，定义为实例方法并返回校验后的实例"
+    notes: "after 验证器在整体模型校验后运行"
+---
+
+# Pydantic 验证器模式选型与实现
+
+根据校验需求选择字段验证器（annotated 或 decorator 模式）或模型验证器（before/after），并按正确签名实现，用于为 Pydantic 模型添加自定义校验逻辑时。
+
+## Prompt
+
+先判断校验目标是单个字段还是整个模型：字段级校验在 annotated 模式与 decorator 模式之间选型，模型级校验在 before 与 after 之间选型。选定后按对应签名实现验证器，确保 after 模型验证器为实例方法并返回校验后的实例。最后给出可运行代码并说明选型理由。
+
+## Objective
+
+为给定校验需求选择并实现正确的 Pydantic 验证器模式
+## Applicable Signals
+
+- 校验逻辑作用于单个字段
+- 校验逻辑需要访问整个已校验模型
+- 需要在初始化前后介入校验
+
+## Contraindications
+
+- 仅需内置字段约束即可满足
+- 校验逻辑与模型定义无关
+
+## Intervention Moves
+
+- 区分字段级与模型级校验需求
+- 字段级在 annotated 与 decorator 模式间选型
+- 模型级在 before 与 after 之间选型
+- 按所选模式实现验证器并校验签名
+
+## Workflow Steps
+
+- 明确校验目标是单字段还是整个模型
+- 字段级：在 annotated 模式与 decorator 模式之间选择并实现
+- 模型级：在 before 与 after 验证器之间选择并实现
+- after 验证器定义为实例方法并返回校验后的实例
+- 输出可运行代码并说明选型理由
+
+## Constraints
+
+- after 模型验证器必须返回校验后的实例
+- 验证器签名需与所选模式匹配
+
+## Cautions
+
+- 模型级 after 验证器作为实例方法运行，属于初始化后钩子，遗漏返回值会导致校验结果丢失
+
+## Output Contract
+
+- 可运行的验证器代码，模式选择有明确理由
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要在整个模型校验完成后做跨字段一致性检查
+- Therapist/Output: 选择 after 模型验证器，定义为实例方法并返回校验后的实例
+- Notes: after 验证器在整体模型校验后运行
+
+## Triggers
+
+- 需要为字段或整个模型添加自定义校验
+- 不确定使用 annotated 还是 decorator 模式
+- 需要在 before 与 after 模型验证器之间做选择
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要在整个模型校验完成后做跨字段一致性检查
+
+Output:
+
+  选择 after 模型验证器，定义为实例方法并返回校验后的实例
+
+Notes:
+
+  after 验证器在整体模型校验后运行
+[?2004hp1$ cat /harbor/skills/1047b6b8-7e89-5dd1-8eb4-08e24cb05a08/SKILL.md
+[?2004l---
+id: "1047b6b8-7e89-5dd1-8eb4-08e24cb05a08"
+name: "After 模型验证器实现"
+description: "实现 Pydantic after 模型验证器：将其定义为实例方法，在整个模型校验完成后运行，作为初始化后钩子，并必须返回校验后的实例。适用于需要在模型级校验完成后执行跨字段逻辑或后初始化处理的场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "model_validator"
+  - "after-validator"
+  - "模型验证器"
+  - "数据校验"
+triggers:
+  - "需要在整个模型校验完成后执行跨字段逻辑"
+  - "需要后初始化钩子"
+  - "需要在模型级校验后对已校验实例做处理"
+examples:
+  - input: "需要在整个模型校验完成后执行跨字段逻辑"
+    output: "定义一个 after 模式模型验证器，作为实例方法接收 self，执行逻辑后返回校验后的实例"
+    notes: "验证器必须返回实例"
+---
+
+# After 模型验证器实现
+
+实现 Pydantic after 模型验证器：将其定义为实例方法，在整个模型校验完成后运行，作为初始化后钩子，并必须返回校验后的实例。适用于需要在模型级校验完成后执行跨字段逻辑或后初始化处理的场景。
+
+## Prompt
+
+编写 after 模型验证器时：1) 使用 model_validator(mode='after') 装饰器（或等价 after 模式）声明；2) 将方法定义为实例方法，接收 self；3) 在方法体内执行跨字段或后初始化逻辑；4) 必须返回校验后的实例（通常 return self）。不要用于仅需单字段校验或需在模型校验前修改输入的场景。
+
+## Objective
+
+正确编写 after 模型验证器并返回校验后的实例
+## Applicable Signals
+
+- 需要在整个模型校验完成后执行跨字段逻辑
+- 需要后初始化钩子
+
+## Contraindications
+
+- 只需单字段校验
+- 需要在模型校验前修改输入
+
+## Intervention Moves
+
+- 使用 after 模式声明模型验证器
+- 将验证器定义为实例方法并接收 self
+- 在方法内执行跨字段或后初始化逻辑
+- 返回校验后的实例
+
+## Workflow Steps
+
+- 确认需求属于模型级校验完成后的处理，而非单字段校验或前置输入修改
+- 使用 after 模式声明模型验证器
+- 将验证器定义为实例方法，接收 self
+- 在方法体内实现跨字段或后初始化逻辑
+- 确保方法返回校验后的实例
+
+## Constraints
+
+- after 验证器必须定义为实例方法
+- after 验证器必须返回校验后的实例
+
+## Cautions
+
+- 若误用于单字段校验或前置输入修改场景，应改用其他验证器模式
+
+## Output Contract
+
+- 返回校验后实例的 after 验证器方法
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要在整个模型校验完成后执行跨字段逻辑
+- Therapist/Output: 定义一个 after 模式模型验证器，作为实例方法接收 self，执行逻辑后返回校验后的实例
+- Notes: 验证器必须返回实例
+
+## Triggers
+
+- 需要在整个模型校验完成后执行跨字段逻辑
+- 需要后初始化钩子
+- 需要在模型级校验后对已校验实例做处理
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要在整个模型校验完成后执行跨字段逻辑
+
+Output:
+
+  定义一个 after 模式模型验证器，作为实例方法接收 self，执行逻辑后返回校验后的实例
+
+Notes:
+
+  验证器必须返回实例
+[?2004hp1$ cat /harbor/skills/15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce/SKILL.md
+[?2004l---
+id: "15220ea2-0440-5d9e-ab4b-5d2ecf1b59ce"
+name: "Wrap 校验器前后处理与提前终止"
+description: "使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "wrap"
+  - "字段校验"
+triggers:
+  - "需要在标准校验前后插入自定义逻辑"
+  - "需要在校验早期直接返回或抛错终止"
+  - "需要最灵活的校验流程控制"
+---
+
+# Wrap 校验器前后处理与提前终止
+
+使用 wrap 校验器在 Pydantic 及其他校验器处理前后运行自定义代码，或通过提前返回值/抛错立即终止校验。适用于需要最灵活控制字段校验流程的场景。
+
+## Prompt
+
+实现一个 wrap 校验器：在标准校验前后插入自定义逻辑，或在需要时提前返回/抛错终止校验。先确认简单类型转换不适用本技能（应改用 annotated 校验器）。编写函数时明确前后处理分支与提前终止分支，并保证返回值为最终字段值。
+
+## Objective
+
+在字段校验中实现前后处理或提前终止逻辑
+## Applicable Signals
+
+- 标准校验前后需要自定义代码
+- 需要提前返回或抛错以终止校验
+
+## Contraindications
+
+- 简单类型转换用 annotated 校验器即可
+
+## Intervention Moves
+
+- 在 Pydantic 及其他校验器处理前后运行代码
+- 通过提前返回值终止校验
+- 通过抛错终止校验
+
+## Workflow Steps
+
+- 判断是否确需 wrap 校验器（否则改用 annotated 校验器）
+- 编写 wrap 校验器函数，明确前后处理逻辑
+- 在需要时提前返回最终值或抛出错误以终止校验
+- 确认返回值为最终字段值
+
+## Constraints
+
+- wrap 校验器为最灵活模式，应仅在需要前后处理或提前终止时使用
+
+## Cautions
+
+- 提前返回会跳过后续校验器处理，需确认符合预期
+
+## Output Contract
+
+- 可运行的 wrap 校验器函数，含前后处理或提前终止分支
+
+## Triggers
+
+- 需要在标准校验前后插入自定义逻辑
+- 需要在校验早期直接返回或抛错终止
+- 需要最灵活的校验流程控制
+[?2004hp1$ cat /harbor/skills/2de78ee8-e350-5fb5-be7d-84c34b80f056/SKILL.md
+[?2004l---
+id: "2de78ee8-e350-5fb5-be7d-84c34b80f056"
+name: "字段校验器显式返回值契约"
+description: "编写或审查 Pydantic 字段级 field_validator 时，确保校验逻辑在每条执行路径上显式返回最终值（原值或规范化后的值），避免字段被置空或校验失效。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "field_validator"
+  - "返回值契约"
+  - "数据校验"
+triggers:
+  - "编写或修改 field_validator 函数体"
+  - "校验器需要转换或规范化字段值"
+  - "审查字段校验器实现是否正确"
+examples:
+  - input: "编写一个校验数字为偶数的 field_validator，仅做检查不修改值"
+    output: "def check_even(cls, v):\n    if v % 2 != 0:\n        raise ValueError(f'{v} is not an even number')\n    return v"
+    notes: "仅做检查时返回原值不变"
+---
+
+# 字段校验器显式返回值契约
+
+编写或审查 Pydantic 字段级 field_validator 时，确保校验逻辑在每条执行路径上显式返回最终值（原值或规范化后的值），避免字段被置空或校验失效。
+
+## Prompt
+
+在实现或审查 field_validator 函数体时，遵循返回值契约：校验器必须用 return 语句返回最终值（原值或规范化后的值）。若校验器只做检查而不返回，Pydantic 会将字段置为 None 或导致校验失效。检查步骤：1) 确认函数体每条执行路径都以 return 结束；2) 若对值做了转换或规范化，返回转换后的值；3) 若仅做校验，返回原值不变；4) 通过实例化模型验证字段值符合预期。
+
+## Objective
+
+保证字段校验器显式返回校验后的值，避免模型字段被置空或校验失效。
+## Applicable Signals
+
+- 正在编写 field_validator 函数体
+- 校验器对字段值做转换或规范化
+- 校验器仅做检查而不修改值
+
+## Contraindications
+
+- 仅需声明字段约束（如 gt、max_length）而无需自定义逻辑
+- 编写模型级校验器而非字段级校验器
+
+## Intervention Moves
+
+- 在每条执行路径末尾添加 return 语句
+- 转换场景返回转换后的值
+- 仅检查场景返回原值不变
+- 实例化模型验证字段值符合预期
+
+## Workflow Steps
+
+- 确认校验器为字段级 field_validator
+- 确保函数体每条执行路径都以 return 结束
+- 若做了转换或规范化，返回转换后的值
+- 若仅做校验，返回原值不变
+- 实例化模型并检查字段值是否符合预期
+
+## Constraints
+
+- 校验器必须显式返回最终值
+- 不得依赖隐式返回 None
+
+## Cautions
+
+- 遗漏 return 会导致字段被置空或校验失效
+- 转换逻辑需返回转换后的值而非原始输入
+
+## Output Contract
+
+- 校验器函数以 return 语句返回最终值，且模型实例化后字段值符合预期。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 编写一个校验数字为偶数的 field_validator，仅做检查不修改值
+- Therapist/Output: def check_even(cls, v):
+    if v % 2 != 0:
+        raise ValueError(f'{v} is not an even number')
+    return v
+- Notes: 仅做检查时返回原值不变
+
+## Triggers
+
+- 编写或修改 field_validator 函数体
+- 校验器需要转换或规范化字段值
+- 审查字段校验器实现是否正确
+
+## Examples
+
+### Example 1
+
+Input:
+
+  编写一个校验数字为偶数的 field_validator，仅做检查不修改值
+
+Output:
+
+  def check_even(cls, v):
+      if v % 2 != 0:
+          raise ValueError(f'{v} is not an even number')
+      return v
+
+Notes:
+
+  仅做检查时返回原值不变
+[?2004hp1$ cat /harbor/skills/3697a04c-0fec-56b7-8448-1c44e3349e5e/SKILL.md
+[?2004l---
+id: "3697a04c-0fec-56b7-8448-1c44e3349e5e"
+name: "Before 校验器安全实现"
+description: "在 Pydantic 中实现 before 模式校验器：在内部解析与校验之前处理原始输入，并避免在校验失败前直接修改值，防止变更值流入其他校验器（如 unions）。适用于需要处理原始输入且校验器可能抛出校验错误的场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "before-validator"
+  - "数据校验"
+  - "副作用防护"
+triggers:
+  - "需要在 Pydantic 内部解析前处理原始输入"
+  - "校验器可能抛出校验错误且涉及值变更"
+examples:
+  - input: "需要在 Pydantic 解析前处理原始输入，且校验器可能抛出校验错误"
+    output: "实现 before 校验器：处理原始输入，避免在校验失败前原地修改值，返回新值交由类型注解再次校验"
+    notes: "若无需处理原始输入，应改用 after 校验器"
+---
+
+# Before 校验器安全实现
+
+在 Pydantic 中实现 before 模式校验器：在内部解析与校验之前处理原始输入，并避免在校验失败前直接修改值，防止变更值流入其他校验器（如 unions）。适用于需要处理原始输入且校验器可能抛出校验错误的场景。
+
+## Prompt
+
+实现 before 校验器时，先确认需求必须在 Pydantic 内部解析前处理原始输入；函数接收原始输入（理论上可为任意对象），需自行处理类型不确定性。若后续可能抛出校验错误，避免直接原地修改值，改为返回新值或在校验通过后再变更，以防变更值流入其他校验器（如 unions）。返回的值将由 Pydantic 依据类型注解再次校验。
+
+## Objective
+
+安全地实现 before 校验器，避免副作用污染后续校验
+## Applicable Signals
+
+- 需要绕过或先于 Pydantic 内部解析与校验（如 str 到 int 的强制转换）处理输入
+- 校验逻辑需面对任意原始对象类型
+- 校验函数内可能抛出校验错误且涉及值变更
+
+## Contraindications
+
+- after 校验器已能满足需求
+- 无需处理原始输入类型
+
+## Intervention Moves
+
+- 确认使用 before 模式而非默认 after 模式
+- 在函数内处理原始输入的类型不确定性
+- 避免在校验失败前直接原地修改值
+- 返回新值交由类型注解再次校验
+
+## Workflow Steps
+
+- 判断是否必须在 Pydantic 内部解析前处理原始输入，否则改用 after 校验器
+- 编写 before 校验器函数，接收原始输入并处理其类型不确定性
+- 若函数后续可能抛出校验错误，避免直接原地修改值，改为返回新值
+- 返回结果，由 Pydantic 依据类型注解再次校验
+
+## Constraints
+
+- before 校验器运行于 Pydantic 内部解析与校验之前
+- 返回的值必须能通过类型注解的再次校验
+- 避免在校验失败前直接修改值，以防变更值流入其他校验器（如 unions）
+
+## Cautions
+
+- before 校验器比 after 校验器更灵活，但需处理任意原始输入对象
+- 在 unions 场景下，被修改的值可能传递给其他校验器，需格外谨慎
+
+## Output Contract
+
+- 返回经类型注解再次校验的值的 before 校验器函数
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要在 Pydantic 解析前处理原始输入，且校验器可能抛出校验错误
+- Therapist/Output: 实现 before 校验器：处理原始输入，避免在校验失败前原地修改值，返回新值交由类型注解再次校验
+- Notes: 若无需处理原始输入，应改用 after 校验器
+
+## Triggers
+
+- 需要在 Pydantic 内部解析前处理原始输入
+- 校验器可能抛出校验错误且涉及值变更
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要在 Pydantic 解析前处理原始输入，且校验器可能抛出校验错误
+
+Output:
+
+  实现 before 校验器：处理原始输入，避免在校验失败前原地修改值，返回新值交由类型注解再次校验
+
+Notes:
+
+  若无需处理原始输入，应改用 after 校验器
+[?2004hp1$ cat /harbor/skills/3f2908c2-5e45-53d0-8741-3e78c412be38/SKILL.md
+[?2004l---
+id: "3f2908c2-5e45-53d0-8741-3e78c412be38"
+name: "Pydantic 校验器执行顺序控制"
+description: "按 Pydantic 规定的顺序组织字段校验器与模型校验器：字段校验先于模型校验，before 模式先于 after 模式，确保校验逻辑的依赖关系正确。适用于模型中存在多个校验器或校验逻辑依赖其他字段已校验值的设计场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "ordering"
+  - "validation"
+triggers:
+  - "模型中有多个字段校验器和模型校验器"
+  - "校验逻辑依赖其他字段已校验后的值"
+  - "需要确定 before 与 after 校验器的相对执行位置"
+examples:
+  - input: "模型中有字段校验器与依赖其他字段已校验值的模型校验器"
+    output: "将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行"
+    notes: "字段校验先于模型校验"
+---
+
+# Pydantic 校验器执行顺序控制
+
+按 Pydantic 规定的顺序组织字段校验器与模型校验器：字段校验先于模型校验，before 模式先于 after 模式，确保校验逻辑的依赖关系正确。适用于模型中存在多个校验器或校验逻辑依赖其他字段已校验值的设计场景。
+
+## Prompt
+
+在设计或审查 Pydantic 模型校验器时，先梳理各校验器的依赖关系，再按 Pydantic 执行顺序规则安排：字段校验器先于模型校验器执行；同一层级内 before 模式先于 after 模式执行。若某校验逻辑依赖其他字段已校验后的值，应将其放在模型校验器或 after 模式中；若需要处理原始输入，应使用 before 模式并注意原始输入类型不确定。确认顺序后检查依赖关系是否成立。
+
+## Objective
+
+正确安排多个校验器的执行顺序
+## Applicable Signals
+
+- 模型中同时存在字段校验器与模型校验器
+- 校验器之间或校验器与字段之间存在数据依赖
+- 校验器使用 before 或 after 模式且需要确定执行先后
+
+## Contraindications
+
+- 只有一个独立校验器且无顺序依赖
+- 校验器之间不存在任何数据或执行依赖
+
+## Intervention Moves
+
+- 识别每个校验器的依赖对象与所需输入状态
+- 按字段校验先于模型校验的规则排列
+- 在同一层级内按 before 先于 after 的规则排列
+- 对依赖已校验值的逻辑改用模型校验器或 after 模式
+- 对需要处理原始输入的逻辑使用 before 模式并处理类型不确定性
+
+## Workflow Steps
+
+- 列出模型中所有字段校验器与模型校验器
+- 标注每个校验器的输入依赖（原始输入或已校验值）
+- 按字段校验先于模型校验排序
+- 在同一层级内按 before 先于 after 排序
+- 验证排序后各校验器的依赖关系成立
+
+## Constraints
+
+- 字段校验器先于模型校验器执行
+- before 模式先于 after 模式执行
+- 依赖已校验值的逻辑不得放在 before 模式中
+
+## Cautions
+
+- before 模式接收原始输入，类型不确定，需处理所有可能的输入类型
+- 即使 before 校验器对输入做了转换，Pydantic 仍会按声明类型执行校验
+
+## Output Contract
+
+- 校验器顺序符合 Pydantic 执行规则且依赖关系正确的模型设计
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 模型中有字段校验器与依赖其他字段已校验值的模型校验器
+- Therapist/Output: 将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行
+- Notes: 字段校验先于模型校验
+
+## Triggers
+
+- 模型中有多个字段校验器和模型校验器
+- 校验逻辑依赖其他字段已校验后的值
+- 需要确定 before 与 after 校验器的相对执行位置
+
+## Examples
+
+### Example 1
+
+Input:
+
+  模型中有字段校验器与依赖其他字段已校验值的模型校验器
+
+Output:
+
+  将依赖已校验值的逻辑放入模型校验器，字段校验器保持在前执行
+
+Notes:
+
+  字段校验先于模型校验
+[?2004hp1$ cat /harbor/skills/4045e587-c93f-5cf1-96d8-34f912827e83/SKILL.md
+[?2004l---
+id: "4045e587-c93f-5cf1-96d8-34f912827e83"
+name: "Pydantic 模型级跨字段校验器"
+description: "使用 model_validator(mode='after') 在模型实例化后校验同一模型内多个字段之间的一致性，不一致时抛出 ValueError。适用于字段级约束无法表达的跨字段逻辑。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "model_validator"
+  - "跨字段校验"
+  - "数据校验"
+triggers:
+  - "需要比较同一模型内多个字段的值"
+  - "字段级约束无法表达跨字段逻辑"
+  - "需要在模型实例化后校验字段一致性"
+examples:
+  - input: "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str"
+    output: "@model_validator(mode='after')\ndef check_passwords_match(self) -> Self:\n    if self.password != self.password_repeat:\n        raise ValueError('Passwords do not match')\n    return self"
+    notes: "跨字段一致性校验示例"
+---
+
+# Pydantic 模型级跨字段校验器
+
+使用 model_validator(mode='after') 在模型实例化后校验同一模型内多个字段之间的一致性，不一致时抛出 ValueError。适用于字段级约束无法表达的跨字段逻辑。
+
+## Prompt
+
+在模型定义中声明一个 mode='after' 的 model_validator，接收已实例化的模型自身，比较相关字段值；若不一致则抛出 ValueError 并给出清晰错误信息；校验通过时返回 self。
+
+## Objective
+
+在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误
+## Applicable Signals
+
+- 模型包含两个及以上需相互比较的字段
+- 单字段约束无法覆盖的依赖关系
+
+## Contraindications
+
+- 仅需单字段约束时
+- 需要在实例化前处理原始输入时（应使用 before 校验器）
+
+## Intervention Moves
+
+- 声明 @model_validator(mode='after') 方法
+- 在方法内比较相关字段值
+- 不一致时 raise ValueError 并说明原因
+- 校验通过时 return self
+
+## Workflow Steps
+
+- 确认跨字段一致性需求无法由字段级约束表达
+- 在模型类中定义 mode='after' 的 model_validator 方法
+- 在方法内读取并比较相关字段
+- 不一致时抛出 ValueError 并给出明确错误信息
+- 校验通过时返回 self
+
+## Constraints
+
+- after 校验器在模型实例化后运行，操作的是已解析的字段值
+- 校验失败必须抛出 ValueError 以触发验证错误
+
+## Cautions
+
+- before 校验器处理原始输入，若在 before 中直接修改值后又抛出验证错误，被修改的值可能传递给其他校验器（如使用 unions 时），应避免
+
+## Output Contract
+
+- 返回 self 的 after 模型校验器，校验失败时抛出 ValueError
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: class UserModel(BaseModel):
+    username: str
+    password: str
+    password_repeat: str
+- Therapist/Output: @model_validator(mode='after')
+def check_passwords_match(self) -> Self:
+    if self.password != self.password_repeat:
+        raise ValueError('Passwords do not match')
+    return self
+- Notes: 跨字段一致性校验示例
+
+## Triggers
+
+- 需要比较同一模型内多个字段的值
+- 字段级约束无法表达跨字段逻辑
+- 需要在模型实例化后校验字段一致性
+
+## Examples
+
+### Example 1
+
+Input:
+
+  class UserModel(BaseModel):
+      username: str
+      password: str
+      password_repeat: str
+
+Output:
+
+  @model_validator(mode='after')
+  def check_passwords_match(self) -> Self:
+      if self.password != self.password_repeat:
+          raise ValueError('Passwords do not match')
+      return self
+
+Notes:
+
+  跨字段一致性校验示例
+[?2004hp1$ cat /harbor/skills/4641701b-2dc0-5429-a380-d65c1c0ec55d/SKILL.md
+[?2004l---
+id: "4641701b-2dc0-5429-a380-d65c1c0ec55d"
+name: "Pydantic 模型级校验器与 ValidationInfo 使用"
+description: "实现 Pydantic 模型级校验器，并在校验中通过 ValidationInfo 读取字段数据、已校验数据与校验上下文，用于跨字段依赖或需要访问上下文的校验场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "模型校验"
+  - "ValidationInfo"
+  - "跨字段校验"
+  - "校验上下文"
+triggers:
+  - "校验逻辑依赖多个字段"
+  - "需要访问 ValidationInfo 的 data"
+  - "需要访问 ValidationInfo 的 context"
+  - "需要实现模型级而非字段级校验"
+---
+
+# Pydantic 模型级校验器与 ValidationInfo 使用
+
+实现 Pydantic 模型级校验器，并在校验中通过 ValidationInfo 读取字段数据、已校验数据与校验上下文，用于跨字段依赖或需要访问上下文的校验场景。
+
+## Prompt
+
+当校验逻辑依赖多个字段，或需要访问 ValidationInfo 的 data 或 context 时，使用本技能：在模型中定义模型级校验器（annotated 或 decorator 模式），按需读取 info.data（已校验字段值）与 info.context（校验上下文），在条件不满足时抛出校验错误，并构造模型实例验证校验器按预期工作。
+
+## Objective
+
+实现模型级校验并正确读取校验信息与上下文
+## Applicable Signals
+
+- 校验规则涉及两个及以上字段的相互依赖
+- 校验需要读取已校验字段数据（data）
+- 校验需要读取外部传入的校验上下文（context）
+
+## Contraindications
+
+- 仅涉及单字段简单约束时，应使用字段级校验器而非模型级校验器
+
+## Intervention Moves
+
+- 选择模型级校验器模式（annotated 或 decorator）
+- 在校验器中通过 ValidationInfo 读取 data 与 context
+- 在条件不满足时抛出校验错误
+- 运行模型验证校验器行为
+
+## Workflow Steps
+
+- 判断校验是否确需跨字段依赖或访问校验上下文
+- 在模型中定义模型级校验器（annotated 或 decorator 模式）
+- 在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）
+- 当校验条件不满足时抛出校验错误
+- 构造模型实例验证校验器按预期工作
+
+## Constraints
+
+- 仅在跨字段依赖或需要访问 ValidationInfo 数据/上下文时使用模型级校验器
+- 单字段简单约束应使用字段级校验器
+
+## Cautions
+
+- 校验器执行顺序会影响可读取的字段数据，需注意依赖字段的校验先后
+
+## Output Contract
+
+- 可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误
+
+## Triggers
+
+- 校验逻辑依赖多个字段
+- 需要访问 ValidationInfo 的 data
+- 需要访问 ValidationInfo 的 context
+- 需要实现模型级而非字段级校验
+[?2004hp1$ cat /harbor/skills/50016175-02e2-59a2-b10a-9128ffd4676a/SKILL.md
+[?2004l---
+id: "50016175-02e2-59a2-b10a-9128ffd4676a"
+name: "Before 校验器预处理原始输入"
+description: "使用 before 校验器在 Pydantic 内部类型校验前对任意原始输入做规范化处理（如将标量包装为列表），并覆盖所有可能的输入类型；处理后的值仍会继续进入 Pydantic 的字段类型校验。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "before-validator"
+  - "input-normalization"
+triggers:
+  - "输入类型不确定，需要在校验前先规范化"
+  - "需要把标量包装为列表等预处理动作"
+  - "需要在 Pydantic 内部类型校验前干预原始输入"
+examples:
+  - input: "字段为 list[int]，传入标量 2"
+    output: "before 校验器将 2 包装为 [2]，随后 Pydantic 校验通过，numbers=[2]"
+    notes: "value 使用 Any 类型提示以接收原始输入"
+  - input: "字段为 list[int]，传入 'str'"
+    output: "校验器处理后仍由 Pydantic 执行 int 校验，产生 int_parsing 校验错误"
+    notes: "说明 before 校验器不替代内部类型校验"
+---
+
+# Before 校验器预处理原始输入
+
+使用 before 校验器在 Pydantic 内部类型校验前对任意原始输入做规范化处理（如将标量包装为列表），并覆盖所有可能的输入类型；处理后的值仍会继续进入 Pydantic 的字段类型校验。
+
+## Prompt
+
+在字段上声明 before 校验器，接收原始输入（类型提示用 Any，因为校验前输入可以是任何类型）。在校验器内对原始输入做规范化处理（例如把标量包装为列表），并显式覆盖所有可能的输入类型（包括 tuple 等通常能通过 list 校验的序列类型）。处理完成后返回结果，交由 Pydantic 继续按字段类型执行内部校验；不要假设校验器已替代类型校验。
+
+## Objective
+
+在类型校验前对原始输入做规范化处理
+## Applicable Signals
+
+- 字段可能收到标量而非列表等非预期形态
+- 需要在类型转换前统一输入形态
+- 原始输入类型无法预先确定
+
+## Contraindications
+
+- 无需在类型校验前干预输入
+- 无法枚举所有可能的输入类型
+- 希望跳过 Pydantic 内部类型校验（应改用 plain 校验器）
+
+## Intervention Moves
+
+- 用 Any 作为 value 的类型提示以接收任意原始输入
+- 在校验器内将标量包装为列表等规范化处理
+- 显式处理 tuple 等其它可能通过 list 校验的序列类型
+- 返回处理后结果，交由 Pydantic 继续类型校验
+
+## Workflow Steps
+
+- 确认该字段需要在类型校验前干预原始输入
+- 声明 before 校验器，value 使用 Any 类型提示
+- 在校验器内枚举并处理所有可能的输入类型（含标量、tuple 等序列）
+- 返回规范化后的值
+- 依赖 Pydantic 继续对返回值执行字段类型校验
+
+## Constraints
+
+- before 校验器接收的是原始输入，类型提示应为 Any
+- 必须覆盖所有可能的输入类型，包括 tuple 等通常能通过 list 校验的序列
+- before 校验器不会跳过 Pydantic 对字段类型的内部校验
+
+## Cautions
+
+- 若只处理部分输入类型，未覆盖的形态可能在后续类型校验中报错
+- 若需要在校验器返回后立即终止校验，应使用 plain 校验器而非 before 校验器
+
+## Output Contract
+
+- 经预处理的输入继续进入 Pydantic 类型校验；校验器返回规范化后的值，由 Pydantic 按字段类型完成后续校验。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 字段为 list[int]，传入标量 2
+- Therapist/Output: before 校验器将 2 包装为 [2]，随后 Pydantic 校验通过，numbers=[2]
+- Notes: value 使用 Any 类型提示以接收原始输入
+
+### Example 2
+
+- Client/Input: 字段为 list[int]，传入 'str'
+- Therapist/Output: 校验器处理后仍由 Pydantic 执行 int 校验，产生 int_parsing 校验错误
+- Notes: 说明 before 校验器不替代内部类型校验
+
+## Triggers
+
+- 输入类型不确定，需要在校验前先规范化
+- 需要把标量包装为列表等预处理动作
+- 需要在 Pydantic 内部类型校验前干预原始输入
+
+## Examples
+
+### Example 1
+
+Input:
+
+  字段为 list[int]，传入标量 2
+
+Output:
+
+  before 校验器将 2 包装为 [2]，随后 Pydantic 校验通过，numbers=[2]
+
+Notes:
+
+  value 使用 Any 类型提示以接收原始输入
+
+### Example 2
+
+Input:
+
+  字段为 list[int]，传入 'str'
+
+Output:
+
+  校验器处理后仍由 Pydantic 执行 int 校验，产生 int_parsing 校验错误
+
+Notes:
+
+  说明 before 校验器不替代内部类型校验
+[?2004hp1$ cat /harbor/skills/688b17b0-4bcf-5eb2-879a-50609da68fe0/SKILL.md
+[?2004l---
+id: "688b17b0-4bcf-5eb2-879a-50609da68fe0"
+name: "Pydantic 模型级 before/after 校验器实现"
+description: "使用 model_validator 在 before/after 阶段对整体模型输入执行校验，处理原始输入类型并支持提前终止校验，适用于跨字段或模型级约束。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "model_validator"
+  - "模型级校验"
+  - "before"
+  - "after"
+triggers:
+  - "需要跨字段或整体模型约束校验"
+  - "需要在 Pydantic 处理前后介入校验"
+examples:
+  - input: "需要在模型级禁止输入中出现 card_number 字段"
+    output: "@model_validator(mode='before')\n@classmethod\ndef check_card_number_not_present(cls, data: Any) -> Any:\n    if isinstance(data, dict):\n        if 'card_number' in data:\n            raise ValueError(\"'card_number' should not be included\")\n    return data"
+    notes: "before 校验器将 data 标注为 Any，并先判断是否为字典再访问键"
+---
+
+# Pydantic 模型级 before/after 校验器实现
+
+使用 model_validator 在 before/after 阶段对整体模型输入执行校验，处理原始输入类型并支持提前终止校验，适用于跨字段或模型级约束。
+
+## Prompt
+
+实现模型级校验器时，先判断校验时机：需要在 Pydantic 及其他校验器处理输入之前介入、或需访问原始输入时使用 mode='before'；需要在字段校验完成后对已解析模型做跨字段约束时使用 mode='after'。before 校验器的 data 参数类型标注为 Any，因为原始输入可能是字典，也可能在启用 from_attributes 时是任意类实例，需先判断类型再访问键。校验失败时抛出 ValueError 以终止校验。
+
+## Objective
+
+实现模型级 before/after 校验并正确处理原始输入
+## Applicable Signals
+
+- 约束涉及多个字段或整个模型
+- 需要在字段校验之前检查原始输入中是否包含禁止字段
+- 需要在字段校验之后对已解析模型做整体校验
+
+## Contraindications
+
+- 仅涉及单字段校验
+- 无需访问原始输入数据
+
+## Intervention Moves
+
+- 选择 mode='before' 或 mode='after' 以匹配校验时机
+- before 校验器将 data 标注为 Any 并先判断是否为 dict 再访问键
+- 校验失败时抛出 ValueError 终止校验
+- 校验通过时返回 data 以继续后续处理
+
+## Workflow Steps
+
+- 确定约束是模型级还是字段级，模型级才使用 model_validator
+- 根据是否需要访问原始输入选择 mode='before'，否则选择 mode='after'
+- before 校验器将 data 参数标注为 Any，并先判断类型（如 isinstance(data, dict)）再访问键
+- 在检测到违规时抛出 ValueError 并给出明确信息
+- 校验通过时返回 data
+
+## Constraints
+
+- before 校验器接收的原始输入不一定是字典，需先判断类型
+- 校验失败应通过抛出 ValueError 终止校验
+
+## Cautions
+
+- 启用 from_attributes 时 before 校验器可能收到任意类实例而非字典
+- 不要假设原始输入总是字典
+
+## Output Contract
+
+- 可运行的 model_validator 实现，含 before/after 模式与类型处理
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要在模型级禁止输入中出现 card_number 字段
+- Therapist/Output: @model_validator(mode='before')
+@classmethod
+def check_card_number_not_present(cls, data: Any) -> Any:
+    if isinstance(data, dict):
+        if 'card_number' in data:
+            raise ValueError("'card_number' should not be included")
+    return data
+- Notes: before 校验器将 data 标注为 Any，并先判断是否为字典再访问键
+
+## Triggers
+
+- 需要跨字段或整体模型约束校验
+- 需要在 Pydantic 处理前后介入校验
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要在模型级禁止输入中出现 card_number 字段
+
+Output:
+
+  @model_validator(mode='before')
+  @classmethod
+  def check_card_number_not_present(cls, data: Any) -> Any:
+      if isinstance(data, dict):
+          if 'card_number' in data:
+              raise ValueError("'card_number' should not be included")
+      return data
+
+Notes:
+
+  before 校验器将 data 标注为 Any，并先判断是否为字典再访问键
+[?2004hp1$ cat /harbor/skills/6f6dd4cb-79fc-53a5-a853-3cf312474f21/SKILL.md
+[?2004l---
+id: "6f6dd4cb-79fc-53a5-a853-3cf312474f21"
+name: "Pydantic 校验错误抛出与校验器顺序控制"
+description: "在 Pydantic 自定义校验器中按规范抛出结构化校验错误，并依据校验器执行顺序安排依赖关系，确保多校验器编排与失败处理正确。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validation"
+  - "error-handling"
+  - "validator-ordering"
+triggers:
+  - "校验失败需返回结构化错误"
+  - "多个校验器存在执行顺序依赖"
+  - "需要自定义校验失败处理"
+---
+
+# Pydantic 校验错误抛出与校验器顺序控制
+
+在 Pydantic 自定义校验器中按规范抛出结构化校验错误，并依据校验器执行顺序安排依赖关系，确保多校验器编排与失败处理正确。
+
+## Prompt
+
+当自定义校验失败需要返回结构化错误，或多个校验器之间存在执行顺序依赖时使用本技能。步骤：1) 确认当前校验器是否应抛出错误而非静默返回；2) 使用 Pydantic 规范方式抛出校验错误（如 ValueError/AssertionError 或 PydanticCustomError），确保错误类型与信息结构化；3) 若存在多校验器依赖，明确各校验器的执行顺序（字段校验器与模型校验器的先后、同字段多校验器的顺序），据此安排依赖；4) 验证失败时输出包含字段路径、错误类型与输入值的结构化错误。不要用于没有自定义校验失败路径的场景。
+
+## Objective
+
+正确抛出校验错误并控制校验器执行顺序
+## Applicable Signals
+
+- 校验失败需返回结构化错误
+- 多个校验器存在执行顺序依赖
+
+## Contraindications
+
+- 无自定义校验失败路径时
+
+## Intervention Moves
+
+- 在校验器中以规范方式抛出校验错误
+- 明确并安排多校验器的执行顺序以满足依赖
+- 确认失败输出包含字段路径、错误类型与输入值
+
+## Workflow Steps
+
+- 确认校验器应抛出错误而非静默返回
+- 使用规范方式抛出结构化校验错误
+- 梳理字段校验器与模型校验器的执行顺序
+- 按依赖关系安排多校验器顺序
+- 验证失败输出为结构化错误
+
+## Constraints
+
+- 仅在存在自定义校验失败路径或顺序依赖时使用
+- 错误信息需结构化并包含字段路径与错误类型
+
+## Cautions
+
+- 忽略校验器执行顺序可能导致依赖失效或错误信息不准确
+
+## Output Contract
+
+- 符合规范的校验错误输出（含字段路径、错误类型、输入值）与明确的校验器执行顺序
+
+## Triggers
+
+- 校验失败需返回结构化错误
+- 多个校验器存在执行顺序依赖
+- 需要自定义校验失败处理
+[?2004hp1$ cat /harbor/skills/81c5fe93-c4e0-53ad-bc12-ac8fea6d8888/SKILL.md
+[?2004l---
+id: "81c5fe93-c4e0-53ad-bc12-ac8fea6d8888"
+name: "Pydantic 特殊类型与跳过校验参考"
+description: "提供 Pydantic 中 InstanceOf 特殊类型与 SkipValidation 跳过校验的用法参考，用于需要校验字段为某类实例或临时跳过某字段校验时查阅。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "特殊类型"
+  - "SkipValidation"
+  - "InstanceOf"
+  - "参考"
+triggers:
+  - "需要校验字段为某类实例"
+  - "需要跳过某字段校验"
+  - "查阅 InstanceOf 或 SkipValidation 用法"
+examples:
+  - input: "需要校验列表元素均为某类实例"
+    output: "使用 InstanceOf[类型] 注解字段，如 fruits: list[InstanceOf[Fruit]]；传入非实例时抛出 ValidationError 并指明字段路径与类型。"
+    notes: "校验失败信息包含字段路径与 is_instance_of 类型"
+  - input: "需要跳过某字段校验"
+    output: "使用 SkipValidation 注解该字段。"
+    notes: "跳过校验会放弃该字段的校验保护"
+---
+
+# Pydantic 特殊类型与跳过校验参考
+
+提供 Pydantic 中 InstanceOf 特殊类型与 SkipValidation 跳过校验的用法参考，用于需要校验字段为某类实例或临时跳过某字段校验时查阅。
+
+## Prompt
+
+当需要判断字段值是否为某类的实例，或需要临时跳过某字段的校验时，查阅本参考：
+1. 若需校验字段为某类实例，使用 InstanceOf[类型] 作为字段注解，校验失败会抛出 ValidationError 并指明字段路径与类型。
+2. 若需跳过某字段校验，使用 SkipValidation 注解该字段。
+3. 若常规字段约束已能满足需求，则不要引入特殊类型或跳过校验。
+仅提供用法参考，不执行完整校验器实现流程。
+
+## Objective
+
+提供特殊类型与跳过校验的用法参考
+## Applicable Signals
+
+- 字段需限定为某类实例
+- 字段需临时跳过校验
+- 常规字段约束不足以表达需求
+
+## Contraindications
+
+- 常规字段约束即可满足需求时
+- 需要完整校验器实现工作流时
+
+## Intervention Moves
+
+- 使用 InstanceOf[类型] 注解字段以校验实例类型
+- 使用 SkipValidation 注解字段以跳过校验
+- 校验失败时读取 ValidationError 中的字段路径与类型信息
+
+## Workflow Steps
+
+- 判断需求属于实例类型校验还是跳过校验
+- 选择 InstanceOf 或 SkipValidation 注解
+- 应用注解并验证行为，必要时读取 ValidationError 信息
+
+## Constraints
+
+- 仅作为用法参考，不替代完整校验器实现
+- 优先使用常规字段约束，特殊类型仅在必要时引入
+
+## Cautions
+
+- 跳过校验会放弃该字段的校验保护，应谨慎使用
+- InstanceOf 校验失败会抛出 ValidationError，需妥善处理
+
+## Output Contract
+
+- 选用正确的特殊类型或跳过校验方式，并说明其适用场景与行为。
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 需要校验列表元素均为某类实例
+- Therapist/Output: 使用 InstanceOf[类型] 注解字段，如 fruits: list[InstanceOf[Fruit]]；传入非实例时抛出 ValidationError 并指明字段路径与类型。
+- Notes: 校验失败信息包含字段路径与 is_instance_of 类型
+
+### Example 2
+
+- Client/Input: 需要跳过某字段校验
+- Therapist/Output: 使用 SkipValidation 注解该字段。
+- Notes: 跳过校验会放弃该字段的校验保护
+
+## Triggers
+
+- 需要校验字段为某类实例
+- 需要跳过某字段校验
+- 查阅 InstanceOf 或 SkipValidation 用法
+
+## Examples
+
+### Example 1
+
+Input:
+
+  需要校验列表元素均为某类实例
+
+Output:
+
+  使用 InstanceOf[类型] 注解字段，如 fruits: list[InstanceOf[Fruit]]；传入非实例时抛出 ValidationError 并指明字段路径与类型。
+
+Notes:
+
+  校验失败信息包含字段路径与 is_instance_of 类型
+
+### Example 2
+
+Input:
+
+  需要跳过某字段校验
+
+Output:
+
+  使用 SkipValidation 注解该字段。
+
+Notes:
+
+  跳过校验会放弃该字段的校验保护
+[?2004hp1$ cat /harbor/skills/9ac11db1-8466-56be-bf2b-9bed656dacd8/SKILL.md
+[?2004l---
+id: "9ac11db1-8466-56be-bf2b-9bed656dacd8"
+name: "验证错误抛出与 ValidationInfo 使用"
+description: "在 Pydantic 验证器中通过抛出验证错误报告校验失败，并使用 ValidationInfo 读取字段数据与校验上下文。适用于需要自定义错误信息或访问校验上下文的场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "validation-error"
+  - "validation-info"
+  - "context"
+triggers:
+  - "需要自定义校验失败信息"
+  - "验证器需要访问 ValidationInfo 数据或上下文"
+  - "需要在验证器中读取同模型其他字段的已校验值"
+---
+
+# 验证错误抛出与 ValidationInfo 使用
+
+在 Pydantic 验证器中通过抛出验证错误报告校验失败，并使用 ValidationInfo 读取字段数据与校验上下文。适用于需要自定义错误信息或访问校验上下文的场景。
+
+## Prompt
+
+在编写或修改 Pydantic 验证器时，若需要自定义校验失败信息或访问校验上下文，按以下方式执行：
+1. 判断是否需要自定义错误：若默认错误信息已足够且无需访问上下文，则不使用本技能。
+2. 在验证器内检测到不满足条件时，抛出验证错误（如 ValueError 或 PydanticCustomError 等验证错误类型），并在错误信息中写明具体失败原因。
+3. 若验证器需要访问同模型其他字段数据或校验上下文，在验证器签名中接收 ValidationInfo 参数，通过其 data 读取已校验字段数据、通过其 context 读取校验上下文。
+4. 注意验证器执行顺序：after 验证器在整个模型校验完成后运行，定义为实例方法，且必须返回被校验的实例。
+5. 确认抛出的错误信息明确、上下文读取正确。
+
+## Objective
+
+在验证器中正确抛出错误并读取校验信息
+## Applicable Signals
+
+- 需要自定义校验失败信息
+- 验证器需要访问 ValidationInfo 数据或上下文
+- 需要在验证器中读取同模型其他字段的已校验值
+
+## Contraindications
+
+- 默认错误信息已足够
+- 无需访问校验上下文
+
+## Intervention Moves
+
+- 在验证器中抛出验证错误并写明失败原因
+- 在验证器签名中接收 ValidationInfo 以读取 data 与 context
+- after 验证器定义为实例方法并返回被校验实例
+
+## Workflow Steps
+
+- 判断是否需要自定义错误信息或访问校验上下文
+- 在验证器中检测失败条件并抛出含明确信息的验证错误
+- 如需上下文，在验证器签名中接收 ValidationInfo 并读取 data 或 context
+- 确认 after 验证器为实例方法且返回被校验实例
+- 核对错误信息与上下文读取结果
+
+## Constraints
+
+- after 验证器必须返回被校验的实例
+- 错误信息应明确说明失败原因
+
+## Cautions
+
+- 验证器执行顺序会影响可访问的数据，需注意 after 验证器在整个模型校验完成后运行
+
+## Output Contract
+
+- 抛出含明确信息的验证错误，并正确读取 ValidationInfo 的 data 或 context。
+
+## Triggers
+
+- 需要自定义校验失败信息
+- 验证器需要访问 ValidationInfo 数据或上下文
+- 需要在验证器中读取同模型其他字段的已校验值
+[?2004hp1$ cat /harbor/skills/9eb16e27-a3e6-5b09-a407-854038ca54a2/SKILL.md
+[?2004l---
+id: "9eb16e27-a3e6-5b09-a407-854038ca54a2"
+name: "Pydantic before 校验器安全变异约束"
+description: "在编写或审查 Pydantic before 校验器时，约束对原始输入的直接变异行为：若校验器后续可能抛出验证错误，应避免直接变异值，以防变异后的值经 union 等路径传递给其他校验器产生副作用。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validator"
+  - "before-validator"
+  - "mutation-safety"
+  - "union"
+triggers:
+  - "编写 before 校验器"
+  - "审查 before 校验器中的值变异"
+  - "校验器内存在后续可能抛出验证错误的路径"
+  - "使用 union 且涉及 before 校验器变异"
+---
+
+# Pydantic before 校验器安全变异约束
+
+在编写或审查 Pydantic before 校验器时，约束对原始输入的直接变异行为：若校验器后续可能抛出验证错误，应避免直接变异值，以防变异后的值经 union 等路径传递给其他校验器产生副作用。
+
+## Prompt
+
+在编写或审查 before 校验器时执行以下约束检查：
+1. 确认当前校验器为 before 模式（在模型实例化之前运行，处理原始输入）。
+2. 判断校验器内是否存在后续可能抛出验证错误的路径。
+3. 若存在该路径，避免直接变异输入值；改为基于副本或返回新值，确保变异不会泄漏到其他校验器（尤其是 union 场景）。
+4. 若确需变异且不会抛出错误，方可就地修改，并说明理由。
+5. 输出符合约束的 before 校验器实现或审查结论。
+
+## Objective
+
+防止 before 校验器中不安全的值变异导致副作用传播
+## Applicable Signals
+
+- 正在编写 before 校验器
+- 校验器内可能后续抛出验证错误
+- 输入值可能经 union 传递给其他校验器
+
+## Contraindications
+
+- after 校验器中已实例化的安全场景
+- 校验器不会抛出验证错误且无 union 传播风险的就地变异
+
+## Intervention Moves
+
+- 识别 before 校验器中的错误抛出路径
+- 避免直接变异原始输入值
+- 改用副本或返回新值以隔离变异
+- 在 union 场景下确认变异不会泄漏
+
+## Workflow Steps
+
+- 确认校验器为 before 模式
+- 检查是否存在后续抛出验证错误的路径
+- 若存在则避免直接变异输入值，改用副本或返回新值
+- 在 union 场景下验证变异不会传递给其他校验器
+- 输出符合约束的实现或审查结论
+
+## Constraints
+
+- 仅在 before 校验器场景应用
+- 存在后续错误抛出路径时不得直接变异原始输入
+- 需考虑 union 下变异值可能传递给其他校验器
+
+## Cautions
+
+- before 校验器处理的是任意原始输入，需谨慎对待类型
+- 就地变异在 union 场景下可能产生难以追踪的副作用
+
+## Output Contract
+
+- 未发生不安全变异的 before 校验器实现，或针对现有 before 校验器的变异安全审查结论
+
+## Triggers
+
+- 编写 before 校验器
+- 审查 before 校验器中的值变异
+- 校验器内存在后续可能抛出验证错误的路径
+- 使用 union 且涉及 before 校验器变异
+[?2004hp1$ cat /harbor/skills/a30b25f4-b752-5564-afbd-e34563890155/SKILL.md
+[?2004l---
+id: "a30b25f4-b752-5564-afbd-e34563890155"
+name: "字段校验器通配符与字段检查配置"
+description: "使用装饰器式字段校验器时，通过传入 '*' 使校验器作用于所有字段（含子类字段），并通过 check_fields=False 在基类上定义校验器而允许字段在子类中存在。适用于在基类或跨字段场景中复用字段校验逻辑。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "field-validator"
+  - "decorator"
+  - "inheritance"
+triggers:
+  - "需要在基类上定义字段校验器并期望子类字段也受校验"
+  - "希望校验器作用于模型全部字段"
+---
+
+# 字段校验器通配符与字段检查配置
+
+使用装饰器式字段校验器时，通过传入 '*' 使校验器作用于所有字段（含子类字段），并通过 check_fields=False 在基类上定义校验器而允许字段在子类中存在。适用于在基类或跨字段场景中复用字段校验逻辑。
+
+## Prompt
+
+在定义装饰器式字段校验器时，按需配置两个参数：1) 若希望校验器作用于模型全部字段（包括子类中定义的字段），将字段名参数设为 '*'；2) 若在基类上定义校验器而目标字段预期只存在于子类中，传入 check_fields=False 以在类创建时跳过字段存在性检查。确认配置后验证校验器作用于预期字段集合且类创建无字段存在性报错。
+
+## Objective
+
+正确配置字段校验器的适用范围与字段存在性检查，使校验逻辑可安全复用于基类与子类。
+## Applicable Signals
+
+- 校验器定义在基类上，字段由子类提供
+- 需要一次性覆盖模型所有字段的校验逻辑
+
+## Contraindications
+
+- 仅需校验单个已知字段且字段必然存在于当前模型
+- 使用 annotated 模式而非装饰器模式
+
+## Intervention Moves
+
+- 将字段名参数设为 '*' 以覆盖全部字段
+- 在基类校验器上传入 check_fields=False 跳过字段存在性检查
+
+## Workflow Steps
+
+- 判断校验器是否需要覆盖全部字段，若是则将字段名参数设为 '*'
+- 判断校验器是否定义在基类且目标字段仅存在于子类，若是则传入 check_fields=False
+- 验证校验器作用于预期字段集合，且类创建时无字段存在性报错
+
+## Constraints
+
+- 仅在装饰器式字段校验器场景下使用
+- check_fields=False 仅用于字段预期存在于子类的基类校验器
+
+## Cautions
+
+- 默认情况下装饰器会检查字段名是否定义在模型上，禁用该检查需明确理由
+
+## Output Contract
+
+- 校验器按预期作用于目标字段集合，且类创建时无字段存在性报错。
+
+## Triggers
+
+- 需要在基类上定义字段校验器并期望子类字段也受校验
+- 希望校验器作用于模型全部字段
+[?2004hp1$ cat /harbor/skills/bfefe7d8-3421-5458-9efa-0bc78f7f439d/SKILL.md
+[?2004l---
+id: "bfefe7d8-3421-5458-9efa-0bc78f7f439d"
+name: "Pydantic 校验错误抛出规范"
+description: "在校验器内检测到非法输入时，通过抛出 ValueError 或 PydanticCustomError 报告校验失败，使 Pydantic 将其包装为结构化 ValidationError 并附带错误类型与输入信息。适用于需要拒绝非法输入或自定义错误消息/错误类型的场景。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "validation"
+  - "error-reporting"
+  - "validator"
+triggers:
+  - "校验器检测到非法输入需要拒绝"
+  - "需要自定义错误消息或错误类型"
+  - "希望校验失败以结构化 ValidationError 形式暴露给调用方"
+examples:
+  - input: "校验器检测到输入无法解析为整数"
+    output: "抛出 ValueError，Pydantic 包装为 ValidationError，错误类型为 int_parsing 并附带输入值"
+    notes: "错误消息应说明期望类型与实际输入"
+---
+
+# Pydantic 校验错误抛出规范
+
+在校验器内检测到非法输入时，通过抛出 ValueError 或 PydanticCustomError 报告校验失败，使 Pydantic 将其包装为结构化 ValidationError 并附带错误类型与输入信息。适用于需要拒绝非法输入或自定义错误消息/错误类型的场景。
+
+## Prompt
+
+当校验器判定输入非法时，不要返回布尔值或静默修正，而应抛出异常：简单场景抛出 ValueError 并给出清晰消息；需要自定义错误类型或结构化上下文时抛出 PydanticCustomError。抛出后由 Pydantic 统一包装为 ValidationError，调用方据此获得结构化错误信息。仅用于校验类失败，系统级异常不应以此方式报告。
+
+## Objective
+
+在校验失败时产生结构化、可读的校验错误
+## Applicable Signals
+
+- 校验器内已判定输入不满足约束
+- 需要向调用方提供明确的错误类型与输入值
+- 默认错误消息不足以表达业务含义
+
+## Contraindications
+
+- 校验通过、无需报错时不应抛出异常
+- 需要抛出非校验类异常（如系统错误、IO 错误）时不应使用本技能
+
+## Intervention Moves
+
+- 在非法分支抛出 ValueError 并附清晰消息
+- 需要自定义错误类型时抛出 PydanticCustomError
+- 依赖 Pydantic 将异常包装为 ValidationError，不自行构造错误对象
+
+## Workflow Steps
+
+- 在校验器逻辑中判断输入是否满足约束
+- 若不满足，选择 ValueError（简单消息）或 PydanticCustomError（自定义类型/上下文）
+- 抛出异常并给出可读的错误消息
+- 由 Pydantic 包装为 ValidationError 返回给调用方
+
+## Constraints
+
+- 仅在校验失败分支抛出异常
+- 错误消息应清晰可读，便于定位问题
+- 不自行构造或吞掉 ValidationError
+
+## Cautions
+
+- 抛出非校验类异常不会被包装为 ValidationError，可能破坏调用方错误处理
+- 错误消息应避免泄露敏感输入细节
+
+## Output Contract
+
+- 抛出 ValueError 或 PydanticCustomError，并被 Pydantic 包装为结构化 ValidationError，包含错误类型与输入信息
+
+## Example Therapist Responses
+
+### Example 1
+
+- Client/Input: 校验器检测到输入无法解析为整数
+- Therapist/Output: 抛出 ValueError，Pydantic 包装为 ValidationError，错误类型为 int_parsing 并附带输入值
+- Notes: 错误消息应说明期望类型与实际输入
+
+## Triggers
+
+- 校验器检测到非法输入需要拒绝
+- 需要自定义错误消息或错误类型
+- 希望校验失败以结构化 ValidationError 形式暴露给调用方
+
+## Examples
+
+### Example 1
+
+Input:
+
+  校验器检测到输入无法解析为整数
+
+Output:
+
+  抛出 ValueError，Pydantic 包装为 ValidationError，错误类型为 int_parsing 并附带输入值
+
+Notes:
+
+  错误消息应说明期望类型与实际输入
+[?2004hp1$ cat /harbor/skills/faa883e0-e41a-5e19-868e-c3c8400b4db4/SKILL.md
+[?2004l---
+id: "faa883e0-e41a-5e19-868e-c3c8400b4db4"
+name: "字段校验器访问已校验数据"
+description: "在字段校验器中通过 ValidationInfo.data 读取已校验的其他字段值，用于跨字段依赖校验，可作为 after 模型校验器的替代方案。"
+version: "0.1.0"
+tags:
+  - "pydantic"
+  - "字段校验"
+  - "跨字段校验"
+  - "ValidationInfo"
+triggers:
+  - "需要在字段校验器中依赖其他已校验字段的值"
+  - "希望用字段校验器替代 after 模型校验器"
+---
+
+# 字段校验器访问已校验数据
+
+在字段校验器中通过 ValidationInfo.data 读取已校验的其他字段值，用于跨字段依赖校验，可作为 after 模型校验器的替代方案。
+
+## Prompt
+
+当需要在字段级校验中依赖其他已校验字段的值时，为字段校验器添加 ValidationInfo 参数，通过 info.data 读取已校验数据并据此完成校验；若依赖的字段尚未校验，则不要使用此方式。
+
+## Objective
+
+在字段级校验中安全访问已校验数据以完成跨字段校验
+## Applicable Signals
+
+- 字段校验逻辑需要读取其他字段的已校验值
+- 考虑用字段校验器替代 after 模型校验器
+
+## Contraindications
+
+- 需要访问尚未校验的字段
+- 校验逻辑与单字段无关且更适合模型级校验
+
+## Intervention Moves
+
+- 为字段校验器函数增加 ValidationInfo 参数
+- 通过 info.data 属性读取已校验数据
+- 基于已校验数据执行跨字段校验并返回结果
+
+## Workflow Steps
+
+- 确认目标字段依赖的其他字段在校验顺序中已先完成校验
+- 在字段校验器签名中加入 ValidationInfo 参数
+- 通过 info.data 读取已校验数据并执行校验逻辑
+- 返回校验结果或抛出校验错误
+
+## Constraints
+
+- 仅能访问已校验的数据，不能依赖尚未校验的字段
+
+## Cautions
+
+- 依赖字段的校验顺序会影响 info.data 中可用数据，需确认顺序正确
+
+## Output Contract
+
+- 字段校验器正确读取 ValidationInfo.data 并返回校验结果
+
+## Triggers
+
+- 需要在字段校验器中依赖其他已校验字段的值
+- 希望用字段校验器替代 after 模型校验器
+[?2004hp1$ 

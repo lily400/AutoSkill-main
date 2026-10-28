@@ -1,0 +1,119 @@
+{
+  "skill_id": "39e7d25f-9e64-51ec-825a-7c8a0f328095",
+  "name": "AFN 单 tick 合法动作执行",
+  "description": "在 AFN 离散时间仿真中推进单个 tick：依据时间与更新顺序规则，对车辆执行合法动作（移动、装卸、等待等），并处理边容量、队列与冲突，产出更新后的状态快照与动作执行记录。",
+  "skill_body": "按以下步骤推进一个 tick：\n1. 读取当前状态快照（GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE），确认 TimeTick 与 ScenarioName。\n2. 依据时间与更新顺序规则确定本 tick 的处理次序。\n3. 对每辆车枚举合法动作（移动、装卸、等待等），排除不合法动作。\n4. 应用边容量、队列与冲突规则裁决竞争性动作，处理 CLOSED 边与占用（Occupancy 中的 RemainingTravelTime）。\n5. 更新节点 PackagesAtNode/ParkingVehicles、边 Occupancy、车辆与货物状态，推进 TimeTick。\n6. 输出更新后的状态快照与动作执行记录。\n\n## Objective\n\n在单个 tick 内正确执行合法动作并更新状态\n## Applicable Signals\n\n- 存在当前 tick 的状态快照\n- 有车辆待处理动作\n- 边存在占用或容量约束\n- 存在活跃事件或道路关闭\n\n## Contraindications\n\n- 需要跨多阶段规划整体控制策略\n- 缺少合法动作定义或更新顺序规则\n\n## Intervention Moves\n\n- 读取并校验状态快照各分区\n- 按更新顺序确定处理次序\n- 枚举并筛选合法动作\n- 按容量/队列/冲突规则裁决\n- 更新状态并推进 TimeTick\n\n## Workflow Steps\n\n- 读取当前状态快照并确认 TimeTick 与 ScenarioName\n- 依据时间与更新顺序规则确定本 tick 处理次序\n- 对每辆车枚举合法动作并排除不合法动作\n- 应用边容量、队列与冲突规则裁决竞争性动作，处理 CLOSED 边与占用\n- 更新节点、边、车辆与货物状态并推进 TimeTick\n- 输出更新后的状态快照与动作执行记录\n\n## Constraints\n\n- 必须遵循时间与更新顺序规则\n- 动作必须属于合法动作集合\n- 边容量、队列与冲突须按规则裁决\n- CLOSED 边不可通行\n\n## Cautions\n\n- ScoreSoFar 可能为暂定值，不应视为最终得分\n- 规则冲突或未定义行为需按规则冲突处理约定处理\n\n## Output Contract\n\n- 更新后的 tick 状态快照（含 GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）与动作执行记录",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "在单个 tick 内正确执行合法动作并更新状态",
+  "domain": "交通仿真",
+  "task_family": "仿真推进",
+  "method_family": "离散时间步更新",
+  "stage": "单步执行",
+  "applicable_signals": [
+    "存在当前 tick 的状态快照",
+    "有车辆待处理动作",
+    "边存在占用或容量约束",
+    "存在活跃事件或道路关闭"
+  ],
+  "contraindications": [
+    "需要跨多阶段规划整体控制策略",
+    "缺少合法动作定义或更新顺序规则"
+  ],
+  "intervention_moves": [
+    "读取并校验状态快照各分区",
+    "按更新顺序确定处理次序",
+    "枚举并筛选合法动作",
+    "按容量/队列/冲突规则裁决",
+    "更新状态并推进 TimeTick"
+  ],
+  "triggers": [
+    "需要推进一个 tick 并更新车辆与边状态",
+    "需要处理边容量、队列或冲突",
+    "需要按合法动作定义裁决本 tick 的车辆行为"
+  ],
+  "workflow_steps": [
+    "读取当前状态快照并确认 TimeTick 与 ScenarioName",
+    "依据时间与更新顺序规则确定本 tick 处理次序",
+    "对每辆车枚举合法动作并排除不合法动作",
+    "应用边容量、队列与冲突规则裁决竞争性动作，处理 CLOSED 边与占用",
+    "更新节点、边、车辆与货物状态并推进 TimeTick",
+    "输出更新后的状态快照与动作执行记录"
+  ],
+  "constraints": [
+    "必须遵循时间与更新顺序规则",
+    "动作必须属于合法动作集合",
+    "边容量、队列与冲突须按规则裁决",
+    "CLOSED 边不可通行"
+  ],
+  "cautions": [
+    "ScoreSoFar 可能为暂定值，不应视为最终得分",
+    "规则冲突或未定义行为需按规则冲突处理约定处理"
+  ],
+  "output_contract": [
+    "更新后的 tick 状态快照（含 GLOBAL、NODES、EDGES、VEHICLES、CONSIGNMENTS、INCIDENTS_ACTIVE）与动作执行记录"
+  ],
+  "examples": [],
+  "tags": [
+    "交通仿真",
+    "离散时间步",
+    "单步执行",
+    "状态更新",
+    "边容量"
+  ],
+  "support_ids": [
+    "d9d06686-630d-518b-800a-557c9a7980d6"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "c3fd8ccd-e1ed-5c52-bff1-92526bfc6ed1"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.75,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||session_skill|session|workflow_skill|在单个 tick 内正确执行合法动作并更新状态|交通仿真|仿真推进|离散时间步更新|单步执行|afn 单 tick 合法动作执行",
+    "change_action": "create",
+    "llm_reason": "候选技能聚焦单 tick 内合法动作枚举与容量/队列/冲突裁决，与同批 peer 技能在阶段顺序和信号判定上互补而非重复，且无冲突证据，保留为新能力。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

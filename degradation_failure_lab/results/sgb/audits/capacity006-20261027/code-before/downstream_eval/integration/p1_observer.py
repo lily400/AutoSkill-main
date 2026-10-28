@@ -1,0 +1,327 @@
+"""Opt-in observation around the official agent; no replacement agent loop."""
+import asyncio
+import json
+import importlib
+import os
+import re
+import shlex
+import subprocess
+import time
+from pathlib import Path, PurePosixPath
+from xml.etree import ElementTree
+from unittest.mock import patch
+
+from .skill_install import remote_hashes
+from .network_isolation import verify_environment_network, NetworkIsolationError
+from .model_connectivity import OneRequest
+from .request_budget import MeteredTransport, BudgetStop, ledger_for_profile
+
+
+class PreModelStop(BaseException):
+    """Deliberate zero-model stop, outside the upstream request retry decorator."""
+
+
+def accessed_skills(lines, expected_ids):
+    result = []
+    for line in lines.splitlines():
+        fields = line.split('|', 2)
+        if len(fields) != 3 or 'ACCESS' not in fields[1].split(','):
+            continue
+        path = PurePosixPath(fields[2])
+        if path.parent.parent == PurePosixPath('/harbor/skills') and path.name == 'SKILL.md' and path.parent.name in expected_ids:
+            result.append({'skill_id': path.parent.name, 'path': str(path), 'kernel_event': fields[1], 'timestamp': fields[0]})
+    return result
+
+
+def body_visible(body, observation):
+    # tmux soft wraps and CRLF change whitespace; disk integrity is checked separately.
+    compact = lambda text: re.sub(r'\s+', '', re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text))
+    return bool(body) and compact(body) in compact(observation)
+
+
+def redact_credentials(value, api_key):
+    if isinstance(value, dict):
+        return {key: redact_credentials(item, api_key) for key, item in value.items()
+                if str(key).lower().replace('_', '-') not in
+                ('api-key', 'x-api-key', 'authorization', 'proxy-authorization')}
+    if isinstance(value, (list, tuple)):
+        return [redact_credentials(item, api_key) for item in value]
+    if isinstance(value, str):
+        if api_key:
+            value = value.replace(api_key, '[REDACTED]')
+        return re.sub(r'(?i)\bBearer\s+[^\s"\x27<>]+', '[REDACTED]', value)
+    return value
+
+
+class P1ObservationMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._p1 = None
+        if self.options.p1_mode is None:
+            return
+        self._p1 = json.loads(Path(self.options.p1_profile).read_text(encoding='utf-8'))
+        import litellm
+        litellm.telemetry = False
+        self._p1_logs = self.logs_dir.parent / 'p1-observer'
+        # The native callback only removes top-level keys; provider metadata can repeat credentials.
+        logger_factory = self._llm._init_logger_fn
+
+        def private_logger(logging_path):
+            native_logger = logger_factory(logging_path)
+            def record(data):
+                cleaned = self._llm._clean_value(data)
+                native_logger(redact_credentials(cleaned, self._llm._llm_kwargs.get('api_key')))
+            return record
+
+        self._llm._init_logger_fn = private_logger
+        self._p1_manifest = json.loads(Path(self.options.p1_manifest).read_text(encoding='utf-8'))
+        if self.model_name != self._p1['model']['name']:
+            raise ValueError('P1 model differs from frozen profile')
+        if (self.options.temperature != self._p1['model']['temperature'] or
+            self.options.reasoning_effort != self._p1['model']['reasoning_effort'] or
+            self.options.max_turns != self._p1['budget']['max_requests'] or self.options.enable_summarize):
+            raise ValueError('P1 sampling, turn or summarization settings differ from frozen profile')
+        self._p1_actor = 'zero_model_probe' if self.options.p1_mode == 'probe' else 'model_tool'
+        self._p1_calls = self._p1_input = self._p1_watch_lines = 0
+        self._p1_http_attempts = 0
+        self._p1_budget = self._p1_transport = self._p1_http_client = None
+        self._p1_pid = None
+        self._p1_reads = []
+        self._p1_kernel_prefix = []
+        self._p1_tool_events = []
+        # P1's zero-retry budget also disables the pinned method's outer Tenacity retries.
+        original_call = self._llm.call.__wrapped__.__get__(self._llm, type(self._llm))
+
+        async def bounded_call(prompt, message_history=None, **call_kwargs):
+            from litellm import token_counter
+            messages = list(message_history or []) + [{'role': 'user', 'content': prompt}]
+            estimated = token_counter(model=self.model_name, messages=messages) + 256
+            self._event('model-requests', mode=self.options.p1_mode, messages=messages,
+                        dispatched=False, estimated_input_tokens_with_reserve=estimated, parameters=call_kwargs)
+            if self.options.p1_mode == 'probe':
+                raise PreModelStop()
+            if os.environ.get(self._p1['approval_environment_variable']) != '1':
+                raise RuntimeError('Paid inference awaits explicit user approval; P1_ALLOW_PAID is unset')
+            budget = self._p1['budget']
+            expected = {'max_completion_tokens': budget['max_completion_tokens_per_request'],
+                        'num_retries': budget['num_retries'], 'timeout': budget['request_timeout_sec']}
+            if any(call_kwargs.get(key) != value for key, value in expected.items()):
+                raise ValueError('P1 output/retry/timeout controls differ from frozen profile')
+            if (self._p1_calls >= budget['max_requests'] or
+                estimated > budget['max_input_tokens_per_request'] or
+                self._p1_input + estimated > budget['max_input_tokens_total']):
+                self._event('budget', status='exhausted_before_request')
+                raise RuntimeError('P1 request/input token budget exhausted')
+            if self._p1_budget is None:
+                raise RuntimeError('Persistent HTTP budget is not attached')
+            self._p1_calls += 1
+            self._p1_input += estimated
+            self._event('model-dispatch', request_number=self._p1_calls, dispatched=True,
+                        estimated_input_tokens_with_reserve=estimated)
+            self._p1_transport.input_estimate = estimated
+            self._p1_transport.last_number = None
+            adapter = importlib.import_module('litellm.main').openai_chat_completions
+            request = OneRequest(adapter.make_openai_chat_completion_request,
+                                 max_completion_tokens=budget['max_completion_tokens_per_request'], http_client=self._p1_http_client)
+            try:
+                import httpx
+                native_send = httpx.AsyncClient.send
+                async def admitted_send(client, *args, **kwargs):
+                    if client is not self._p1_http_client:
+                        raise BudgetStop('HTTP client bypassed the metered transport')
+                    return await native_send(client, *args, **kwargs)
+                with patch.object(adapter, 'make_openai_chat_completion_request', request.send), \
+                     patch.object(httpx.AsyncClient, 'send', admitted_send), \
+                     patch.object(httpx.Client, 'send', side_effect=BudgetStop('Sync HTTP model path forbidden')), \
+                     patch('litellm.aresponses', side_effect=BudgetStop('Alternate model protocol forbidden')):
+                    response = await original_call(prompt=prompt, message_history=message_history or [], **call_kwargs)
+                self._p1_budget.response(self._p1_transport.last_number, response.usage)
+            except BaseException as error:
+                self._p1_budget.fail(self._p1_transport.last_number, type(error).__name__)
+                self._event('model-errors', error_type=type(error).__name__, usage='unreported; not zero cost')
+                if isinstance(error, Exception):
+                    raise RuntimeError('P1 model request failed: ' + type(error).__name__) from None
+                raise
+            finally:
+                self._p1_http_attempts += request.http_attempts
+                self._event('model-http', logical_request_number=self._p1_calls,
+                            sdk_request_hooks=request.http_attempts, http_status=request.http_status,
+                            reserved_attempt=self._p1_transport.last_number,
+                            total_http_attempts=self._p1_budget.snapshot()['counts'][self._p1_manifest['arm']])
+            usage = response.usage
+            rates = self._p1['price_usd_per_million_tokens']
+            fixed_rate_cost = ((usage.prompt_tokens - usage.cache_tokens) * rates['input'] +
+                               usage.cache_tokens * rates['cached_input'] + usage.completion_tokens * rates['output']) / 1_000_000 if usage and rates else None
+            self._event('model-responses', content=response.content, model=response.model_name,
+                        fixed_rate_cost_estimate_usd=fixed_rate_cost,
+                        cost_provenance='Configured verified rates if present; LiteLLM cost_usd is a model-map reference, not a provider invoice',
+                        usage=({key: getattr(usage, key) for key in
+                                ('prompt_tokens', 'completion_tokens', 'cache_tokens', 'cost_usd')} if usage else None))
+            return response
+
+        self._llm.call = bounded_call
+
+    def _event(self, name, **data):
+        # The agent mounts logs_dir; its sibling is private to the Harbor control process.
+        self._p1_logs.mkdir(parents=True, exist_ok=True)
+        with (self._p1_logs / ('p1-' + name + '.jsonl')).open('a', encoding='utf-8') as stream:
+            payload = {'time': time.time(), **data}
+            llm = getattr(self, '_llm', None)
+            api_key = llm._llm_kwargs.get('api_key') if llm else None
+            stream.write(json.dumps(redact_credentials(payload, api_key), ensure_ascii=False) + '\n')
+
+    async def setup(self, environment):
+        if self._p1:
+            try:
+                report = await verify_environment_network(environment)
+            except NetworkIsolationError as error:
+                self._event('network-isolation', **error.report)
+                raise
+            self._event('network-isolation', **report)
+        await super().setup(environment)
+        if not self._p1:
+            return
+        self._p1_environment = environment
+        result = await environment.exec('mkdir -p /harbor/skills; test ! -e /tests && test ! -e /solution && test ! -e /environment && test ! -e /tmp/build-fixture.py && test ! -S /var/run/docker.sock', timeout_sec=10)
+        if result.return_code:
+            raise RuntimeError('P1 answer-isolation filesystem check failed')
+        container = await environment._run_docker_compose_command(['ps', '-q', 'main'])
+        probe = await asyncio.to_thread(subprocess.run, ['docker', 'inspect', container.stdout.strip(), '--format', '{"mounts":{{json .Mounts}},"image_id":{{json .Image}}}'], capture_output=True, check=True)
+        inspected = json.loads(probe.stdout)
+        mounts = inspected['mounts']
+        image_id = inspected['image_id']
+        expected_image = self._p1.get('frozen_agent_image_id')
+        if expected_image and image_id != expected_image:
+            raise RuntimeError('P1 image differs from the zero-model validated image')
+        if self.options.p1_mode == 'paid' and not expected_image:
+            raise RuntimeError('P1 paid trial requires a zero-model validated image')
+        frozen_image = 'harbor-p1-task:sha256-' + image_id.split(':')[-1]
+        if self.options.p1_mode == 'probe':
+            await asyncio.to_thread(subprocess.run, ['docker', 'tag', image_id, frozen_image], capture_output=True, check=True)
+        allowed = {'/logs/agent': environment.trial_paths.agent_dir,
+                   '/logs/verifier': environment.trial_paths.verifier_dir,
+                   '/logs/artifacts': environment.trial_paths.host_artifact_path('main', '/logs/artifacts')}
+        self._event('isolation', status='CHECKING', mounts=mounts)
+        if any(m['Destination'] not in allowed or str(allowed[m['Destination']].resolve()) != m['Source'] for m in mounts):
+            raise RuntimeError('P1 agent has an unexpected host mount')
+        self._event('isolation', status='PASS', mounts=mounts, environment_image_id=image_id,
+                    frozen_image=frozen_image, fixture_source_visible=False,
+                    oracle_visible=False, reference_solution_visible=False, api_key_forwarded=bool(self._extra_env))
+        await self._session.send_keys("export PS1='p1$ '; clear\n", min_timeout_sec=0.1)
+
+    async def _build_skills_section(self, environment):
+        xml = await super()._build_skills_section(environment)
+        if not getattr(self, '_p1', None):
+            return xml
+        actual = await remote_hashes(environment, '/harbor/skills')
+        if actual != self._p1_manifest['files']:
+            raise ValueError('Native Harbor injection changed the Skill file/ID/hash set')
+        entries = list(ElementTree.fromstring(xml)) if xml else []
+        by_id = {PurePosixPath(e.findtext('location')).parent.name: e for e in entries}
+        expected = self._p1_manifest['metadata']
+        if len(entries) != len(expected) or set(by_id) != set(expected):
+            raise ValueError('P1 index is incomplete or duplicated')
+        for sid, metadata in expected.items():
+            if any(by_id[sid].findtext(key) != metadata[key] for key in ('name', 'description')):
+                raise ValueError('P1 index metadata differs from canonical Skill')
+        self._p1_logs.mkdir(parents=True, exist_ok=True)
+        (self._p1_logs / 'p1-skill-index.xml').write_text(xml or '', encoding='utf-8')
+        self._event('installation', status='PASS', installed_ids=sorted(expected),
+                    discovered_ids=sorted(by_id), file_hashes=actual)
+        result = await environment.exec("nohup stdbuf -oL inotifywait -m -r -e open,access,close_nowrite --timefmt '%s' --format '%T|%e|%w%f' /harbor/skills >/logs/agent/p1-kernel-reads.log 2>/logs/agent/p1-kernel-watch.stderr </dev/null & echo $!", timeout_sec=10)
+        self._p1_pid = int(result.stdout.strip())
+        ready = await environment.exec("for i in $(seq 1 100); do grep -q 'Watches established' /logs/agent/p1-kernel-watch.stderr && exit 0; sleep 0.02; done; exit 1", timeout_sec=10)
+        if ready.return_code:
+            raise RuntimeError('P1 file-access monitor did not start')
+        return xml
+
+    def _limit_output_length(self, output, max_bytes=10000):
+        limited = super()._limit_output_length(output, max_bytes)
+        if getattr(self, '_p1', None):
+            self._event('terminal-frames', actor=self._p1_actor, full_output=output,
+                        model_visible_output=limited, truncated=limited != output,
+                        full_utf8_bytes=len(output.encode('utf-8')), visible_utf8_bytes=len(limited.encode('utf-8')))
+        return limited
+
+    async def _capture_reads(self):
+        result = await self._p1_environment.exec('cat /logs/agent/p1-kernel-reads.log', timeout_sec=10)
+        if result.return_code:
+            raise RuntimeError('P1 file-access evidence unavailable')
+        lines = (result.stdout or '').splitlines()
+        if lines[:self._p1_watch_lines] != self._p1_kernel_prefix:
+            raise RuntimeError('P1 kernel read log was truncated or changed')
+        events = accessed_skills('\n'.join(lines[self._p1_watch_lines:]), self._p1_manifest['metadata'])
+        self._p1_watch_lines = len(lines)
+        self._p1_kernel_prefix = lines
+        for event in events:
+            event['actor'] = self._p1_actor
+            self._p1_reads.append(event)
+            self._event('skill-reads', **event)
+        return events
+
+    async def _execute_commands(self, commands, session):
+        if not getattr(self, '_p1', None):
+            return await super()._execute_commands(commands, session)
+        self._event('tool-actions', actor=self._p1_actor, stage='submitted', episode=self._n_episodes,
+                    commands=[{'keystrokes': c.keystrokes, 'duration_sec': c.duration_sec} for c in commands])
+        result = await super()._execute_commands(commands, session)
+        reads = await self._capture_reads()
+        visible = {}
+        for event in reads:
+            sid = event['skill_id']
+            body = (Path(self._p1_manifest['staged_root']) / sid / 'SKILL.md').read_bytes().decode('utf-8')
+            visible[sid] = body_visible(body, result[1])
+        event = {'actor': self._p1_actor, 'stage': 'observed', 'timeout': result[0],
+                 'observation': result[1], 'read_events': reads,
+                 'full_body_visible_ignoring_terminal_whitespace': visible,
+                 'truncated': '[... output limited to ' in result[1]}
+        self._p1_tool_events.append(event)
+        self._event('tool-actions', **event)
+        return result
+
+    def _budget_ledger(self):
+        return ledger_for_profile(self._p1)
+
+    async def run(self, instruction, environment, context):
+        if not getattr(self, '_p1', None):
+            return await super().run(instruction, environment, context)
+        if self.options.p1_mode == 'paid':
+            import httpx
+            self._p1_budget = self._budget_ledger()
+            arm = self._p1_manifest['arm']
+            trial = self.logs_dir.parent.name
+            lease = os.environ.get('P1_BUDGET_LEASE', '')
+            self._p1_budget.attach(arm, trial, lease)
+            self._p1_transport = MeteredTransport(self._p1_budget, arm, trial, lease)
+            self._p1_http_client = httpx.AsyncClient(transport=self._p1_transport, trust_env=False,
+                                                   follow_redirects=False, timeout=self._p1['budget']['request_timeout_sec'])
+        stopped = False
+        try:
+            try:
+                await super().run(instruction, environment, context)
+            except PreModelStop:
+                stopped = True
+                self._event('execution', status='STOPPED_BEFORE_MODEL', paid_requests=0)
+                # Controlled terminal probes are kept separate from model-generated actions.
+                from harbor.agents.terminus_2.terminus_2 import Command
+                paths = ['/harbor/skills/' + sid + '/SKILL.md' for sid in sorted(self._p1_manifest['metadata'])]
+                for path in paths:
+                    await self._execute_commands([Command('cat ' + shlex.quote(path) + '\n', 0.2)], self._session)
+                if not paths:
+                    await self._execute_commands([Command('pwd\n', 0.2)], self._session)
+        finally:
+            if self._p1_pid:
+                await environment.exec('kill ' + str(self._p1_pid), timeout_sec=10)
+                await self._capture_reads()
+            visible_ids = sorted({sid for e in self._p1_tool_events for sid, match in e['full_body_visible_ignoring_terminal_whitespace'].items() if match})
+            summary = {'mode': self.options.p1_mode, 'stopped_before_model': stopped,
+                       'paid_requests': self._p1_calls, 'logical_model_dispatches': self._p1_calls,
+                       'actual_http_attempts': (self._p1_budget.snapshot()['counts'][self._p1_manifest['arm']]
+                                                if self._p1_budget else 0), 'estimated_input_reserved': self._p1_input,
+                       'model_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'model_tool'}),
+                       'controlled_probe_read_ids': sorted({e['skill_id'] for e in self._p1_reads if e['actor'] == 'zero_model_probe'}),
+                       'full_body_visible_ids_ignoring_terminal_whitespace': visible_ids,
+                       'rule_following': 'requires action and Oracle review; not inferred from model self-report'}
+            (self._p1_logs / 'p1-summary.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
+            if self._p1_http_client:
+                await self._p1_http_client.aclose()

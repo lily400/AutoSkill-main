@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"dbee85ed-4cc4-53bf-a0b0-a1d98c51007a\", \"name\": \"字符串判别器字段声明\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"为联合字段声明字符串判别器，实现按标签字段分派校验\", \"applicable_signals\": [\"联合成员各自带有可区分的字符串标签字段\", \"需要以声明式语法指定判别器\", \"希望避免运行时类型判断逻辑\"], \"contraindications\": [\"判别需依赖运行时类型而非字段值时，应改用 callable Discriminator\", \"联合成员缺少可区分的字符串标签字段时\"], \"workflow_steps\": [\"确认联合成员可通过单一字符串字段区分\", \"选择声明语法：some_field: Union[...] = Field(discriminator='my_discriminator') 或 some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\", \"确保判别器参数值与成员标签字段名一致\", \"通过 model_validate 验证输入被分派到正确成员\"], \"constraints\": [\"判别器参数值必须与成员中用于分派的标签字段名一致\", \"仅在判别依据为字段值时使用；运行时类型判别应使用 callable Discriminator\"], \"triggers\": [\"联合字段的成员可通过单一字符串字段区分\", \"需要简洁的判别器声明语法\", \"希望用 Field(discriminator=...) 或 Annotated 模式声明判别器\"], \"output_contract\": [\"带 discriminator 参数的联合字段声明，校验时按标签字段分派到对应联合成员\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"933c98e2-d5e4-54c4-9a7d-ec0587081593\", \"name\": \"嵌套判别联合建模\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"用嵌套 Annotated 判别联合表达多级判别键的联合类型\", \"applicable_signals\": [\"联合成员可由单一判别字段唯一区分时不应使用本技能\", \"存在多个变体需要按层级组合判别条件\", \"需要为联合类型提供更简洁的校验错误信息\"], \"workflow_steps\": [\"确认联合成员需要多级判别键，单一 discriminator 不足\", \"为内层联合成员定义判别字段（如 color）的 Literal 值\", \"用 Annotated[Union[内层成员...], Field(discriminator='内层字段')] 定义内层联合类型\", \"将内层联合类型与其他成员组合，用 Annotated[Union[...], Field(discriminator='外层字段')] 定义外层联合\", \"在 BaseModel 字段中引用该联合类型，或使用 TypeAdapter 直接校验\", \"验证合法输入被解析为正确的具体成员类型\"], \"output_contract\": [\"可被 BaseModel 或 TypeAdapter 使用的嵌套判别联合类型定义\"], \"score\": 0.695883896578269}, {\"skill_id\": \"556b9c81-2257-59a9-9233-b7eab81bd6d8\", \"name\": \"可调用判别器联合类型校验\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为联合类型字段配置可调用判别器，实现按运行时类型分派校验\", \"applicable_signals\": [\"联合成员需按运行时类型（如 int 与 dict/BaseModel）区分\", \"字符串判别字段无法覆盖判别逻辑\"], \"workflow_steps\": [\"定义判别函数，按运行时类型返回对应标签字符串\", \"判别值未找到时返回 None\", \"用 Annotated 为每个联合成员标注 Tag\", \"用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型\", \"用 model_validate 验证不同输入分派到正确成员实例\"], \"output_contract\": [\"带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例\"], \"score\": 0.6119118082786517}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

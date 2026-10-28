@@ -1,0 +1,106 @@
+{
+  "skill_id": "710c818d-4bd9-5a8e-a211-01cfe2244f26",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 7ba74262 高度重复（同一相位-绿灯边映射查询，仅 stage 不同），且 7ba74262 的步骤更完整，保留该候选即可，无需重复创建。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "710c818d-4bd9-5a8e-a211-01cfe2244f26",
+    "name": "信号交叉口相位-绿灯边映射查询",
+    "description": "根据信号节点的周期长度与当前 tick 计算所处相位，并返回该相位允许通行的绿灯边集合；用于判定某信号交叉口在给定时刻哪些入边可放行。",
+    "skill_body": "输入信号节点、其 CycleLength 与相位定义（各相位对应的 tick 区间与 GreenEdges），以及当前 tick。先对 tick 按 CycleLength 取模得到周期内位置，再匹配该位置所属相位，输出相位标识与该相位的 GreenEdges 集合。若节点未信号化或缺少相位定义，则声明无法判定而非猜测。\n\n## Objective\n\n在给定 tick 下确定信号节点的当前相位及其绿灯边集合\n## Applicable Signals\n\n- 节点已信号化且给出 CycleLength 与相位定义\n- 需要判定某入边在 tick t 是否放行\n\n## Contraindications\n\n- 节点未信号化\n- 需要处理容量或排队冲突而非信号放行\n- 缺少相位定义或 CycleLength\n\n## Intervention Moves\n\n- 对 tick 按 CycleLength 取模\n- 将周期内位置匹配到相位区间\n- 返回相位标识与对应 GreenEdges\n\n## Workflow Steps\n\n- 确认目标节点已信号化并取得 CycleLength 与相位定义\n- 计算 tick mod CycleLength 得到周期内位置\n- 匹配该位置所属相位区间\n- 输出相位标识与该相位的 GreenEdges 集合\n\n## Constraints\n\n- 仅依据给定相位定义判定，不推断未声明的相位\n- 相位区间按周期取模解释\n\n## Cautions\n\n- 不同节点周期长度不同，不可跨节点套用相位表\n- 相位定义缺失时应声明无法判定\n\n## Output Contract\n\n- 返回当前相位标识与对应 GreenEdges 集合；无法判定时明确说明原因。",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在给定 tick 下确定信号节点的当前相位及其绿灯边集合",
+    "domain": "交通仿真规则",
+    "task_family": "信号配时查询",
+    "method_family": "相位周期取模映射",
+    "stage": "状态判定",
+    "applicable_signals": [
+      "节点已信号化且给出 CycleLength 与相位定义",
+      "需要判定某入边在 tick t 是否放行"
+    ],
+    "contraindications": [
+      "节点未信号化",
+      "需要处理容量或排队冲突而非信号放行",
+      "缺少相位定义或 CycleLength"
+    ],
+    "intervention_moves": [
+      "对 tick 按 CycleLength 取模",
+      "将周期内位置匹配到相位区间",
+      "返回相位标识与对应 GreenEdges"
+    ],
+    "triggers": [
+      "需要判断某信号节点在 tick t 的放行边",
+      "需要校验车辆能否进入某条入边",
+      "需要查询信号交叉口当前相位"
+    ],
+    "workflow_steps": [
+      "确认目标节点已信号化并取得 CycleLength 与相位定义",
+      "计算 tick mod CycleLength 得到周期内位置",
+      "匹配该位置所属相位区间",
+      "输出相位标识与该相位的 GreenEdges 集合"
+    ],
+    "constraints": [
+      "仅依据给定相位定义判定，不推断未声明的相位",
+      "相位区间按周期取模解释"
+    ],
+    "cautions": [
+      "不同节点周期长度不同，不可跨节点套用相位表",
+      "相位定义缺失时应声明无法判定"
+    ],
+    "output_contract": [
+      "返回当前相位标识与对应 GreenEdges 集合；无法判定时明确说明原因。"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "信号配时",
+      "相位查询",
+      "绿灯边",
+      "知识参考"
+    ],
+    "support_ids": [
+      "34c421d6-18b4-5bc1-a32b-04d0779e27d9"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "5e1dfaee-6a65-5f7a-bd17-dfac65aa83d1"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|在给定 tick 下确定信号节点的当前相位及其绿灯边集合|交通仿真规则|信号配时查询|相位周期取模映射|状态判定|信号交叉口相位-绿灯边映射查询"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

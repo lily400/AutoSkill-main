@@ -1,0 +1,108 @@
+{
+  "skill_id": "2f1bc8c6-2861-5c8a-958a-6d30100bd274",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "2f1bc8c6-2861-5c8a-958a-6d30100bd274",
+    "name": "评论分类字段小写规范化",
+    "description": "将评论 CSV 中的分类字段（如 is_sportswear、is_apparel_product）取值统一转换为严格小写，处理大写或混合大小写的行，使数据符合下游小写格式契约，同时保持行数与其余字段不变。",
+    "skill_body": "读取评论 CSV，识别分类字段（如 is_sportswear、is_apparel_product），扫描各分类字段取值，标记大写或混合大小写的行，将标记取值转换为严格小写（如 \"Yes\" -> \"yes\"），校验转换后分类字段全部为小写且行数不变，输出规范化后的数据。\n\n## Objective\n\n使分类取值严格符合小写格式要求\n## Applicable Signals\n\n- 分类字段出现大写或混合大小写取值（如 \"Yes\"）\n- 下游要求分类取值严格小写\n\n## Contraindications\n\n- 字段已全部为规范小写\n- 需要修改的是缺失列而非取值格式\n\n## Intervention Moves\n\n- 定位分类字段中的非小写取值\n- 将取值统一转换为严格小写\n- 保持行数与其余字段不变\n\n## Workflow Steps\n\n- 读取评论 CSV 并识别分类字段（如 is_sportswear、is_apparel_product）\n- 扫描各分类字段取值，标记大写或混合大小写的行\n- 将标记取值转换为严格小写\n- 校验转换后分类字段全部为小写且行数不变\n\n## Constraints\n\n- 仅规范化取值大小写，不改变行数\n- 不新增或删除列\n\n## Cautions\n\n- 缺失列问题不属于本技能范围，应另行处理\n\n## Output Contract\n\n- 分类字段全部为小写且行数不变的规范化数据\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: is_sportswear 取值为 \"Yes\"\n- Therapist/Output: is_sportswear 取值为 \"yes\"\n- Notes: 仅转换大小写，其余字段不变",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "使分类取值严格符合小写格式要求",
+    "domain": "运营流程",
+    "task_family": "数据清洗",
+    "method_family": "取值规范化",
+    "stage": "数据预处理",
+    "applicable_signals": [
+      "分类字段出现大写或混合大小写取值（如 \"Yes\"）",
+      "下游要求分类取值严格小写"
+    ],
+    "contraindications": [
+      "字段已全部为规范小写",
+      "需要修改的是缺失列而非取值格式"
+    ],
+    "intervention_moves": [
+      "定位分类字段中的非小写取值",
+      "将取值统一转换为严格小写",
+      "保持行数与其余字段不变"
+    ],
+    "triggers": [
+      "发现分类字段存在大写或混合大小写取值",
+      "评论数据需清洗以符合下游小写格式契约"
+    ],
+    "workflow_steps": [
+      "读取评论 CSV 并识别分类字段（如 is_sportswear、is_apparel_product）",
+      "扫描各分类字段取值，标记大写或混合大小写的行",
+      "将标记取值转换为严格小写",
+      "校验转换后分类字段全部为小写且行数不变"
+    ],
+    "constraints": [
+      "仅规范化取值大小写，不改变行数",
+      "不新增或删除列"
+    ],
+    "cautions": [
+      "缺失列问题不属于本技能范围，应另行处理"
+    ],
+    "output_contract": [
+      "分类字段全部为小写且行数不变的规范化数据"
+    ],
+    "examples": [
+      {
+        "input": "is_sportswear 取值为 \"Yes\"",
+        "output": "is_sportswear 取值为 \"yes\"",
+        "notes": "仅转换大小写，其余字段不变"
+      }
+    ],
+    "tags": [
+      "数据清洗",
+      "取值规范化",
+      "评论数据",
+      "预处理"
+    ],
+    "support_ids": [
+      "fdc1e70b-9e0b-5c65-b7f7-ff7f67aac842"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "90512c9b-0f9b-5014-85d5-12150578e51d"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|使分类取值严格符合小写格式要求|运营流程|数据清洗|取值规范化|数据预处理|评论分类字段小写规范化"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

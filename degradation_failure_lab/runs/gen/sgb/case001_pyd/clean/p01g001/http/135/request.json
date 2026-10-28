@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"4045e587-c93f-5cf1-96d8-34f912827e83\", \"name\": \"Pydantic 模型级跨字段校验器\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"在模型实例化后执行跨字段一致性校验并在失败时抛出验证错误\", \"applicable_signals\": [\"模型包含两个及以上需相互比较的字段\", \"单字段约束无法覆盖的依赖关系\"], \"contraindications\": [\"仅需单字段约束时\", \"需要在实例化前处理原始输入时（应使用 before 校验器）\"], \"workflow_steps\": [\"确认跨字段一致性需求无法由字段级约束表达\", \"在模型类中定义 mode='after' 的 model_validator 方法\", \"在方法内读取并比较相关字段\", \"不一致时抛出 ValueError 并给出明确错误信息\", \"校验通过时返回 self\"], \"constraints\": [\"after 校验器在模型实例化后运行，操作的是已解析的字段值\", \"校验失败必须抛出 ValueError 以触发验证错误\"], \"triggers\": [\"需要比较同一模型内多个字段的值\", \"字段级约束无法表达跨字段逻辑\", \"需要在模型实例化后校验字段一致性\"], \"output_contract\": [\"返回 self 的 after 模型校验器，校验失败时抛出 ValueError\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"0166b7ef-ec54-5e0c-9bd2-086b92fc3430\", \"name\": \"Pydantic 验证器模式选型与实现\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"为给定校验需求选择并实现正确的 Pydantic 验证器模式\", \"applicable_signals\": [\"校验逻辑作用于单个字段\", \"校验逻辑需要访问整个已校验模型\", \"需要在初始化前后介入校验\"], \"workflow_steps\": [\"明确校验目标是单字段还是整个模型\", \"字段级：在 annotated 模式与 decorator 模式之间选择并实现\", \"模型级：在 before 与 after 验证器之间选择并实现\", \"after 验证器定义为实例方法并返回校验后的实例\", \"输出可运行代码并说明选型理由\"], \"output_contract\": [\"可运行的验证器代码，模式选择有明确理由\"], \"score\": 0.5976641041200936}, {\"skill_id\": \"4641701b-2dc0-5429-a380-d65c1c0ec55d\", \"name\": \"Pydantic 模型级校验器与 ValidationInfo 使用\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"实现模型级校验并正确读取校验信息与上下文\", \"applicable_signals\": [\"校验规则涉及两个及以上字段的相互依赖\", \"校验需要读取已校验字段数据（data）\", \"校验需要读取外部传入的校验上下文（context）\"], \"workflow_steps\": [\"判断校验是否确需跨字段依赖或访问校验上下文\", \"在模型中定义模型级校验器（annotated 或 decorator 模式）\", \"在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）\", \"当校验条件不满足时抛出校验错误\", \"构造模型实例验证校验器按预期工作\"], \"output_contract\": [\"可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误\"], \"score\": 0.4583044328227092}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

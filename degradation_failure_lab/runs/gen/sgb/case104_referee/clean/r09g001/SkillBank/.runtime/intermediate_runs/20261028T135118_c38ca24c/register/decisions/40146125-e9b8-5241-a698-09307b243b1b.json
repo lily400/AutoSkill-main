@@ -1,0 +1,121 @@
+{
+  "skill_id": "40146125-e9b8-5241-a698-09307b243b1b",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "40146125-e9b8-5241-a698-09307b243b1b",
+    "name": "辅助证据可信度审查与判罚把关",
+    "description": "在力量举判罚前，对自动追踪叠加、教练申诉、相机记录等辅助证据进行可信度与局限审查（如阈值漏报、相机抖动、校准警告），避免以不可靠证据推翻或改变基于目视观察的技术判罚。",
+    "skill_body": "当自动工具报告与目视观察冲突，或教练提出技术性申诉时，先审查辅助证据的可信度再决定是否采纳。步骤：1) 识别辅助证据来源（自动追踪叠加、教练申诉、相机记录）；2) 检查该来源的已知局限与警告（如阈值设置可能漏报短时事件、光照眩光导致校准偏差、相机抖动伪影）；3) 将辅助证据与目视观察及规则标准对照；4) 若辅助证据存在未排除的局限或与目视观察冲突，则不以其推翻技术判罚，以目视观察和规则为准；5) 输出对辅助证据采纳与否的判定说明，并归入判罚理由。\n\n## Objective\n\n防止不可靠辅助证据导致误判\n## Applicable Signals\n\n- 自动追踪工具报告无异常但目视观察到疑似违规\n- 教练申诉称微动为相机伪影或滑动可忽略\n- 工具说明提示校准可能漏报短时事件\n\n## Contraindications\n\n- 无争议且证据一致时无需启动\n- 与判罚无关的赛事信息（如抽奖、赞助、座位安排）不纳入审查\n\n## Intervention Moves\n\n- 识别辅助证据来源及其局限\n- 核对工具阈值与校准警告\n- 将辅助证据与目视观察及规则标准对照\n- 在局限未排除时不采纳该证据推翻判罚\n- 记录证据采纳与否的判定说明\n\n## Workflow Steps\n\n- 识别辅助证据来源（自动追踪、教练申诉、相机记录）\n- 检查该来源的已知局限与警告（阈值漏报、光照眩光、相机抖动）\n- 将辅助证据与目视观察及规则标准对照\n- 若局限未排除或与目视观察冲突，则不以其推翻技术判罚\n- 输出证据采纳与否的判定说明并归入判罚理由\n\n## Constraints\n\n- 辅助证据不得单独作为推翻目视技术判罚的依据\n- 存在未排除的校准或阈值警告时，该证据可信度应下调\n- 仅审查与判罚相关的证据，排除无关赛事信息\n\n## Cautions\n\n- 工具阈值设置可能系统性漏报短时事件\n- 光照眩光等环境因素可能导致校准偏差\n- 相机抖动伪影可能被误读为真实动作\n\n## Output Contract\n\n- 对辅助证据采纳与否的判定说明，包含证据来源、已识别的局限、与目视观察的对照结论，以及是否据此改变判罚的理由。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 自动追踪工具报告在关键时段无超过阈值的杠铃下沉事件，但工具说明提示光照眩光下可能漏报短时下沉。\n- Therapist/Output: 该自动证据存在未排除的漏报风险，不予采纳以推翻目视观察到的下沉判罚；判罚维持，理由记为工具阈值局限。\n- Notes: 阈值与校准警告是可信度下调的关键依据。\n\n### Example 2\n\n- Client/Input: 教练申诉称微动为相机抖动伪影、脚部滑动可忽略。\n- Therapist/Output: 申诉未提供排除伪影的独立证据，且目视观察显示接触连续平整；不据此推翻判罚，记录申诉已审查。\n- Notes: 申诉本身属辅助证据，需与目视观察对照。",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "防止不可靠辅助证据导致误判",
+    "domain": "力量举裁判",
+    "task_family": "判罚把关",
+    "method_family": "证据可信度审查",
+    "stage": "判罚前证据核验",
+    "applicable_signals": [
+      "自动追踪工具报告无异常但目视观察到疑似违规",
+      "教练申诉称微动为相机伪影或滑动可忽略",
+      "工具说明提示校准可能漏报短时事件"
+    ],
+    "contraindications": [
+      "无争议且证据一致时无需启动",
+      "与判罚无关的赛事信息（如抽奖、赞助、座位安排）不纳入审查"
+    ],
+    "intervention_moves": [
+      "识别辅助证据来源及其局限",
+      "核对工具阈值与校准警告",
+      "将辅助证据与目视观察及规则标准对照",
+      "在局限未排除时不采纳该证据推翻判罚",
+      "记录证据采纳与否的判定说明"
+    ],
+    "triggers": [
+      "自动工具报告与目视观察冲突",
+      "教练提出技术性申诉要求推翻判罚",
+      "辅助证据存在校准或阈值警告"
+    ],
+    "workflow_steps": [
+      "识别辅助证据来源（自动追踪、教练申诉、相机记录）",
+      "检查该来源的已知局限与警告（阈值漏报、光照眩光、相机抖动）",
+      "将辅助证据与目视观察及规则标准对照",
+      "若局限未排除或与目视观察冲突，则不以其推翻技术判罚",
+      "输出证据采纳与否的判定说明并归入判罚理由"
+    ],
+    "constraints": [
+      "辅助证据不得单独作为推翻目视技术判罚的依据",
+      "存在未排除的校准或阈值警告时，该证据可信度应下调",
+      "仅审查与判罚相关的证据，排除无关赛事信息"
+    ],
+    "cautions": [
+      "工具阈值设置可能系统性漏报短时事件",
+      "光照眩光等环境因素可能导致校准偏差",
+      "相机抖动伪影可能被误读为真实动作"
+    ],
+    "output_contract": [
+      "对辅助证据采纳与否的判定说明，包含证据来源、已识别的局限、与目视观察的对照结论，以及是否据此改变判罚的理由。"
+    ],
+    "examples": [
+      {
+        "input": "自动追踪工具报告在关键时段无超过阈值的杠铃下沉事件，但工具说明提示光照眩光下可能漏报短时下沉。",
+        "output": "该自动证据存在未排除的漏报风险，不予采纳以推翻目视观察到的下沉判罚；判罚维持，理由记为工具阈值局限。",
+        "notes": "阈值与校准警告是可信度下调的关键依据。"
+      },
+      {
+        "input": "教练申诉称微动为相机抖动伪影、脚部滑动可忽略。",
+        "output": "申诉未提供排除伪影的独立证据，且目视观察显示接触连续平整；不据此推翻判罚，记录申诉已审查。",
+        "notes": "申诉本身属辅助证据，需与目视观察对照。"
+      }
+    ],
+    "tags": [
+      "力量举裁判",
+      "证据可信度",
+      "判罚把关",
+      "辅助证据审查"
+    ],
+    "support_ids": [
+      "001f04b6-637f-518f-8bd3-7c336c198271"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "4f2c1f42-249b-5f3a-bdc1-81f00e608aed"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.65,
+      "domain_type": "Rule_System_Application_Game_Mechanics_2",
+      "taxonomy_id": "Rule_System_Application_Game_Mechanics_2",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "rule_system_application_game_mechanics_2|||safety_rule|micro|safety_rule_node|防止不可靠辅助证据导致误判|力量举裁判|判罚把关|证据可信度审查|判罚前证据核验|辅助证据可信度审查与判罚把关"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

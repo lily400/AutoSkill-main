@@ -1,0 +1,112 @@
+{
+  "skill_id": "9fe92bc9-6546-50f8-bcae-efb34ffbb5f2",
+  "name": "判别联合校验",
+  "description": "使用判别字段（含 str 判别器、可调用 Discriminator 及嵌套判别联合）将联合类型路由到唯一成员进行校验；适用于成员可由判别字段明确区分的场景。",
+  "skill_body": "当联合类型的成员可由一个判别字段唯一区分时，使用本技能：先确认判别字段存在且取值能唯一映射到某个成员，再按判别值选中唯一成员并执行该成员的校验，返回其校验结果。若判别值无法匹配任何成员或成员间无可靠判别字段，则不要使用本技能，改用顺序或评分选择策略。\n\n## Objective\n\n依据判别字段将输入路由到唯一联合成员并校验\n## Applicable Signals\n\n- 联合成员可由一个判别字段唯一区分\n- 需要支持 str 判别器、可调用 Discriminator 或嵌套判别联合\n\n## Contraindications\n\n- 成员间无可靠判别字段\n- 仅需按顺序或评分选择成员\n\n## Intervention Moves\n\n- 识别并确认判别字段\n- 按判别值路由到唯一成员\n- 对选中成员执行校验并返回结果\n\n## Workflow Steps\n\n- 确认联合成员可由一个判别字段唯一区分。\n- 确定判别器形式：str 判别器、可调用 Discriminator 或嵌套判别联合。\n- 读取判别字段取值并映射到唯一成员。\n- 对选中成员执行校验。\n- 返回该成员的校验结果。\n\n## Constraints\n\n- 仅在成员可由判别字段唯一区分时使用\n- 判别值必须能唯一映射到某个成员\n\n## Cautions\n\n- 判别值无法匹配任何成员时应报错而非回退到顺序选择\n- 嵌套判别联合需逐层解析判别字段\n\n## Output Contract\n\n- 按判别值选中唯一成员并返回其校验结果",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "parent",
+  "objective": "依据判别字段将输入路由到唯一联合成员并校验",
+  "domain": "pydantic",
+  "task_family": "union_validation",
+  "method_family": "discriminated_routing",
+  "stage": "validation",
+  "applicable_signals": [
+    "联合成员可由一个判别字段唯一区分",
+    "需要支持 str 判别器、可调用 Discriminator 或嵌套判别联合"
+  ],
+  "contraindications": [
+    "成员间无可靠判别字段",
+    "仅需按顺序或评分选择成员"
+  ],
+  "intervention_moves": [
+    "识别并确认判别字段",
+    "按判别值路由到唯一成员",
+    "对选中成员执行校验并返回结果"
+  ],
+  "triggers": [
+    "联合成员可由一个判别字段唯一区分",
+    "需要支持 str 判别器",
+    "需要使用可调用 Discriminator",
+    "需要处理嵌套判别联合"
+  ],
+  "workflow_steps": [
+    "确认联合成员可由一个判别字段唯一区分。",
+    "确定判别器形式：str 判别器、可调用 Discriminator 或嵌套判别联合。",
+    "读取判别字段取值并映射到唯一成员。",
+    "对选中成员执行校验。",
+    "返回该成员的校验结果。"
+  ],
+  "constraints": [
+    "仅在成员可由判别字段唯一区分时使用",
+    "判别值必须能唯一映射到某个成员"
+  ],
+  "cautions": [
+    "判别值无法匹配任何成员时应报错而非回退到顺序选择",
+    "嵌套判别联合需逐层解析判别字段"
+  ],
+  "output_contract": [
+    "按判别值选中唯一成员并返回其校验结果"
+  ],
+  "examples": [],
+  "tags": [
+    "pydantic",
+    "union_validation",
+    "discriminated_union",
+    "routing"
+  ],
+  "support_ids": [
+    "d5df299a-9107-5b50-9977-9f0ae3517455"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "8c6b1a67-06f1-5959-b0b6-96eeef24bdeb"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "pydantic",
+    "taxonomy_id": "pydantic",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "pydantic::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "pydantic|||session_skill|session|workflow_skill|依据判别字段将输入路由到唯一联合成员并校验|pydantic|union_validation|discriminated_routing|validation|判别联合校验",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

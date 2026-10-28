@@ -1,0 +1,106 @@
+{
+  "skill_id": "b0980678-7418-5cdd-b5dc-b84f61f3f5fa",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 07e18b42 高度重复（同为单字段 annotated/decorator 校验器选择与实现），且 0166b7ef 已覆盖字段级与模型级选型；本候选内容更薄、约束更弱，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "b0980678-7418-5cdd-b5dc-b84f61f3f5fa",
+    "name": "Pydantic 字段校验器选择与实现",
+    "description": "为 Pydantic 模型字段选择并实现自定义校验器：在 annotated 模式与 decorator 模式之间做选择，并处理值变更与校验跳过。用于需要为单个字段添加自定义校验逻辑时。",
+    "skill_body": "当需要为 Pydantic 模型的单个字段添加自定义校验逻辑时，先判断校验需求：若校验逻辑简单、可复用、以类型注解方式表达，优先使用 annotated 模式（Annotated + 校验函数）；若需要访问字段值、进行变更或依赖装饰器上下文，使用 decorator 模式（field_validator）。实现时明确所选模式，确保校验函数签名与模式匹配，必要时使用 SkipValidation 跳过某字段校验。不要用于跨字段或模型级校验。\n\n## Objective\n\n为 Pydantic 模型字段选择并实现合适的自定义校验器模式\n## Applicable Signals\n\n- 需要为单个字段添加自定义校验逻辑\n- 需要在 annotated 与 decorator 两种校验器模式间做选择\n- 需要跳过某字段校验（SkipValidation）\n\n## Contraindications\n\n- 需要跨字段或模型级校验时（应使用模型校验器）\n\n## Intervention Moves\n\n- 判断校验需求是否属于单字段级\n- 在 annotated 模式与 decorator 模式之间选择\n- 按所选模式实现校验函数\n- 必要时使用 SkipValidation 跳过字段校验\n\n## Workflow Steps\n\n- 确认校验目标为单个字段而非跨字段或模型级\n- 评估校验逻辑：简单可复用选 annotated 模式；需访问值或变更选 decorator 模式\n- 按所选模式实现校验函数并接入模型字段\n- 如需跳过某字段校验，使用 SkipValidation\n- 验证实现可运行且校验行为符合预期\n\n## Constraints\n\n- 仅处理字段级校验，不扩展到模型级校验\n- 明确标注采用的 annotated 或 decorator 模式\n\n## Cautions\n\n- 跨字段或模型级校验不属于本技能范围，应改用模型校验器\n\n## Output Contract\n\n- 可运行的字段校验器实现，明确采用 annotated 或 decorator 模式",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为 Pydantic 模型字段选择并实现合适的自定义校验器模式",
+    "domain": "pydantic",
+    "task_family": "模型校验",
+    "method_family": "字段校验器",
+    "stage": "字段校验实现",
+    "applicable_signals": [
+      "需要为单个字段添加自定义校验逻辑",
+      "需要在 annotated 与 decorator 两种校验器模式间做选择",
+      "需要跳过某字段校验（SkipValidation）"
+    ],
+    "contraindications": [
+      "需要跨字段或模型级校验时（应使用模型校验器）"
+    ],
+    "intervention_moves": [
+      "判断校验需求是否属于单字段级",
+      "在 annotated 模式与 decorator 模式之间选择",
+      "按所选模式实现校验函数",
+      "必要时使用 SkipValidation 跳过字段校验"
+    ],
+    "triggers": [
+      "需要为单个字段添加自定义校验逻辑",
+      "需要在 annotated 与 decorator 两种校验器模式间做选择",
+      "需要处理字段值变更或跳过字段校验"
+    ],
+    "workflow_steps": [
+      "确认校验目标为单个字段而非跨字段或模型级",
+      "评估校验逻辑：简单可复用选 annotated 模式；需访问值或变更选 decorator 模式",
+      "按所选模式实现校验函数并接入模型字段",
+      "如需跳过某字段校验，使用 SkipValidation",
+      "验证实现可运行且校验行为符合预期"
+    ],
+    "constraints": [
+      "仅处理字段级校验，不扩展到模型级校验",
+      "明确标注采用的 annotated 或 decorator 模式"
+    ],
+    "cautions": [
+      "跨字段或模型级校验不属于本技能范围，应改用模型校验器"
+    ],
+    "output_contract": [
+      "可运行的字段校验器实现，明确采用 annotated 或 decorator 模式"
+    ],
+    "examples": [],
+    "tags": [
+      "pydantic",
+      "字段校验",
+      "validator",
+      "annotated",
+      "decorator"
+    ],
+    "support_ids": [
+      "ca741c62-bcc4-5be8-83e5-98c0ff938320"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "3afa0b33-b04a-5edb-87ef-5f0bf866def2"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|为 pydantic 模型字段选择并实现合适的自定义校验器模式|pydantic|模型校验|字段校验器|字段校验实现|pydantic 字段校验器选择与实现"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

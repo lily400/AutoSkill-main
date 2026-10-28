@@ -1,0 +1,152 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "联合类型约束",
+  "run_id": "20261028T132115_64b662fd",
+  "skills": [
+    {
+      "skill_id": "3062a472-2dcc-54ef-b18a-b64a5b592a3d",
+      "name": "单变体联合禁用判别器校验",
+      "description": "在定义带判别器的联合类型字段前，检查联合是否仅含单一变体；若仅含一个成员，应改用非联合类型，因为 Python 会把 Union[T] 折叠为 T，导致判别器无法生效。",
+      "skill_body": "在编写带判别器的联合字段前执行前置校验：确认联合类型至少包含两个变体。若发现 Union[T] 这类单变体写法，停止添加 Discriminator，并改为直接使用 T 或补充其他变体。\n\n## Objective\n\n阻止对单变体联合使用判别器\n## Applicable Signals\n\n- 联合类型仅包含一个成员\n- 计划为联合字段配置 Discriminator\n- 字段声明中出现 Union[T] 形式\n\n## Contraindications\n\n- 联合包含两个及以上变体时无需触发此校验\n\n## Intervention Moves\n\n- 统计联合成员数量\n- 若仅一个成员则拒绝添加判别器\n- 建议改用非联合类型或补充变体\n\n## Workflow Steps\n\n- 识别待定义的联合字段及其成员列表\n- 统计联合变体数量\n- 若变体数小于 2，停止添加判别器并改用非联合类型或补充变体\n- 若变体数大于等于 2，允许继续配置判别器\n\n## Constraints\n\n- 判别器不得用于仅含单一变体的联合\n- 不得依赖 Union[T] 与 T 的区分，因为 Python 在解释时会将 Union[T] 折叠为 T\n\n## Cautions\n\n- 单变体联合在运行时无法与普通类型区分，判别逻辑会静默失效\n\n## Output Contract\n\n- 确认联合含多变体或改用非联合类型\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: some_field: Annotated[Union[Cat], Discriminator(...)]\n- Therapist/Output: 拒绝添加判别器；改为 some_field: Cat 或补充其他变体后再使用判别器\n- Notes: Union[Cat] 会被 Python 折叠为 Cat",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "阻止对单变体联合使用判别器",
+      "domain": "pydantic",
+      "task_family": "联合类型约束",
+      "method_family": "前置校验",
+      "stage": "字段定义前检查",
+      "applicable_signals": [
+        "联合类型仅包含一个成员",
+        "计划为联合字段配置 Discriminator",
+        "字段声明中出现 Union[T] 形式"
+      ],
+      "contraindications": [
+        "联合包含两个及以上变体时无需触发此校验"
+      ],
+      "intervention_moves": [
+        "统计联合成员数量",
+        "若仅一个成员则拒绝添加判别器",
+        "建议改用非联合类型或补充变体"
+      ],
+      "triggers": [
+        "准备为联合字段添加判别器",
+        "联合类型仅包含一个成员",
+        "编写 Annotated[Union[...], Discriminator(...)] 或 Field(discriminator=...) 前"
+      ],
+      "workflow_steps": [
+        "识别待定义的联合字段及其成员列表",
+        "统计联合变体数量",
+        "若变体数小于 2，停止添加判别器并改用非联合类型或补充变体",
+        "若变体数大于等于 2，允许继续配置判别器"
+      ],
+      "constraints": [
+        "判别器不得用于仅含单一变体的联合",
+        "不得依赖 Union[T] 与 T 的区分，因为 Python 在解释时会将 Union[T] 折叠为 T"
+      ],
+      "cautions": [
+        "单变体联合在运行时无法与普通类型区分，判别逻辑会静默失效"
+      ],
+      "output_contract": [
+        "确认联合含多变体或改用非联合类型"
+      ],
+      "examples": [
+        {
+          "input": "some_field: Annotated[Union[Cat], Discriminator(...)]",
+          "output": "拒绝添加判别器；改为 some_field: Cat 或补充其他变体后再使用判别器",
+          "notes": "Union[Cat] 会被 Python 折叠为 Cat"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminated-union",
+        "前置校验",
+        "类型约束"
+      ],
+      "support_ids": [
+        "10a2a4ca-e66f-5c69-b297-d93f5cca7421"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "f666d299-14dd-5e04-91ba-06de2ac0570c"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||safety_rule|micro|safety_rule_node|阻止对单变体联合使用判别器|pydantic|联合类型约束|前置校验|字段定义前检查|单变体联合禁用判别器校验",
+        "change_action": "create",
+        "llm_reason": "候选规则针对单变体联合使用判别器的静默失效风险，与同批其他候选（输入形态兼容、union_mode 选择、错误聚合）主题不同，无冗余；有支持证据且无冲突，保留为独立安全规则。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "bdc19721-2a49-4fbb-b48f-24e09d5da7c9",
+      "entity_type": "skill",
+      "entity_id": "3062a472-2dcc-54ef-b18a-b64a5b592a3d",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选规则针对单变体联合使用判别器的静默失效风险，与同批其他候选（输入形态兼容、union_mode 选择、错误聚合）主题不同，无冗余；有支持证据且无冲突，保留为独立安全规则。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3062a472-2dcc-54ef-b18a-b64a5b592a3d",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "10a2a4ca-e66f-5c69-b297-d93f5cca7421"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

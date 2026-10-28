@@ -1,0 +1,112 @@
+{
+  "skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+    "name": "可调用判别器联合类型校验",
+    "description": "使用 callable Discriminator 配合 Tag 注解，将联合类型按运行时类型分派到对应成员进行校验。适用于联合成员无法用单一字符串字段区分、需要自定义判别逻辑的场景。",
+    "skill_body": "为联合类型字段配置可调用判别器：定义判别函数，按运行时类型返回对应 Tag 标签；用 Annotated 将各联合成员标注 Tag，并用 Discriminator 包裹整个联合；判别值未找到时返回 None。随后用 model_validate 验证不同输入能分派到正确成员。\n\n## Objective\n\n为联合类型字段配置可调用判别器，实现按运行时类型分派校验\n## Applicable Signals\n\n- 联合成员需按运行时类型（如 int 与 dict/BaseModel）区分\n- 字符串判别字段无法覆盖判别逻辑\n\n## Contraindications\n\n- 联合成员可用单一字符串字段直接区分时优先用 str 判别器\n- 判别函数无法稳定返回标签时\n\n## Intervention Moves\n\n- 定义判别函数，按 isinstance 判断运行时类型并返回对应标签\n- 判别值未找到时返回 None\n- 用 Annotated 为每个联合成员标注 Tag\n- 用 Discriminator 包裹联合并传入判别函数\n- 用 model_validate 验证不同输入分派到正确成员\n\n## Workflow Steps\n\n- 定义判别函数，按运行时类型返回对应标签字符串\n- 判别值未找到时返回 None\n- 用 Annotated 为每个联合成员标注 Tag\n- 用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型\n- 用 model_validate 验证不同输入分派到正确成员实例\n\n## Constraints\n\n- 判别函数必须对每个可接受输入返回稳定标签\n- 判别值未找到时应返回 None 而非抛出异常\n\n## Cautions\n\n- 判别函数返回 None 时会触发 union_tag_not_found 错误\n\n## Output Contract\n\n- 带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: value 字段联合 int 与 SpecialValue，判别函数按 isinstance 返回 'int' 或 'model'\n- Therapist/Output: 输入 {'value': {'value': 1}} 得到 SpecialValue(value=1)；输入 {'value': 123} 得到 123\n- Notes: 判别值未找到时返回 None，触发 union_tag_not_found",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "为联合类型字段配置可调用判别器，实现按运行时类型分派校验",
+    "domain": "pydantic",
+    "task_family": "联合类型校验",
+    "method_family": "判别器分派",
+    "stage": "模型定义与校验",
+    "applicable_signals": [
+      "联合成员需按运行时类型（如 int 与 dict/BaseModel）区分",
+      "字符串判别字段无法覆盖判别逻辑"
+    ],
+    "contraindications": [
+      "联合成员可用单一字符串字段直接区分时优先用 str 判别器",
+      "判别函数无法稳定返回标签时"
+    ],
+    "intervention_moves": [
+      "定义判别函数，按 isinstance 判断运行时类型并返回对应标签",
+      "判别值未找到时返回 None",
+      "用 Annotated 为每个联合成员标注 Tag",
+      "用 Discriminator 包裹联合并传入判别函数",
+      "用 model_validate 验证不同输入分派到正确成员"
+    ],
+    "triggers": [
+      "联合成员需按运行时类型（如 int 与 dict/BaseModel）区分",
+      "字符串判别字段无法覆盖判别逻辑"
+    ],
+    "workflow_steps": [
+      "定义判别函数，按运行时类型返回对应标签字符串",
+      "判别值未找到时返回 None",
+      "用 Annotated 为每个联合成员标注 Tag",
+      "用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型",
+      "用 model_validate 验证不同输入分派到正确成员实例"
+    ],
+    "constraints": [
+      "判别函数必须对每个可接受输入返回稳定标签",
+      "判别值未找到时应返回 None 而非抛出异常"
+    ],
+    "cautions": [
+      "判别函数返回 None 时会触发 union_tag_not_found 错误"
+    ],
+    "output_contract": [
+      "带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例"
+    ],
+    "examples": [
+      {
+        "input": "value 字段联合 int 与 SpecialValue，判别函数按 isinstance 返回 'int' 或 'model'",
+        "output": "输入 {'value': {'value': 1}} 得到 SpecialValue(value=1)；输入 {'value': 123} 得到 123",
+        "notes": "判别值未找到时返回 None，触发 union_tag_not_found"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "union",
+      "discriminator",
+      "callable",
+      "tag"
+    ],
+    "support_ids": [
+      "c94da646-7dcd-5dc2-ae1e-e511b06cfec8"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "65966fab-f30e-5588-ad70-71b55dd3b75d"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||session_skill|session|workflow_skill|为联合类型字段配置可调用判别器，实现按运行时类型分派校验|pydantic|联合类型校验|判别器分派|模型定义与校验|可调用判别器联合类型校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

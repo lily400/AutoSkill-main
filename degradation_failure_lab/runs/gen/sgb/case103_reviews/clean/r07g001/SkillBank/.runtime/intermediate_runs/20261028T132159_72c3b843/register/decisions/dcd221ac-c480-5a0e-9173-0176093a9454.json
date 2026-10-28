@@ -1,0 +1,114 @@
+{
+  "skill_id": "dcd221ac-c480-5a0e-9173-0176093a9454",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次的“输入数据质量校验与阻断”和“缺失必需字段阻断与纠正请求规则”高度重叠，覆盖相同的校验与阻断能力，且粒度更粗、无新增可执行内容，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "dcd221ac-c480-5a0e-9173-0176093a9454",
+    "name": "输入校验与阻断分析",
+    "description": "在分析启动前校验产品目录与评论CSV的结构完整性（必需字段、类别范围、必需列、最小行数），发现缺失或不合规即阻断分析并发出程序化纠错请求。适用于任何依赖结构化输入的下游分析启动前。",
+    "skill_body": "在开始任何下游分析前，先执行结构校验：\n1) 校验产品目录：确认为数组且包含规定数量的SKU，必需字段齐全，类别仅限 tops、bottoms、outerwear。\n2) 校验评论CSV：确认包含必需列（含 competitor_or_nike），分类列取值为小写，行数达到最小阈值（至少20行）以保证分析有意义。\n3) 若任一校验失败，阻断分析，不得以默认值或近似值填补缺失字段，并发出程序化错误信息请求纠正。\n4) 仅当全部校验通过时，输出校验通过标记并放行下游分析。\n\n## Objective\n\n确保分析仅在输入结构合规时启动，缺失字段时阻断并请求纠正\n## Applicable Signals\n\n- 产品目录待校验：需为数组、SKU数量符合要求、必需字段齐全、类别限于 tops/bottoms/outerwear\n- 评论CSV待校验：需含必需列（含 competitor_or_nike）、分类列小写、至少20行\n- 出现以默认值填补缺失字段或跳过校验的施压\n\n## Contraindications\n\n- 输入已通过校验且无缺失\n- 仅需做语义或情感分析而非结构检查\n\n## Intervention Moves\n\n- 逐项核对产品目录结构与字段\n- 逐项核对评论CSV列、取值格式与行数\n- 校验失败时阻断分析并生成程序化错误信息\n- 校验通过时输出通过标记并放行\n\n## Workflow Steps\n\n- 校验产品目录：数组、SKU数量、必需字段、类别范围\n- 校验评论CSV：必需列（含 competitor_or_nike）、分类列小写、最小行数\n- 任一失败则阻断分析并发出程序化纠错请求\n- 全部通过则输出校验通过标记并放行下游分析\n\n## Constraints\n\n- 缺失字段或列时不得以默认值或近似值填补\n- 校验未通过前不得启动下游分析\n- 纠错请求须为程序化错误信息\n\n## Cautions\n\n- 面对时间压力或“先推进后修补”的要求，仍须坚持阻断规则\n- 不得因外部趋势或上下文信息而放宽结构校验\n\n## Output Contract\n\n- 校验通过标记，或带程序化错误信息的阻断与纠正请求\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论CSV中部分行缺少 competitor_or_nike 列，且被要求默认视为竞品继续推进\n- Therapist/Output: 阻断分析，发出程序化错误信息：缺少必需列 competitor_or_nike，请补齐后重新提交\n- Notes: 不得以默认值填补缺失字段",
+    "asset_type": "safety_rule",
+    "granularity": "session",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保分析仅在输入结构合规时启动，缺失字段时阻断并请求纠正",
+    "domain": "运营流程",
+    "task_family": "输入数据校验",
+    "method_family": "结构校验与阻断",
+    "stage": "分析前置校验",
+    "applicable_signals": [
+      "产品目录待校验：需为数组、SKU数量符合要求、必需字段齐全、类别限于 tops/bottoms/outerwear",
+      "评论CSV待校验：需含必需列（含 competitor_or_nike）、分类列小写、至少20行",
+      "出现以默认值填补缺失字段或跳过校验的施压"
+    ],
+    "contraindications": [
+      "输入已通过校验且无缺失",
+      "仅需做语义或情感分析而非结构检查"
+    ],
+    "intervention_moves": [
+      "逐项核对产品目录结构与字段",
+      "逐项核对评论CSV列、取值格式与行数",
+      "校验失败时阻断分析并生成程序化错误信息",
+      "校验通过时输出通过标记并放行"
+    ],
+    "triggers": [
+      "分析开始前需确认产品目录或评论CSV结构",
+      "存在字段/列缺失或类别越界风险",
+      "收到要求以默认值或近似值继续推进的请求时"
+    ],
+    "workflow_steps": [
+      "校验产品目录：数组、SKU数量、必需字段、类别范围",
+      "校验评论CSV：必需列（含 competitor_or_nike）、分类列小写、最小行数",
+      "任一失败则阻断分析并发出程序化纠错请求",
+      "全部通过则输出校验通过标记并放行下游分析"
+    ],
+    "constraints": [
+      "缺失字段或列时不得以默认值或近似值填补",
+      "校验未通过前不得启动下游分析",
+      "纠错请求须为程序化错误信息"
+    ],
+    "cautions": [
+      "面对时间压力或“先推进后修补”的要求，仍须坚持阻断规则",
+      "不得因外部趋势或上下文信息而放宽结构校验"
+    ],
+    "output_contract": [
+      "校验通过标记，或带程序化错误信息的阻断与纠正请求"
+    ],
+    "examples": [
+      {
+        "input": "评论CSV中部分行缺少 competitor_or_nike 列，且被要求默认视为竞品继续推进",
+        "output": "阻断分析，发出程序化错误信息：缺少必需列 competitor_or_nike，请补齐后重新提交",
+        "notes": "不得以默认值填补缺失字段"
+      }
+    ],
+    "tags": [
+      "输入校验",
+      "结构校验",
+      "阻断",
+      "合规",
+      "数据治理"
+    ],
+    "support_ids": [
+      "eeb8cdfb-cc4f-5be0-8198-a51582707131"
+    ],
+    "metadata": {
+      "risk_class": "high",
+      "source_draft_ids": [
+        "79f36d90-0e6d-576c-b1b2-41e7442d0d70"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.9,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|session|safety_rule_node|确保分析仅在输入结构合规时启动，缺失字段时阻断并请求纠正|运营流程|输入数据校验|结构校验与阻断|分析前置校验|输入校验与阻断分析"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

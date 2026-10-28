@@ -1,0 +1,15 @@
+{
+  "correct": {
+    "source": "\"\"\"Researcher-written positive fixture; never a generated Skill or Agent result.\"\"\"\nfrom typing import Annotated\nfrom pydantic import AfterValidator,BaseModel,BeforeValidator,WrapValidator\n\nVALIDATION_LOG=[]\n\ndef before(value):\n    VALIDATION_LOG.append({'event':'before','value':value})\n    return value*2\n\ndef wrap(value,handler):\n    VALIDATION_LOG.append({'event':'wrap_start','value':value})\n    result=handler(value)\n    VALIDATION_LOG.append({'event':'wrap_end','value':result})\n    return result\n\ndef after(value):\n    VALIDATION_LOG.append({'event':'after','value':value})\n    return value+10\n\nclass MyModel(BaseModel):\n    value:Annotated[int,AfterValidator(after),BeforeValidator(before),WrapValidator(wrap)]\n",
+    "passed": 16,
+    "failed": []
+  },
+  "rule_mutant": {
+    "source": "\"\"\"Researcher-written positive fixture; never a generated Skill or Agent result.\"\"\"\nfrom typing import Annotated\nfrom pydantic import AfterValidator,BaseModel,BeforeValidator,WrapValidator\n\nVALIDATION_LOG=[]\n\ndef before(value):\n    VALIDATION_LOG.append({'event':'before','value':value})\n    return value*2\n\ndef wrap(value,handler):\n    VALIDATION_LOG.append({'event':'wrap_start','value':value})\n    result=handler(value)\n    VALIDATION_LOG.append({'event':'wrap_end','value':result})\n    return result\n\ndef after(value):\n    VALIDATION_LOG.append({'event':'after','value':value})\n    return value+10\n\nclass MyModel(BaseModel):\n    value:Annotated[int,AfterValidator(after),WrapValidator(wrap),BeforeValidator(before)]\n",
+    "passed": 14,
+    "failed": [
+      "test_wrap_sees_raw_input",
+      "test_order_matches_documented_pipeline_semantics"
+    ]
+  }
+}

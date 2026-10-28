@@ -1,0 +1,123 @@
+{
+  "skill_id": "12d1ad66-9416-5cce-87f7-c629df2206c1",
+  "name": "货物状态快照解析",
+  "description": "解析状态快照中 CONSIGNMENTS 段的货物条目，按货物状态条件读取并结构化 ConsignmentID、Status、CurrentNode、AssignedVehicleID 与 DeliveredTime 等字段，用于读取或校验货物分配与交付状态。",
+  "skill_body": "定位状态快照中的 CONSIGNMENTS 段，逐条读取货物条目。对每个条目先读取 ConsignmentID 与 Status，再依据状态条件读取其余字段：当状态为 PENDING_AT_ORIGIN 或货物停留在中间节点时读取 CurrentNode；当存在分配车辆时读取 AssignedVehicleID；当货物已交付时读取 DeliveredTime。仅输出由条目实际提供的字段，不推断缺失字段，不处理车辆段或事件段，不进行路径规划。\n\n## Objective\n\n按货物状态条件正确读取并结构化货物字段\n## Applicable Signals\n\n- 输入包含 CONSIGNMENTS 段\n- 需要核对货物分配或交付状态\n- 需要将货物条目转为结构化列表\n\n## Contraindications\n\n- 处理车辆段或事件段\n- 需要执行路径规划\n- 输入中不存在 CONSIGNMENTS 段\n\n## Intervention Moves\n\n- 定位 CONSIGNMENTS 段并逐条切分货物条目\n- 先读取 ConsignmentID 与 Status 作为基础字段\n- 按状态条件读取 CurrentNode、AssignedVehicleID、DeliveredTime\n- 仅保留条目实际提供的字段并汇总为列表\n\n## Workflow Steps\n\n- 定位状态快照中的 CONSIGNMENTS 段\n- 逐条切分货物条目\n- 读取每个条目的 ConsignmentID 与 Status\n- 当状态为 PENDING_AT_ORIGIN 或停留在中间节点时读取 CurrentNode\n- 当存在分配车辆时读取 AssignedVehicleID\n- 当货物已交付时读取 DeliveredTime\n- 汇总为结构化货物状态列表\n\n## Constraints\n\n- 字段读取必须与货物状态条件一致\n- 不得为条目补造未提供的字段\n- 仅处理 CONSIGNMENTS 段，不混入车辆或事件段\n\n## Cautions\n\n- 状态与字段的对应关系依赖条目实际内容，缺失字段应留空而非推断\n- 不同状态下的字段集合不同，需逐条判断\n\n## Output Contract\n\n- 结构化的货物状态列表，每条含 ConsignmentID 与 Status，并按状态条件附带 CurrentNode、AssignedVehicleID、DeliveredTime 等字段。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: CONSIGNMENTS 段中一条货物条目，含 ConsignmentID、Status 及条件字段\n- Therapist/Output: 结构化条目：ConsignmentID、Status，以及按状态条件读取的 CurrentNode / AssignedVehicleID / DeliveredTime\n- Notes: 仅输出条目实际提供的字段",
+  "asset_type": "knowledge_reference",
+  "granularity": "session",
+  "asset_node_id": "knowledge_reference_node",
+  "asset_path": "family_root/knowledge_reference_node",
+  "asset_level": 1,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 1.0,
+  "hierarchy_status": "root",
+  "visible_role": "leaf",
+  "objective": "按货物状态条件正确读取并结构化货物字段",
+  "domain": "交通仿真规则",
+  "task_family": "状态快照解析",
+  "method_family": "条件字段解析",
+  "stage": "状态读取",
+  "applicable_signals": [
+    "输入包含 CONSIGNMENTS 段",
+    "需要核对货物分配或交付状态",
+    "需要将货物条目转为结构化列表"
+  ],
+  "contraindications": [
+    "处理车辆段或事件段",
+    "需要执行路径规划",
+    "输入中不存在 CONSIGNMENTS 段"
+  ],
+  "intervention_moves": [
+    "定位 CONSIGNMENTS 段并逐条切分货物条目",
+    "先读取 ConsignmentID 与 Status 作为基础字段",
+    "按状态条件读取 CurrentNode、AssignedVehicleID、DeliveredTime",
+    "仅保留条目实际提供的字段并汇总为列表"
+  ],
+  "triggers": [
+    "需要读取或校验 CONSIGNMENTS 段内容",
+    "核对货物分配与交付状态",
+    "需要将货物条目转为结构化状态列表"
+  ],
+  "workflow_steps": [
+    "定位状态快照中的 CONSIGNMENTS 段",
+    "逐条切分货物条目",
+    "读取每个条目的 ConsignmentID 与 Status",
+    "当状态为 PENDING_AT_ORIGIN 或停留在中间节点时读取 CurrentNode",
+    "当存在分配车辆时读取 AssignedVehicleID",
+    "当货物已交付时读取 DeliveredTime",
+    "汇总为结构化货物状态列表"
+  ],
+  "constraints": [
+    "字段读取必须与货物状态条件一致",
+    "不得为条目补造未提供的字段",
+    "仅处理 CONSIGNMENTS 段，不混入车辆或事件段"
+  ],
+  "cautions": [
+    "状态与字段的对应关系依赖条目实际内容，缺失字段应留空而非推断",
+    "不同状态下的字段集合不同，需逐条判断"
+  ],
+  "output_contract": [
+    "结构化的货物状态列表，每条含 ConsignmentID 与 Status，并按状态条件附带 CurrentNode、AssignedVehicleID、DeliveredTime 等字段。"
+  ],
+  "examples": [
+    {
+      "input": "CONSIGNMENTS 段中一条货物条目，含 ConsignmentID、Status 及条件字段",
+      "output": "结构化条目：ConsignmentID、Status，以及按状态条件读取的 CurrentNode / AssignedVehicleID / DeliveredTime",
+      "notes": "仅输出条目实际提供的字段"
+    }
+  ],
+  "tags": [
+    "状态快照",
+    "货物解析",
+    "条件字段",
+    "交通仿真"
+  ],
+  "support_ids": [
+    "0c219e6c-8bb9-5679-beb3-2cd6f6f6381f"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "97a7740e-2940-5196-8da0-515e8b9371c9"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.7,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|按货物状态条件正确读取并结构化货物字段|交通仿真规则|状态快照解析|条件字段解析|状态读取|货物状态快照解析",
+    "change_action": "create",
+    "llm_reason": "该候选技能聚焦于 CONSIGNMENTS 段的按状态条件字段解析，与同批的车辆段解析及整体六段快照解析在范围上互补而非重复，且无冲突证据，具备独立可复用价值。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 1.0,
+    "hierarchy_status": "root",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

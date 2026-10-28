@@ -1,0 +1,109 @@
+{
+  "skill_id": "03e82d80-c511-5415-b021-9c29b77aa966",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "候选技能是通用的封闭类别硬约束分类微技能，与同批评论匹配、情感分类、条件计数技能职责不同，无冗余或冲突，可保留。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "03e82d80-c511-5415-b021-9c29b77aa966",
+    "name": "类别匹配硬约束判定",
+    "description": "依据预定义封闭类别清单对条目做硬性类别归属判定，确保每个条目只被赋予清单内的合法类别标签，不得自造类别；无法归类的条目明确标记为无法归类。",
+    "skill_body": "对每个待分类条目，从预定义类别清单中选择唯一合法类别标签。判定时先确认类别清单已给定且封闭，再逐条比对条目与类别定义，输出清单内的类别标签；若条目无法归入任何既有类别，标记为无法归类而非新建类别。\n\n## Objective\n\n将条目归入预定义类别且不越界\n## Applicable Signals\n\n- 提供了封闭的预定义类别集合\n- 要求每个条目获得硬性类别标签\n- 类别标签需与固定清单严格一致\n\n## Contraindications\n\n- 类别体系开放或需动态生成\n- 任务仅需相似度排序而非类别归属\n- 未提供预定义类别清单\n\n## Intervention Moves\n\n- 确认类别清单为封闭集合\n- 逐条比对条目与类别定义\n- 为每条目选定清单内唯一类别标签\n- 对无法归类的条目标记为无法归类而非新建类别\n\n## Workflow Steps\n\n- 读取并确认预定义类别清单，确认其为封闭集合\n- 逐条读取待分类条目\n- 将条目与各预定义类别定义比对，判定归属\n- 为每条目输出清单内的合法类别标签\n- 若条目无法归入任何既有类别，标记为无法归类并保留原条目\n\n## Constraints\n\n- 类别标签必须来自预定义清单\n- 不得自造或扩展类别\n- 每个条目应获得明确的类别归属或无法归类标记\n\n## Cautions\n\n- 类别定义模糊时需依据清单原义判定，避免主观扩展\n- 不得以相似度排序替代硬性类别归属\n\n## Output Contract\n\n- 每条目对应的合法类别标签（来自预定义清单），无法归类的条目明确标记为无法归类。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "将条目归入预定义类别且不越界",
+    "domain": "运营流程",
+    "task_family": "类别分类",
+    "method_family": "规则约束分类",
+    "stage": "分类判定",
+    "applicable_signals": [
+      "提供了封闭的预定义类别集合",
+      "要求每个条目获得硬性类别标签",
+      "类别标签需与固定清单严格一致"
+    ],
+    "contraindications": [
+      "类别体系开放或需动态生成",
+      "任务仅需相似度排序而非类别归属",
+      "未提供预定义类别清单"
+    ],
+    "intervention_moves": [
+      "确认类别清单为封闭集合",
+      "逐条比对条目与类别定义",
+      "为每条目选定清单内唯一类别标签",
+      "对无法归类的条目标记为无法归类而非新建类别"
+    ],
+    "triggers": [
+      "存在固定类别清单需要逐条归类",
+      "任务要求硬性类别标签且不允许自造类别",
+      "需要对目录条目做类别归属判定"
+    ],
+    "workflow_steps": [
+      "读取并确认预定义类别清单，确认其为封闭集合",
+      "逐条读取待分类条目",
+      "将条目与各预定义类别定义比对，判定归属",
+      "为每条目输出清单内的合法类别标签",
+      "若条目无法归入任何既有类别，标记为无法归类并保留原条目"
+    ],
+    "constraints": [
+      "类别标签必须来自预定义清单",
+      "不得自造或扩展类别",
+      "每个条目应获得明确的类别归属或无法归类标记"
+    ],
+    "cautions": [
+      "类别定义模糊时需依据清单原义判定，避免主观扩展",
+      "不得以相似度排序替代硬性类别归属"
+    ],
+    "output_contract": [
+      "每条目对应的合法类别标签（来自预定义清单），无法归类的条目明确标记为无法归类。"
+    ],
+    "examples": [],
+    "tags": [
+      "类别分类",
+      "规则约束",
+      "硬性标签",
+      "目录整理"
+    ],
+    "support_ids": [
+      "01e10b77-08a9-5ddd-9c38-8df13530bb68"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "a79fe5e7-cf38-52f4-a91c-01d25c44687a"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||micro_skill|micro|micro_skill_node|将条目归入预定义类别且不越界|运营流程|类别分类|规则约束分类|分类判定|类别匹配硬约束判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

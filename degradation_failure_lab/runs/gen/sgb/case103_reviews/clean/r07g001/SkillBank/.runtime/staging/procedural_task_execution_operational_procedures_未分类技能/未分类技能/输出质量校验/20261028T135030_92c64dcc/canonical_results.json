@@ -1,0 +1,593 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "输出质量校验",
+  "run_id": "20261028T135030_92c64dcc",
+  "skills": [
+    {
+      "skill_id": "d5819e3a-52b8-5d7e-ae63-fc922c47c24a",
+      "name": "输出完整性与有效性校验",
+      "description": "对批量结构化输出执行完整性检查（数量、覆盖、去重、字段齐全）与数据有效性检查，确认交付物符合既定规格；适用于任何需要验证批量结构化输出是否合规的场景。",
+      "skill_body": "在交付前对结构化输出执行两阶段校验：先做完整性检查（对象数量是否与预期一致、是否覆盖全部源条目、是否存在重复ID、每个对象字段是否齐全），再做数据有效性检查。逐项记录通过/不通过结果，汇总问题清单后给出总体校验结论。\n\n## Objective\n\n验证输出满足数量、覆盖、去重与字段完整性要求\n## Applicable Signals\n\n- 输出为批量结构化对象且存在明确规格\n- 存在预期数量、源条目清单或字段定义可供对照\n\n## Contraindications\n\n- 输出为非结构化自由文本\n- 无明确规格可对照\n\n## Intervention Moves\n\n- 核对输出对象数量与预期数量是否一致\n- 核对源条目是否全部出现在输出中\n- 检查输出中是否存在重复ID\n- 检查每个对象是否包含全部必需字段\n- 执行数据有效性检查并记录异常\n\n## Workflow Steps\n\n- 完整性检查：确认输出对象数量与预期一致\n- 完整性检查：确认源条目全部覆盖，无遗漏\n- 完整性检查：确认无重复ID\n- 完整性检查：确认每个对象字段齐全\n- 数据有效性检查：按规格核验字段内容有效性\n- 汇总通过/不通过结论及问题清单\n\n## Constraints\n\n- 校验须以既定规格为唯一对照标准\n- 完整性与有效性检查须分别执行并分别记录结果\n\n## Cautions\n\n- 规格不明确时不应臆造校验标准，应标记为无法校验\n- 问题清单需可定位到具体对象或字段\n\n## Output Contract\n\n- 通过/不通过的校验结论及问题清单\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 输出包含50个SKU对象，需对照产品目录校验\n- Therapist/Output: 完整性检查：数量一致、目录全覆盖、无重复SKU ID、5个字段齐全；数据有效性检查结果与问题清单；总体结论：通过/不通过\n- Notes: 完整性与有效性分阶段记录",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "验证输出满足数量、覆盖、去重与字段完整性要求",
+      "domain": "程序化任务执行",
+      "task_family": "输出质量校验",
+      "method_family": "规则化校验",
+      "stage": "交付前验证",
+      "applicable_signals": [
+        "输出为批量结构化对象且存在明确规格",
+        "存在预期数量、源条目清单或字段定义可供对照"
+      ],
+      "contraindications": [
+        "输出为非结构化自由文本",
+        "无明确规格可对照"
+      ],
+      "intervention_moves": [
+        "核对输出对象数量与预期数量是否一致",
+        "核对源条目是否全部出现在输出中",
+        "检查输出中是否存在重复ID",
+        "检查每个对象是否包含全部必需字段",
+        "执行数据有效性检查并记录异常"
+      ],
+      "triggers": [
+        "需要确认输出对象数量与预期一致",
+        "需要检查是否存在重复ID或缺失字段",
+        "批量结构化输出交付前需要合规确认"
+      ],
+      "workflow_steps": [
+        "完整性检查：确认输出对象数量与预期一致",
+        "完整性检查：确认源条目全部覆盖，无遗漏",
+        "完整性检查：确认无重复ID",
+        "完整性检查：确认每个对象字段齐全",
+        "数据有效性检查：按规格核验字段内容有效性",
+        "汇总通过/不通过结论及问题清单"
+      ],
+      "constraints": [
+        "校验须以既定规格为唯一对照标准",
+        "完整性与有效性检查须分别执行并分别记录结果"
+      ],
+      "cautions": [
+        "规格不明确时不应臆造校验标准，应标记为无法校验",
+        "问题清单需可定位到具体对象或字段"
+      ],
+      "output_contract": [
+        "通过/不通过的校验结论及问题清单"
+      ],
+      "examples": [
+        {
+          "input": "输出包含50个SKU对象，需对照产品目录校验",
+          "output": "完整性检查：数量一致、目录全覆盖、无重复SKU ID、5个字段齐全；数据有效性检查结果与问题清单；总体结论：通过/不通过",
+          "notes": "完整性与有效性分阶段记录"
+        }
+      ],
+      "tags": [
+        "输出校验",
+        "完整性检查",
+        "数据有效性",
+        "交付前验证",
+        "规则化校验"
+      ],
+      "support_ids": [
+        "c582ea63-bafe-524d-9b6c-28d187bcd04f"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "0a8db05d-a997-5fe6-8c30-772b09090af3"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|验证输出满足数量、覆盖、去重与字段完整性要求|程序化任务执行|输出质量校验|规则化校验|交付前验证|输出完整性与有效性校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "84d5fe5e-e708-590e-8eef-c0647819df6e",
+      "name": "输出数据有效性校验",
+      "description": "在结构化输出提交或下游消费前，对 JSON 输出执行字段级数据有效性检查：确认标识字段与产品目录完全一致（区分大小写）、计数字段为整数且非负、JSON 可解析。用于输出交付前的质量把关。",
+      "skill_body": "在输出交付前执行数据有效性校验。逐项检查：1) 所有 sku_id 是否与产品目录中的值完全一致（区分大小写）；2) 四个计数字段是否均为整数；3) 所有计数是否 ≥ 0（无负值）；4) JSON 是否格式正确且可解析。任一项不通过则标记失败并说明具体失败项，不得放行。\n\n## Objective\n\n在输出交付前拦截格式错误、非法标识与非法计数值\n## Applicable Signals\n\n- 已生成含 sku_id 与计数字段的 JSON 输出\n- 输出即将提交或交付下游系统\n\n## Contraindications\n\n- 输入本身缺失或无法解析，需先走无效输入处理流程\n- 仅需检查逻辑一致性而非字段级有效性时\n\n## Intervention Moves\n\n- 逐项核对 sku_id 与产品目录完全一致（区分大小写）\n- 确认四个计数字段均为整数\n- 确认所有计数 ≥ 0\n- 确认 JSON 格式正确且可解析\n- 任一项不通过则标记失败并指明失败项\n\n## Workflow Steps\n\n- 读取待校验的 JSON 输出\n- 核对所有 sku_id 与产品目录完全一致（区分大小写）\n- 检查四个计数字段均为整数\n- 检查所有计数 ≥ 0（无负值）\n- 验证 JSON 格式正确且可解析\n- 全部通过则放行；否则标记失败并列出具体失败项\n\n## Constraints\n\n- sku_id 必须与产品目录完全一致且区分大小写\n- 四个计数字段必须为整数\n- 所有计数必须 ≥ 0\n- JSON 必须格式正确且可解析\n\n## Cautions\n\n- 本检查聚焦格式与字段级有效性，不替代逻辑一致性检查\n- 输入缺失或无法解析时应先走无效输入处理流程，而非直接校验\n\n## Output Contract\n\n- 通过全部有效性检查的合规 JSON 输出，或带有明确失败标记及具体失败项的校验结果\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 含 sku_id 与四个计数字段的 JSON 输出\n- Therapist/Output: 校验通过，放行合规 JSON\n- Notes: 所有 sku_id 与目录一致、计数为整数且非负、JSON 可解析\n\n### Example 2\n\n- Client/Input: 含负计数值的 JSON 输出\n- Therapist/Output: 校验失败：计数字段存在负值\n- Notes: 标记失败并指明具体失败项，不放行",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "在输出交付前拦截格式错误、非法标识与非法计数值",
+      "domain": "多智能体数据处理",
+      "task_family": "输出质量校验",
+      "method_family": "数据有效性检查",
+      "stage": "输出前校验",
+      "applicable_signals": [
+        "已生成含 sku_id 与计数字段的 JSON 输出",
+        "输出即将提交或交付下游系统"
+      ],
+      "contraindications": [
+        "输入本身缺失或无法解析，需先走无效输入处理流程",
+        "仅需检查逻辑一致性而非字段级有效性时"
+      ],
+      "intervention_moves": [
+        "逐项核对 sku_id 与产品目录完全一致（区分大小写）",
+        "确认四个计数字段均为整数",
+        "确认所有计数 ≥ 0",
+        "确认 JSON 格式正确且可解析",
+        "任一项不通过则标记失败并指明失败项"
+      ],
+      "triggers": [
+        "生成含 sku_id 与计数字段的 JSON 输出后",
+        "需要确认输出可被下游系统解析时",
+        "输出提交或下游消费前的质量把关"
+      ],
+      "workflow_steps": [
+        "读取待校验的 JSON 输出",
+        "核对所有 sku_id 与产品目录完全一致（区分大小写）",
+        "检查四个计数字段均为整数",
+        "检查所有计数 ≥ 0（无负值）",
+        "验证 JSON 格式正确且可解析",
+        "全部通过则放行；否则标记失败并列出具体失败项"
+      ],
+      "constraints": [
+        "sku_id 必须与产品目录完全一致且区分大小写",
+        "四个计数字段必须为整数",
+        "所有计数必须 ≥ 0",
+        "JSON 必须格式正确且可解析"
+      ],
+      "cautions": [
+        "本检查聚焦格式与字段级有效性，不替代逻辑一致性检查",
+        "输入缺失或无法解析时应先走无效输入处理流程，而非直接校验"
+      ],
+      "output_contract": [
+        "通过全部有效性检查的合规 JSON 输出，或带有明确失败标记及具体失败项的校验结果"
+      ],
+      "examples": [
+        {
+          "input": "含 sku_id 与四个计数字段的 JSON 输出",
+          "output": "校验通过，放行合规 JSON",
+          "notes": "所有 sku_id 与目录一致、计数为整数且非负、JSON 可解析"
+        },
+        {
+          "input": "含负计数值的 JSON 输出",
+          "output": "校验失败：计数字段存在负值",
+          "notes": "标记失败并指明具体失败项，不放行"
+        }
+      ],
+      "tags": [
+        "输出校验",
+        "数据有效性",
+        "JSON",
+        "质量把关",
+        "sku_id"
+      ],
+      "support_ids": [
+        "0dbe296d-0b67-5e21-ab53-363999c37b43"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "9fae94f9-ca22-5738-acf2-39d84c8edcde"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|在输出交付前拦截格式错误、非法标识与非法计数值|多智能体数据处理|输出质量校验|数据有效性检查|输出前校验|输出数据有效性校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "ee25de74-f85b-5c3c-a2eb-10864f6b92fd",
+      "name": "输出逻辑一致性校验",
+      "description": "在数据有效性检查通过后，检查输出各字段之间的逻辑关系是否自洽，防止数值或分类结果相互矛盾；用于最终交付前的二次把关。",
+      "skill_body": "对已通过数据有效性检查的输出执行逻辑一致性校验：逐项核对相互关联的字段或计数之间的关系是否自洽，发现矛盾点时明确指出矛盾所在，并给出逻辑一致的输出或标注矛盾点的校验报告。仅做字段间关系校验，不重复检查 JSON 格式或字段类型。\n\n## Objective\n\n确保输出内部逻辑自洽、无相互矛盾的结果\n## Applicable Signals\n\n- 数据有效性检查已通过\n- 输出包含多个相互关联的字段或计数\n\n## Contraindications\n\n- 仅需检查 JSON 格式或字段类型时\n- 数据有效性检查尚未通过时\n\n## Intervention Moves\n\n- 逐项核对相互关联字段或计数之间的关系\n- 标注发现的矛盾点\n- 输出逻辑一致的结论或校验报告\n\n## Workflow Steps\n\n- 确认数据有效性检查已通过\n- 识别输出中相互关联的字段或计数\n- 逐项核对字段间逻辑关系是否自洽\n- 若发现矛盾，标注具体矛盾点\n- 输出逻辑一致的结论或校验报告\n\n## Constraints\n\n- 仅校验字段间关系，不重复格式或类型检查\n- 须在数据有效性检查通过后执行\n\n## Cautions\n\n- 矛盾点需明确指出，避免笼统判定\n\n## Output Contract\n\n- 逻辑一致的输出，或标注出矛盾点的校验报告",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "确保输出内部逻辑自洽、无相互矛盾的结果",
+      "domain": "多智能体数据处理",
+      "task_family": "输出质量校验",
+      "method_family": "逻辑一致性检查",
+      "stage": "输出前校验",
+      "applicable_signals": [
+        "数据有效性检查已通过",
+        "输出包含多个相互关联的字段或计数"
+      ],
+      "contraindications": [
+        "仅需检查 JSON 格式或字段类型时",
+        "数据有效性检查尚未通过时"
+      ],
+      "intervention_moves": [
+        "逐项核对相互关联字段或计数之间的关系",
+        "标注发现的矛盾点",
+        "输出逻辑一致的结论或校验报告"
+      ],
+      "triggers": [
+        "数据有效性检查已通过",
+        "输出包含多个相互关联的字段或计数",
+        "最终交付前需要二次把关"
+      ],
+      "workflow_steps": [
+        "确认数据有效性检查已通过",
+        "识别输出中相互关联的字段或计数",
+        "逐项核对字段间逻辑关系是否自洽",
+        "若发现矛盾，标注具体矛盾点",
+        "输出逻辑一致的结论或校验报告"
+      ],
+      "constraints": [
+        "仅校验字段间关系，不重复格式或类型检查",
+        "须在数据有效性检查通过后执行"
+      ],
+      "cautions": [
+        "矛盾点需明确指出，避免笼统判定"
+      ],
+      "output_contract": [
+        "逻辑一致的输出，或标注出矛盾点的校验报告"
+      ],
+      "examples": [],
+      "tags": [
+        "输出质量校验",
+        "逻辑一致性检查",
+        "输出前校验",
+        "多智能体数据处理"
+      ],
+      "support_ids": [
+        "6d237e26-b709-58a7-a726-816684ab8e60"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "4d65b822-57fc-5db7-aba9-69ebc03aa50b"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.7,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|确保输出内部逻辑自洽、无相互矛盾的结果|多智能体数据处理|输出质量校验|逻辑一致性检查|输出前校验|输出逻辑一致性校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "5d1c0a04-fb5b-51bf-90e4-19ad0e8463d7",
+      "name": "抽样自检与纠错复核",
+      "description": "在返回最终分析输出前，随机抽取3-5个SKU进行抽样复核，核验评审计数、类目匹配与情感分类是否准确；若发现已知错误，先修正再输出，确保交付物无已知错误。",
+      "skill_body": "在即将交付最终分析输出时执行本技能：从结果中随机抽取3-5个SKU，逐一核验三项内容——(1) 被计为适用的评论是否确实讨论了语义相似的属性；(2) 类目匹配是否正确应用；(3) 情感分类是否准确。若自检发现任何问题，先修正分析再返回输出；不得在存在已知错误的情况下返回结果。\n\n## Objective\n\n在交付前通过抽样复核发现并修正分析错误，确保输出无已知错误\n## Applicable Signals\n\n- 已有完整或部分分析结果待交付\n- 结果涉及计数、类目匹配或情感分类\n- 处于最终输出返回前的检查点\n\n## Contraindications\n\n- 尚无任何分析结果可复核\n- 仅需生成原始数据而无交付输出\n\n## Intervention Moves\n\n- 随机抽取3-5个SKU作为复核样本\n- 核验被计为适用的评论是否讨论语义相似属性\n- 核验类目匹配是否正确应用\n- 核验情感分类是否准确\n- 发现错误时先修正分析再输出\n\n## Workflow Steps\n\n- 确认当前处于最终输出返回前的检查点\n- 从结果中随机抽取3-5个SKU\n- 对每个样本核验评审计数是否对应语义相似属性\n- 对每个样本核验类目匹配是否正确\n- 对每个样本核验情感分类是否准确\n- 若发现任何问题，修正分析后重新核验\n- 确认无已知错误后返回最终输出\n\n## Constraints\n\n- 抽样数量应为3-5个SKU\n- 抽样必须随机进行\n- 不得在存在已知错误的情况下返回输出\n\n## Cautions\n\n- 自检发现问题时必须先修正，不能仅记录问题后直接交付\n- 复核范围限于计数、类目匹配与情感分类三项\n\n## Output Contract\n\n- 经抽样核验并修正后的无已知错误输出\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 已完成SKU评论分析，准备返回最终输出\n- Therapist/Output: 随机抽取3-5个SKU复核计数、类目匹配与情感分类，修正发现的问题后返回无已知错误的输出\n- Notes: 若自检未发现问题，可直接返回输出",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "parent",
+      "objective": "在交付前通过抽样复核发现并修正分析错误，确保输出无已知错误",
+      "domain": "运营流程",
+      "task_family": "输出质量校验",
+      "method_family": "抽样复核",
+      "stage": "交付前自检",
+      "applicable_signals": [
+        "已有完整或部分分析结果待交付",
+        "结果涉及计数、类目匹配或情感分类",
+        "处于最终输出返回前的检查点"
+      ],
+      "contraindications": [
+        "尚无任何分析结果可复核",
+        "仅需生成原始数据而无交付输出"
+      ],
+      "intervention_moves": [
+        "随机抽取3-5个SKU作为复核样本",
+        "核验被计为适用的评论是否讨论语义相似属性",
+        "核验类目匹配是否正确应用",
+        "核验情感分类是否准确",
+        "发现错误时先修正分析再输出"
+      ],
+      "triggers": [
+        "即将返回最终分析输出",
+        "输出包含评审计数、类目匹配或情感分类结果",
+        "需要确认交付物无已知错误"
+      ],
+      "workflow_steps": [
+        "确认当前处于最终输出返回前的检查点",
+        "从结果中随机抽取3-5个SKU",
+        "对每个样本核验评审计数是否对应语义相似属性",
+        "对每个样本核验类目匹配是否正确",
+        "对每个样本核验情感分类是否准确",
+        "若发现任何问题，修正分析后重新核验",
+        "确认无已知错误后返回最终输出"
+      ],
+      "constraints": [
+        "抽样数量应为3-5个SKU",
+        "抽样必须随机进行",
+        "不得在存在已知错误的情况下返回输出"
+      ],
+      "cautions": [
+        "自检发现问题时必须先修正，不能仅记录问题后直接交付",
+        "复核范围限于计数、类目匹配与情感分类三项"
+      ],
+      "output_contract": [
+        "经抽样核验并修正后的无已知错误输出"
+      ],
+      "examples": [
+        {
+          "input": "已完成SKU评论分析，准备返回最终输出",
+          "output": "随机抽取3-5个SKU复核计数、类目匹配与情感分类，修正发现的问题后返回无已知错误的输出",
+          "notes": "若自检未发现问题，可直接返回输出"
+        }
+      ],
+      "tags": [
+        "抽样复核",
+        "交付前自检",
+        "质量校验",
+        "纠错"
+      ],
+      "support_ids": [
+        "dd1d1668-f0cb-5353-bec2-70e871b5b792"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "01d7f80b-0a89-5349-af13-75fd9704ef46"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+        "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|在交付前通过抽样复核发现并修正分析错误，确保输出无已知错误|运营流程|输出质量校验|抽样复核|交付前自检|抽样自检与纠错复核",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "parent"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "733fb956-a798-4018-88af-28b6bfb01eb0",
+      "entity_type": "skill",
+      "entity_id": "d5819e3a-52b8-5d7e-ae63-fc922c47c24a",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "d5819e3a-52b8-5d7e-ae63-fc922c47c24a",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "c582ea63-bafe-524d-9b6c-28d187bcd04f"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "ddf3296a-5c90-496b-8665-b62238cfb1c3",
+      "entity_type": "skill",
+      "entity_id": "84d5fe5e-e708-590e-8eef-c0647819df6e",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "84d5fe5e-e708-590e-8eef-c0647819df6e",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "0dbe296d-0b67-5e21-ab53-363999c37b43"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "9b2d40e3-1d27-4be7-96f4-b9ec0ce91d3f",
+      "entity_type": "skill",
+      "entity_id": "ee25de74-f85b-5c3c-a2eb-10864f6b92fd",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "ee25de74-f85b-5c3c-a2eb-10864f6b92fd",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "6d237e26-b709-58a7-a726-816684ab8e60"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "0abfa8e1-8643-49f3-ad36-7f4dcf097654",
+      "entity_type": "skill",
+      "entity_id": "5d1c0a04-fb5b-51bf-90e4-19ad0e8463d7",
+      "action": "create",
+      "changed_at": "2026-10-28T05:50:04+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "5d1c0a04-fb5b-51bf-90e4-19ad0e8463d7",
+        "doc_ids": [
+          "debb1776-1021-523f-adab-cc06d43c1776"
+        ],
+        "support_added": [
+          "dd1d1668-f0cb-5353-bec2-70e871b5b792"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

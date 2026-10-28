@@ -1,0 +1,111 @@
+{
+  "skill_id": "0a34413e-f719-56fc-b923-223ce3f98e44",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "0a34413e-f719-56fc-b923-223ce3f98e44",
+    "name": "规则冲突优先级裁决",
+    "description": "当两条或多条交通仿真规则对同一对象给出不同约束时，按作用域具体性裁决：更具体的规则（如针对单条边的场景规则）覆盖更通用的规则（如通用容量规则）。用于规则解释、状态推进或控制器决策前的冲突消解。",
+    "skill_body": "在应用规则前检查是否存在冲突：若两条或多条规则对同一对象给出不同约束，比较各规则的作用域具体性，选择作用域更具体的规则作为生效规则，并说明其覆盖更通用规则的理由。若冲突中不存在更具体的规则可依，则视为未定义行为，不要臆造裁决。\n\n## Objective\n\n在规则冲突时确定唯一生效规则，避免未定义行为\n## Applicable Signals\n\n- 两条规则对同一对象给出不同约束\n- 场景特定规则与通用规则同时适用\n\n## Contraindications\n\n- 规则之间无冲突\n- 冲突涉及未定义行为且无更具体规则可依\n\n## Intervention Moves\n\n- 识别冲突规则及其作用对象\n- 比较规则作用域的具体性\n- 指定作用域更具体的规则为生效规则\n- 记录覆盖理由\n\n## Workflow Steps\n\n- 确认存在规则冲突：两条或多条规则对同一对象给出不同约束。\n- 比较冲突规则的作用域具体性（如针对单条边的场景规则 vs 通用容量规则）。\n- 指定作用域更具体的规则为生效规则。\n- 输出生效规则及覆盖理由；若无更具体规则可依，标记为未定义行为。\n\n## Constraints\n\n- 仅在规则确实冲突时执行裁决\n- 裁决依据为作用域具体性，不得引入其他偏好\n- 无更具体规则可依时不得臆造裁决\n\n## Cautions\n\n- 避免将无冲突情形误判为冲突\n- 未定义行为需明确标记而非强行消解\n\n## Output Contract\n\n- 明确指定生效规则及其覆盖理由；若无更具体规则可依，则标记为未定义行为。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 场景规则规定某条边容量为 X，通用容量规则给出不同值。\n- Therapist/Output: 生效规则：该边的场景规则（作用域更具体），覆盖通用容量规则。\n- Notes: 针对单条边的场景规则优先于通用规则。",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在规则冲突时确定唯一生效规则，避免未定义行为",
+    "domain": "交通仿真规则",
+    "task_family": "规则冲突消解",
+    "method_family": "作用域具体性优先",
+    "stage": "规则应用前",
+    "applicable_signals": [
+      "两条规则对同一对象给出不同约束",
+      "场景特定规则与通用规则同时适用"
+    ],
+    "contraindications": [
+      "规则之间无冲突",
+      "冲突涉及未定义行为且无更具体规则可依"
+    ],
+    "intervention_moves": [
+      "识别冲突规则及其作用对象",
+      "比较规则作用域的具体性",
+      "指定作用域更具体的规则为生效规则",
+      "记录覆盖理由"
+    ],
+    "triggers": [
+      "两条规则对同一对象给出不同约束",
+      "场景特定规则与通用规则同时适用"
+    ],
+    "workflow_steps": [
+      "确认存在规则冲突：两条或多条规则对同一对象给出不同约束。",
+      "比较冲突规则的作用域具体性（如针对单条边的场景规则 vs 通用容量规则）。",
+      "指定作用域更具体的规则为生效规则。",
+      "输出生效规则及覆盖理由；若无更具体规则可依，标记为未定义行为。"
+    ],
+    "constraints": [
+      "仅在规则确实冲突时执行裁决",
+      "裁决依据为作用域具体性，不得引入其他偏好",
+      "无更具体规则可依时不得臆造裁决"
+    ],
+    "cautions": [
+      "避免将无冲突情形误判为冲突",
+      "未定义行为需明确标记而非强行消解"
+    ],
+    "output_contract": [
+      "明确指定生效规则及其覆盖理由；若无更具体规则可依，则标记为未定义行为。"
+    ],
+    "examples": [
+      {
+        "input": "场景规则规定某条边容量为 X，通用容量规则给出不同值。",
+        "output": "生效规则：该边的场景规则（作用域更具体），覆盖通用容量规则。",
+        "notes": "针对单条边的场景规则优先于通用规则。"
+      }
+    ],
+    "tags": [
+      "规则冲突消解",
+      "作用域具体性",
+      "交通仿真",
+      "护栏规则"
+    ],
+    "support_ids": [
+      "ff334183-65e6-53c1-aabf-59543ca13ee3"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "c6d0c02c-7d88-5076-afbc-e248cb0efcb7"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.85,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|在规则冲突时确定唯一生效规则，避免未定义行为|交通仿真规则|规则冲突消解|作用域具体性优先|规则应用前|规则冲突优先级裁决"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

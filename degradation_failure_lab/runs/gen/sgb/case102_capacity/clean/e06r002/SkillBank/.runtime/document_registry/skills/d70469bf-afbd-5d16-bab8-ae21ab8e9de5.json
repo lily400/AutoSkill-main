@@ -1,0 +1,135 @@
+{
+  "skill_id": "d70469bf-afbd-5d16-bab8-ae21ab8e9de5",
+  "name": "装卸作业逐tick推进与完成判定",
+  "description": "当车辆已进入 LOADING 或 UNLOADING 状态后，按车辆 HandlingRate 在每个 Loading/Unloading Phase 逐 tick 递减作业 WorkUnits，并在 WorkUnits 小于等于 0 时于该 tick 末完成作业并更新货物状态。",
+  "skill_body": "当车辆已选择 START_LOADING 或 START_UNLOADING 并进入 LOADING/UNLOADING 状态时，按以下步骤推进装卸作业：\n1. 确认作业已创建，且 WorkUnits 等于该作业所处理货物 SizeUnits 之和。\n2. 确认车辆类型对应的 HandlingRate：BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4 工作单位/tick。\n3. 在每个后续 Loading/Unloading Phase，将 WorkUnits 减去该车辆的 HandlingRate。\n4. 若递减后 WorkUnits 小于等于 0，则在该 tick 末完成作业：装载作业将货物状态置为 ON_VEHICLE；卸载作业按场景规定将货物状态置为 DELIVERED，或在转运节点置为 PENDING_AT_ORIGIN。\n5. 作业进行期间，车辆不得移动，也不得开始另一作业。\n仅处理装卸作业推进与完成判定，不处理车辆移动、信号或路径逻辑。\n\n## Objective\n\n正确推进装卸作业并判定完成时机与货物状态转换\n## Applicable Signals\n\n- 车辆状态为 LOADING\n- 车辆状态为 UNLOADING\n- 存在进行中的装卸作业且 WorkUnits 大于 0\n- 需要确定作业完成 tick 及货物新状态\n\n## Contraindications\n\n- 车辆尚未开始装卸作业\n- 需要处理车辆移动或信号逻辑\n- 作业尚未创建或 WorkUnits 未初始化\n\n## Intervention Moves\n\n- 按车辆类型查取 HandlingRate\n- 每个 Loading/Unloading Phase 将 WorkUnits 减去 HandlingRate\n- WorkUnits 小于等于 0 时在该 tick 末完成作业\n- 装载完成将货物状态置为 ON_VEHICLE\n- 卸载完成将货物状态置为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN\n- 作业进行期间锁定车辆，禁止移动或开始新作业\n\n## Workflow Steps\n\n- 确认车辆已通过 START_LOADING 或 START_UNLOADING 进入 LOADING/UNLOADING 状态\n- 确认作业 WorkUnits 等于所处理货物 SizeUnits 之和\n- 按车辆类型确定 HandlingRate（BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4）\n- 在每个后续 Loading/Unloading Phase 将 WorkUnits 减去 HandlingRate\n- 若 WorkUnits 小于等于 0，则在该 tick 末完成作业并更新货物状态\n- 装载完成置为 ON_VEHICLE；卸载完成置为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN\n- 作业进行期间保持车辆不可移动且不可开始新作业\n\n## Constraints\n\n- WorkUnits 必须等于该作业所处理货物 SizeUnits 之和\n- HandlingRate 必须按车辆类型取值：BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4\n- 完成判定条件为 WorkUnits 小于等于 0，完成时点为该 tick 末\n- 作业进行期间车辆不得移动或开始另一作业\n\n## Cautions\n\n- WorkUnits 可能因递减而小于零，仍按小于等于 0 判定完成\n- 卸载完成后的货物状态取决于是否为转运节点，需按场景规定区分 DELIVERED 与 PENDING_AT_ORIGIN\n- 本规则不覆盖移动、信号或路径逻辑，遇到这些需求应转交相应规则\n\n## Output Contract\n\n- 作业 WorkUnits 归零或小于零，并在该 tick 末输出作业完成结果及货物新状态（装载为 ON_VEHICLE；卸载为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN）。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: VAN 在 tick t 开始装载，所处理货物 SizeUnits 之和为 5，HandlingRate=2。\n- Therapist/Output: tick t+1 后 WorkUnits=3，tick t+2 后 WorkUnits=1，tick t+3 后 WorkUnits=-1，于 tick t+3 末完成装载，货物状态置为 ON_VEHICLE。\n- Notes: WorkUnits 递减至小于零仍按完成处理。\n\n### Example 2\n\n- Client/Input: TRUCK 在转运节点开始卸载，作业 WorkUnits=4，HandlingRate=4。\n- Therapist/Output: 该 tick 的 Loading/Unloading Phase 后 WorkUnits=0，于该 tick 末完成卸载，货物状态按场景规定置为 DELIVERED 或 PENDING_AT_ORIGIN。\n- Notes: 卸载完成状态取决于是否为转运节点。",
+  "asset_type": "knowledge_reference",
+  "granularity": "session",
+  "asset_node_id": "knowledge_reference_node",
+  "asset_path": "family_root/knowledge_reference_node",
+  "asset_level": 1,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 1.0,
+  "hierarchy_status": "root",
+  "visible_role": "leaf",
+  "objective": "正确推进装卸作业并判定完成时机与货物状态转换",
+  "domain": "交通仿真规则",
+  "task_family": "装卸作业模拟",
+  "method_family": "逐tick工作量递减",
+  "stage": "Loading/Unloading Phase",
+  "applicable_signals": [
+    "车辆状态为 LOADING",
+    "车辆状态为 UNLOADING",
+    "存在进行中的装卸作业且 WorkUnits 大于 0",
+    "需要确定作业完成 tick 及货物新状态"
+  ],
+  "contraindications": [
+    "车辆尚未开始装卸作业",
+    "需要处理车辆移动或信号逻辑",
+    "作业尚未创建或 WorkUnits 未初始化"
+  ],
+  "intervention_moves": [
+    "按车辆类型查取 HandlingRate",
+    "每个 Loading/Unloading Phase 将 WorkUnits 减去 HandlingRate",
+    "WorkUnits 小于等于 0 时在该 tick 末完成作业",
+    "装载完成将货物状态置为 ON_VEHICLE",
+    "卸载完成将货物状态置为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN",
+    "作业进行期间锁定车辆，禁止移动或开始新作业"
+  ],
+  "triggers": [
+    "车辆已进入 LOADING 或 UNLOADING 状态",
+    "需要计算作业剩余 WorkUnits 或完成时点",
+    "需要判定装载/卸载完成后的货物状态转换"
+  ],
+  "workflow_steps": [
+    "确认车辆已通过 START_LOADING 或 START_UNLOADING 进入 LOADING/UNLOADING 状态",
+    "确认作业 WorkUnits 等于所处理货物 SizeUnits 之和",
+    "按车辆类型确定 HandlingRate（BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4）",
+    "在每个后续 Loading/Unloading Phase 将 WorkUnits 减去 HandlingRate",
+    "若 WorkUnits 小于等于 0，则在该 tick 末完成作业并更新货物状态",
+    "装载完成置为 ON_VEHICLE；卸载完成置为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN",
+    "作业进行期间保持车辆不可移动且不可开始新作业"
+  ],
+  "constraints": [
+    "WorkUnits 必须等于该作业所处理货物 SizeUnits 之和",
+    "HandlingRate 必须按车辆类型取值：BIKE=1、VAN=2、MINI_TRUCK=3、TRUCK=4",
+    "完成判定条件为 WorkUnits 小于等于 0，完成时点为该 tick 末",
+    "作业进行期间车辆不得移动或开始另一作业"
+  ],
+  "cautions": [
+    "WorkUnits 可能因递减而小于零，仍按小于等于 0 判定完成",
+    "卸载完成后的货物状态取决于是否为转运节点，需按场景规定区分 DELIVERED 与 PENDING_AT_ORIGIN",
+    "本规则不覆盖移动、信号或路径逻辑，遇到这些需求应转交相应规则"
+  ],
+  "output_contract": [
+    "作业 WorkUnits 归零或小于零，并在该 tick 末输出作业完成结果及货物新状态（装载为 ON_VEHICLE；卸载为 DELIVERED 或转运节点的 PENDING_AT_ORIGIN）。"
+  ],
+  "examples": [
+    {
+      "input": "VAN 在 tick t 开始装载，所处理货物 SizeUnits 之和为 5，HandlingRate=2。",
+      "output": "tick t+1 后 WorkUnits=3，tick t+2 后 WorkUnits=1，tick t+3 后 WorkUnits=-1，于 tick t+3 末完成装载，货物状态置为 ON_VEHICLE。",
+      "notes": "WorkUnits 递减至小于零仍按完成处理。"
+    },
+    {
+      "input": "TRUCK 在转运节点开始卸载，作业 WorkUnits=4，HandlingRate=4。",
+      "output": "该 tick 的 Loading/Unloading Phase 后 WorkUnits=0，于该 tick 末完成卸载，货物状态按场景规定置为 DELIVERED 或 PENDING_AT_ORIGIN。",
+      "notes": "卸载完成状态取决于是否为转运节点。"
+    }
+  ],
+  "tags": [
+    "装卸作业",
+    "WorkUnits",
+    "HandlingRate",
+    "逐tick推进",
+    "货物状态转换",
+    "Loading/Unloading Phase"
+  ],
+  "support_ids": [
+    "b22ce640-9598-5908-95e1-f04872b57411"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "0ef49326-ef06-5dfc-94bc-6c1382ef75e4"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "traffic simulation rules",
+    "taxonomy_id": "traffic simulation rules",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "traffic_simulation_rules::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|正确推进装卸作业并判定完成时机与货物状态转换|交通仿真规则|装卸作业模拟|逐tick工作量递减|loading/unloading phase|装卸作业逐tick推进与完成判定",
+    "change_action": "create",
+    "llm_reason": "候选技能与同批 c653b7cb 高度重叠，但本候选更完整地覆盖了 START_LOADING/START_UNLOADING 前置状态确认、WorkUnits 与 SizeUnits 一致性校验及车辆锁定约束，且无冲突证据，保留为独立可执行规则。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 1.0,
+    "hierarchy_status": "root",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

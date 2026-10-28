@@ -1,0 +1,121 @@
+{
+  "skill_id": "bd432df1-20b2-5198-b0f5-1d551a94d475",
+  "name": "评论与SKU语义匹配及情感量化流程",
+  "description": "对消费者评论与SKU描述执行类别匹配、语义相似度判断和情感分类，输出可逐条汇总的匹配与情感结果。适用于需要将非结构化评论映射到具体商品并量化消费者态度的场景。",
+  "skill_body": "作为评论分析角色，逐条处理消费者评论：先判断评论是否指向运动服饰类商品并识别品牌归属，再在候选SKU描述中做类别匹配（硬性要求），随后判断语义相似度，最后给出情感分类结果。对无效或不完整输入按既定规则处理，不要臆造匹配。\n\n## Objective\n\n将评论逐条匹配到SKU并量化情感倾向\n## Applicable Signals\n\n- 输入包含原始消费者评论\n- 输入包含可用的SKU描述或商品目录\n- 下游需要可汇总的匹配与情感结果\n\n## Contraindications\n\n- 输入缺少可用的SKU描述或评论文本\n- 任务仅为趋势分析或销量预测\n- 输入商品目录无效或不完整且无法校验\n\n## Intervention Moves\n\n- 识别评论所指商品类别与品牌归属\n- 在候选SKU中执行类别匹配\n- 判断评论与SKU描述的语义相似度\n- 对评论进行情感分类并给出标签或分值\n\n## Workflow Steps\n\n- 校验输入：确认评论文本与SKU描述/商品目录可用且格式有效。\n- 类别匹配：判断评论是否指向运动服饰类商品并识别品牌归属（硬性要求）。\n- 语义相似度判断：在通过类别匹配的候选SKU中评估评论与SKU描述的语义相似度。\n- 情感分类：对评论给出情感标签或分值。\n- 输出汇总：为每条评论记录匹配的SKU与情感结果；对无效或不完整输入按处理规则标注。\n\n## Constraints\n\n- 类别匹配为硬性要求，未通过类别匹配的SKU不得作为匹配结果。\n- 语义相似度判断需基于评论与SKU描述的实际内容，不得臆造。\n- 输出需逐条对应评论，便于下游汇总。\n\n## Cautions\n\n- 商品目录无效或不完整时，应先校验再处理，避免产生错误匹配。\n- 评论可能同时涉及多个商品，需明确主要匹配对象。\n\n## Output Contract\n\n- 每条评论对应的SKU匹配结果与情感标签/分值，可直接供下游汇总使用。",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [
+    "98da004a-ffa1-5fc4-999c-5a29338f8d95"
+  ],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "parent",
+  "visible_role": "parent",
+  "objective": "将评论逐条匹配到SKU并量化情感倾向",
+  "domain": "商品策展运营",
+  "task_family": "评论-商品语义匹配",
+  "method_family": "语义匹配与情感分类",
+  "stage": "评论分析",
+  "applicable_signals": [
+    "输入包含原始消费者评论",
+    "输入包含可用的SKU描述或商品目录",
+    "下游需要可汇总的匹配与情感结果"
+  ],
+  "contraindications": [
+    "输入缺少可用的SKU描述或评论文本",
+    "任务仅为趋势分析或销量预测",
+    "输入商品目录无效或不完整且无法校验"
+  ],
+  "intervention_moves": [
+    "识别评论所指商品类别与品牌归属",
+    "在候选SKU中执行类别匹配",
+    "判断评论与SKU描述的语义相似度",
+    "对评论进行情感分类并给出标签或分值"
+  ],
+  "triggers": [
+    "需要把原始评论映射到具体SKU",
+    "需要量化评论对商品的情感倾向",
+    "需要对评论与SKU描述做语义匹配"
+  ],
+  "workflow_steps": [
+    "校验输入：确认评论文本与SKU描述/商品目录可用且格式有效。",
+    "类别匹配：判断评论是否指向运动服饰类商品并识别品牌归属（硬性要求）。",
+    "语义相似度判断：在通过类别匹配的候选SKU中评估评论与SKU描述的语义相似度。",
+    "情感分类：对评论给出情感标签或分值。",
+    "输出汇总：为每条评论记录匹配的SKU与情感结果；对无效或不完整输入按处理规则标注。"
+  ],
+  "constraints": [
+    "类别匹配为硬性要求，未通过类别匹配的SKU不得作为匹配结果。",
+    "语义相似度判断需基于评论与SKU描述的实际内容，不得臆造。",
+    "输出需逐条对应评论，便于下游汇总。"
+  ],
+  "cautions": [
+    "商品目录无效或不完整时，应先校验再处理，避免产生错误匹配。",
+    "评论可能同时涉及多个商品，需明确主要匹配对象。"
+  ],
+  "output_contract": [
+    "每条评论对应的SKU匹配结果与情感标签/分值，可直接供下游汇总使用。"
+  ],
+  "examples": [],
+  "tags": [
+    "评论分析",
+    "语义匹配",
+    "情感分类",
+    "SKU映射",
+    "商品策展"
+  ],
+  "support_ids": [
+    "d98ad7af-acf0-5963-a530-0619797822f9"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "28bb5b72-f247-5314-8f5a-7eb413292a21"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|将评论逐条匹配到sku并量化情感倾向|商品策展运营|评论-商品语义匹配|语义匹配与情感分类|评论分析|评论与sku语义匹配及情感量化流程",
+    "change_action": "create",
+    "llm_reason": "候选技能提供了评论到SKU的语义匹配与情感量化流程，与同批候选在输入前提和输出粒度上存在差异（本技能侧重逐条评论映射与情感量化，而非按SKU拆分计数或约束优化选品），且无冲突证据，保留为独立能力。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "parent",
+    "visible_role": "parent",
+    "child_skill_ids": [
+      "98da004a-ffa1-5fc4-999c-5a29338f8d95"
+    ]
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

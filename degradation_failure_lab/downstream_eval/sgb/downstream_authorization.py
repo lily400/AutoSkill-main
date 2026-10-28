@@ -9,6 +9,7 @@ import re
 from degradation_lab.io import read, sha256
 
 ADAPTER = 'downstream_eval.sgb.task_adapters.audited.json_task'
+ADAPTERS = (ADAPTER, 'downstream_eval.sgb.task_adapters.audited.code_task')
 CONDITIONS = {'NoSkill1': 'NoSkill', 'CleanSkill1': 'CleanSkill'}
 CONTRACT = 'sgb-downstream-experiment-v1'
 
@@ -33,7 +34,7 @@ def task_config_bytes(task):
 
 
 def expected_authorization(task, generator, experiment):
-    if task.get('adapter') != ADAPTER or task.get('conditions') != CONDITIONS:
+    if task.get('adapter') not in ADAPTERS or task.get('conditions') != CONDITIONS:
         blocked('task does not use the paired JSON protocol')
     if not isinstance(generator, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', generator):
         blocked('invalid generator identifier')

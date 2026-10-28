@@ -1,0 +1,103 @@
+{
+  "skill_id": "c71056c2-de8b-52f1-b293-d45b5872f4bb",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次两个候选（924e6d0d、1c367e1d）内容高度重复，均为同一未交付货物延迟计分规则，属于同批冗余，无需保留为独立技能。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "c71056c2-de8b-52f1-b293-d45b5872f4bb",
+    "name": "未交付货物延迟计分规则",
+    "description": "当仿真场景结束时仍有未交付货物，按 (FinalTick + 1 − DueTime) 计算每个未交付货物的延迟量，用于评分与结果核对。",
+    "skill_body": "在场景到达最终 tick 后，识别所有未交付的货物。对每个未交付货物，用公式 (FinalTick + 1 − DueTime) 计算其延迟量。输出每个未交付货物的延迟数值，供评分与结果核对使用。\n\n## Objective\n\n为场景结束时未交付的货物计算延迟惩罚值\n## Applicable Signals\n\n- 场景已到达最终 tick\n- 存在未交付货物\n\n## Contraindications\n\n- 货物已在截止前交付\n- 场景尚未结束\n\n## Intervention Moves\n\n- 识别未交付货物\n- 对每个未交付货物应用公式 (FinalTick + 1 − DueTime) 计算延迟量\n\n## Workflow Steps\n\n- 确认场景已到达最终 tick\n- 列出所有未交付货物\n- 对每个未交付货物计算 (FinalTick + 1 − DueTime)\n- 输出每个未交付货物的延迟数值\n\n## Constraints\n\n- 仅在场景结束时应用\n- 仅对未交付货物计算\n- 公式固定为 (FinalTick + 1 − DueTime)\n\n## Cautions\n\n- 已交付货物不参与此计算\n- 场景未结束时不应提前计算\n\n## Output Contract\n\n- 每个未交付货物的延迟数值",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为场景结束时未交付的货物计算延迟惩罚值",
+    "domain": "交通仿真规则",
+    "task_family": "结果计分",
+    "method_family": "延迟惩罚计算",
+    "stage": "仿真收尾评估",
+    "applicable_signals": [
+      "场景已到达最终 tick",
+      "存在未交付货物"
+    ],
+    "contraindications": [
+      "货物已在截止前交付",
+      "场景尚未结束"
+    ],
+    "intervention_moves": [
+      "识别未交付货物",
+      "对每个未交付货物应用公式 (FinalTick + 1 − DueTime) 计算延迟量"
+    ],
+    "triggers": [
+      "场景到达最终 tick 且存在未交付货物",
+      "需要计算未完成交付的延迟量"
+    ],
+    "workflow_steps": [
+      "确认场景已到达最终 tick",
+      "列出所有未交付货物",
+      "对每个未交付货物计算 (FinalTick + 1 − DueTime)",
+      "输出每个未交付货物的延迟数值"
+    ],
+    "constraints": [
+      "仅在场景结束时应用",
+      "仅对未交付货物计算",
+      "公式固定为 (FinalTick + 1 − DueTime)"
+    ],
+    "cautions": [
+      "已交付货物不参与此计算",
+      "场景未结束时不应提前计算"
+    ],
+    "output_contract": [
+      "每个未交付货物的延迟数值"
+    ],
+    "examples": [],
+    "tags": [
+      "交通仿真",
+      "结果计分",
+      "延迟惩罚",
+      "未交付货物"
+    ],
+    "support_ids": [
+      "78b51537-9323-5ca3-a962-8f165e106003"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "2bc736aa-02f7-5183-986d-91272e6f0ef7"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||knowledge_reference|session|knowledge_reference_node|为场景结束时未交付的货物计算延迟惩罚值|交通仿真规则|结果计分|延迟惩罚计算|仿真收尾评估|未交付货物延迟计分规则"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

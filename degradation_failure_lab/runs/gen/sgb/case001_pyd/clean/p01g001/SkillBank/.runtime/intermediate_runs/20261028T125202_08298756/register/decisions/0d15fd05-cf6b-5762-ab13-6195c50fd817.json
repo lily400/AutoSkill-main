@@ -1,0 +1,120 @@
+{
+  "skill_id": "0d15fd05-cf6b-5762-ab13-6195c50fd817",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 4258652f（模式与时机选择）和 2fa0d411（字段校验器模式选择）高度重叠，均覆盖 before/after 时机与 annotated/decorator 写法选型，缺乏独立可保留的增量能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "0d15fd05-cf6b-5762-ab13-6195c50fd817",
+    "name": "Pydantic 字段校验器模式选型",
+    "description": "根据字段校验目标选择 before/after/plain 字段校验器模式（以及 annotated/decorator 写法），并说明各模式的执行时机与终止行为。用于为字段编写自定义校验逻辑时。",
+    "skill_body": "先明确校验目标：是否需要在 Pydantic 内部类型校验之前处理原始输入、是否需要在类型校验之后处理已校验值、是否需要在校验后立即终止后续校验。据此选择 before / after / plain 模式，并选择 annotated 或 decorator 写法。说明所选模式的执行时机、对原始输入类型的处理要求，以及是否终止后续校验与内部类型校验。\n\n## Objective\n\n为给定字段校验需求选出正确的校验器模式并说明其行为边界\n## Applicable Signals\n\n- 需要在校验前转换或规范化原始输入\n- 需要基于已校验值做进一步校验\n- 需要在校验后立即终止后续校验\n\n## Contraindications\n\n- 仅使用内置字段约束即可满足需求\n- 需要跨字段或模型级校验（应使用模型校验器）\n\n## Intervention Moves\n\n- 判断校验发生在类型校验之前还是之后\n- 选择 before / after / plain 模式\n- 选择 annotated 或 decorator 写法\n- 说明模式的终止行为与内部类型校验是否仍执行\n\n## Workflow Steps\n\n- 明确校验目标与所需执行时机\n- 若需处理原始输入（类型可为任意），选择 before 模式，并注意需覆盖元组等其他序列类型\n- 若需处理已校验值，选择 after 模式\n- 若需在返回后立即终止校验且不执行内部类型校验，选择 plain 模式\n- 选择 annotated 或 decorator 写法实现\n- 说明所选模式的行为边界：执行时机、输入类型假设、是否终止后续校验\n\n## Constraints\n\n- before 校验器接收原始输入，类型提示可为 Any，需自行覆盖所有可能的输入类型\n- before 校验器处理后，Pydantic 仍会对字段类型执行内部校验\n- plain 校验器返回后立即终止校验，不再调用后续校验器，也不执行内部类型校验\n\n## Cautions\n\n- before 模式灵活性更高，但需考虑元组等通常可通过 list 校验的序列类型\n- 不要假设 before 校验器的输出会跳过内部类型校验\n\n## Output Contract\n\n- 选定的校验器模式（before/after/plain 及 annotated/decorator 写法）及对应行为说明，包括执行时机、输入类型假设与终止行为\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要在类型校验前把单个整数转换为列表\n- Therapist/Output: 选择 before 模式：value 类型提示为 Any，需处理元组等其他序列类型；返回后 Pydantic 仍对 list[int] 执行内部校验\n- Notes: 体现 before 模式的灵活性与内部校验仍执行\n\n### Example 2\n\n- Client/Input: 需要在校验后立即终止后续校验且跳过内部类型校验\n- Therapist/Output: 选择 plain 模式：返回后立即终止校验，不再调用后续校验器，也不执行内部类型校验\n- Notes: 体现 plain 模式的终止行为",
+    "asset_type": "knowledge_reference",
+    "granularity": "session",
+    "asset_node_id": "knowledge_reference_node",
+    "asset_path": "family_root/knowledge_reference_node",
+    "asset_level": 1,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "为给定字段校验需求选出正确的校验器模式并说明其行为边界",
+    "domain": "pydantic",
+    "task_family": "字段校验设计",
+    "method_family": "校验器模式选型",
+    "stage": "设计",
+    "applicable_signals": [
+      "需要在校验前转换或规范化原始输入",
+      "需要基于已校验值做进一步校验",
+      "需要在校验后立即终止后续校验"
+    ],
+    "contraindications": [
+      "仅使用内置字段约束即可满足需求",
+      "需要跨字段或模型级校验（应使用模型校验器）"
+    ],
+    "intervention_moves": [
+      "判断校验发生在类型校验之前还是之后",
+      "选择 before / after / plain 模式",
+      "选择 annotated 或 decorator 写法",
+      "说明模式的终止行为与内部类型校验是否仍执行"
+    ],
+    "triggers": [
+      "需要为字段添加自定义校验逻辑",
+      "不确定 before/after/plain 校验器差异",
+      "需要决定使用 annotated 还是 decorator 写法"
+    ],
+    "workflow_steps": [
+      "明确校验目标与所需执行时机",
+      "若需处理原始输入（类型可为任意），选择 before 模式，并注意需覆盖元组等其他序列类型",
+      "若需处理已校验值，选择 after 模式",
+      "若需在返回后立即终止校验且不执行内部类型校验，选择 plain 模式",
+      "选择 annotated 或 decorator 写法实现",
+      "说明所选模式的行为边界：执行时机、输入类型假设、是否终止后续校验"
+    ],
+    "constraints": [
+      "before 校验器接收原始输入，类型提示可为 Any，需自行覆盖所有可能的输入类型",
+      "before 校验器处理后，Pydantic 仍会对字段类型执行内部校验",
+      "plain 校验器返回后立即终止校验，不再调用后续校验器，也不执行内部类型校验"
+    ],
+    "cautions": [
+      "before 模式灵活性更高，但需考虑元组等通常可通过 list 校验的序列类型",
+      "不要假设 before 校验器的输出会跳过内部类型校验"
+    ],
+    "output_contract": [
+      "选定的校验器模式（before/after/plain 及 annotated/decorator 写法）及对应行为说明，包括执行时机、输入类型假设与终止行为"
+    ],
+    "examples": [
+      {
+        "input": "需要在类型校验前把单个整数转换为列表",
+        "output": "选择 before 模式：value 类型提示为 Any，需处理元组等其他序列类型；返回后 Pydantic 仍对 list[int] 执行内部校验",
+        "notes": "体现 before 模式的灵活性与内部校验仍执行"
+      },
+      {
+        "input": "需要在校验后立即终止后续校验且跳过内部类型校验",
+        "output": "选择 plain 模式：返回后立即终止校验，不再调用后续校验器，也不执行内部类型校验",
+        "notes": "体现 plain 模式的终止行为"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "validator",
+      "字段校验",
+      "模式选型"
+    ],
+    "support_ids": [
+      "74e99417-38b0-53c7-bf99-6da026b89517"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "5adf5789-ce6e-5a50-bf57-83e34338fab7"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.75,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|为给定字段校验需求选出正确的校验器模式并说明其行为边界|pydantic|字段校验设计|校验器模式选型|设计|pydantic 字段校验器模式选型"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -77,6 +77,9 @@ def main():
     parser.add_argument("--case", required=True)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--approve", action="store_true")
+    parser.add_argument("--resume-from")
+    parser.add_argument("--max-http-calls", type=int)
+    parser.add_argument("--max-observed-total-tokens", type=int)
     args = parser.parse_args()
 
     case_id = args.case
@@ -136,6 +139,33 @@ def main():
     if not config.get("credential_env"):
         fail("Missing credential configuration")
 
+    parent = None
+    if args.resume_from:
+        if not IDENTIFIER.fullmatch(args.resume_from):
+            fail("Invalid parent run ID")
+        parent = ROOT / "runs/gen/sgb" / case_id / "clean" / args.resume_from
+        invocation = load(parent / "invocation.json")
+        if (invocation.get("run_id") != args.resume_from
+                or invocation.get("case_id") != case_id
+                or invocation.get("condition_id") != "clean"
+                or invocation.get("execution_kind") != "official"
+                or load(parent / "status.json").get("state") != "FAILED"
+                or load(parent / "case.json") != case):
+            fail("Matching failed official parent required")
+        manifest = load(parent / "artifact_manifest.json")
+        if not manifest or any(not (parent / n).resolve().is_relative_to(parent.resolve())
+                               or sha256((parent / n).resolve()) != h
+                               for n, h in manifest.items()):
+            fail("Parent artifact hash mismatch")
+        prior = load(parent / "config.json")
+        limits = {"max_http_calls": args.max_http_calls,
+                  "max_observed_total_tokens": args.max_observed_total_tokens}
+        if any(type(v) is not int or v < prior[k] for k, v in limits.items()):
+            fail("Explicit nondecreasing cumulative limits required")
+        http, tokens = limits["max_http_calls"], limits["max_observed_total_tokens"]
+    elif args.max_http_calls is not None or args.max_observed_total_tokens is not None:
+        fail("Budget overrides require --resume-from")
+
     gate_path = inside(case["execution_gate"])
     original = gate_path.read_bytes()
     gate = load(gate_path)
@@ -157,6 +187,10 @@ def main():
         "max_http_calls": http,
         "max_observed_total_tokens": tokens,
     }
+
+    if parent is not None:
+        approval.update(resume_from=args.resume_from,
+                        parent_manifest_sha256=sha256(parent / "artifact_manifest.json"))
 
     print(json.dumps({
         "case_id": case_id,
@@ -221,12 +255,12 @@ def main():
 
     print("AUTHORIZED_GENERATION:", run_id)
     print("BACKUP:", backup)
-    print(
-        "NEXT: python scripts/lab.py run"
-        f" --case {case_id}"
-        " --condition clean --repeat 1"
-        f" --run-id {run_id}"
-    )
+    if parent is not None:
+        print(f"NEXT: python scripts/lab.py resume --run {args.resume_from} --run-id {run_id}"
+              f" --max-http-calls {http} --max-observed-total-tokens {tokens}")
+    else:
+        print("NEXT: python scripts/lab.py run"
+              f" --case {case_id} --condition clean --repeat 1 --run-id {run_id}")
 
 
 if __name__ == "__main__":

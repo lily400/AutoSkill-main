@@ -1,0 +1,242 @@
+{
+  "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+  "title": "input001\\context.md",
+  "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+  "window_id": "82d3c815-b184-59eb-822d-fc1d543e6d5a",
+  "section_heading": "User Questions",
+  "strategy": "strict",
+  "supports": [
+    {
+      "support_id": "75c2dbc6-75cc-53d8-9fc6-61dcadcaf610",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "skill_id": "",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case102_capacity\\clean\\e06g002\\inputs\\input001\\context.md",
+      "section": "User Questions",
+      "span": {
+        "start": 46622,
+        "end": 47451
+      },
+      "excerpt": "R6. The network is a directed graph. Every edge has an ordered pair (from_node, to_node)\n\nR7. Each node has:\n- A unique identifier NodeID\n- A NodeType in {INTERSECTION, DEPOT, CUSTOMER, HUB}\n- Zero or more parking bays where vehicles can wait and load/unload\n- Zero or more queues at incoming edges\n\nR8. Each edge has:\n- A unique identifier EdgeID.\n- FromNode, ToNode.\n- Length in abstract distance units.\n- BaseTravelTime in ticks, representing the travel time for a reference vehicle under free flow.\n- LaneCount (positive integer).\n- CapacityPerLane: maximum number of vehicles that can be present on that edge at any time per lane.\n- RoadClass in {LOCAL, ARTERIAL, RING}.\n- SignalType at the downstream node in {SIGNALIZED, UNSIGNALIZED}.\n\nR9. If an edge is conceptually two way, it is modeled as two separate directed edges.",
+      "relation_type": "support",
+      "confidence": 0.8,
+      "metadata": {
+        "document_title": "input001\\context.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "有向路网节点与边建模",
+        "asset_type": "knowledge_reference",
+        "granularity": "session",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "objective": "产出符合规则约束的有向图节点与边定义",
+        "task_family": "路网建模",
+        "method_family": "有向图数据结构定义",
+        "stage": "场景构建",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "candidate_slot": 1,
+        "window_id": "82d3c815-b184-59eb-822d-fc1d543e6d5a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 25,
+        "paragraph_end": 28,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      },
+      "created_at": "2026-10-27T13:40:25+00:00"
+    }
+  ],
+  "skill_drafts": [
+    {
+      "draft_id": "8c9f0a6c-2bd8-5ea3-975a-ed293461d201",
+      "doc_id": "1291f40b-7db3-5798-9061-f3310b3f99fe",
+      "name": "有向路网节点与边建模",
+      "description": "按规则将城市路网建模为有向图：为每个节点定义标识、类型、停车位与入边队列，为每条边定义起止节点、长度、基准通行时间、车道数、单车道容量、道路等级与信号类型。适用于构建或校验交通仿真路网静态数据结构时。",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "产出符合规则约束的有向图节点与边定义",
+      "domain": "交通仿真",
+      "task_family": "路网建模",
+      "method_family": "有向图数据结构定义",
+      "stage": "场景构建",
+      "applicable_signals": [
+        "需要定义或校验仿真路网的节点与边属性",
+        "需要将双向道路拆分为两条有向边"
+      ],
+      "contraindications": [
+        "仅需描述车辆行为或信号配时逻辑",
+        "需要动态仿真推进而非静态结构定义"
+      ],
+      "intervention_moves": [
+        "将网络建模为有向图，边用有序对 (from_node, to_node) 表示",
+        "为每个节点定义 NodeID、NodeType、停车位与入边队列",
+        "为每条边定义 EdgeID、起止节点、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass 与 SignalType",
+        "将概念上的双向道路拆分为两条独立有向边"
+      ],
+      "workflow_steps": [
+        "确认网络为有向图，边以有序对 (from_node, to_node) 表示",
+        "逐节点定义 NodeID、NodeType（INTERSECTION/DEPOT/CUSTOMER/HUB）、停车位与入边队列",
+        "逐边定义 EdgeID、FromNode、ToNode、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass（LOCAL/ARTERIAL/RING）、SignalType（SIGNALIZED/UNSIGNALIZED）",
+        "识别概念上的双向道路并拆分为两条独立有向边",
+        "汇总输出完整节点与边属性清单并校验完整性"
+      ],
+      "triggers": [
+        "需要定义或校验仿真路网的节点与边属性",
+        "需要将双向道路拆分为两条有向边",
+        "构建交通仿真场景的静态路网结构"
+      ],
+      "constraints": [
+        "NodeType 必须取 {INTERSECTION, DEPOT, CUSTOMER, HUB} 之一",
+        "RoadClass 必须取 {LOCAL, ARTERIAL, RING} 之一",
+        "SignalType 必须取 {SIGNALIZED, UNSIGNALIZED} 之一",
+        "LaneCount 必须为正整数",
+        "双向道路必须拆分为两条独立有向边"
+      ],
+      "cautions": [
+        "本技能仅覆盖静态路网结构定义，不涉及车辆行为、信号配时或动态仿真推进"
+      ],
+      "output_contract": [
+        "完整的节点与边属性清单，双向道路已拆为两条有向边"
+      ],
+      "examples": [
+        {
+          "input": "一条概念上双向的道路连接两个交叉口",
+          "output": "拆分为两条独立有向边，各自定义 EdgeID、FromNode、ToNode、长度、BaseTravelTime、LaneCount、CapacityPerLane、RoadClass 与 SignalType",
+          "notes": "双向道路必须建模为两条有向边"
+        }
+      ],
+      "risk_class": "low",
+      "confidence": 0.8,
+      "support_ids": [
+        "75c2dbc6-75cc-53d8-9fc6-61dcadcaf610"
+      ],
+      "metadata": {
+        "prompt": "依据有向图规则定义或校验路网结构：\n1. 将整个网络视为有向图，每条边用有序对 (from_node, to_node) 表示。\n2. 为每个节点定义：唯一标识 NodeID；NodeType 取 {INTERSECTION, DEPOT, CUSTOMER, HUB} 之一；零个或多个停车位（供车辆等待与装卸）；零个或多个入边队列。\n3. 为每条边定义：唯一标识 EdgeID；FromNode 与 ToNode；长度（抽象距离单位）；BaseTravelTime（以 tick 计，表示参考车辆自由流下的通行时间）；LaneCount（正整数）；CapacityPerLane（每车道任意时刻可容纳的最大车辆数）；RoadClass 取 {LOCAL, ARTERIAL, RING} 之一；下游节点的 SignalType 取 {SIGNALIZED, UNSIGNALIZED} 之一。\n4. 若某道路概念上是双向的，将其拆分为两条独立的有向边，分别定义。\n5. 输出完整、无遗漏的节点与边属性清单，并确认双向道路已拆分。",
+        "tags": [
+          "交通仿真",
+          "路网建模",
+          "有向图",
+          "数据结构定义"
+        ],
+        "files": {},
+        "resources": {},
+        "source_sections": [
+          "User Questions"
+        ],
+        "extraction_unit": "window",
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "asset_node_id": "knowledge_reference_node",
+        "asset_path": "family_root/knowledge_reference_node",
+        "asset_level": 1,
+        "visible_role": "leaf",
+        "candidate_slot": 1,
+        "window_id": "82d3c815-b184-59eb-822d-fc1d543e6d5a",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 25,
+        "paragraph_end": 28,
+        "heading_path": [
+          "User Questions"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "CL-Bench: Empirical Discovery & Simulation / Simulation Environment",
+          "System Context"
+        ],
+        "subsection_headings": [
+          "1. Overview",
+          "2. Nodes and Edges",
+          "3. Time and Update Order",
+          "4. Vehicles",
+          "5. Consignments (Packages)",
+          "6. Legal Actions Per Tick",
+          "7. Edge Capacity, Queues, and Conflicts",
+          "8. Traffic Signals",
+          "9. Loading and Unloading",
+          "10. Incidents and Road Closures",
+          "11. Priorities and Service Levels",
+          "12. Controller Objectives",
+          "13. Rule Conflicts and Undefined Behavior",
+          "1. Map Overview",
+          "2. Edges",
+          "3. Signal Settings",
+          "4. Vehicles in the Morning Rush Scenario",
+          "5. Consignments",
+          "6. Incidents",
+          "7. Scenario Horizon and Objective",
+          "1. State Snapshot Format",
+          "1.1 GLOBAL Section",
+          "1.2 NODES Section",
+          "1.3 EDGES Section",
+          "1.4 VEHICLES Section",
+          "1.5 CONSIGNMENTS Section",
+          "1.6 INCIDENTS_ACTIVE Section",
+          "2. Worked Example A:Simple Departure",
+          "3. Worked Example B:Signal at Central Intersection",
+          "4. Worked Example C:Capacity Reduction Incident"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "R1. The Arclight Freight Network (AFN) is a fictional urban road and logistics system used to simulate movement of vehicles and packages over discrete time steps."
+      }
+    }
+  ],
+  "failed": false,
+  "complete": true,
+  "error": {}
+}

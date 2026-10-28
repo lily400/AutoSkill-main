@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="8" time="0.101" timestamp="2026-10-27T14:28:18.809993+00:00" hostname="ec638f041ca4"><testcase classname="eval" name="test_cl_case[1-case0]" time="0.002" /><testcase classname="eval" name="test_cl_case[2-case1]" time="0.002" /><testcase classname="eval" name="test_cl_case[3-case2]" time="0.003" /><testcase classname="eval" name="test_cl_case[4-case3]" time="0.002" /><testcase classname="eval" name="test_cl_case[5-case4]" time="0.003" /><testcase classname="eval" name="test_cl_case[6-case5]" time="0.002"><failure message="AssertionError: case_6.decision: 'White' != 'Red'&#10;assert 'White' == 'Red'&#10;  &#10;  - Red&#10;  + White">case_index = 6
+case = {'expected_output': {'decision': 'Red', 'reason': 'Incomplete lockout / not motionless at top', 'routing_card': {'Atte...ds': {'waited_for_press': True, 'waited_for_rack': True, 'waited_for_start': True}, 'feet': {'flat': True}, ...}, ...}}
+
+    @pytest.mark.parametrize("case_index, case", list(enumerate(load_bundle().get("test_cases", []), start=1)))
+    def test_cl_case(case_index, case):
+        assert AGENT_OUTPUT.exists(), f"agent_output.py not found: {AGENT_OUTPUT}"
+        bundle = load_bundle()
+        result = run_case(bundle, case)
+&gt;       assert_close(result, case["expected_output"], f"case_{case_index}")
+
+oracle/eval.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+oracle/eval.py:96: in assert_close
+    assert_close(actual[key], expected[key], f"{path}.{key}")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actual = 'White', expected = 'Red', path = 'case_6.decision'
+
+    def assert_close(actual, expected, path="result"):
+        actual = normalize_value(actual)
+        expected = normalize_value(expected)
+    
+        if isinstance(expected, bool):
+            assert isinstance(actual, bool), f"{path}: expected bool, got {type(actual).__name__}"
+            assert actual is expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if expected is None:
+            assert actual is None, f"{path}: {actual!r} != None"
+            return
+    
+        if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+            assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+                f"{path}: expected numeric value, got {type(actual).__name__}"
+            )
+            if isinstance(expected, float) or isinstance(actual, float):
+                assert math.isclose(float(actual), float(expected), rel_tol=1e-5, abs_tol=1e-8), (
+                    f"{path}: {actual!r} != {expected!r}"
+                )
+            else:
+                assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+            return
+    
+        if isinstance(expected, str):
+            assert isinstance(actual, str), f"{path}: expected str, got {type(actual).__name__}"
+&gt;           assert actual == expected, f"{path}: {actual!r} != {expected!r}"
+E           AssertionError: case_6.decision: 'White' != 'Red'
+E           assert 'White' == 'Red'
+E             
+E             - Red
+E             + White
+
+oracle/eval.py:80: AssertionError</failure></testcase><testcase classname="eval" name="test_cl_case[7-case6]" time="0.002" /><testcase classname="eval" name="test_cl_case[8-case7]" time="0.003" /></testsuite></testsuites>

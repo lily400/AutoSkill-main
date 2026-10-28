@@ -1,0 +1,120 @@
+{
+  "skill_id": "17677650-7bed-5e92-9636-10946f5ad5ba",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "17677650-7bed-5e92-9636-10946f5ad5ba",
+    "name": "信号相位通行准入校验",
+    "description": "在离散时间步交通仿真中，依据当前激活相位的 GreenEdges 集合，判定某车辆能否从其所在边进入交叉口；用于每 tick 的车辆移动合法性检查。",
+    "skill_body": "给定当前 tick 的激活相位及其 GreenEdges 集合，以及待判定车辆所在的边，执行单一准入判定：仅当该边属于当前相位的 GreenEdges 时，允许车辆进入交叉口；否则不允许。输出布尔判定结果及依据（所依据的相位与边是否在 GreenEdges 中）。不要扩展到装卸、容量或非交叉口路段行驶判定。\n\n## Objective\n\n确保车辆仅在所属边处于当前相位绿灯集合时才进入交叉口\n## Applicable Signals\n\n- 存在当前激活相位\n- 已提供该相位的GreenEdges集合\n- 待判定车辆位于某条边上并拟进入交叉口\n\n## Contraindications\n\n- 未提供当前相位或GreenEdges信息\n- 非交叉口路段的普通行驶判定\n- 涉及装卸作业或边容量/队列冲突的判定\n\n## Intervention Moves\n\n- 读取当前tick的激活相位\n- 获取该相位的GreenEdges集合\n- 检查车辆所在边是否属于GreenEdges\n- 返回允许/不允许进入交叉口的判定及依据\n\n## Workflow Steps\n\n- 确认当前tick的激活相位。\n- 获取该相位的GreenEdges集合。\n- 确定待判定车辆所在的边。\n- 判断该边是否在GreenEdges中。\n- 输出布尔判定及依据。\n\n## Constraints\n\n- 判定仅依据当前激活相位的GreenEdges集合\n- 仅适用于交叉口进入判定，不覆盖其他通行规则\n\n## Cautions\n\n- 若缺少相位或GreenEdges信息，应拒绝判定而非默认放行\n- 不得将本判定与装卸、容量规则混用\n\n## Output Contract\n\n- 返回该车辆本tick是否允许进入交叉口的布尔判定及依据（所依据的相位与边是否在GreenEdges中）。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 当前激活相位的GreenEdges包含边E1，车辆位于边E1并拟进入交叉口。\n- Therapist/Output: 允许进入交叉口；依据：边E1属于当前相位GreenEdges。\n\n### Example 2\n\n- Client/Input: 当前激活相位的GreenEdges不包含边E2，车辆位于边E2并拟进入交叉口。\n- Therapist/Output: 不允许进入交叉口；依据：边E2不在当前相位GreenEdges中。",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "确保车辆仅在所属边处于当前相位绿灯集合时才进入交叉口",
+    "domain": "交通仿真规则",
+    "task_family": "车辆通行合法性判定",
+    "method_family": "规则校验",
+    "stage": "每tick更新",
+    "applicable_signals": [
+      "存在当前激活相位",
+      "已提供该相位的GreenEdges集合",
+      "待判定车辆位于某条边上并拟进入交叉口"
+    ],
+    "contraindications": [
+      "未提供当前相位或GreenEdges信息",
+      "非交叉口路段的普通行驶判定",
+      "涉及装卸作业或边容量/队列冲突的判定"
+    ],
+    "intervention_moves": [
+      "读取当前tick的激活相位",
+      "获取该相位的GreenEdges集合",
+      "检查车辆所在边是否属于GreenEdges",
+      "返回允许/不允许进入交叉口的判定及依据"
+    ],
+    "triggers": [
+      "需要判定车辆能否进入交叉口",
+      "已确定当前激活相位及其GreenEdges",
+      "每tick车辆移动合法性检查"
+    ],
+    "workflow_steps": [
+      "确认当前tick的激活相位。",
+      "获取该相位的GreenEdges集合。",
+      "确定待判定车辆所在的边。",
+      "判断该边是否在GreenEdges中。",
+      "输出布尔判定及依据。"
+    ],
+    "constraints": [
+      "判定仅依据当前激活相位的GreenEdges集合",
+      "仅适用于交叉口进入判定，不覆盖其他通行规则"
+    ],
+    "cautions": [
+      "若缺少相位或GreenEdges信息，应拒绝判定而非默认放行",
+      "不得将本判定与装卸、容量规则混用"
+    ],
+    "output_contract": [
+      "返回该车辆本tick是否允许进入交叉口的布尔判定及依据（所依据的相位与边是否在GreenEdges中）。"
+    ],
+    "examples": [
+      {
+        "input": "当前激活相位的GreenEdges包含边E1，车辆位于边E1并拟进入交叉口。",
+        "output": "允许进入交叉口；依据：边E1属于当前相位GreenEdges。",
+        "notes": null
+      },
+      {
+        "input": "当前激活相位的GreenEdges不包含边E2，车辆位于边E2并拟进入交叉口。",
+        "output": "不允许进入交叉口；依据：边E2不在当前相位GreenEdges中。",
+        "notes": null
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "信号相位",
+      "通行准入",
+      "规则校验",
+      "离散时间步"
+    ],
+    "support_ids": [
+      "5431a762-e716-53e3-8db3-eb086a3bc61d"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "fded6253-993f-56a3-a2ee-b880cbc8dfb4"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|确保车辆仅在所属边处于当前相位绿灯集合时才进入交叉口|交通仿真规则|车辆通行合法性判定|规则校验|每tick更新|信号相位通行准入校验"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

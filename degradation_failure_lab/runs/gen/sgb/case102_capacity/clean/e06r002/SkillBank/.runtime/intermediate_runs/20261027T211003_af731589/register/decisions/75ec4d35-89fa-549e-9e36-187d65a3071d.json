@@ -1,0 +1,111 @@
+{
+  "skill_id": "75ec4d35-89fa-549e-9e36-187d65a3071d",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 b7089cf9（信号相位通行判定）高度重复，后者已覆盖取模相位判定、逐边绿灯校验及下一绿灯 tick 推算，本候选无新增能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "75ec4d35-89fa-549e-9e36-187d65a3071d",
+    "name": "信号相位进入判定",
+    "description": "根据当前 tick 与信号周期相位，判断某条入边是否处于绿灯，从而决定车辆能否进入目标节点；用于逐 tick 推进仿真时确定车辆通行许可。",
+    "skill_body": "给定当前 tick、信号周期长度与相位划分，先计算 t mod 周期，确定当前所处相位；再查该相位下目标入边是否为绿灯；若为绿灯则输出允许进入，否则输出需等待并给出下一个可进入的相位对应 tick。仅做单次相位判定，不处理容量、排队或事故。\n\n## Objective\n\n在给定 tick 下判定入边绿灯状态并输出车辆可否进入节点\n## Applicable Signals\n\n- 当前 tick 已知\n- 信号周期与相位划分已知\n- 目标入边受信号控制\n\n## Contraindications\n\n- 无信号控制的路口\n- 非离散时间步仿真\n\n## Intervention Moves\n\n- 计算 t mod 周期长度\n- 将余数映射到相位\n- 查该相位下入边绿灯状态\n- 输出进入许可或等待至下一绿灯相位\n\n## Workflow Steps\n\n- 读取当前 tick 与信号周期长度\n- 计算 t mod 周期长度得到相位索引\n- 确定该相位下目标入边的绿灯状态\n- 若绿灯输出允许进入；否则计算下一绿灯相位对应 tick 并输出等待\n\n## Constraints\n\n- 判定仅基于相位与 tick，不引入容量或事故因素\n- 相位划分须与信号周期定义一致\n\n## Cautions\n\n- 不同入边在同一相位下绿灯状态可能不同，需逐边判定\n\n## Output Contract\n\n- 输出该 tick 下各入边绿灯状态及车辆进入许可（允许进入或等待至指定 tick）\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: tick 6，周期 6，Phase A 下 E2 绿灯、E5 非绿灯\n- Therapist/Output: E2 允许进入；E5 需等待至 Phase B（tick 8 或 9）\n- Notes: t mod 6 = 0 对应 Phase A",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在给定 tick 下判定入边绿灯状态并输出车辆可否进入节点",
+    "domain": "交通仿真",
+    "task_family": "逐tick状态推进",
+    "method_family": "信号相位取模判定",
+    "stage": "车辆移动决策",
+    "applicable_signals": [
+      "当前 tick 已知",
+      "信号周期与相位划分已知",
+      "目标入边受信号控制"
+    ],
+    "contraindications": [
+      "无信号控制的路口",
+      "非离散时间步仿真"
+    ],
+    "intervention_moves": [
+      "计算 t mod 周期长度",
+      "将余数映射到相位",
+      "查该相位下入边绿灯状态",
+      "输出进入许可或等待至下一绿灯相位"
+    ],
+    "triggers": [
+      "需要判断某车辆在某 tick 能否进入节点",
+      "存在多相位信号周期",
+      "逐 tick 推进仿真需确定通行许可"
+    ],
+    "workflow_steps": [
+      "读取当前 tick 与信号周期长度",
+      "计算 t mod 周期长度得到相位索引",
+      "确定该相位下目标入边的绿灯状态",
+      "若绿灯输出允许进入；否则计算下一绿灯相位对应 tick 并输出等待"
+    ],
+    "constraints": [
+      "判定仅基于相位与 tick，不引入容量或事故因素",
+      "相位划分须与信号周期定义一致"
+    ],
+    "cautions": [
+      "不同入边在同一相位下绿灯状态可能不同，需逐边判定"
+    ],
+    "output_contract": [
+      "输出该 tick 下各入边绿灯状态及车辆进入许可（允许进入或等待至指定 tick）"
+    ],
+    "examples": [
+      {
+        "input": "tick 6，周期 6，Phase A 下 E2 绿灯、E5 非绿灯",
+        "output": "E2 允许进入；E5 需等待至 Phase B（tick 8 或 9）",
+        "notes": "t mod 6 = 0 对应 Phase A"
+      }
+    ],
+    "tags": [
+      "交通仿真",
+      "信号相位",
+      "逐tick推进",
+      "通行许可"
+    ],
+    "support_ids": [
+      "8ad4daa8-ddd6-5ddc-b4e4-920904b7937c"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "54c116ea-b615-59c6-bc4e-ded08ff8f576"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "traffic simulation rules",
+      "taxonomy_id": "traffic simulation rules",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "traffic simulation rules|||micro_skill|micro|micro_skill_node|在给定 tick 下判定入边绿灯状态并输出车辆可否进入节点|交通仿真|逐tick状态推进|信号相位取模判定|车辆移动决策|信号相位进入判定"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

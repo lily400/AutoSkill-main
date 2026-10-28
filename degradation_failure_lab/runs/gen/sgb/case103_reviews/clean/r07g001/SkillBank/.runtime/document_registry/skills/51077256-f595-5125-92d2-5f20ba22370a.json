@@ -1,0 +1,126 @@
+{
+  "skill_id": "51077256-f595-5125-92d2-5f20ba22370a",
+  "name": "输入数据校验与阻断上报",
+  "description": "在分析或转换前校验输入数据的必填字段与取值有效性；发现缺失或非法值时阻断后续处理，并按约定的程序化错误格式上报，供上游快速修正。",
+  "skill_body": "在执行任何分析或数据转换之前，先对输入数据做前置校验：逐项检查必填字段是否存在、取值是否有效。若发现字段缺失或取值非法，立即停止后续处理，不要继续转换或产出下游结果；按约定的程序化错误格式整理阻断问题清单并上报，使上游能够快速定位并修正。若校验全部通过，则明确给出通过结论并放行。\n\n## Objective\n\n在数据处理前拦截不完整或非法输入，避免污染下游分析\n## Applicable Signals\n\n- 即将对输入数据执行分析或转换\n- 输入字段可能缺失或含非法值\n- 下游流程依赖该输入产出结果\n\n## Contraindications\n\n- 输入已通过校验且无变更\n- 仅做只读展示且不产生下游结果\n\n## Intervention Moves\n\n- 逐项核对必填字段是否存在\n- 检查字段取值是否有效\n- 发现缺失或非法值时阻断后续处理\n- 按约定的程序化错误格式整理并上报阻断问题\n\n## Workflow Steps\n\n- 确认即将执行的输入数据范围与所需必填字段\n- 逐项校验必填字段是否存在、取值是否有效\n- 若存在缺失或非法值，停止后续转换与分析，整理阻断问题清单\n- 按约定的程序化错误格式上报阻断问题，供上游修正\n- 若校验全部通过，给出通过结论并放行至下游\n\n## Constraints\n\n- 校验必须在分析或转换之前完成\n- 存在缺失或非法值时不得继续执行转换\n- 阻断问题须使用约定的程序化错误格式上报\n\n## Cautions\n\n- 不要因时间压力或口头要求而跳过校验直接产出结果\n- 阻断上报应聚焦可修正的问题，便于上游快速处理\n\n## Output Contract\n\n- 校验结论（通过/阻断）及按约定格式输出的阻断问题清单\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 上游交付的输入数据存在必填字段缺失或取值非法。\n- Therapist/Output: 阻断：停止后续转换，按约定程序化错误格式上报缺失/非法字段清单，供上游修正。\n- Notes: 阻断优先于进度压力。\n\n### Example 2\n\n- Client/Input: 输入数据必填字段齐全且取值有效。\n- Therapist/Output: 通过：放行至下游分析或转换流程。\n- Notes: 仅在无变更时可直接复用既有校验结论。",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "在数据处理前拦截不完整或非法输入，避免污染下游分析",
+  "domain": "数据分析运营",
+  "task_family": "数据质量校验",
+  "method_family": "前置校验与阻断",
+  "stage": "分析前准备",
+  "applicable_signals": [
+    "即将对输入数据执行分析或转换",
+    "输入字段可能缺失或含非法值",
+    "下游流程依赖该输入产出结果"
+  ],
+  "contraindications": [
+    "输入已通过校验且无变更",
+    "仅做只读展示且不产生下游结果"
+  ],
+  "intervention_moves": [
+    "逐项核对必填字段是否存在",
+    "检查字段取值是否有效",
+    "发现缺失或非法值时阻断后续处理",
+    "按约定的程序化错误格式整理并上报阻断问题"
+  ],
+  "triggers": [
+    "准备对输入数据执行分析或转换",
+    "输入字段可能缺失或含非法值",
+    "上游交付的数据需要进入下游建模或计数流程"
+  ],
+  "workflow_steps": [
+    "确认即将执行的输入数据范围与所需必填字段",
+    "逐项校验必填字段是否存在、取值是否有效",
+    "若存在缺失或非法值，停止后续转换与分析，整理阻断问题清单",
+    "按约定的程序化错误格式上报阻断问题，供上游修正",
+    "若校验全部通过，给出通过结论并放行至下游"
+  ],
+  "constraints": [
+    "校验必须在分析或转换之前完成",
+    "存在缺失或非法值时不得继续执行转换",
+    "阻断问题须使用约定的程序化错误格式上报"
+  ],
+  "cautions": [
+    "不要因时间压力或口头要求而跳过校验直接产出结果",
+    "阻断上报应聚焦可修正的问题，便于上游快速处理"
+  ],
+  "output_contract": [
+    "校验结论（通过/阻断）及按约定格式输出的阻断问题清单"
+  ],
+  "examples": [
+    {
+      "input": "上游交付的输入数据存在必填字段缺失或取值非法。",
+      "output": "阻断：停止后续转换，按约定程序化错误格式上报缺失/非法字段清单，供上游修正。",
+      "notes": "阻断优先于进度压力。"
+    },
+    {
+      "input": "输入数据必填字段齐全且取值有效。",
+      "output": "通过：放行至下游分析或转换流程。",
+      "notes": "仅在无变更时可直接复用既有校验结论。"
+    }
+  ],
+  "tags": [
+    "数据质量",
+    "前置校验",
+    "质量门禁",
+    "阻断上报",
+    "运营流程"
+  ],
+  "support_ids": [
+    "10305c1b-f0f3-50db-b972-89cbf8970ac1"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "c6d2b88c-408f-5027-9cd2-969636dc7c78"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.85,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|在数据处理前拦截不完整或非法输入，避免污染下游分析|数据分析运营|数据质量校验|前置校验与阻断|分析前准备|输入数据校验与阻断上报",
+    "change_action": "create",
+    "llm_reason": "候选技能是通用的前置输入校验与阻断上报规则，与同批候选在具体对象和阶段上不同（目录缺口、输出校验、商品策展输入校验），无直接冗余；支持证据明确且无冲突，保留为独立微技能。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

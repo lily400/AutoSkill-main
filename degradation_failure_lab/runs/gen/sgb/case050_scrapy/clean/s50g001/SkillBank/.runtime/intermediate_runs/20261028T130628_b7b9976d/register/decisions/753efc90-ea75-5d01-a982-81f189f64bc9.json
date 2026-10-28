@@ -1,0 +1,114 @@
+{
+  "skill_id": "753efc90-ea75-5d01-a982-81f189f64bc9",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "753efc90-ea75-5d01-a982-81f189f64bc9",
+    "name": "Scrapy 设置分层配置",
+    "description": "按命令行、Spider、项目 settings.py、插件、命令默认、全局默认的优先级顺序放置并覆盖 Scrapy 设置项，用于需要定制爬虫行为时。",
+    "skill_body": "当需要为 Scrapy 项目定制行为时，按优先级层级放置设置项：优先在项目 settings.py 中放置适用于所有 Spider 的通用配置；仅在需要按 Spider 覆盖时使用 Spider 级设置（如通过 from_crawler 中的 settings.set 并指定 priority=\"spider\"）；命令行设置用于临时覆盖。确认每个设置项落在正确的层级，并说明其生效优先级。\n\n## Objective\n\n按优先级层级正确放置并覆盖 Scrapy 设置项\n## Applicable Signals\n\n- 需要为所有 Spider 设置通用配置\n- 需要按优先级覆盖某个设置项\n\n## Contraindications\n\n- 仅需临时调试单个命令参数\n\n## Intervention Moves\n\n- 将适用于所有 Spider 的通用设置放入项目 settings.py\n- 需要按 Spider 覆盖时在 Spider 中通过 settings.set 指定 priority=\"spider\"\n- 使用命令行设置进行临时覆盖\n\n## Workflow Steps\n\n- 识别需要配置的设置项及其作用范围（全局或单个 Spider）\n- 将适用于所有 Spider 的通用设置放入项目 settings.py\n- 如需按 Spider 覆盖，在 Spider 的 from_crawler 中调用 settings.set 并指定 priority=\"spider\"\n- 如需临时覆盖，使用命令行设置\n- 确认各设置项落在正确层级并说明生效优先级\n\n## Constraints\n\n- 通用配置应优先放在项目 settings.py\n- Spider 级覆盖需显式指定 priority=\"spider\"\n\n## Cautions\n\n- 避免将仅适用于单个 Spider 的配置放入项目全局设置\n\n## Output Contract\n\n- 一份按正确优先级生效的 settings 配置\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 需要为所有 Spider 设置通用配置\n- Therapist/Output: 在项目 settings.py 中写入该设置项，使其对所有 Spider 生效\n- Notes: 项目级设置适用于所有 Spider\n\n### Example 2\n\n- Client/Input: 需要为某个 Spider 覆盖已有设置\n- Therapist/Output: 在 Spider 的 from_crawler 中调用 settings.set(\"SOME_SETTING\", value, priority=\"spider\")\n- Notes: Spider 级设置优先级高于项目设置",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "按优先级层级正确放置并覆盖 Scrapy 设置项",
+    "domain": "scrapy",
+    "task_family": "配置管理",
+    "method_family": "分层优先级配置",
+    "stage": "项目配置",
+    "applicable_signals": [
+      "需要为所有 Spider 设置通用配置",
+      "需要按优先级覆盖某个设置项"
+    ],
+    "contraindications": [
+      "仅需临时调试单个命令参数"
+    ],
+    "intervention_moves": [
+      "将适用于所有 Spider 的通用设置放入项目 settings.py",
+      "需要按 Spider 覆盖时在 Spider 中通过 settings.set 指定 priority=\"spider\"",
+      "使用命令行设置进行临时覆盖"
+    ],
+    "triggers": [
+      "需要为所有 Spider 设置通用配置",
+      "需要按优先级覆盖某个设置项",
+      "需要决定某个设置项应放在哪一层级"
+    ],
+    "workflow_steps": [
+      "识别需要配置的设置项及其作用范围（全局或单个 Spider）",
+      "将适用于所有 Spider 的通用设置放入项目 settings.py",
+      "如需按 Spider 覆盖，在 Spider 的 from_crawler 中调用 settings.set 并指定 priority=\"spider\"",
+      "如需临时覆盖，使用命令行设置",
+      "确认各设置项落在正确层级并说明生效优先级"
+    ],
+    "constraints": [
+      "通用配置应优先放在项目 settings.py",
+      "Spider 级覆盖需显式指定 priority=\"spider\""
+    ],
+    "cautions": [
+      "避免将仅适用于单个 Spider 的配置放入项目全局设置"
+    ],
+    "output_contract": [
+      "一份按正确优先级生效的 settings 配置"
+    ],
+    "examples": [
+      {
+        "input": "需要为所有 Spider 设置通用配置",
+        "output": "在项目 settings.py 中写入该设置项，使其对所有 Spider 生效",
+        "notes": "项目级设置适用于所有 Spider"
+      },
+      {
+        "input": "需要为某个 Spider 覆盖已有设置",
+        "output": "在 Spider 的 from_crawler 中调用 settings.set(\"SOME_SETTING\", value, priority=\"spider\")",
+        "notes": "Spider 级设置优先级高于项目设置"
+      }
+    ],
+    "tags": [
+      "scrapy",
+      "settings",
+      "配置管理",
+      "优先级"
+    ],
+    "support_ids": [
+      "fa9dc8b3-bcb4-544f-a611-bb8f529beff5"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "6792c07c-6e08-5b3c-ad8a-c37c4a715dd1"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "scrapy",
+      "taxonomy_id": "scrapy",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "scrapy|||session_skill|session|workflow_skill|按优先级层级正确放置并覆盖 scrapy 设置项|scrapy|配置管理|分层优先级配置|项目配置|scrapy 设置分层配置"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

@@ -1,0 +1,140 @@
+{
+  "skill_id": "529684d7-cb46-54dd-bff7-bf378ff743ce",
+  "name": "评论与SKU语义匹配判定",
+  "description": "依据类别匹配、语义相似度、材料等价与语境一致性，判断一条评论是否适用于某SKU，并保持保守计数。用于将非结构化评论映射到产品目录条目。",
+  "skill_body": "对每条评论-SKU对执行保守的语义匹配判定：先确认类别匹配（硬性要求），再评估语义相似度、材料等价与语境一致性；仅在语义关联强且清晰时判定为适用，弱或模糊关联一律不计数。输出每条评论-SKU对的适用/不适用判定及理由。\n\n## Objective\n\n对每条评论-SKU对给出是否适用的保守判定\n## Applicable Signals\n\n- 存在待映射的非结构化评论与产品目录条目\n- 需要判断评论内容是否适用于某SKU\n- 需要控制过度匹配、保持保守计数\n\n## Contraindications\n\n- 仅需统计数量而无需语义判断\n- 评论与产品类别完全无关\n\n## Intervention Moves\n\n- 先做类别匹配，作为硬性要求\n- 评估语义相似度，识别同义或近义表述\n- 应用材料等价规则（如技术抓绒≈具保暖性能的抓绒、速干面料≈吸湿排汗合成面料、防撕裂面料≈抗撕裂尼龙）\n- 结合语境与预期用途判断，而非仅匹配关键词\n- 对弱或模糊关联判定为不适用\n\n## Workflow Steps\n\n- 读取评论与SKU条目，确认类别是否匹配（硬性要求）\n- 评估评论与SKU描述之间的语义相似度\n- 应用材料等价规则判断材料表述是否等价\n- 结合语境与预期用途核对一致性（如保暖类评论不适用于轻薄夏季产品）\n- 仅在语义关联强且清晰时判定为适用，否则判定为不适用\n- 输出每条评论-SKU对的判定结果及理由\n\n## Constraints\n\n- 类别匹配为硬性要求，不匹配则不应判定为适用\n- 语义关联弱或不清时不得计数为适用\n- 宁可少而准，不可过度计数\n- 仅强语义关系才可判定为适用\n- 匹配语境与预期用途，而非仅匹配单个关键词\n\n## Cautions\n\n- 避免因关键词重合而误判适用\n- 避免将保暖、厚重等语境错配到轻薄或修身产品\n- 对模糊关联保持保守，不夸大匹配\n\n## Output Contract\n\n- 每条评论-SKU对的适用/不适用判定及理由\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 评论提及“跑步”用途，SKU描述为“训练”或“运动表现”\n- Therapist/Output: 适用：语义相近，跑步属训练/运动表现语境\n- Notes: 语义相似度规则\n\n### Example 2\n\n- Client/Input: 评论称赞“保暖”，SKU为轻薄夏季产品\n- Therapist/Output: 不适用：语境不一致，保暖评论不适用于轻薄夏季产品\n- Notes: 语境一致性规则\n\n### Example 3\n\n- Client/Input: 评论与SKU仅存在弱或模糊关联\n- Therapist/Output: 不适用：语义关联弱，保守不计数\n- Notes: 保守计数规则",
+  "asset_type": "session_skill",
+  "granularity": "session",
+  "asset_node_id": "workflow_skill",
+  "asset_path": "family_root/macro_skill/workflow_skill",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [
+    "7c03ea42-1b70-58a2-826a-114facfe94ec"
+  ],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "parent",
+  "visible_role": "parent",
+  "objective": "对每条评论-SKU对给出是否适用的保守判定",
+  "domain": "产品目录策展",
+  "task_family": "语义匹配",
+  "method_family": "规则约束的语义相似度判定",
+  "stage": "匹配判定",
+  "applicable_signals": [
+    "存在待映射的非结构化评论与产品目录条目",
+    "需要判断评论内容是否适用于某SKU",
+    "需要控制过度匹配、保持保守计数"
+  ],
+  "contraindications": [
+    "仅需统计数量而无需语义判断",
+    "评论与产品类别完全无关"
+  ],
+  "intervention_moves": [
+    "先做类别匹配，作为硬性要求",
+    "评估语义相似度，识别同义或近义表述",
+    "应用材料等价规则（如技术抓绒≈具保暖性能的抓绒、速干面料≈吸湿排汗合成面料、防撕裂面料≈抗撕裂尼龙）",
+    "结合语境与预期用途判断，而非仅匹配关键词",
+    "对弱或模糊关联判定为不适用"
+  ],
+  "triggers": [
+    "需要将评论映射到SKU目录",
+    "需要判断评论是否适用于某产品",
+    "需要为评论-SKU对给出适用性判定"
+  ],
+  "workflow_steps": [
+    "读取评论与SKU条目，确认类别是否匹配（硬性要求）",
+    "评估评论与SKU描述之间的语义相似度",
+    "应用材料等价规则判断材料表述是否等价",
+    "结合语境与预期用途核对一致性（如保暖类评论不适用于轻薄夏季产品）",
+    "仅在语义关联强且清晰时判定为适用，否则判定为不适用",
+    "输出每条评论-SKU对的判定结果及理由"
+  ],
+  "constraints": [
+    "类别匹配为硬性要求，不匹配则不应判定为适用",
+    "语义关联弱或不清时不得计数为适用",
+    "宁可少而准，不可过度计数",
+    "仅强语义关系才可判定为适用",
+    "匹配语境与预期用途，而非仅匹配单个关键词"
+  ],
+  "cautions": [
+    "避免因关键词重合而误判适用",
+    "避免将保暖、厚重等语境错配到轻薄或修身产品",
+    "对模糊关联保持保守，不夸大匹配"
+  ],
+  "output_contract": [
+    "每条评论-SKU对的适用/不适用判定及理由"
+  ],
+  "examples": [
+    {
+      "input": "评论提及“跑步”用途，SKU描述为“训练”或“运动表现”",
+      "output": "适用：语义相近，跑步属训练/运动表现语境",
+      "notes": "语义相似度规则"
+    },
+    {
+      "input": "评论称赞“保暖”，SKU为轻薄夏季产品",
+      "output": "不适用：语境不一致，保暖评论不适用于轻薄夏季产品",
+      "notes": "语境一致性规则"
+    },
+    {
+      "input": "评论与SKU仅存在弱或模糊关联",
+      "output": "不适用：语义关联弱，保守不计数",
+      "notes": "保守计数规则"
+    }
+  ],
+  "tags": [
+    "语义匹配",
+    "SKU目录",
+    "评论映射",
+    "保守计数"
+  ],
+  "support_ids": [
+    "f3ce569b-feb3-5262-824f-1d9944f1fadd"
+  ],
+  "metadata": {
+    "risk_class": "low",
+    "source_draft_ids": [
+      "6ee9189f-dd86-5487-83ec-ab314c1deaf9"
+    ],
+    "support_summary": {
+      "support": 1,
+      "constraint": 0,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.8,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|对每条评论-sku对给出是否适用的保守判定|产品目录策展|语义匹配|规则约束的语义相似度判定|匹配判定|评论与sku语义匹配判定",
+    "change_action": "create",
+    "llm_reason": "create",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "parent",
+    "visible_role": "parent",
+    "child_skill_ids": [
+      "7c03ea42-1b70-58a2-826a-114facfe94ec"
+    ]
+  },
+  "version": "0.1.0",
+  "status": "active"
+}

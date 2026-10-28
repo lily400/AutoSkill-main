@@ -1,0 +1,146 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "字段校验器配置",
+  "run_id": "20261028T130521_49f31b4f",
+  "skills": [
+    {
+      "skill_id": "a30b25f4-b752-5564-afbd-e34563890155",
+      "name": "字段校验器通配符与字段检查配置",
+      "description": "使用装饰器式字段校验器时，通过传入 '*' 使校验器作用于所有字段（含子类字段），并通过 check_fields=False 在基类上定义校验器而允许字段在子类中存在。适用于在基类或跨字段场景中复用字段校验逻辑。",
+      "skill_body": "在定义装饰器式字段校验器时，按需配置两个参数：1) 若希望校验器作用于模型全部字段（包括子类中定义的字段），将字段名参数设为 '*'；2) 若在基类上定义校验器而目标字段预期只存在于子类中，传入 check_fields=False 以在类创建时跳过字段存在性检查。确认配置后验证校验器作用于预期字段集合且类创建无字段存在性报错。\n\n## Objective\n\n正确配置字段校验器的适用范围与字段存在性检查，使校验逻辑可安全复用于基类与子类。\n## Applicable Signals\n\n- 校验器定义在基类上，字段由子类提供\n- 需要一次性覆盖模型所有字段的校验逻辑\n\n## Contraindications\n\n- 仅需校验单个已知字段且字段必然存在于当前模型\n- 使用 annotated 模式而非装饰器模式\n\n## Intervention Moves\n\n- 将字段名参数设为 '*' 以覆盖全部字段\n- 在基类校验器上传入 check_fields=False 跳过字段存在性检查\n\n## Workflow Steps\n\n- 判断校验器是否需要覆盖全部字段，若是则将字段名参数设为 '*'\n- 判断校验器是否定义在基类且目标字段仅存在于子类，若是则传入 check_fields=False\n- 验证校验器作用于预期字段集合，且类创建时无字段存在性报错\n\n## Constraints\n\n- 仅在装饰器式字段校验器场景下使用\n- check_fields=False 仅用于字段预期存在于子类的基类校验器\n\n## Cautions\n\n- 默认情况下装饰器会检查字段名是否定义在模型上，禁用该检查需明确理由\n\n## Output Contract\n\n- 校验器按预期作用于目标字段集合，且类创建时无字段存在性报错。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+      "parent_candidate_ids": [
+        "0166b7ef-ec54-5e0c-9bd2-086b92fc3430"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.72,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "正确配置字段校验器的适用范围与字段存在性检查，使校验逻辑可安全复用于基类与子类。",
+      "domain": "pydantic",
+      "task_family": "字段校验器配置",
+      "method_family": "装饰器式校验器",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "校验器定义在基类上，字段由子类提供",
+        "需要一次性覆盖模型所有字段的校验逻辑"
+      ],
+      "contraindications": [
+        "仅需校验单个已知字段且字段必然存在于当前模型",
+        "使用 annotated 模式而非装饰器模式"
+      ],
+      "intervention_moves": [
+        "将字段名参数设为 '*' 以覆盖全部字段",
+        "在基类校验器上传入 check_fields=False 跳过字段存在性检查"
+      ],
+      "triggers": [
+        "需要在基类上定义字段校验器并期望子类字段也受校验",
+        "希望校验器作用于模型全部字段"
+      ],
+      "workflow_steps": [
+        "判断校验器是否需要覆盖全部字段，若是则将字段名参数设为 '*'",
+        "判断校验器是否定义在基类且目标字段仅存在于子类，若是则传入 check_fields=False",
+        "验证校验器作用于预期字段集合，且类创建时无字段存在性报错"
+      ],
+      "constraints": [
+        "仅在装饰器式字段校验器场景下使用",
+        "check_fields=False 仅用于字段预期存在于子类的基类校验器"
+      ],
+      "cautions": [
+        "默认情况下装饰器会检查字段名是否定义在模型上，禁用该检查需明确理由"
+      ],
+      "output_contract": [
+        "校验器按预期作用于目标字段集合，且类创建时无字段存在性报错。"
+      ],
+      "examples": [],
+      "tags": [
+        "pydantic",
+        "field-validator",
+        "decorator",
+        "inheritance"
+      ],
+      "support_ids": [
+        "7ba43fca-2305-5677-b2fd-820abf303937"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "46235579-ca83-5cee-b82b-e460a0d00618"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|正确配置字段校验器的适用范围与字段存在性检查，使校验逻辑可安全复用于基类与子类。|pydantic|字段校验器配置|装饰器式校验器|模型定义|字段校验器通配符与字段检查配置",
+        "change_action": "create",
+        "llm_reason": "候选技能聚焦装饰器式字段校验器的通配符 '*' 与 check_fields=False 配置，与同批模型验证器/错误处理候选无实质重叠，且有支持证据、无冲突，保留为独立微技能。",
+        "parent_skill_id": "0166b7ef-ec54-5e0c-9bd2-086b92fc3430",
+        "parent_candidate_ids": [
+          "0166b7ef-ec54-5e0c-9bd2-086b92fc3430"
+        ],
+        "hierarchy_confidence": 0.72,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "e9bd58a8-fa7a-4b3c-af3f-5ce2abe6c39a",
+      "entity_type": "skill",
+      "entity_id": "a30b25f4-b752-5564-afbd-e34563890155",
+      "action": "create",
+      "changed_at": "2026-10-28T05:04:35+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选技能聚焦装饰器式字段校验器的通配符 '*' 与 check_fields=False 配置，与同批模型验证器/错误处理候选无实质重叠，且有支持证据、无冲突，保留为独立微技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "a30b25f4-b752-5564-afbd-e34563890155",
+        "doc_ids": [
+          "a60f9661-6cba-5f16-be41-fbe06bc00bca"
+        ],
+        "support_added": [
+          "7ba43fca-2305-5677-b2fd-820abf303937"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

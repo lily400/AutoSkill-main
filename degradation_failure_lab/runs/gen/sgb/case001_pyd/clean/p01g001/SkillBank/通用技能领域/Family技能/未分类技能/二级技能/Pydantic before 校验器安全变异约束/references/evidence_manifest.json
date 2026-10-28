@@ -1,0 +1,73 @@
+{
+  "schema": "autoskill.document.evidence_manifest.v1",
+  "generated_at": "2026-10-28T05:05:22+00:00",
+  "family_name": "未分类技能",
+  "skill_id": "9eb16e27-a3e6-5b09-a407-854038ca54a2",
+  "skill_name": "Pydantic before 校验器安全变异约束",
+  "support_count": 1,
+  "supports": [
+    {
+      "support_id": "43d03a28-6070-5e7c-a6c6-78da780d4613",
+      "doc_id": "a60f9661-6cba-5f16-be41-fbe06bc00bca",
+      "document_title": "input001\\validators.md",
+      "source_file": "D:\\AS\\AutoSkill-main\\degradation_failure_lab\\runs\\gen\\sgb\\case001_pyd\\clean\\p01g001\\inputs\\input001\\validators.md",
+      "section": "# Validators",
+      "span": {
+        "start": 14017,
+        "end": 14766
+      },
+      "relation_type": "constraint",
+      "confidence": 0.75,
+      "quote": "class UserModel(BaseModel):\n    username: str\n    password: str\n    password_repeat: str\n\n@model_validator(mode='after')\n    def check_passwords_match(self) -> Self:\n        if self.password != self.password_repeat:\n            raise ValueError('Passwords do not match')\n        return self\n```\n- ***Before* validators**: are run before the model is instantiated. These are more flexible than *after* validators,\n but they also have to deal with the raw input, which in theory could be any arbitrary object. You should also avoid\n mutating the value directly if you are raising a validation error later in your validator\n function, as the mutated value may be passed to other validators if using [unions](../unions/).\n\n```\nfrom typing import Any",
+      "metadata": {
+        "document_title": "input001\\validators.md",
+        "domain": "",
+        "extraction_unit": "window",
+        "skill_name": "Pydantic before 校验器安全变异约束",
+        "asset_type": "safety_rule",
+        "granularity": "micro",
+        "asset_node_id": "safety_rule_node",
+        "asset_path": "family_root/safety_module/safety_rule_node",
+        "asset_level": 2,
+        "visible_role": "leaf",
+        "objective": "防止 before 校验器中不安全的值变异导致副作用传播",
+        "task_family": "数据校验",
+        "method_family": "校验器约束",
+        "stage": "模型定义",
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "candidate_slot": 3,
+        "window_id": "cd93ce53-154b-5321-88c1-08284dbc9a9b",
+        "window_strategy": "strict",
+        "anchor_hits": [],
+        "paragraph_start": 33,
+        "paragraph_end": 35,
+        "heading_path": [
+          "# Validators"
+        ],
+        "parent_heading": "",
+        "sibling_headings": [
+          "input001\\validators.md"
+        ],
+        "subsection_headings": [
+          "## Field validators",
+          "Example mutating the value",
+          "Which validator pattern to use",
+          "Using the annotated pattern",
+          "Using the decorator pattern",
+          "Model validators",
+          "Raising validation errors",
+          "Validation info",
+          "Validation data",
+          "Validation context",
+          "Ordering of validators",
+          "Special types"
+        ],
+        "context_snippets": [],
+        "heading_number": "",
+        "heading_kind": "outline_llm",
+        "section_summary": "In addition to Pydantic's [built-in validation capabilities](../fields/#field-constraints),"
+      }
+    }
+  ]
+}

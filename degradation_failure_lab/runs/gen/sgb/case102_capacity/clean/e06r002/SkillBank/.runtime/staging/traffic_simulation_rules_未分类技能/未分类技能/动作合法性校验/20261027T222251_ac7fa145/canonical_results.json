@@ -1,0 +1,306 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "traffic_simulation_rules::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "动作合法性校验",
+  "run_id": "20261027T222251_ac7fa145",
+  "skills": [
+    {
+      "skill_id": "7b118a07-ff9b-54a5-b3a9-11d2e137c158",
+      "name": "动作前置条件守卫",
+      "description": "在生成车辆每tick动作请求时，对有条件动作（ENTER_EDGE、START_LOADING、START_UNLOADING、GO_OFFLINE、GO_ONLINE）校验其位置与状态前置条件；不满足则拒绝或修正该动作，仅保留合法动作请求。",
+      "skill_body": "对每个非离线车辆拟发出的有条件动作，逐项核对前置条件：ENTER_EDGE 需车辆当前位于节点；START_LOADING 需车辆位于当前节点且目标货物在该节点；START_UNLOADING 需指定货物已在车上且其目的地或允许转运节点与当前节点匹配；GO_OFFLINE 需车辆位于其 HomeDepot；GO_ONLINE 需车辆处于 OFFLINE 且位于 HomeDepot。任一条件不满足则不得发出该动作，改为拒绝或替换为合法动作（如 WAIT）。注意动作在容量与冲突校验前仅为请求，本守卫只做前置条件过滤，不处理容量与冲突。\n\n## Objective\n\n阻止不满足位置或状态前置条件的非法动作请求\n## Applicable Signals\n\n- 车辆拟发出 ENTER_EDGE 且需确认是否在节点\n- 车辆拟发出 START_LOADING 或 START_UNLOADING\n- 车辆拟切换 GO_OFFLINE 或 GO_ONLINE\n- 需判断动作在当前节点或状态是否允许\n\n## Contraindications\n\n- 动作本身无条件合法如 WAIT\n- 已进入容量与冲突校验阶段\n\n## Intervention Moves\n\n- 识别动作类型及其前置条件\n- 核对车辆当前位置与状态\n- 对不满足条件的动作拒绝或替换为合法动作\n\n## Workflow Steps\n\n- 确定车辆当前所在节点与状态（在线/离线）\n- 识别拟发出动作类型\n- 按动作类型核对前置条件：ENTER_EDGE 需在节点；START_LOADING 需在节点且货物在该节点；START_UNLOADING 需货物在车上且目的地或允许转运节点匹配当前节点；GO_OFFLINE 需在 HomeDepot；GO_ONLINE 需 OFFLINE 且在 HomeDepot\n- 对不满足条件的动作拒绝或修正为合法动作\n- 输出仅含满足前置条件的动作请求\n\n## Constraints\n\n- 每个非离线车辆每tick至多选择一个动作\n- 动作在容量与冲突校验前仅为请求，本守卫不替代该阶段\n\n## Cautions\n\n- 不要将前置条件校验与容量/冲突校验混淆\n- GO_ONLINE 仅在车辆已处于 OFFLINE 且位于 HomeDepot 时允许\n\n## Output Contract\n\n- 非法动作被拒绝或修正，仅保留满足前置条件的动作请求。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆位于非 HomeDepot 节点，请求 GO_OFFLINE\n- Therapist/Output: 拒绝 GO_OFFLINE，改为合法动作（如 WAIT）\n- Notes: GO_OFFLINE 需在 HomeDepot\n\n### Example 2\n\n- Client/Input: 车辆处于 OFFLINE 且位于 HomeDepot，请求 GO_ONLINE\n- Therapist/Output: 允许 GO_ONLINE，状态转为 IDLE_AT_NODE\n- Notes: 满足前置条件",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "阻止不满足位置或状态前置条件的非法动作请求",
+      "domain": "交通仿真规则",
+      "task_family": "动作合法性校验",
+      "method_family": "前置条件检查",
+      "stage": "动作请求过滤",
+      "applicable_signals": [
+        "车辆拟发出 ENTER_EDGE 且需确认是否在节点",
+        "车辆拟发出 START_LOADING 或 START_UNLOADING",
+        "车辆拟切换 GO_OFFLINE 或 GO_ONLINE",
+        "需判断动作在当前节点或状态是否允许"
+      ],
+      "contraindications": [
+        "动作本身无条件合法如 WAIT",
+        "已进入容量与冲突校验阶段"
+      ],
+      "intervention_moves": [
+        "识别动作类型及其前置条件",
+        "核对车辆当前位置与状态",
+        "对不满足条件的动作拒绝或替换为合法动作"
+      ],
+      "triggers": [
+        "车辆请求进入边、装卸、上下线等有条件动作",
+        "需要判断动作在当前节点或状态是否允许"
+      ],
+      "workflow_steps": [
+        "确定车辆当前所在节点与状态（在线/离线）",
+        "识别拟发出动作类型",
+        "按动作类型核对前置条件：ENTER_EDGE 需在节点；START_LOADING 需在节点且货物在该节点；START_UNLOADING 需货物在车上且目的地或允许转运节点匹配当前节点；GO_OFFLINE 需在 HomeDepot；GO_ONLINE 需 OFFLINE 且在 HomeDepot",
+        "对不满足条件的动作拒绝或修正为合法动作",
+        "输出仅含满足前置条件的动作请求"
+      ],
+      "constraints": [
+        "每个非离线车辆每tick至多选择一个动作",
+        "动作在容量与冲突校验前仅为请求，本守卫不替代该阶段"
+      ],
+      "cautions": [
+        "不要将前置条件校验与容量/冲突校验混淆",
+        "GO_ONLINE 仅在车辆已处于 OFFLINE 且位于 HomeDepot 时允许"
+      ],
+      "output_contract": [
+        "非法动作被拒绝或修正，仅保留满足前置条件的动作请求。"
+      ],
+      "examples": [
+        {
+          "input": "车辆位于非 HomeDepot 节点，请求 GO_OFFLINE",
+          "output": "拒绝 GO_OFFLINE，改为合法动作（如 WAIT）",
+          "notes": "GO_OFFLINE 需在 HomeDepot"
+        },
+        {
+          "input": "车辆处于 OFFLINE 且位于 HomeDepot，请求 GO_ONLINE",
+          "output": "允许 GO_ONLINE，状态转为 IDLE_AT_NODE",
+          "notes": "满足前置条件"
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "动作合法性",
+        "前置条件",
+        "守卫规则"
+      ],
+      "support_ids": [
+        "15ab2be1-4b6d-56b4-aeff-7f5c7ce15422"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "24fc40be-d92c-5439-ae7d-bdf919f6b378"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|阻止不满足位置或状态前置条件的非法动作请求|交通仿真规则|动作合法性校验|前置条件检查|动作请求过滤|动作前置条件守卫",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "fb8197f0-8b04-5737-97fc-0668903cd571",
+      "name": "行驶中车辆动作合法性约束",
+      "description": "当车辆状态为 MOVING（位于某条边上）时，校验其唯一合法动作为 CONTINUE_TRAVEL，禁止开始装卸；用于每 tick 车辆动作合法性判定。",
+      "skill_body": "在确定或校验某车辆本 tick 的动作时，先检查其状态。若状态为 MOVING（车辆位于边上），则唯一合法动作为 CONTINUE_TRAVEL；不得开始装载或卸载。若控制器下发或候选动作包含装卸类动作，应判定为非法并拒绝，返回合法动作 CONTINUE_TRAVEL。仅处理动作合法性判定，不涉及容量计算或信号判定。\n\n## Objective\n\n防止行驶中车辆执行装卸等非法动作\n## Applicable Signals\n\n- 车辆 Status = MOVING\n- 车辆位于某条边上\n- 需要判定本 tick 车辆动作\n\n## Contraindications\n\n- 车辆处于非行驶状态\n- 与车辆动作无关的容量或信号判定\n\n## Intervention Moves\n\n- 读取车辆状态\n- 若为 MOVING 则限定动作为 CONTINUE_TRAVEL\n- 拒绝任何装卸类动作并标记非法\n\n## Workflow Steps\n\n- 检查车辆当前状态是否为 MOVING\n- 若为 MOVING，将合法动作限定为 CONTINUE_TRAVEL\n- 若候选动作包含开始装载或卸载，判定为非法并拒绝\n- 输出合法动作或非法标记\n\n## Constraints\n\n- MOVING 状态下不得开始装载或卸载\n- 仅对动作合法性做判定，不扩展到容量或信号规则\n\n## Cautions\n\n- 仅在车辆确实位于边上（MOVING）时适用\n- 非行驶状态车辆不适用本约束\n\n## Output Contract\n\n- 确认车辆动作被限定为 CONTINUE_TRAVEL，或将装卸类动作标记为非法。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 车辆状态为 MOVING，控制器下发 START_LOADING\n- Therapist/Output: 动作非法，拒绝；合法动作限定为 CONTINUE_TRAVEL\n- Notes: 行驶中车辆不得开始装卸\n\n### Example 2\n\n- Client/Input: 车辆状态为 MOVING，候选动作为 CONTINUE_TRAVEL\n- Therapist/Output: 动作合法，允许执行 CONTINUE_TRAVEL",
+      "asset_type": "safety_rule",
+      "granularity": "micro",
+      "asset_node_id": "safety_rule_node",
+      "asset_path": "family_root/safety_module/safety_rule_node",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "unresolved",
+      "visible_role": "leaf",
+      "objective": "防止行驶中车辆执行装卸等非法动作",
+      "domain": "交通仿真规则",
+      "task_family": "动作合法性校验",
+      "method_family": "约束规则",
+      "stage": "动作执行",
+      "applicable_signals": [
+        "车辆 Status = MOVING",
+        "车辆位于某条边上",
+        "需要判定本 tick 车辆动作"
+      ],
+      "contraindications": [
+        "车辆处于非行驶状态",
+        "与车辆动作无关的容量或信号判定"
+      ],
+      "intervention_moves": [
+        "读取车辆状态",
+        "若为 MOVING 则限定动作为 CONTINUE_TRAVEL",
+        "拒绝任何装卸类动作并标记非法"
+      ],
+      "triggers": [
+        "车辆状态为 MOVING 且需确定其可执行动作",
+        "校验控制器下发的动作是否合法"
+      ],
+      "workflow_steps": [
+        "检查车辆当前状态是否为 MOVING",
+        "若为 MOVING，将合法动作限定为 CONTINUE_TRAVEL",
+        "若候选动作包含开始装载或卸载，判定为非法并拒绝",
+        "输出合法动作或非法标记"
+      ],
+      "constraints": [
+        "MOVING 状态下不得开始装载或卸载",
+        "仅对动作合法性做判定，不扩展到容量或信号规则"
+      ],
+      "cautions": [
+        "仅在车辆确实位于边上（MOVING）时适用",
+        "非行驶状态车辆不适用本约束"
+      ],
+      "output_contract": [
+        "确认车辆动作被限定为 CONTINUE_TRAVEL，或将装卸类动作标记为非法。"
+      ],
+      "examples": [
+        {
+          "input": "车辆状态为 MOVING，控制器下发 START_LOADING",
+          "output": "动作非法，拒绝；合法动作限定为 CONTINUE_TRAVEL",
+          "notes": "行驶中车辆不得开始装卸"
+        },
+        {
+          "input": "车辆状态为 MOVING，候选动作为 CONTINUE_TRAVEL",
+          "output": "动作合法，允许执行 CONTINUE_TRAVEL",
+          "notes": null
+        }
+      ],
+      "tags": [
+        "交通仿真",
+        "动作合法性",
+        "MOVING",
+        "CONTINUE_TRAVEL",
+        "护栏"
+      ],
+      "support_ids": [
+        "b921ce3e-5264-51f8-aabc-33b32af1196f"
+      ],
+      "metadata": {
+        "risk_class": "medium",
+        "source_draft_ids": [
+          "ba3e25d1-7b7c-5ddc-b3a5-8b1617f677f5"
+        ],
+        "support_summary": {
+          "support": 0,
+          "constraint": 1,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "traffic simulation rules",
+        "taxonomy_id": "traffic simulation rules",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "traffic_simulation_rules::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "traffic simulation rules|||safety_rule|micro|safety_rule_node|防止行驶中车辆执行装卸等非法动作|交通仿真规则|动作合法性校验|约束规则|动作执行|行驶中车辆动作合法性约束",
+        "change_action": "create",
+        "llm_reason": "候选规则有明确文档支持（R25），聚焦MOVING状态下唯一合法动作为CONTINUE_TRAVEL，与同批其他候选（前置条件守卫、装卸锁定、歧义声明）在触发状态与约束内容上互补，无重复或冲突，保留为新技能。",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "unresolved",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "ec501964-9bd6-47ad-9000-139c79d7778a",
+      "entity_type": "skill",
+      "entity_id": "7b118a07-ff9b-54a5-b3a9-11d2e137c158",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "7b118a07-ff9b-54a5-b3a9-11d2e137c158",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "15ab2be1-4b6d-56b4-aeff-7f5c7ce15422"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "0a416dc2-f9e7-4374-9626-aa2e143e553d",
+      "entity_type": "skill",
+      "entity_id": "fb8197f0-8b04-5737-97fc-0668903cd571",
+      "action": "create",
+      "changed_at": "2026-10-27T14:21:52+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "候选规则有明确文档支持（R25），聚焦MOVING状态下唯一合法动作为CONTINUE_TRAVEL，与同批其他候选（前置条件守卫、装卸锁定、歧义声明）在触发状态与约束内容上互补，无重复或冲突，保留为新技能。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "fb8197f0-8b04-5737-97fc-0668903cd571",
+        "doc_ids": [
+          "1291f40b-7db3-5798-9061-f3310b3f99fe"
+        ],
+        "support_added": [
+          "b921ce3e-5264-51f8-aabc-33b32af1196f"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

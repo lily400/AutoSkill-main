@@ -1,0 +1,114 @@
+{
+  "skill_id": "51f5a8db-c4dd-53b6-9943-d8f3f4098fdc",
+  "action": "create",
+  "matched_skill_ids": [],
+  "reason": "create",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "51f5a8db-c4dd-53b6-9943-d8f3f4098fdc",
+    "name": "多SKU语义匹配计数",
+    "description": "将每条评论与产品目录做语义匹配，当一条评论可匹配多个 SKU 时分别计入各 SKU，避免漏计，最终产出每 SKU 评论计数 JSON 及简要状态说明。",
+    "skill_body": "对每条评论逐一与产品目录做语义匹配：若评论语义上匹配多个 SKU，则每个匹配的 SKU 各计一次，不得因单条评论只计一次而漏计。仅依据评论文本与目录的语义对应关系计数，不从未提供的字段推断分类值。完成后输出每 SKU 计数 JSON，并附简要状态说明；若存在阻塞（如必需字段缺失），明确说明以便快速补救。\n\n## Objective\n\n产出准确的每 SKU 评论计数\n## Applicable Signals\n\n- 评论文本可能同时提及多个商品（如连帽衫与运动裤同帖）\n- 需要按 SKU 维度而非仅品牌维度汇总\n- 存在产品目录可供语义比对\n\n## Contraindications\n\n- 评论与产品目录无对应关系\n- 仅需品牌层面汇总\n\n## Intervention Moves\n\n- 逐条评论与产品目录做语义匹配\n- 对匹配多个 SKU 的评论分别计入各 SKU\n- 汇总每 SKU 计数并输出 JSON\n- 附简要状态说明并明确阻塞项\n\n## Workflow Steps\n\n- 确认产品目录与评论数据可用，检查必需字段是否齐全\n- 逐条评论与产品目录做语义匹配，识别所有语义对应的 SKU\n- 对匹配多个 SKU 的评论，分别计入每个匹配 SKU，避免漏计\n- 汇总生成每 SKU 计数 JSON\n- 撰写简要状态说明，若存在阻塞则明确列出\n\n## Constraints\n\n- 不得因单条评论只计一次而漏计多 SKU 匹配\n- 不得从未提供的字段推断分类值\n- 必需字段缺失时应请求修正后的输入，而非继续处理不完整分类字段\n\n## Cautions\n\n- 评论可能同时提及多个商品，需防止漏计\n- 若分类字段缺失，应明确报告阻塞而非自行推断\n\n## Output Contract\n\n- 每 SKU 计数的 JSON 及简要状态说明；若存在阻塞，需清晰说明阻塞项以便快速补救。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 一条评论同时提及连帽衫与运动裤，二者均与产品目录中的不同 SKU 语义匹配。\n- Therapist/Output: 该评论分别计入连帽衫对应 SKU 与运动裤对应 SKU 的计数，各加一。\n- Notes: 体现多 SKU 匹配分别计入、避免漏计。",
+    "asset_type": "session_skill",
+    "granularity": "session",
+    "asset_node_id": "workflow_skill",
+    "asset_path": "family_root/macro_skill/workflow_skill",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "parent",
+    "objective": "产出准确的每 SKU 评论计数",
+    "domain": "数据运营",
+    "task_family": "语义匹配计数",
+    "method_family": "语义相似度匹配",
+    "stage": "计数汇总",
+    "applicable_signals": [
+      "评论文本可能同时提及多个商品（如连帽衫与运动裤同帖）",
+      "需要按 SKU 维度而非仅品牌维度汇总",
+      "存在产品目录可供语义比对"
+    ],
+    "contraindications": [
+      "评论与产品目录无对应关系",
+      "仅需品牌层面汇总"
+    ],
+    "intervention_moves": [
+      "逐条评论与产品目录做语义匹配",
+      "对匹配多个 SKU 的评论分别计入各 SKU",
+      "汇总每 SKU 计数并输出 JSON",
+      "附简要状态说明并明确阻塞项"
+    ],
+    "triggers": [
+      "需要按 SKU 统计评论提及量",
+      "评论可能同时提及多个商品",
+      "需要输出每 SKU 计数结果"
+    ],
+    "workflow_steps": [
+      "确认产品目录与评论数据可用，检查必需字段是否齐全",
+      "逐条评论与产品目录做语义匹配，识别所有语义对应的 SKU",
+      "对匹配多个 SKU 的评论，分别计入每个匹配 SKU，避免漏计",
+      "汇总生成每 SKU 计数 JSON",
+      "撰写简要状态说明，若存在阻塞则明确列出"
+    ],
+    "constraints": [
+      "不得因单条评论只计一次而漏计多 SKU 匹配",
+      "不得从未提供的字段推断分类值",
+      "必需字段缺失时应请求修正后的输入，而非继续处理不完整分类字段"
+    ],
+    "cautions": [
+      "评论可能同时提及多个商品，需防止漏计",
+      "若分类字段缺失，应明确报告阻塞而非自行推断"
+    ],
+    "output_contract": [
+      "每 SKU 计数的 JSON 及简要状态说明；若存在阻塞，需清晰说明阻塞项以便快速补救。"
+    ],
+    "examples": [
+      {
+        "input": "一条评论同时提及连帽衫与运动裤，二者均与产品目录中的不同 SKU 语义匹配。",
+        "output": "该评论分别计入连帽衫对应 SKU 与运动裤对应 SKU 的计数，各加一。",
+        "notes": "体现多 SKU 匹配分别计入、避免漏计。"
+      }
+    ],
+    "tags": [
+      "语义匹配",
+      "计数汇总",
+      "多SKU",
+      "数据运营"
+    ],
+    "support_ids": [
+      "2e9cd190-33d0-5f67-9736-15c46dfee8dd"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "a7501c47-f74c-5891-aae3-d12c4ae3e9e7"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||session_skill|session|workflow_skill|产出准确的每 sku 评论计数|数据运营|语义匹配计数|语义相似度匹配|计数汇总|多sku语义匹配计数"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

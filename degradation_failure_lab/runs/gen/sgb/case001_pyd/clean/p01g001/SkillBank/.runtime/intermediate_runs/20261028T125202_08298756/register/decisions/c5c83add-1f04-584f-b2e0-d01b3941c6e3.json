@@ -1,0 +1,117 @@
+{
+  "skill_id": "c5c83add-1f04-584f-b2e0-d01b3941c6e3",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "与同批候选 bfefe7d8-3421-5458-9efa-0bc78f7f439d（Pydantic 校验错误抛出规范）高度重叠，后者覆盖 ValueError/PydanticCustomError 选择与结构化错误报告，本候选无独立新增能力。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "c5c83add-1f04-584f-b2e0-d01b3941c6e3",
+    "name": "校验器异常抛出规范",
+    "description": "在 Pydantic 字段或模型校验器内，通过抛出 ValueError、AssertionError 或 PydanticCustomError 触发校验失败，并根据是否需要自定义错误信息选择异常类型。适用于编写校验器时需要拒绝非法值并报告校验错误的场景。",
+    "skill_body": "当在 Pydantic 校验器内需要拒绝非法值时，按以下步骤执行：1) 确认当前代码位于字段或模型校验器内；2) 若只需通用错误信息，抛出 ValueError；3) 若使用 assert 语句，注意其在 Python -O 优化模式下会被跳过，因此不要依赖 assert 作为唯一校验手段；4) 若需要自定义错误类型或更灵活的错误信息，使用 PydanticCustomError（从 pydantic_core 导入）；5) 确认非法输入会触发预期校验错误。\n\n## Objective\n\n在校验器内以正确异常类型触发校验失败\n## Applicable Signals\n\n- 校验器逻辑需要拒绝非法值\n- 需要自定义错误信息或错误类型\n- 需要在校验器中主动报告校验失败\n\n## Contraindications\n\n- 仅需内置字段约束即可表达规则\n- 在非校验器代码中处理业务异常\n\n## Intervention Moves\n\n- 在常见场景下抛出 ValueError\n- 使用 assert 语句时注意 -O 优化模式会跳过断言\n- 需要自定义错误类型时使用 PydanticCustomError\n\n## Workflow Steps\n\n- 确认代码位于字段或模型校验器内\n- 根据错误信息需求选择异常类型：ValueError、AssertionError 或 PydanticCustomError\n- 若使用 assert，评估 -O 优化模式下的跳过风险\n- 需要自定义错误类型时从 pydantic_core 导入 PydanticCustomError 并抛出\n- 验证非法输入产生预期校验错误\n\n## Constraints\n\n- 异常必须在校验器内抛出才能转化为校验错误\n- assert 语句在 Python -O 优化模式下会被跳过，不应作为唯一校验手段\n\n## Cautions\n\n- AssertionError 依赖 assert 语句，生产环境可能因优化标志失效\n- PydanticCustomError 写法更冗长，仅在需要额外灵活性时使用\n\n## Output Contract\n\n- 校验器在非法输入时抛出合适异常并产生预期校验错误\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 校验器需要拒绝非法值并给出通用错误\n- Therapist/Output: raise ValueError('invalid value')\n- Notes: ValueError 是最常见的校验器异常\n\n### Example 2\n\n- Client/Input: 校验器需要自定义错误类型\n- Therapist/Output: from pydantic_core import PydanticCustomError; raise PydanticCustomError('custom_error', 'message')\n- Notes: PydanticCustomError 提供额外灵活性",
+    "asset_type": "micro_skill",
+    "granularity": "micro",
+    "asset_node_id": "micro_skill_node",
+    "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+    "asset_level": 3,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在校验器内以正确异常类型触发校验失败",
+    "domain": "pydantic",
+    "task_family": "数据校验",
+    "method_family": "异常抛出",
+    "stage": "校验器实现",
+    "applicable_signals": [
+      "校验器逻辑需要拒绝非法值",
+      "需要自定义错误信息或错误类型",
+      "需要在校验器中主动报告校验失败"
+    ],
+    "contraindications": [
+      "仅需内置字段约束即可表达规则",
+      "在非校验器代码中处理业务异常"
+    ],
+    "intervention_moves": [
+      "在常见场景下抛出 ValueError",
+      "使用 assert 语句时注意 -O 优化模式会跳过断言",
+      "需要自定义错误类型时使用 PydanticCustomError"
+    ],
+    "triggers": [
+      "编写字段校验器需要拒绝非法值",
+      "编写模型校验器需要拒绝非法值",
+      "需要自定义校验错误信息或错误类型"
+    ],
+    "workflow_steps": [
+      "确认代码位于字段或模型校验器内",
+      "根据错误信息需求选择异常类型：ValueError、AssertionError 或 PydanticCustomError",
+      "若使用 assert，评估 -O 优化模式下的跳过风险",
+      "需要自定义错误类型时从 pydantic_core 导入 PydanticCustomError 并抛出",
+      "验证非法输入产生预期校验错误"
+    ],
+    "constraints": [
+      "异常必须在校验器内抛出才能转化为校验错误",
+      "assert 语句在 Python -O 优化模式下会被跳过，不应作为唯一校验手段"
+    ],
+    "cautions": [
+      "AssertionError 依赖 assert 语句，生产环境可能因优化标志失效",
+      "PydanticCustomError 写法更冗长，仅在需要额外灵活性时使用"
+    ],
+    "output_contract": [
+      "校验器在非法输入时抛出合适异常并产生预期校验错误"
+    ],
+    "examples": [
+      {
+        "input": "校验器需要拒绝非法值并给出通用错误",
+        "output": "raise ValueError('invalid value')",
+        "notes": "ValueError 是最常见的校验器异常"
+      },
+      {
+        "input": "校验器需要自定义错误类型",
+        "output": "from pydantic_core import PydanticCustomError; raise PydanticCustomError('custom_error', 'message')",
+        "notes": "PydanticCustomError 提供额外灵活性"
+      }
+    ],
+    "tags": [
+      "pydantic",
+      "validator",
+      "error-handling",
+      "validation"
+    ],
+    "support_ids": [
+      "b2548842-1554-56e0-965e-26308da45b96"
+    ],
+    "metadata": {
+      "risk_class": "low",
+      "source_draft_ids": [
+        "02afccde-3d02-5064-90a3-b225cf40462f"
+      ],
+      "support_summary": {
+        "support": 1,
+        "constraint": 0,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.8,
+      "domain_type": "pydantic",
+      "taxonomy_id": "pydantic",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|在校验器内以正确异常类型触发校验失败|pydantic|数据校验|异常抛出|校验器实现|校验器异常抛出规范"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

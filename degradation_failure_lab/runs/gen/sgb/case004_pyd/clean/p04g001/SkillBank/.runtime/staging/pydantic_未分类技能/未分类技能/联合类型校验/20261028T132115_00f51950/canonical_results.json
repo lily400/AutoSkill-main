@@ -1,0 +1,1032 @@
+{
+  "schema": "autoskill.document.staging.canonical_results.v1",
+  "profile_id": "pydantic::未分类技能",
+  "family_id": "未分类技能",
+  "child_type": "联合类型校验",
+  "run_id": "20261028T132115_00f51950",
+  "skills": [
+    {
+      "skill_id": "3df5f979-7629-5c57-8c24-746c21770722",
+      "name": "联合类型从左到右校验顺序控制",
+      "description": "解释并预测 Pydantic 联合类型按声明顺序从左到右依次尝试成员校验的行为，以及 lax 模式下类型转换导致的意外匹配；用于调试或设计含混合成员（如 int/str）的联合字段。",
+      "skill_body": "当需要解释联合类型为何返回非预期成员类型，或设计含 int/str 混合成员的联合字段时，按以下要点说明：联合类型按成员声明顺序从左到右依次尝试校验，第一个通过校验的成员即为结果；在 lax 模式下，字符串等输入可能被转换为更早声明的成员类型（如 '123' 被转换为 int），从而产生意外匹配。若需要确定性区分成员类型，应改用判别联合而非依赖顺序。\n\n## Objective\n\n理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱\n## Applicable Signals\n\n- 联合字段返回了与预期不同的成员类型\n- 联合成员包含可相互转换的类型（如 int 与 str）\n- 输入为数字字符串但结果被解析为 int\n\n## Contraindications\n\n- 需要确定性区分成员类型时应改用判别联合，而非依赖顺序校验\n\n## Intervention Moves\n\n- 说明联合类型按声明顺序从左到右尝试成员校验\n- 指出 lax 模式下字符串可被转换为更早声明的 int 成员\n- 建议在需要确定性区分时改用判别联合\n\n## Workflow Steps\n\n- 确认联合成员的声明顺序\n- 判断输入是否可被更早声明的成员在 lax 模式下转换\n- 解释实际匹配到的成员及原因\n- 若需确定性区分，建议改用判别联合\n\n## Constraints\n\n- 仅适用于解释或预测联合类型校验顺序与类型转换行为\n- 不替代判别联合等确定性区分方案\n\n## Cautions\n\n- lax 模式下的隐式类型转换可能导致与直觉不符的解析结果\n\n## Output Contract\n\n- 能说明联合类型按声明顺序尝试且 lax 模式会转换字符串为 int 的规则\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合字段声明为 int | str，输入为字符串 '123'，结果 id 为 int 类型\n- Therapist/Output: 因为联合按声明顺序先尝试 int 成员，lax 模式下 '123' 被转换为 int 并通过校验，故结果为 int 而非 str。\n- Notes: 体现从左到右顺序与 lax 类型转换的意外匹配",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "顺序校验规则",
+      "stage": "模型设计",
+      "applicable_signals": [
+        "联合字段返回了与预期不同的成员类型",
+        "联合成员包含可相互转换的类型（如 int 与 str）",
+        "输入为数字字符串但结果被解析为 int"
+      ],
+      "contraindications": [
+        "需要确定性区分成员类型时应改用判别联合，而非依赖顺序校验"
+      ],
+      "intervention_moves": [
+        "说明联合类型按声明顺序从左到右尝试成员校验",
+        "指出 lax 模式下字符串可被转换为更早声明的 int 成员",
+        "建议在需要确定性区分时改用判别联合"
+      ],
+      "triggers": [
+        "需要解释联合类型为何返回非预期成员类型",
+        "设计含 int/str 混合成员的联合字段",
+        "调试联合类型解析结果"
+      ],
+      "workflow_steps": [
+        "确认联合成员的声明顺序",
+        "判断输入是否可被更早声明的成员在 lax 模式下转换",
+        "解释实际匹配到的成员及原因",
+        "若需确定性区分，建议改用判别联合"
+      ],
+      "constraints": [
+        "仅适用于解释或预测联合类型校验顺序与类型转换行为",
+        "不替代判别联合等确定性区分方案"
+      ],
+      "cautions": [
+        "lax 模式下的隐式类型转换可能导致与直觉不符的解析结果"
+      ],
+      "output_contract": [
+        "能说明联合类型按声明顺序尝试且 lax 模式会转换字符串为 int 的规则"
+      ],
+      "examples": [
+        {
+          "input": "联合字段声明为 int | str，输入为字符串 '123'，结果 id 为 int 类型",
+          "output": "因为联合按声明顺序先尝试 int 成员，lax 模式下 '123' 被转换为 int 并通过校验，故结果为 int 而非 str。",
+          "notes": "体现从左到右顺序与 lax 类型转换的意外匹配"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "validation-order",
+        "lax-mode",
+        "type-coercion"
+      ],
+      "support_ids": [
+        "146cba65-2453-529b-a463-e35a98f44942"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "21864a50-10ff-5b07-affb-cddba5a590e3"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|理解并预测联合类型按声明顺序校验的行为及 lax 模式下的类型转换陷阱|pydantic|联合类型校验|顺序校验规则|模型设计|联合类型从左到右校验顺序控制",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+      "name": "联合类型精确度匹配评分",
+      "description": "说明 Pydantic 校验联合类型（Union）时如何按精确度对成员匹配打分并选出最佳匹配，用于判断或解释联合类型中哪个成员应胜出。",
+      "skill_body": "当需要判断联合类型多个成员中哪个匹配最优，或解释联合类型校验结果的选择依据时，按精确度评分规则对每个成员匹配打分：精确类型匹配得分最高，其次是在 strict 模式下会成功的匹配，再次是在 lax 模式下会成功的匹配；取得最高精确度得分的成员即为最佳匹配。仅用于联合类型匹配选择，不用于单类型校验或自定义判别器逻辑。\n\n## Objective\n\n按精确度评分规则确定联合类型的最佳匹配成员\n## Applicable Signals\n\n- 输入需要匹配多个候选类型之一\n- 需要说明为何某个联合成员被选中\n\n## Contraindications\n\n- 非联合类型的单类型校验\n- 需要自定义判别器逻辑而非精确度评分时\n\n## Intervention Moves\n\n- 对每个联合成员计算精确度得分\n- 按精确类型匹配 > strict 模式成功 > lax 模式成功排序\n- 选择得分最高的成员作为最佳匹配\n\n## Workflow Steps\n\n- 确认校验对象为联合类型且存在多个候选成员\n- 对每个成员判断匹配层级：精确类型匹配、strict 模式成功、lax 模式成功\n- 按层级从高到低赋分\n- 选出最高精确度得分的成员作为最佳匹配\n- 输出按精确度排序的成员匹配结论\n\n## Constraints\n\n- 评分仅依据三个精确度层级，不引入其他自定义权重\n- 仅在联合类型场景下应用\n\n## Cautions\n\n- 精确类型匹配优先于 strict 模式成功，strict 模式成功优先于 lax 模式成功\n- 若需自定义判别器逻辑，应改用判别联合而非精确度评分\n\n## Output Contract\n\n- 给出按精确度排序的成员匹配结论，并指明最佳匹配成员。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: int 输入匹配 float | int 联合类型\n- Therapist/Output: int 成员为精确类型匹配，得分最高，判定为最佳匹配。\n- Notes: 精确类型匹配优先于其他层级",
+      "asset_type": "knowledge_reference",
+      "granularity": "session",
+      "asset_node_id": "knowledge_reference_node",
+      "asset_path": "family_root/knowledge_reference_node",
+      "asset_level": 1,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 1.0,
+      "hierarchy_status": "root",
+      "visible_role": "leaf",
+      "objective": "按精确度评分规则确定联合类型的最佳匹配成员",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "精确度评分",
+      "stage": "匹配选择",
+      "applicable_signals": [
+        "输入需要匹配多个候选类型之一",
+        "需要说明为何某个联合成员被选中"
+      ],
+      "contraindications": [
+        "非联合类型的单类型校验",
+        "需要自定义判别器逻辑而非精确度评分时"
+      ],
+      "intervention_moves": [
+        "对每个联合成员计算精确度得分",
+        "按精确类型匹配 > strict 模式成功 > lax 模式成功排序",
+        "选择得分最高的成员作为最佳匹配"
+      ],
+      "triggers": [
+        "需要判断联合类型多个成员中哪个匹配最优",
+        "解释联合类型校验结果的选择依据"
+      ],
+      "workflow_steps": [
+        "确认校验对象为联合类型且存在多个候选成员",
+        "对每个成员判断匹配层级：精确类型匹配、strict 模式成功、lax 模式成功",
+        "按层级从高到低赋分",
+        "选出最高精确度得分的成员作为最佳匹配",
+        "输出按精确度排序的成员匹配结论"
+      ],
+      "constraints": [
+        "评分仅依据三个精确度层级，不引入其他自定义权重",
+        "仅在联合类型场景下应用"
+      ],
+      "cautions": [
+        "精确类型匹配优先于 strict 模式成功，strict 模式成功优先于 lax 模式成功",
+        "若需自定义判别器逻辑，应改用判别联合而非精确度评分"
+      ],
+      "output_contract": [
+        "给出按精确度排序的成员匹配结论，并指明最佳匹配成员。"
+      ],
+      "examples": [
+        {
+          "input": "int 输入匹配 float | int 联合类型",
+          "output": "int 成员为精确类型匹配，得分最高，判定为最佳匹配。",
+          "notes": "精确类型匹配优先于其他层级"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "exactness",
+        "匹配选择"
+      ],
+      "support_ids": [
+        "26404bea-5236-53ec-80a6-f3bba33795fc"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "1c73e9d3-2606-5f9a-81e1-791596fb67d1"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||knowledge_reference|session|knowledge_reference_node|按精确度评分规则确定联合类型的最佳匹配成员|pydantic|联合类型校验|精确度评分|匹配选择|联合类型精确度匹配评分",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 1.0,
+        "hierarchy_status": "root",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+      "name": "可调用判别器设计",
+      "description": "当联合成员之间没有统一判别字段时，编写可调用 Discriminator 函数，使其同时处理 dict 与模型实例输入，从而在验证与序列化阶段都能正确判别，避免序列化警告或运行时错误。",
+      "skill_body": "编写一个可调用判别器函数，用于联合类型中成员缺少统一判别字段的场景。函数需同时兼容 dict 输入与模型实例输入：对 dict 读取键值，对模型实例读取属性，返回对应成员的标签。设计时参照 mode='before' 校验器的思路，预先考虑多种输入形态，因为 Pydantic 在序列化阶段也会调用该判别器，此时输入很可能是模型实例。完成后确认函数在验证与序列化两条路径上均返回正确标签。\n\n## Objective\n\n实现兼容 dict 与模型输入的 callable discriminator\n## Applicable Signals\n\n- 联合成员缺少单一统一判别字段\n- 需要在序列化阶段也能正确判别\n\n## Contraindications\n\n- 存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器\n- 判别逻辑仅需处理单一输入形态时，无需引入可调用判别器\n\n## Intervention Moves\n\n- 确认联合成员间不存在可直接使用的统一 Literal 判别字段\n- 编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值\n- 返回与目标成员对应的标签\n- 在验证与序列化两条路径上验证判别结果\n\n## Workflow Steps\n\n- 检查联合成员，确认没有单一统一字段可作为字符串判别器\n- 设计判别函数签名，使其接受 dict 或模型实例\n- 在函数内分支处理：dict 走键访问，模型实例走属性访问\n- 返回对应成员的标签值\n- 分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误\n\n## Constraints\n\n- 判别函数必须同时处理 dict 与模型实例输入\n- 不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误\n\n## Cautions\n\n- Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例\n- 若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误\n\n## Output Contract\n\n- 一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。\n- Therapist/Output: 编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。\n- Notes: 参照 mode='before' 校验器的思路，预先考虑多种输入形态。",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+      "parent_candidate_ids": [
+        "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.82,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "实现兼容 dict 与模型输入的 callable discriminator",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "可调用判别器",
+      "stage": "判别逻辑实现",
+      "applicable_signals": [
+        "联合成员缺少单一统一判别字段",
+        "需要在序列化阶段也能正确判别"
+      ],
+      "contraindications": [
+        "存在可直接使用的统一 Literal 判别字段时，应改用 Field(discriminator=...) 的字符串判别器",
+        "判别逻辑仅需处理单一输入形态时，无需引入可调用判别器"
+      ],
+      "intervention_moves": [
+        "确认联合成员间不存在可直接使用的统一 Literal 判别字段",
+        "编写判别函数，对 dict 输入按键取值、对模型实例输入按属性取值",
+        "返回与目标成员对应的标签",
+        "在验证与序列化两条路径上验证判别结果"
+      ],
+      "triggers": [
+        "联合成员之间没有单一统一判别字段",
+        "需要在序列化阶段也能正确判别联合成员",
+        "准备为 Union 配置 callable Discriminator"
+      ],
+      "workflow_steps": [
+        "检查联合成员，确认没有单一统一字段可作为字符串判别器",
+        "设计判别函数签名，使其接受 dict 或模型实例",
+        "在函数内分支处理：dict 走键访问，模型实例走属性访问",
+        "返回对应成员的标签值",
+        "分别以 dict 输入和模型实例输入测试，确认验证与序列化均无警告或运行时错误"
+      ],
+      "constraints": [
+        "判别函数必须同时处理 dict 与模型实例输入",
+        "不得假设输入仅为 dict，否则序列化阶段可能产生警告或运行时错误"
+      ],
+      "cautions": [
+        "Pydantic 在序列化时也会调用可调用判别器，此时输入很可能是模型实例",
+        "若未兼顾模型实例输入，最好情况是序列化警告，最坏情况是验证期间运行时错误"
+      ],
+      "output_contract": [
+        "一个对 dict 和模型实例均能返回正确标签的判别函数，且在验证与序列化路径上均无警告或运行时错误。"
+      ],
+      "examples": [
+        {
+          "input": "联合成员为多个模型，彼此没有统一判别字段，需要为其配置 callable Discriminator。",
+          "output": "编写判别函数：输入为 dict 时按键读取判别值，输入为模型实例时按属性读取判别值，返回对应成员标签。",
+          "notes": "参照 mode='before' 校验器的思路，预先考虑多种输入形态。"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "callable",
+        "serialization"
+      ],
+      "support_ids": [
+        "119de05c-37c6-55ca-8414-1aa8724e07e1"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "cd2f99f3-ed69-51f1-9f04-a57aef19d8e7"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|实现兼容 dict 与模型输入的 callable discriminator|pydantic|联合类型校验|可调用判别器|判别逻辑实现|可调用判别器设计",
+        "change_action": "create",
+        "llm_reason": "Distinct micro-skill on writing callable discriminators that handle both dict and model-instance inputs; complements peer candidates (unknown-tag None handling, generic extraction, string discriminator declaration) without redundancy.",
+        "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+        "parent_candidate_ids": [
+          "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+        ],
+        "hierarchy_confidence": 0.82,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+      "name": "可调用判别器联合类型校验",
+      "description": "使用 callable Discriminator 配合 Tag 注解，将联合类型按运行时类型分派到对应成员进行校验。适用于联合成员无法用单一字符串字段区分、需要自定义判别逻辑的场景。",
+      "skill_body": "为联合类型字段配置可调用判别器：定义判别函数，按运行时类型返回对应 Tag 标签；用 Annotated 将各联合成员标注 Tag，并用 Discriminator 包裹整个联合；判别值未找到时返回 None。随后用 model_validate 验证不同输入能分派到正确成员。\n\n## Objective\n\n为联合类型字段配置可调用判别器，实现按运行时类型分派校验\n## Applicable Signals\n\n- 联合成员需按运行时类型（如 int 与 dict/BaseModel）区分\n- 字符串判别字段无法覆盖判别逻辑\n\n## Contraindications\n\n- 联合成员可用单一字符串字段直接区分时优先用 str 判别器\n- 判别函数无法稳定返回标签时\n\n## Intervention Moves\n\n- 定义判别函数，按 isinstance 判断运行时类型并返回对应标签\n- 判别值未找到时返回 None\n- 用 Annotated 为每个联合成员标注 Tag\n- 用 Discriminator 包裹联合并传入判别函数\n- 用 model_validate 验证不同输入分派到正确成员\n\n## Workflow Steps\n\n- 定义判别函数，按运行时类型返回对应标签字符串\n- 判别值未找到时返回 None\n- 用 Annotated 为每个联合成员标注 Tag\n- 用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型\n- 用 model_validate 验证不同输入分派到正确成员实例\n\n## Constraints\n\n- 判别函数必须对每个可接受输入返回稳定标签\n- 判别值未找到时应返回 None 而非抛出异常\n\n## Cautions\n\n- 判别函数返回 None 时会触发 union_tag_not_found 错误\n\n## Output Contract\n\n- 带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: value 字段联合 int 与 SpecialValue，判别函数按 isinstance 返回 'int' 或 'model'\n- Therapist/Output: 输入 {'value': {'value': 1}} 得到 SpecialValue(value=1)；输入 {'value': 123} 得到 123\n- Notes: 判别值未找到时返回 None，触发 union_tag_not_found",
+      "asset_type": "session_skill",
+      "granularity": "session",
+      "asset_node_id": "workflow_skill",
+      "asset_path": "family_root/macro_skill/workflow_skill",
+      "asset_level": 2,
+      "parent_skill_id": "",
+      "parent_candidate_ids": [],
+      "child_skill_ids": [
+        "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+        "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+        "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a"
+      ],
+      "hierarchy_confidence": 0.0,
+      "hierarchy_status": "parent",
+      "visible_role": "parent",
+      "objective": "为联合类型字段配置可调用判别器，实现按运行时类型分派校验",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "判别器分派",
+      "stage": "模型定义与校验",
+      "applicable_signals": [
+        "联合成员需按运行时类型（如 int 与 dict/BaseModel）区分",
+        "字符串判别字段无法覆盖判别逻辑"
+      ],
+      "contraindications": [
+        "联合成员可用单一字符串字段直接区分时优先用 str 判别器",
+        "判别函数无法稳定返回标签时"
+      ],
+      "intervention_moves": [
+        "定义判别函数，按 isinstance 判断运行时类型并返回对应标签",
+        "判别值未找到时返回 None",
+        "用 Annotated 为每个联合成员标注 Tag",
+        "用 Discriminator 包裹联合并传入判别函数",
+        "用 model_validate 验证不同输入分派到正确成员"
+      ],
+      "triggers": [
+        "联合成员需按运行时类型（如 int 与 dict/BaseModel）区分",
+        "字符串判别字段无法覆盖判别逻辑"
+      ],
+      "workflow_steps": [
+        "定义判别函数，按运行时类型返回对应标签字符串",
+        "判别值未找到时返回 None",
+        "用 Annotated 为每个联合成员标注 Tag",
+        "用 Annotated 将联合与 Discriminator(判别函数) 组合为字段类型",
+        "用 model_validate 验证不同输入分派到正确成员实例"
+      ],
+      "constraints": [
+        "判别函数必须对每个可接受输入返回稳定标签",
+        "判别值未找到时应返回 None 而非抛出异常"
+      ],
+      "cautions": [
+        "判别函数返回 None 时会触发 union_tag_not_found 错误"
+      ],
+      "output_contract": [
+        "带 Discriminator 与 Tag 注解的联合字段模型，能正确校验并返回对应成员实例"
+      ],
+      "examples": [
+        {
+          "input": "value 字段联合 int 与 SpecialValue，判别函数按 isinstance 返回 'int' 或 'model'",
+          "output": "输入 {'value': {'value': 1}} 得到 SpecialValue(value=1)；输入 {'value': 123} 得到 123",
+          "notes": "判别值未找到时返回 None，触发 union_tag_not_found"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "callable",
+        "tag"
+      ],
+      "support_ids": [
+        "c94da646-7dcd-5dc2-ae1e-e511b06cfec8"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "65966fab-f30e-5588-ad70-71b55dd3b75d"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.85,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||session_skill|session|workflow_skill|为联合类型字段配置可调用判别器，实现按运行时类型分派校验|pydantic|联合类型校验|判别器分派|模型定义与校验|可调用判别器联合类型校验",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "",
+        "parent_candidate_ids": [],
+        "hierarchy_confidence": 0.0,
+        "hierarchy_status": "parent",
+        "visible_role": "parent",
+        "child_skill_ids": [
+          "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+          "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+          "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a"
+        ]
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+      "name": "Callable Discriminator Returns None for Unknown Tags",
+      "description": "When writing a callable Discriminator for a Pydantic union, explicitly return None for input types not covered by known branches so that a union_tag_not_found error is raised, and ensure the caller handles that error.",
+      "skill_body": "When writing a callable discriminator for a Pydantic union, cover all known input types and return their corresponding tags. For any input type not covered, explicitly return None in an else branch rather than raising another exception or returning an arbitrary default tag. Expect that returning None raises a union_tag_not_found error, and ensure the calling code anticipates and handles that error.\n\n## Objective\n\nReturn None from a callable discriminator for unknown input types and expect a union_tag_not_found error\n## Applicable Signals\n\n- 判别函数遇到未覆盖的输入类型\n- 需要明确未知判别值的失败行为\n\n## Contraindications\n\n- 判别逻辑已保证覆盖所有输入类型时\n\n## Intervention Moves\n\n- 在判别函数末尾添加返回 None 的分支\n- 确认已知类型分支返回对应标签\n- 调用方捕获 union_tag_not_found 错误\n\n## Workflow Steps\n\n- 检查判别函数是否覆盖所有已知输入类型并返回对应标签\n- 为未覆盖的输入类型添加显式返回 None 的分支\n- 在调用方预期并捕获 union_tag_not_found 错误\n\n## Constraints\n\n- 判别函数在无法确定标签时必须返回 None，而非抛出其他异常或返回任意默认标签\n\n## Cautions\n\n- 返回 None 会触发 union_tag_not_found 错误，需确保调用方已处理该错误\n\n## Output Contract\n\n- 判别函数在未知分支返回 None，调用方捕获 union_tag_not_found 错误\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 判别函数仅处理 int 与 dict/BaseModel，其他类型未覆盖\n- Therapist/Output: 在 else 分支返回 None，触发 union_tag_not_found 错误\n- Notes: 显式处理未知类型分支",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+      "parent_candidate_ids": [
+        "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.9,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "Return None from a callable discriminator for unknown input types and expect a union_tag_not_found error",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "错误处理",
+      "stage": "校验失败处理",
+      "applicable_signals": [
+        "判别函数遇到未覆盖的输入类型",
+        "需要明确未知判别值的失败行为"
+      ],
+      "contraindications": [
+        "判别逻辑已保证覆盖所有输入类型时"
+      ],
+      "intervention_moves": [
+        "在判别函数末尾添加返回 None 的分支",
+        "确认已知类型分支返回对应标签",
+        "调用方捕获 union_tag_not_found 错误"
+      ],
+      "triggers": [
+        "判别函数遇到未覆盖的输入类型",
+        "需要明确未知判别值的失败行为"
+      ],
+      "workflow_steps": [
+        "检查判别函数是否覆盖所有已知输入类型并返回对应标签",
+        "为未覆盖的输入类型添加显式返回 None 的分支",
+        "在调用方预期并捕获 union_tag_not_found 错误"
+      ],
+      "constraints": [
+        "判别函数在无法确定标签时必须返回 None，而非抛出其他异常或返回任意默认标签"
+      ],
+      "cautions": [
+        "返回 None 会触发 union_tag_not_found 错误，需确保调用方已处理该错误"
+      ],
+      "output_contract": [
+        "判别函数在未知分支返回 None，调用方捕获 union_tag_not_found 错误"
+      ],
+      "examples": [
+        {
+          "input": "判别函数仅处理 int 与 dict/BaseModel，其他类型未覆盖",
+          "output": "在 else 分支返回 None，触发 union_tag_not_found 错误",
+          "notes": "显式处理未知类型分支"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "error-handling"
+      ],
+      "support_ids": [
+        "a80204c1-b5b6-5b69-a620-e3cf7b420ba2"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "1eed385c-5adf-541a-b7c4-d188099c3111"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|return none from a callable discriminator for unknown input types and expect a union_tag_not_found error|pydantic|联合类型校验|错误处理|校验失败处理|callable discriminator returns none for unknown tags",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+        "parent_candidate_ids": [
+          "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+        ],
+        "hierarchy_confidence": 0.9,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a",
+      "name": "字符串判别器字段声明",
+      "description": "在 Pydantic 模型定义中，为联合字段声明字符串判别器（str discriminator），使校验时按标签字段分派到对应联合成员。适用于联合成员可由单一字符串字段区分的场景，提供 Field(discriminator=...) 与 Annotated 两种声明语法。",
+      "skill_body": "当联合字段的各成员可通过一个字符串标签字段区分时，使用本技能声明判别器。\n\n执行要点：\n1. 确认联合成员各自拥有一个可区分的字符串标签字段（判别字段）。\n2. 选择声明语法：\n   - 直接字段声明：some_field: Union[...] = Field(discriminator='my_discriminator')\n   - Annotated 模式：some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n3. 判别器参数值必须与各成员中用于分派的标签字段名一致。\n4. 若判别依赖运行时类型而非字段值，改用 callable Discriminator，不要使用本技能。\n5. 声明后通过 model_validate 验证：输入应被分派到正确的联合成员。\n\n## Objective\n\n为联合字段声明字符串判别器，实现按标签字段分派校验\n## Applicable Signals\n\n- 联合成员各自带有可区分的字符串标签字段\n- 需要以声明式语法指定判别器\n- 希望避免运行时类型判断逻辑\n\n## Contraindications\n\n- 判别需依赖运行时类型而非字段值时，应改用 callable Discriminator\n- 联合成员缺少可区分的字符串标签字段时\n\n## Intervention Moves\n\n- 识别联合成员中的判别字段\n- 选择 Field(discriminator=...) 或 Annotated 声明语法\n- 将判别器参数设为对应标签字段名\n- 用 model_validate 验证分派结果\n\n## Workflow Steps\n\n- 确认联合成员可通过单一字符串字段区分\n- 选择声明语法：some_field: Union[...] = Field(discriminator='my_discriminator') 或 some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n- 确保判别器参数值与成员标签字段名一致\n- 通过 model_validate 验证输入被分派到正确成员\n\n## Constraints\n\n- 判别器参数值必须与成员中用于分派的标签字段名一致\n- 仅在判别依据为字段值时使用；运行时类型判别应使用 callable Discriminator\n\n## Cautions\n\n- 若判别值未找到，校验会失败；需确保输入包含有效标签字段\n\n## Output Contract\n\n- 带 discriminator 参数的联合字段声明，校验时按标签字段分派到对应联合成员\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: some_field: Union[...] = Field(discriminator='my_discriminator')\n- Therapist/Output: 联合字段按 my_discriminator 标签字段分派校验\n- Notes: 直接字段声明语法\n\n### Example 2\n\n- Client/Input: some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]\n- Therapist/Output: 联合字段按 my_discriminator 标签字段分派校验\n- Notes: Annotated 模式，便于将 Union 与 discriminator 信息归组",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "933c98e2-d5e4-54c4-9a7d-ec0587081593",
+      "parent_candidate_ids": [
+        "933c98e2-d5e4-54c4-9a7d-ec0587081593",
+        "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.72,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "为联合字段声明字符串判别器，实现按标签字段分派校验",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "判别器声明",
+      "stage": "模型定义",
+      "applicable_signals": [
+        "联合成员各自带有可区分的字符串标签字段",
+        "需要以声明式语法指定判别器",
+        "希望避免运行时类型判断逻辑"
+      ],
+      "contraindications": [
+        "判别需依赖运行时类型而非字段值时，应改用 callable Discriminator",
+        "联合成员缺少可区分的字符串标签字段时"
+      ],
+      "intervention_moves": [
+        "识别联合成员中的判别字段",
+        "选择 Field(discriminator=...) 或 Annotated 声明语法",
+        "将判别器参数设为对应标签字段名",
+        "用 model_validate 验证分派结果"
+      ],
+      "triggers": [
+        "联合字段的成员可通过单一字符串字段区分",
+        "需要简洁的判别器声明语法",
+        "希望用 Field(discriminator=...) 或 Annotated 模式声明判别器"
+      ],
+      "workflow_steps": [
+        "确认联合成员可通过单一字符串字段区分",
+        "选择声明语法：some_field: Union[...] = Field(discriminator='my_discriminator') 或 some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]",
+        "确保判别器参数值与成员标签字段名一致",
+        "通过 model_validate 验证输入被分派到正确成员"
+      ],
+      "constraints": [
+        "判别器参数值必须与成员中用于分派的标签字段名一致",
+        "仅在判别依据为字段值时使用；运行时类型判别应使用 callable Discriminator"
+      ],
+      "cautions": [
+        "若判别值未找到，校验会失败；需确保输入包含有效标签字段"
+      ],
+      "output_contract": [
+        "带 discriminator 参数的联合字段声明，校验时按标签字段分派到对应联合成员"
+      ],
+      "examples": [
+        {
+          "input": "some_field: Union[...] = Field(discriminator='my_discriminator')",
+          "output": "联合字段按 my_discriminator 标签字段分派校验",
+          "notes": "直接字段声明语法"
+        },
+        {
+          "input": "some_field: Annotated[Union[...], Field(discriminator='my_discriminator')]",
+          "output": "联合字段按 my_discriminator 标签字段分派校验",
+          "notes": "Annotated 模式，便于将 Union 与 discriminator 信息归组"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "discriminator",
+        "str-discriminator",
+        "model-definition"
+      ],
+      "support_ids": [
+        "9f372687-7a80-5ee3-b90e-37de244c8cb3"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "41861892-bce6-5286-a8ad-f621b883461e"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.75,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|为联合字段声明字符串判别器，实现按标签字段分派校验|pydantic|联合类型校验|判别器声明|模型定义|字符串判别器字段声明",
+        "change_action": "create",
+        "llm_reason": "create",
+        "parent_skill_id": "933c98e2-d5e4-54c4-9a7d-ec0587081593",
+        "parent_candidate_ids": [
+          "933c98e2-d5e4-54c4-9a7d-ec0587081593",
+          "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+        ],
+        "hierarchy_confidence": 0.72,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    },
+    {
+      "skill_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+      "name": "TypeAdapter 校验纯联合类型",
+      "description": "当校验目标仅为联合类型本身、且不希望继承 BaseModel 时，使用 TypeAdapter 包装联合类型并调用 validate_python 对数据执行校验，返回解析后的具体联合成员实例。",
+      "skill_body": "确认校验目标是一个联合类型（而非完整模型字段）。用 TypeAdapter 包装该联合类型构造适配器，调用 validate_python 传入待校验数据，返回解析后的具体联合成员实例。若联合为可辨识联合，确保判别字段存在且取值匹配。\n\n## Objective\n\n用 TypeAdapter 对纯联合类型执行校验\n## Applicable Signals\n\n- 校验目标仅为联合类型本身\n- 不希望继承 BaseModel\n- 已有联合类型定义但无外层模型承载\n\n## Contraindications\n\n- 需要完整模型字段校验\n- 已有 BaseModel 承载该字段\n\n## Intervention Moves\n\n- 用 TypeAdapter 包装联合类型构造适配器\n- 调用 validate_python 传入待校验数据\n- 返回解析后的具体联合成员实例\n\n## Workflow Steps\n\n- 确认校验目标为联合类型本身而非完整模型\n- 用 TypeAdapter(联合类型) 构造适配器\n- 调用 type_adapter.validate_python(数据)\n- 返回解析后的具体联合成员实例\n\n## Constraints\n\n- 仅用于纯联合类型校验，不替代 BaseModel 字段校验\n- 若为可辨识联合，判别字段须存在且取值匹配\n\n## Cautions\n\n- 联合校验错误信息可能较冗长，可考虑可辨识联合简化错误\n\n## Output Contract\n\n- 返回解析后的具体联合成员实例\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: type_adapter = TypeAdapter(Pet); type_adapter.validate_python({'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'})\n- Therapist/Output: BlackCat(pet_type='cat', color='black', black_name='felix')\n- Notes: Pet 为嵌套可辨识联合类型",
+      "asset_type": "micro_skill",
+      "granularity": "micro",
+      "asset_node_id": "micro_skill_node",
+      "asset_path": "family_root/macro_skill/workflow_skill/micro_skill_node",
+      "asset_level": 3,
+      "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+      "parent_candidate_ids": [
+        "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+      ],
+      "child_skill_ids": [],
+      "hierarchy_confidence": 0.6,
+      "hierarchy_status": "linked",
+      "visible_role": "leaf",
+      "objective": "用 TypeAdapter 对纯联合类型执行校验",
+      "domain": "pydantic",
+      "task_family": "联合类型校验",
+      "method_family": "TypeAdapter",
+      "stage": "数据校验",
+      "applicable_signals": [
+        "校验目标仅为联合类型本身",
+        "不希望继承 BaseModel",
+        "已有联合类型定义但无外层模型承载"
+      ],
+      "contraindications": [
+        "需要完整模型字段校验",
+        "已有 BaseModel 承载该字段"
+      ],
+      "intervention_moves": [
+        "用 TypeAdapter 包装联合类型构造适配器",
+        "调用 validate_python 传入待校验数据",
+        "返回解析后的具体联合成员实例"
+      ],
+      "triggers": [
+        "需要校验的数据目标仅为联合类型本身",
+        "不希望为校验而继承 BaseModel",
+        "需要对联合类型单独执行 validate_python"
+      ],
+      "workflow_steps": [
+        "确认校验目标为联合类型本身而非完整模型",
+        "用 TypeAdapter(联合类型) 构造适配器",
+        "调用 type_adapter.validate_python(数据)",
+        "返回解析后的具体联合成员实例"
+      ],
+      "constraints": [
+        "仅用于纯联合类型校验，不替代 BaseModel 字段校验",
+        "若为可辨识联合，判别字段须存在且取值匹配"
+      ],
+      "cautions": [
+        "联合校验错误信息可能较冗长，可考虑可辨识联合简化错误"
+      ],
+      "output_contract": [
+        "返回解析后的具体联合成员实例"
+      ],
+      "examples": [
+        {
+          "input": "type_adapter = TypeAdapter(Pet); type_adapter.validate_python({'pet_type': 'cat', 'color': 'black', 'black_name': 'felix'})",
+          "output": "BlackCat(pet_type='cat', color='black', black_name='felix')",
+          "notes": "Pet 为嵌套可辨识联合类型"
+        }
+      ],
+      "tags": [
+        "pydantic",
+        "union",
+        "TypeAdapter",
+        "validation"
+      ],
+      "support_ids": [
+        "52871143-3b70-5022-a1fd-af6ce48fbc55"
+      ],
+      "metadata": {
+        "risk_class": "low",
+        "source_draft_ids": [
+          "565b2424-8f94-56bd-a680-c1eb1098da78"
+        ],
+        "support_summary": {
+          "support": 1,
+          "constraint": 0,
+          "conflict": 0,
+          "case_variant": 0
+        },
+        "files": {},
+        "resources": {},
+        "confidence": 0.8,
+        "domain_type": "pydantic",
+        "taxonomy_id": "pydantic",
+        "family_name": "未分类技能",
+        "family_id": "",
+        "profile_id": "pydantic::未分类技能",
+        "domain_root_name": "通用技能领域",
+        "domain_root_id": "default",
+        "taxonomy_axis": "",
+        "family_bucket_label": "Family技能",
+        "visible_levels": {
+          "root_label": "总技能",
+          "family_bucket_label": "Family技能",
+          "level_labels": {
+            "1": "一级技能",
+            "2": "二级技能",
+            "3": "微技能"
+          }
+        },
+        "identity_key": "pydantic|||micro_skill|micro|micro_skill_node|用 typeadapter 对纯联合类型执行校验|pydantic|联合类型校验|typeadapter|数据校验|typeadapter 校验纯联合类型",
+        "change_action": "create",
+        "llm_reason": "TypeAdapter 校验纯联合类型是独立且可执行的微技能，与同批判别器类技能无冗余，支持证据无冲突。",
+        "parent_skill_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+        "parent_candidate_ids": [
+          "556b9c81-2257-59a9-9233-b7eab81bd6d8"
+        ],
+        "hierarchy_confidence": 0.6,
+        "hierarchy_status": "linked",
+        "visible_role": "leaf"
+      },
+      "version": "0.1.0",
+      "status": "active"
+    }
+  ],
+  "change_logs": [
+    {
+      "change_id": "c6532dad-e8f0-4090-90ca-33313334ea67",
+      "entity_type": "skill",
+      "entity_id": "3df5f979-7629-5c57-8c24-746c21770722",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "3df5f979-7629-5c57-8c24-746c21770722",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "146cba65-2453-529b-a463-e35a98f44942"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "7cb8cc3e-27a5-4c28-93bf-fc9ef837c2ec",
+      "entity_type": "skill",
+      "entity_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "5faaba9c-de9a-593e-b531-bc2479e25d36",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "26404bea-5236-53ec-80a6-f3bba33795fc"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "b2d99df2-f29a-478f-8959-59154df04134",
+      "entity_type": "skill",
+      "entity_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "Distinct micro-skill on writing callable discriminators that handle both dict and model-instance inputs; complements peer candidates (unknown-tag None handling, generic extraction, string discriminator declaration) without redundancy.",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "f2ee54d4-9dd0-5a47-9012-d0e239e70e9a",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "119de05c-37c6-55ca-8414-1aa8724e07e1"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "afb39506-b412-48e2-b0e5-7ceebf111e0d",
+      "entity_type": "skill",
+      "entity_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "556b9c81-2257-59a9-9233-b7eab81bd6d8",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "c94da646-7dcd-5dc2-ae1e-e511b06cfec8"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "8e3cc682-19db-4550-b00b-5c28ffdfe31e",
+      "entity_type": "skill",
+      "entity_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "a43912b0-2bb6-56a5-a243-b84dcdacbcc6",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "a80204c1-b5b6-5b69-a620-e3cf7b420ba2"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "a16c49cd-e35c-4b05-83a3-d2e4cb04e032",
+      "entity_type": "skill",
+      "entity_id": "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "create",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "dbee85ed-4cc4-53bf-a0b0-a1d98c51007a",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "9f372687-7a80-5ee3-b90e-37de244c8cb3"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    },
+    {
+      "change_id": "d106dcdb-c603-4560-9324-0cdf0dc5ce7f",
+      "entity_type": "skill",
+      "entity_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+      "action": "create",
+      "changed_at": "2026-10-28T05:20:29+00:00",
+      "from_version": "",
+      "to_version": "0.1.0",
+      "from_state": "",
+      "to_state": "active",
+      "summary": "TypeAdapter 校验纯联合类型是独立且可执行的微技能，与同批判别器类技能无冗余，支持证据无冲突。",
+      "related_entity_ids": [],
+      "provenance": {
+        "entity_type": "skill",
+        "entity_id": "2a47f56f-2ee0-5cb8-80c8-ed41f07d7ffc",
+        "doc_ids": [
+          "1d31929f-7c28-5538-8026-89e5fc796f73"
+        ],
+        "support_added": [
+          "52871143-3b70-5022-a1fd-af6ce48fbc55"
+        ],
+        "support_conflicts": [],
+        "related_entity_ids": []
+      }
+    }
+  ]
+}

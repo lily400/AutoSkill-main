@@ -1,0 +1,19 @@
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are AutoSkill4Doc's hierarchy linker.\nTask: attach one child skill to the best broader parent candidate.\nRules:\n- Choose ONLY one parent_skill_id from parent_candidates when a clear broader parent exists.\n- Parent must be a broader reusable skill that should call or contain the child skill.\n- allowed_parent_nodes is a hard constraint; never attach outside that set.\n- Prefer a parent whose workflow has a natural handoff point for the child and whose output or stage makes the child callable as a sub-skill.\n- Do not attach merely because domain, family, or wording is similar.\n- Prefer defer when multiple parents are similarly plausible or when the best score is still weak.\n- If no parent is clearly suitable, return decision=defer.\n- Do not invent ids.\nReturn ONLY strict JSON:\n{\n  \"decision\": \"attach\"|\"defer\",\n  \"parent_skill_id\": \"candidate-id-or-empty\",\n  \"confidence\": 0.0,\n  \"reason\": \"short reason\"\n}\n"
+    },
+    {
+      "role": "user",
+      "content": "{\"child_skill\": {\"skill_id\": \"688b17b0-4bcf-5eb2-879a-50609da68fe0\", \"name\": \"Pydantic 模型级 before/after 校验器实现\", \"asset_type\": \"micro_skill\", \"asset_node_id\": \"micro_skill_node\", \"asset_level\": 3, \"objective\": \"实现模型级 before/after 校验并正确处理原始输入\", \"applicable_signals\": [\"约束涉及多个字段或整个模型\", \"需要在字段校验之前检查原始输入中是否包含禁止字段\", \"需要在字段校验之后对已解析模型做整体校验\"], \"contraindications\": [\"仅涉及单字段校验\", \"无需访问原始输入数据\"], \"workflow_steps\": [\"确定约束是模型级还是字段级，模型级才使用 model_validator\", \"根据是否需要访问原始输入选择 mode='before'，否则选择 mode='after'\", \"before 校验器将 data 参数标注为 Any，并先判断类型（如 isinstance(data, dict)）再访问键\", \"在检测到违规时抛出 ValueError 并给出明确信息\", \"校验通过时返回 data\"], \"constraints\": [\"before 校验器接收的原始输入不一定是字典，需先判断类型\", \"校验失败应通过抛出 ValueError 终止校验\"], \"triggers\": [\"需要跨字段或整体模型约束校验\", \"需要在 Pydantic 处理前后介入校验\"], \"output_contract\": [\"可运行的 model_validator 实现，含 before/after 模式与类型处理\"]}, \"allowed_parent_nodes\": [\"workflow_skill\"], \"parent_candidates\": [{\"skill_id\": \"4641701b-2dc0-5429-a380-d65c1c0ec55d\", \"name\": \"Pydantic 模型级校验器与 ValidationInfo 使用\", \"asset_node_id\": \"workflow_skill\", \"asset_level\": 2, \"objective\": \"实现模型级校验并正确读取校验信息与上下文\", \"applicable_signals\": [\"校验规则涉及两个及以上字段的相互依赖\", \"校验需要读取已校验字段数据（data）\", \"校验需要读取外部传入的校验上下文（context）\"], \"workflow_steps\": [\"判断校验是否确需跨字段依赖或访问校验上下文\", \"在模型中定义模型级校验器（annotated 或 decorator 模式）\", \"在校验器中通过 ValidationInfo 读取所需字段数据（data）与上下文（context）\", \"当校验条件不满足时抛出校验错误\", \"构造模型实例验证校验器按预期工作\"], \"output_contract\": [\"可运行的模型校验器，正确使用 ValidationInfo 数据与上下文，并在条件不满足时产生校验错误\"], \"score\": 0.41034971665914804}]}"
+    }
+  ],
+  "temperature": 0.0,
+  "stream": false,
+  "max_tokens": 128,
+  "thinking": {
+    "type": "disabled"
+  }
+}

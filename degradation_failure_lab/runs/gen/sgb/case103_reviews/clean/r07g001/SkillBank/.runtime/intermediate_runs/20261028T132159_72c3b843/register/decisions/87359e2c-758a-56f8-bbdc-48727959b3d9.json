@@ -1,0 +1,105 @@
+{
+  "skill_id": "87359e2c-758a-56f8-bbdc-48727959b3d9",
+  "action": "discard",
+  "matched_skill_ids": [],
+  "reason": "该候选与同批次多个候选（3a5a6ffa、4e47719c、c7f3c46b）高度重复，均为输入校验与异常处理的微安全规则，缺乏独立区分度，保留会造成冗余。",
+  "split_parent_id": "",
+  "skill": {
+    "skill_id": "87359e2c-758a-56f8-bbdc-48727959b3d9",
+    "name": "无效或不完整输入处理",
+    "description": "当输入缺失、格式错误或产品目录JSON校验失败时，按既定规则执行合规的异常处理并给出规范输出，保障流程在异常输入下的稳健性。",
+    "skill_body": "在开始匹配、分类或计数任务前，先校验输入是否完整且格式有效。若输入缺失、格式不符合要求，或产品目录JSON校验失败，则停止后续处理，按既定规则输出规范的错误或降级处理结果，不要臆造缺失数据或继续执行下游任务。\n\n## Objective\n\n在输入无效或不完整时执行合规处理\n## Applicable Signals\n\n- 待处理输入为空或缺少必需字段\n- 输入格式与要求不符\n- 产品目录JSON无法通过校验\n\n## Contraindications\n\n- 输入完整且格式有效时无需触发本规则\n\n## Intervention Moves\n\n- 校验输入完整性与格式\n- 校验产品目录JSON有效性\n- 在异常时停止下游任务并输出规范错误或降级结果\n\n## Workflow Steps\n\n- 检查输入是否存在且包含必需内容\n- 检查输入格式是否符合要求\n- 校验产品目录JSON是否有效\n- 若任一校验失败，停止后续匹配、分类或计数任务\n- 按既定规则输出规范的错误或降级处理结果\n\n## Constraints\n\n- 不得在输入无效时继续执行下游任务\n- 不得臆造或补全缺失数据\n- 输出须符合既定规范格式\n\n## Cautions\n\n- 区分输入缺失与格式错误，分别给出对应处理结果\n- 降级处理需明确说明未完成的部分\n\n## Output Contract\n\n- 输出符合规范的错误或降级处理结果，明确标识输入问题类型并说明后续任务未执行。",
+    "asset_type": "safety_rule",
+    "granularity": "micro",
+    "asset_node_id": "safety_rule_node",
+    "asset_path": "family_root/safety_module/safety_rule_node",
+    "asset_level": 2,
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "child_skill_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf",
+    "objective": "在输入无效或不完整时执行合规处理",
+    "domain": "商品评论分析",
+    "task_family": "输入校验与异常处理",
+    "method_family": "输入校验规则",
+    "stage": "输入校验",
+    "applicable_signals": [
+      "待处理输入为空或缺少必需字段",
+      "输入格式与要求不符",
+      "产品目录JSON无法通过校验"
+    ],
+    "contraindications": [
+      "输入完整且格式有效时无需触发本规则"
+    ],
+    "intervention_moves": [
+      "校验输入完整性与格式",
+      "校验产品目录JSON有效性",
+      "在异常时停止下游任务并输出规范错误或降级结果"
+    ],
+    "triggers": [
+      "输入缺失或格式不符合要求",
+      "产品目录JSON校验失败"
+    ],
+    "workflow_steps": [
+      "检查输入是否存在且包含必需内容",
+      "检查输入格式是否符合要求",
+      "校验产品目录JSON是否有效",
+      "若任一校验失败，停止后续匹配、分类或计数任务",
+      "按既定规则输出规范的错误或降级处理结果"
+    ],
+    "constraints": [
+      "不得在输入无效时继续执行下游任务",
+      "不得臆造或补全缺失数据",
+      "输出须符合既定规范格式"
+    ],
+    "cautions": [
+      "区分输入缺失与格式错误，分别给出对应处理结果",
+      "降级处理需明确说明未完成的部分"
+    ],
+    "output_contract": [
+      "输出符合规范的错误或降级处理结果，明确标识输入问题类型并说明后续任务未执行。"
+    ],
+    "examples": [],
+    "tags": [
+      "输入校验",
+      "异常处理",
+      "护栏规则",
+      "JSON校验"
+    ],
+    "support_ids": [
+      "2488b9a9-0787-54f4-a979-e42a63e7f8ed"
+    ],
+    "metadata": {
+      "risk_class": "medium",
+      "source_draft_ids": [
+        "da303da9-37c8-54fa-8887-6173b7bdaaa8"
+      ],
+      "support_summary": {
+        "support": 0,
+        "constraint": 1,
+        "conflict": 0,
+        "case_variant": 0
+      },
+      "files": {},
+      "resources": {},
+      "confidence": 0.7,
+      "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+      "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+      "family_name": "",
+      "family_id": "",
+      "profile_id": "",
+      "domain_root_name": "",
+      "domain_root_id": "",
+      "taxonomy_axis": "",
+      "family_bucket_label": "",
+      "visible_levels": {},
+      "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|在输入无效或不完整时执行合规处理|商品评论分析|输入校验与异常处理|输入校验规则|输入校验|无效或不完整输入处理"
+    },
+    "version": "0.1.0",
+    "status": "active"
+  },
+  "hits": 0,
+  "branch": "hits0"
+}

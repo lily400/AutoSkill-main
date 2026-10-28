@@ -1,0 +1,122 @@
+{
+  "skill_id": "c0e659dc-db67-530f-87dc-425fd05b00be",
+  "name": "缺失分类字段的数据质量校验与退回",
+  "description": "当处理后的评论数据缺少必需分类字段（如 brand、competitor_or_nike）时，阻断后续处理并要求源系统提供修正输入，禁止从无关字段推断分类值。用于数据预处理阶段的数据质量守门。",
+  "skill_body": "在执行下游计数或匹配前，先校验处理后的评论数据是否包含全部必需分类字段。若发现必需分类字段缺失或不完整，立即停止处理，不得从无关字段推断分类值，并向源系统发起修正输入请求，同时给出明确的阻断说明。\n\n## Objective\n\n防止使用不完整或推断出的分类字段产出下游计数结果\n## Applicable Signals\n\n- 处理后的评论缺少必需分类列\n- 解析器警告某字段映射缺失\n- 分类字段不完整或为空\n\n## Contraindications\n\n- 所有必需分类字段完整且有效\n- 缺失字段可从同一记录的其他字段合法推导\n\n## Intervention Moves\n\n- 校验必需分类字段是否齐全\n- 发现缺失时阻断后续处理\n- 禁止从无关字段推断分类值\n- 向源系统发起修正输入请求\n- 输出明确的阻断说明\n\n## Workflow Steps\n\n- 检查处理后的评论数据是否包含全部必需分类字段（如 brand、competitor_or_nike）\n- 若字段完整有效，放行至下游处理\n- 若字段缺失或不完整，停止处理，不得从无关字段推断分类值\n- 向源系统发起修正输入请求\n- 输出明确的阻断说明，说明缺失字段与所需修正\n\n## Constraints\n\n- 不得在分类字段不完整时继续处理\n- 不得从无关字段推断分类值\n- 必需列缺失时必须请求源系统提供修正输入\n\n## Cautions\n\n- 阻断说明需清晰指出缺失字段，便于快速补救\n- 在源系统修正前不得产出下游计数结果\n\n## Output Contract\n\n- 明确的阻断说明与向源系统发起的修正输入请求\n\n## Example Therapist Responses\n\n### Example 1\n\n- Client/Input: 解析器警告：competitor_or_nike 映射缺失，晨间运行数据中该列可能缺失。\n- Therapist/Output: 阻断处理：competitor_or_nike 字段缺失，已停止下游计数，请源系统提供含该列的修正输入。\n- Notes: 不得从 brand 文本或其他字段推断该分类值",
+  "asset_type": "safety_rule",
+  "granularity": "micro",
+  "asset_node_id": "safety_rule_node",
+  "asset_path": "family_root/safety_module/safety_rule_node",
+  "asset_level": 2,
+  "parent_skill_id": "",
+  "parent_candidate_ids": [],
+  "child_skill_ids": [],
+  "hierarchy_confidence": 0.0,
+  "hierarchy_status": "unresolved",
+  "visible_role": "leaf",
+  "objective": "防止使用不完整或推断出的分类字段产出下游计数结果",
+  "domain": "数据运营",
+  "task_family": "数据质量管控",
+  "method_family": "输入校验与退回",
+  "stage": "数据预处理",
+  "applicable_signals": [
+    "处理后的评论缺少必需分类列",
+    "解析器警告某字段映射缺失",
+    "分类字段不完整或为空"
+  ],
+  "contraindications": [
+    "所有必需分类字段完整且有效",
+    "缺失字段可从同一记录的其他字段合法推导"
+  ],
+  "intervention_moves": [
+    "校验必需分类字段是否齐全",
+    "发现缺失时阻断后续处理",
+    "禁止从无关字段推断分类值",
+    "向源系统发起修正输入请求",
+    "输出明确的阻断说明"
+  ],
+  "triggers": [
+    "处理后的评论缺少必需分类列",
+    "解析器警告某字段映射缺失",
+    "分类字段不完整或为空"
+  ],
+  "workflow_steps": [
+    "检查处理后的评论数据是否包含全部必需分类字段（如 brand、competitor_or_nike）",
+    "若字段完整有效，放行至下游处理",
+    "若字段缺失或不完整，停止处理，不得从无关字段推断分类值",
+    "向源系统发起修正输入请求",
+    "输出明确的阻断说明，说明缺失字段与所需修正"
+  ],
+  "constraints": [
+    "不得在分类字段不完整时继续处理",
+    "不得从无关字段推断分类值",
+    "必需列缺失时必须请求源系统提供修正输入"
+  ],
+  "cautions": [
+    "阻断说明需清晰指出缺失字段，便于快速补救",
+    "在源系统修正前不得产出下游计数结果"
+  ],
+  "output_contract": [
+    "明确的阻断说明与向源系统发起的修正输入请求"
+  ],
+  "examples": [
+    {
+      "input": "解析器警告：competitor_or_nike 映射缺失，晨间运行数据中该列可能缺失。",
+      "output": "阻断处理：competitor_or_nike 字段缺失，已停止下游计数，请源系统提供含该列的修正输入。",
+      "notes": "不得从 brand 文本或其他字段推断该分类值"
+    }
+  ],
+  "tags": [
+    "数据质量",
+    "输入校验",
+    "退回",
+    "分类字段",
+    "守门规则"
+  ],
+  "support_ids": [
+    "cebd8458-5acb-504e-81a8-6c450cb5c5f5"
+  ],
+  "metadata": {
+    "risk_class": "medium",
+    "source_draft_ids": [
+      "1f9a5dc3-036e-57bb-9484-578e118f8fb3"
+    ],
+    "support_summary": {
+      "support": 0,
+      "constraint": 1,
+      "conflict": 0,
+      "case_variant": 0
+    },
+    "files": {},
+    "resources": {},
+    "confidence": 0.9,
+    "domain_type": "Procedural_Task_Execution_Operational_Procedures",
+    "taxonomy_id": "Procedural_Task_Execution_Operational_Procedures",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "profile_id": "procedural_task_execution_operational_procedures::未分类技能",
+    "domain_root_name": "通用技能领域",
+    "domain_root_id": "default",
+    "taxonomy_axis": "",
+    "family_bucket_label": "Family技能",
+    "visible_levels": {
+      "root_label": "总技能",
+      "family_bucket_label": "Family技能",
+      "level_labels": {
+        "1": "一级技能",
+        "2": "二级技能",
+        "3": "微技能"
+      }
+    },
+    "identity_key": "procedural_task_execution_operational_procedures|||safety_rule|micro|safety_rule_node|防止使用不完整或推断出的分类字段产出下游计数结果|数据运营|数据质量管控|输入校验与退回|数据预处理|缺失分类字段的数据质量校验与退回",
+    "change_action": "create",
+    "llm_reason": "该候选技能针对分类字段缺失时的阻断与退回，属于独立的数据质量守门能力；与同批候选在阶段、领域和具体校验对象上不同，无直接冗余，且无冲突证据，建议保留。",
+    "parent_skill_id": "",
+    "parent_candidate_ids": [],
+    "hierarchy_confidence": 0.0,
+    "hierarchy_status": "unresolved",
+    "visible_role": "leaf"
+  },
+  "version": "0.1.0",
+  "status": "active"
+}
