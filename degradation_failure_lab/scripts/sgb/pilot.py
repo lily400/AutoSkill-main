@@ -20,6 +20,7 @@ def main(default_task=None, default_generator=None):
     parser.add_argument('phase', choices=('register', 'plan', 'freeze', 'prepare', 'run', 'status', 'analyze'))
     parser.add_argument('--task', default=default_task, required=default_task is None)
     parser.add_argument('--generator-run', default=default_generator)
+    parser.add_argument('--bank-binding', help='Verified immutable snapshot TaskBinding for plan/prepare')
     parser.add_argument('--experiment')
     parser.add_argument('--config', help='Project-relative task configuration, for register')
     parser.add_argument('--output', help='Project-relative freeze/analysis destination')
@@ -31,7 +32,7 @@ def main(default_task=None, default_generator=None):
         result = pilot.register_task(LAB, args.task, args.config)
     else:
         task = pilot.load_binding(LAB, args.task)
-        if args.phase in ('plan', 'freeze', 'prepare') and not args.generator_run:
+        if args.phase in ('plan', 'freeze', 'prepare') and not args.generator_run and not (args.bank_binding and args.phase != 'freeze'):
             parser.error('this phase requires --generator-run')
         if args.phase != 'freeze' and not args.experiment:
             parser.error('this phase requires --experiment')
@@ -41,7 +42,8 @@ def main(default_task=None, default_generator=None):
             entries = freeze_generation(LAB, args.generator_run, inside(LAB, args.output), case_id=task['case_id'])
             result = {'status': 'FROZEN', 'skills': len(entries), 'output': args.output}
         elif args.phase == 'plan':
-            result = pilot.plan(LAB, task, args.generator_run, args.experiment)
+            result = pilot.plan(LAB, task, args.generator_run, args.experiment,
+                                **({'bank_binding_id':args.bank_binding} if args.bank_binding else {}))
         elif args.phase in ('prepare', 'run') and os.name == 'nt':
             runtime = read(LAB / 'configs/downstream_runtime.json')
             mount = runtime['project_mount']
@@ -61,9 +63,12 @@ def main(default_task=None, default_generator=None):
                         '--experiment', args.experiment]
             if args.generator_run:
                 command += ['--generator-run', args.generator_run]
+            if args.bank_binding:
+                command += ['--bank-binding', args.bank_binding]
             return subprocess.run(command).returncode
         elif args.phase == 'prepare':
-            result = pilot.prepare(LAB, task, args.generator_run, args.experiment)
+            result = pilot.prepare(LAB, task, args.generator_run, args.experiment,
+                                   **({'bank_binding_id':args.bank_binding} if args.bank_binding else {}))
         elif args.phase == 'run':
             return pilot.run(LAB, task, args.experiment)
         elif args.phase == 'status':

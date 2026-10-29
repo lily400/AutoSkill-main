@@ -65,6 +65,14 @@ def execution_profile(output, config):
             or set(profile.get('arms', [])) != set(config.conditions.values())
             or Path(policy['database']).resolve() != (output / 'budget.sqlite3').resolve()):
         raise ValueError('Trial conditions or budget database differ from explicit execution config')
+    if profile.get('bank_binding_id'):
+        from degradation_lab.skillbank import verify_consumption
+        binding = verify_consumption(output.parents[4], output,
+                                     task_key=read(output / 'task_config.json')['task_key'])
+        if (binding['binding_id'] != profile['bank_binding_id']
+                or binding['snapshot_id'] != profile.get('snapshot_id')
+                or binding['generator_run_id'] != config.generator_run_id):
+            raise ValueError('Snapshot/consumer/generator execution identities differ')
     return profile
 
 
@@ -80,7 +88,17 @@ def trial_config(output, label, mode, config):
     if (manifest.get('arm') != label or manifest.get('generator_run_id') != config.generator_run_id
             or Path(manifest['staged_root']).resolve() != stage.resolve()):
         raise ValueError('Skill manifest identity differs from explicit execution config')
-    if not stage.is_dir() or inventory(stage) != manifest['files']:
+    if profile.get('bank_binding_id') and (
+            manifest.get('binding_id') != profile['bank_binding_id']
+            or manifest.get('snapshot_id') != profile['snapshot_id']
+            or manifest.get('task_key') != profile['task_key']):
+        raise ValueError('Trial stage snapshot/consumer identity differs from frozen profile')
+    if profile.get('bank_binding_id'):
+        from degradation_lab.skillbank import full_inventory
+        observed_files = full_inventory(stage)
+    else:
+        observed_files = inventory(stage)
+    if not stage.is_dir() or observed_files != manifest['files']:
         raise ValueError('Staged Skill files differ from frozen manifest')
     skills_enabled = condition in config.skill_conditions
     if not skills_enabled and (manifest['files'] or manifest['metadata']):

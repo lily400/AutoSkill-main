@@ -15,6 +15,16 @@ from .harbor_adapter import discover_local, official_probe_class, official_resol
 
 
 def canonical_packages(root, config):
+    if config.get('bank_binding_id'):
+        from degradation_lab.skillbank import SkillBank
+        bank = SkillBank(root)
+        binding = bank.binding(config['bank_binding_id'], task_key=config['task_key'])
+        if config.get('generator_run_id', binding['generator_run_id']) != binding['generator_run_id']:
+            raise ValueError('Snapshot generator differs from requested origin')
+        packages = bank.packages(binding['binding_id'], task_key=config['task_key'])
+        if config.get('expected_skill_count', len(packages)) != len(packages):
+            raise ValueError('Snapshot Skill count differs from requested count')
+        return packages
     identity, run, result, stages = load_run(root, config['generator_run_id'])
     if identity['case_id'] != config['case_id'] or identity['condition_id'] != config['condition']:
         raise ValueError('Generator run identity differs from pilot config')

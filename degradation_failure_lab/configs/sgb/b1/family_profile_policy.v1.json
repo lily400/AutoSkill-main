@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "policy_version": "b1-family-profile-v1",
+  "catalog_schema_version": 1,
+  "profile_rule": "taxonomy.derive_profile_id",
+  "profile_expression": "safe(taxonomy_id) + \"::\" + safe(family_name)",
+  "max_runtime_candidates": 1,
+  "taxonomy_loading": "Load the effective existing domain/file taxonomy with official load_skill_taxonomy, serialize it once per requested runtime, then change only family_candidates/default_family_name.",
+  "family_identity": "Canonical id/name/aliases come from the selected immutable catalog version; no task-name inference.",
+  "runtime_options": [
+    "family_name",
+    "profile_id",
+    "skill_taxonomy_path"
+  ],
+  "family_id_transport": "Candidate id is resolved by pipeline.resolve_run_metadata; family_id is not a public extract_from_doc keyword.",
+  "preserved_fields": [
+    "domain",
+    "domain_type",
+    "taxonomy_id",
+    "family_axis",
+    "domain_root",
+    "visible_levels",
+    "asset_types",
+    "asset_tree"
+  ],
+  "mixed_policy": {
+    "scope": "primary_batch",
+    "status": "READY_PRIMARY_BATCH",
+    "secondary_families_retained": true,
+    "precise_skill_routing": false
+  },
+  "multiple_primary_families": "ROUTING_REQUIRED",
+  "declared_rule_conflicts": "ROUTING_REQUIRED",
+  "unknown_content": "CLASSIFICATION_REQUIRED",
+  "no_sources": "SOURCE_PENDING",
+  "default_control": {
+    "mode": "default-control",
+    "family_name": "未分类技能",
+    "family_id": "",
+    "empty_candidates": true,
+    "preserve_implicit_resolution": true,
+    "exception": "Empty family_id is allowed only in this named legacy control mode."
+  },
+  "classification_is_not_source_admission": true,
+  "semantic_conflict_detection": "Reviewed source status and explicit rule_conflicts only; this tool does not infer semantic compatibility.",
+  "initial_registry_sha256": "27f656286137c358e7057d4403186b38b00aa60f7e81ee4f4c32269a24bb9416"
+}

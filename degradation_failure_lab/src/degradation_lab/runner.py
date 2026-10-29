@@ -78,8 +78,19 @@ class ExperimentRunner:
                 'upstream_path':str(upstream),
                 'output_pattern':target.parent.relative_to(self.root).as_posix()+'/<run_id>/'}
 
-    def prepare(self, case_id, condition_id, run_id=None, fixture=False):
+    def prepare(self, case_id, condition_id, run_id=None, fixture=False, bank_plan=None):
         bundle, condition, manifest, config = self.resolve(case_id, condition_id)
+        bank = planned = None
+        if bank_plan is not None:
+            from .skillbank import SkillBank
+            bank = SkillBank(self.root)
+            planned = read(Path(bank_plan)) if not isinstance(bank_plan, dict) else bank_plan
+            run_id = run_id or planned['build_run']['run_id']
+            expected = bank.plan({'task_key':planned['task_key'],'sources':planned['sources']},
+                case_id,condition_id,run_id,family_mode=planned['family_mode'],
+                force_generation=planned['force_generation'])
+            if expected != planned:
+                raise ValueError('Bank plan no longer matches inputs/config/code/prompt')
         width = 10 if case_path(self.root,case_id).parent == self.root/'cases/sgb' else 12
         run_id = run_id or 'r' + uuid.uuid4().hex[:width]
         if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', run_id): raise ValueError('Unsafe run_id')
@@ -117,9 +128,13 @@ class ExperimentRunner:
             'run_id':run_id, 'store_path':str(target/'SkillBank'), 'initial_store_entries':[],
             'real_generation':False, 'execution_kind':'fixture' if fixture else 'official'})
         write(target/'status.json', {'state':'PREPARED', 'real_generation':False, 'updated_at':utc()})
+        if bank is not None:
+            bank.attach_prepared(target, planned)
         return target
 
-    def run(self, case_id, condition_id, run_id=None, resume_from=None, resume_budget=None):
+    def run(self, case_id, condition_id, run_id=None, resume_from=None, resume_budget=None, bank_plan=None):
+        if resume_from and bank_plan is not None:
+            raise ValueError('Continuation inherits recorded context; do not supply a fresh bank plan')
         if resume_from:
             from .artifacts import resolve_run
             identity, parent = resolve_run(self.root, resume_from)
@@ -155,8 +170,12 @@ class ExperimentRunner:
         if resume_from:
             from .resume import prepare_resume
             target = prepare_resume(self.root, resume_from, run_id, budget_overrides=resume_budget)
+            if (parent/'bank_build.json').is_file():
+                from .skillbank import SkillBank
+                SkillBank(self.root).capture_continuation(target)
         else:
-            target = self.prepare(case_id, condition_id, run_id)
+            target = (self.prepare(case_id, condition_id, run_id, bank_plan=bank_plan)
+                      if bank_plan is not None else self.prepare(case_id, condition_id, run_id))
         from .adapter import execute
         try:
             code = execute(target)

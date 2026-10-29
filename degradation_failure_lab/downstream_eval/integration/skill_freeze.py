@@ -7,12 +7,9 @@ from degradation_lab.io import inside, inventory, read, sha256, write
 from .skill_install import canonical_packages, copy_packages
 
 
-def freeze_generation(root, generator_run_id, destination, *, case_id=None, condition='clean'):
-    root, destination = Path(root).resolve(), Path(destination).resolve()
-    if not destination.is_relative_to(root):
-        raise ValueError('Freeze destination must be inside the lab')
-    if destination.exists() and any(destination.iterdir()):
-        raise FileExistsError('Freeze output must be new and empty')
+def verify_generation(root, generator_run_id, *, case_id=None, condition="clean"):
+    """Read-only official-generation/lineage/registry verification shared by both freeze modes."""
+    root = Path(root).resolve()
     identity, run, result, stages = load_run(root, generator_run_id)
     case_id = case_id or identity['case_id']
     if (identity['case_id'] != case_id or identity['condition_id'] != condition
@@ -44,6 +41,18 @@ def freeze_generation(root, generator_run_id, destination, *, case_id=None, cond
     expected = {x['id'] for x in stages['register']['upserted_store_skills']}
     if not active or set(active) != expected:
         raise ValueError('Final live registry and exported registration identities differ; explicit review required')
+    return identity, run, result, stages, lineage, active, registry
+
+
+def freeze_generation(root, generator_run_id, destination, *, case_id=None, condition='clean'):
+    root, destination = Path(root).resolve(), Path(destination).resolve()
+    if not destination.is_relative_to(root):
+        raise ValueError('Freeze destination must be inside the lab')
+    if destination.exists() and any(destination.iterdir()):
+        raise FileExistsError('Freeze output must be new and empty')
+    identity, run, result, stages, lineage, active, registry = verify_generation(
+        root, generator_run_id, case_id=case_id, condition=condition)
+    case_id = case_id or identity['case_id']
     destination.mkdir(parents=True, exist_ok=True)
     write(destination / 'canonical_files.json', {
         'unique_program_skill_count': len(active),

@@ -100,10 +100,26 @@ def output_path(root, task, experiment):
     return Path(root) / 'runs/eval/sgb' / task['task_id'] / experiment
 
 
-def plan(root, task, generator, experiment):
+def _bank_source(root, task, generator, binding_id):
+    from degradation_lab.skillbank import SkillBank
+    bank = SkillBank(root)
+    binding = bank.binding(binding_id, task_key=task['task_key'])
+    snapshot = bank.snapshot(binding['snapshot_id'])['payload']
+    if snapshot['recipe']['conditions']['condition']['kind'] != 'clean':
+        raise ValueError('The existing CleanSkill pilot requires a clean snapshot')
+    if generator is not None and generator != binding['generator_run_id']:
+        raise ValueError('Snapshot generation origin differs from requested generator')
+    return bank, binding
+
+
+def plan(root, task, generator, experiment, *, bank_binding_id=None):
     from degradation_lab.artifacts import load_run
+    binding = None
+    if bank_binding_id:
+        _, binding = _bank_source(root, task, generator, bank_binding_id)
+        generator = binding['generator_run_id']
     identity, run, result, _ = load_run(root, generator)
-    if identity['case_id'] != task['case_id'] or result.get('status') != 'completed':
+    if binding is None and (identity['case_id'] != task['case_id'] or result.get('status') != 'completed'):
         raise ValueError('Task requires a matching completed generation')
     output = output_path(root, task, experiment)
     if output.exists():
@@ -113,7 +129,10 @@ def plan(root, task, generator, experiment):
             'model': profile['model'], 'budget': profile['budget'], 'conditions': task['conditions'],
             'max_http_calls': len(task['conditions']) * profile['budget']['max_requests'],
             'runtime': read(inside(root, task['runtime_lock'])), 'model_calls': 0,
-            'generation_path': str(run), 'runtime_admission': 'REQUIRES_ZERO_MODEL_PREPARATION'}
+            'generation_path': str(run), 'runtime_admission': 'REQUIRES_ZERO_MODEL_PREPARATION',
+            **({'bank_binding_id': binding['binding_id'], 'snapshot_id': binding['snapshot_id'],
+                'generator_case_id': binding['generator_case_id'], 'consumer_case_id': task['case_id'],
+                'task_key': task['task_key']} if binding else {})}
 
 
 def _stage(output, packages, generator, conditions):
@@ -128,7 +147,11 @@ def _stage(output, packages, generator, conditions):
         else:
             copy_packages({sid: {'path': output / 'skills' / sid / 'SKILL.md', 'files': p['files']}
                            for sid, p in packages.items()}, stage)
+        bank_reference = (read(output / 'skillbank_reference.json')
+                          if (output / 'skillbank_reference.json').is_file() else None)
         write(output / 'manifests' / (label + '.json'), {
+            **({k:bank_reference[k] for k in ('binding_id','snapshot_id','task_key','generator_case_id')}
+               if bank_reference else {}),
             'arm': label, 'generator_run_id': generator, 'staged_root': str(stage),
             'files': inventory(stage),
             'metadata': {sid: p['metadata'] for sid, p in packages.items()} if condition == 'CleanSkill' else {}})
@@ -185,11 +208,15 @@ def _probe(output, task, adapter, config, packages, attempt):
     return reports
 
 
-def prepare(root, task, generator, experiment):
+def prepare(root, task, generator, experiment, *, bank_binding_id=None):
     from downstream_eval.integration.harbor_adapter import verify_sources
     from downstream_eval.integration.request_budget import Ledger
     from downstream_eval.p1 import fairness_identity
     root = Path(root)
+    bank = binding = None
+    if bank_binding_id:
+        bank, binding = _bank_source(root, task, generator, bank_binding_id)
+        generator = binding['generator_run_id']
     output = output_path(root, task, experiment)
     if (output / 'budget.sqlite3').exists() or (output / 'batch.started').exists():
         raise RuntimeError('Existing pilot budget must never be reset')
@@ -217,6 +244,13 @@ def prepare(root, task, generator, experiment):
                 or sha256(output / 'skills_manifest.json') != frozen['manifest_sha256']):
             raise ValueError('Existing frozen Skills changed')
         packages = read(output / 'skills_manifest.json')['packages']
+        if binding:
+            from degradation_lab.skillbank import verify_consumption
+            reference = verify_consumption(root, output, task_key=task['task_key'])
+            if reference['binding_id'] != binding['binding_id']:
+                raise ValueError('Prepared consumer references a different snapshot binding')
+    elif binding:
+        packages = bank.materialize(binding['binding_id'], task['task_key'], output)
     else:
         packages = freeze_generation(root, generator, output, case_id=task['case_id'])
     attempt = output / 'engineering' / ('attempt-%03d' % (len(list((output / 'engineering').glob('attempt-*'))) + 1))
@@ -235,6 +269,9 @@ def prepare(root, task, generator, experiment):
                'approval_environment_variable': task['approval_environment_variable'],
                'authorization': 'RUN_REQUIRES_EXPLICIT_INVOCATION', 'protocol_id': 'clean-pair-v1',
                'task_config_sha256': sha256(output / 'task_config.json')}
+    if binding:
+        profile.update(bank_binding_id=binding['binding_id'], snapshot_id=binding['snapshot_id'],
+                       generator_case_id=binding['generator_case_id'], task_key=task['task_key'])
     limit = profile['budget']['max_requests']
     profile['hard_http_budget'] = {'database': str(output / 'budget.sqlite3'),
         'per_arm_limit': limit, 'global_limit': limit * len(task['conditions']), 'order': list(task['conditions'])}
@@ -267,6 +304,12 @@ def prepare(root, task, generator, experiment):
                  'configs/datasets/sgb.json', 'data/manifests/sgb/tasks.jsonl',
                  'downstream_eval/configs/runner.lock.json', *task.get('freeze_files', [])):
         frozen[name] = sha256(root / name)
+    if binding:
+        for name in ('src/degradation_lab/skillbank.py', 'src/degradation_lab/family.py'):
+            frozen[name] = sha256(root / name)
+        snapshot_row = next(x for x in bank.rows('bank_registry.v1.jsonl') if x['snapshot_id']==binding['snapshot_id'])
+        snapshot_file = bank.path(snapshot_row['manifest_path'])
+        frozen[snapshot_file.relative_to(root).as_posix()] = sha256(snapshot_file)
     for name, digest in inventory(root / '.external/harbor-full/src/harbor').items():
         frozen['.external/harbor-full/src/harbor/' + name] = digest
     for name, digest in inventory(output).items():
@@ -294,6 +337,9 @@ def run(root, task, experiment):
         raise RuntimeError('Pilot already started; inspect status/analyze instead of restarting')
     if read(output / 'task_config.json') != task:
         raise ValueError('Task binding changed after preparation')
+    if read(output / 'profile.json').get('bank_binding_id'):
+        from degradation_lab.skillbank import verify_consumption
+        verify_consumption(root, output, task_key=task['task_key'])
     versions = {n: importlib.metadata.version(n) for n in ('harbor', 'litellm', 'openai', 'httpx')}
     if versions != read(output / 'runtime_versions.json'):
         raise ValueError('Prepared runtime package versions changed')

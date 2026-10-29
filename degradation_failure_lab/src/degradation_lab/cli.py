@@ -19,7 +19,9 @@ def main():
         p.add_argument('--case', nargs='+', required=True)
         p.add_argument('--condition', nargs='+')
         p.add_argument('--repeat', type=int, default=1)
-        if name=='run': p.add_argument('--run-id', help='Only for a single case/condition/repeat')
+        if name=='run':
+            p.add_argument('--run-id', help='Only for a single case/condition/repeat')
+            p.add_argument('--bank-plan', help='Exact zero-model SkillBank plan; one new run only')
     p = sub.add_parser('resume', help='Continue an interrupted Plan in a new run; invokes paid model API')
     p.add_argument('--run', required=True, help='Interrupted run id')
     p.add_argument('--run-id', required=True, help='New globally unique run id')
@@ -126,10 +128,13 @@ def main():
         if args.command=='plan': result=plans
         else:
             if args.run_id and (len(plans)!=1 or args.repeat!=1): raise ValueError('Explicit run-id requires one run')
+            if args.bank_plan and (not args.run_id or len(plans)!=1 or args.repeat!=1):
+                raise ValueError('Bank plan requires one explicit new run')
             result=[]
             for plan in plans:
                 for _ in range(args.repeat):
-                    path, code = runner.run(plan['case_id'],plan['condition_id'],args.run_id)
+                    path, code = runner.run(plan['case_id'],plan['condition_id'],args.run_id,
+                                            **({'bank_plan':args.bank_plan} if args.bank_plan else {}))
                     result.append({'path':str(path),'exit_code':code})
             print(json.dumps(result,ensure_ascii=False,indent=2))
             return int(any(r['exit_code'] for r in result))
